@@ -275,7 +275,7 @@
         <section>
           <div class="eyebrow">Recientes</div>
           <div>
-            <div class="recent-row"><div><div class="club">Club de Golf Hato Verde</div><div class="date">Jugado el 6 de septiembre</div></div><div class="play-btn">Jugar</div></div>
+            <div class="recent-row"><div><div class="club">Club Hato Verde</div><div class="date">Jugado el 6 de septiembre</div></div><div class="play-btn">Jugar</div></div>
             <div class="recent-row"><div><div class="club">La Dehesa</div><div class="date">Jugado el 1 de septiembre</div></div><div class="play-btn">Jugar</div></div>
             <div class="recent-row"><div><div class="club">Real Club de Golf Guadalmina</div><div class="date">Jugado el 18 de agosto</div></div><div class="play-btn">Jugar</div></div>
           </div>
@@ -327,7 +327,7 @@
           <div class="section-sub">Hasta 4 jugadores en la misma partida. Escribe para ver jugadores anteriores, o deja en blanco los que no vayan a jugar.</div>
           <div class="field">
             <label>Jugador 1</label>
-            <div class="search-box"><input type="text" id="player1Input" value="Tú" placeholder="Nombre del jugador 1" autocomplete="off"></div>
+            <div class="search-box"><input type="text" id="player1Input" placeholder="Nombre del jugador 1" autocomplete="off"></div>
             <div class="dropdown" id="player1Dropdown"></div>
           </div>
           <div class="field">
@@ -938,9 +938,15 @@
     closeDropdown();
   });
 
-  // Pantalla "Jugar": botón "Jugar" en recientes va directo a anotar resultados
+  // Pantalla "Jugar": botón "Jugar" en recientes pasa primero por "Configurar partida" (para poner jugadores)
   document.querySelectorAll('.recent-row .play-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> goTo(3));
+    btn.addEventListener('click', ()=>{
+      const row = btn.closest('.recent-row');
+      const courseName = row ? row.querySelector('.club').textContent.trim() : '';
+      const match = COURSES.find(c => c.name === courseName);
+      if(match) selectCourse(match);
+      goTo(1);
+    });
   });
 
   // Botones de navegación de flujo dentro de cada pantalla
