@@ -658,21 +658,52 @@
   let players = ['Jugador 1'];
   let currentCoursePar = 0;
 
+  // Compañeros habituales (extraídos de "Hoyo 19", el histórico de rondas de golfdirecto),
+  // para que aparezcan como favoritos al buscar jugadores
+  const FAVORITE_PLAYERS = [
+    'Carlos Acedo Domínguez',
+    'Francisco Javier Garcia Martinez',
+    'Juan Jimenez Jimenez',
+    'Jose Moises Romero Martinez',
+    'Juan Ramon Burgos Cantos',
+    'Rafael Ruiz Romero',
+    'Jesus Jimenez Lopez de Lemus',
+    'Fernando Rumayor Zarzuelo',
+    'Alvaro Rodriguez Gonzalez',
+    'Álvaro Lainez Garcia-Alexandre',
+    'Juan Manuel Jimenez Lopez de Lemus',
+    'Alejandro Azancot Cabello',
+    'Moises Hermida Luna',
+    'Emilio Martin Carrero',
+    'Jose Maria Hurtado Leon',
+    'Manuel Medina Morian',
+    'Jesus Antonio Castaño Alba',
+    'Francisco Javier Romero Jimeno',
+  ];
+
   // Define quiénes juegan esta ronda (1 a 4 jugadores)
   function setPlayers(names){
     players = names && names.length ? names.slice(0, 4) : ['Jugador 1'];
   }
 
-  // Historial de jugadores (guardado en este navegador) para sugerir nombres ya usados
-  function getPlayerHistory(){
+  // Jugadores guardados en este navegador (los que se han escrito en partidas anteriores)
+  function getStoredPlayerHistory(){
     try {
       const raw = localStorage.getItem('golfAppPlayerHistory');
       return raw ? JSON.parse(raw) : [];
     } catch(e){ return []; }
   }
+  // Lista para sugerir en el buscador: favoritos (compañeros habituales) + guardados en este navegador
+  function getPlayerHistory(){
+    const merged = FAVORITE_PLAYERS.slice();
+    getStoredPlayerHistory().forEach(name=>{
+      if(name && !merged.some(m => m.toLowerCase() === name.toLowerCase())) merged.push(name);
+    });
+    return merged;
+  }
   function rememberPlayers(names){
     try {
-      const history = getPlayerHistory();
+      const history = getStoredPlayerHistory();
       names.forEach(name=>{
         if(name && !history.some(h => h.toLowerCase() === name.toLowerCase())) history.push(name);
       });
