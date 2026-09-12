@@ -333,8 +333,16 @@
           </div>
         </section>
         <section>
+          <div class="eyebrow">Partidas</div>
+          <div class="section-sub">Hasta 2 grupos de 4 jugadores a la vez, cada uno con su propia tarjeta.</div>
+          <div class="tab-toggle" id="configGroupToggle">
+            <div class="tab active" data-group="0">Grupo 1</div>
+            <div class="tab" data-group="1">Grupo 2</div>
+          </div>
+        </section>
+        <section>
           <div class="eyebrow">Jugadores</div>
-          <div class="section-sub">Hasta 4 jugadores en la misma partida. Escribe para ver jugadores anteriores (se rellena su hándicap solo), o deja en blanco los que no vayan a jugar.</div>
+          <div class="section-sub">Hasta 4 jugadores por grupo. Escribe para ver jugadores anteriores (se rellena su hándicap solo), o deja en blanco los que no vayan a jugar.</div>
           <div class="field-row">
             <div class="field" style="flex:2;">
               <label>Jugador 1</label>
@@ -434,6 +442,10 @@
         <div class="meta">Hoy · Individual Stableford</div>
       </div>
       <div class="screen-content">
+        <section id="groupSwitchSection" style="display:none;">
+          <div class="eyebrow">Grupo</div>
+          <div class="tab-toggle" id="groupSwitchToggle"></div>
+        </section>
         <section>
           <div class="eyebrow">Golpes por hoyo</div>
           <div class="section-sub">Cada jugador anota en su propia fila</div>
@@ -470,43 +482,35 @@
       <div class="app-bar">
         <div class="back" id="s4Back">‹ Club de Golf Hato Verde</div>
         <h1>Diagnóstico post-ronda</h1>
-        <div class="meta">Stroke Play · 6 de septiembre</div>
-        <div class="score-line"><span class="total">90</span><span class="vs">golpes</span><span class="diff">+20 sobre par 70</span></div>
+        <div class="meta" id="s4Meta">Ronda de hoy</div>
+        <div class="score-line" id="s4ScoreLine"><span class="total">—</span><span class="vs">golpes</span><span class="diff">Sin datos</span></div>
       </div>
       <div class="screen-content">
-        <section>
-          <div class="eyebrow">Hoyos a revisar</div>
-          <h2>3 hoyos con mayor pérdida</h2>
-          <div class="section-sub">Seleccionados automáticamente por desviación sobre par</div>
-          <div style="margin-top:12px;">
-            <div class="hole-row"><div class="hole-badge">1</div><div class="hole-par">Par 5</div><div class="hole-strokes">7</div><div class="hole-diff">+2</div></div>
-            <div class="hole-row"><div class="hole-badge">14</div><div class="hole-par">Par 4</div><div class="hole-strokes">6</div><div class="hole-diff">+2</div></div>
-            <div class="hole-row"><div class="hole-badge">18</div><div class="hole-par">Par 4</div><div class="hole-strokes">6</div><div class="hole-diff">+2</div></div>
-          </div>
+        <section id="s4PlayerTabSection" style="display:none;">
+          <div class="eyebrow">Jugador</div>
+          <div class="tab-toggle" id="s4PlayerTabToggle"></div>
         </section>
         <section>
-          <div class="eyebrow">Tus respuestas</div>
-          <h2>Cuestionario rápido</h2>
-          <div style="margin-top:8px;">
-            <div class="answer-row"><div class="hole-tag">HOYO 1</div><div class="answer-main">Juego corto</div><div class="answer-sub">Mala dirección (izq/dcha)</div></div>
-            <div class="answer-row"><div class="hole-tag">HOYO 14</div><div class="answer-main">Approach</div><div class="answer-sub">Largo — se pasó del green</div></div>
-            <div class="answer-row"><div class="hole-tag">HOYO 18</div><div class="answer-main">Approach</div><div class="answer-sub">Mala dirección (izq/dcha)</div></div>
-          </div>
+          <div class="eyebrow">Hoyos a revisar</div>
+          <h2 id="s4WorstHeading">Hoyos con mayor pérdida</h2>
+          <div class="section-sub">Seleccionados automáticamente por desviación sobre par</div>
+          <div style="margin-top:12px;" id="s4WorstHoles"></div>
+        </section>
+        <section id="s4QuestionsSection">
+          <div class="eyebrow">Cuéntanos qué pasó</div>
+          <h2>Una pregunta por cada hoyo flojo</h2>
+          <div style="margin-top:8px;" id="s4Questions"></div>
         </section>
         <section>
           <div class="eyebrow">Patrón detectado</div>
-          <div class="pattern"><div class="pct">67%</div><p>de tus hoyos malos vienen de fallos de <strong>precisión en approach</strong> — dirección, no distancia.</p></div>
+          <div class="pattern" id="s4Pattern"><p>Responde el cuestionario de arriba para ver tu patrón.</p></div>
         </section>
-        <section>
+        <section id="s4PlanSection" style="display:none;">
           <div class="eyebrow">Plan de trabajo sugerido</div>
-          <div style="margin-top:10px;">
-            <div class="plan-item"><div class="dot2"></div><div>Rango con objetivo estrecho, no solo distancia al green</div></div>
-            <div class="plan-item"><div class="dot2"></div><div>Chequeo de alineación antes de cada approach</div></div>
-            <div class="plan-item"><div class="dot2"></div><div>Juego corto centrado en línea de tiro, no en fuerza</div></div>
-          </div>
+          <div style="margin-top:10px;" id="s4Plan"></div>
         </section>
       </div>
-      <div class="actions"><div class="btn ghost">Revisar 13 y 16</div><div class="btn primary">Guardar plan</div></div>
+      <div class="actions"><div class="btn primary full" id="s4GuardarBtn">Guardar diagnóstico</div></div>
     </div>
 
     <!-- SCREEN 5: Overlay de swing -->
@@ -763,6 +767,86 @@
     playerHandicaps = players.map((n, i) => (handicaps && !isNaN(handicaps[i])) ? handicaps[i] : 0);
   }
 
+  // Hasta 2 grupos de 4 jugadores jugando la misma ronda, cada uno con su propia tarjeta
+  let matchGroups = [
+    { players: [], handicaps: [], scores: {} },
+    { players: [], handicaps: [], scores: {} },
+  ];
+  let configGroup = 0; // qué grupo se está rellenando en "Configurar partida"
+  let activeGroup = 0; // qué grupo se está viendo en "Introducir resultados" / Diagnóstico
+
+  function readConfigFields(){
+    const slots = ['player1', 'player2', 'player3', 'player4'].map(id => ({
+      name: ((document.getElementById(id + 'Input') || {}).value || '').trim(),
+      hcp: parseFloat((document.getElementById(id + 'Hcp') || {}).value),
+    })).filter(s => s.name.length > 0);
+    return { players: slots.map(s => s.name), handicaps: slots.map(s => isNaN(s.hcp) ? 0 : s.hcp) };
+  }
+  function writeConfigFields(group){
+    const g = matchGroups[group];
+    for(let i = 0; i < 4; i++){
+      const nameInput = document.getElementById('player' + (i + 1) + 'Input');
+      const hcpInput = document.getElementById('player' + (i + 1) + 'Hcp');
+      if(nameInput) nameInput.value = g.players[i] || '';
+      if(hcpInput) hcpInput.value = g.handicaps[i] ? g.handicaps[i] : '';
+    }
+  }
+  function saveConfigGroupFields(){
+    const data = readConfigFields();
+    matchGroups[configGroup].players = data.players;
+    matchGroups[configGroup].handicaps = data.handicaps;
+  }
+
+  // Recoge/aplica los golpes ya escritos en la tarjeta, por jugador y hoyo (para cambiar de grupo sin perderlos)
+  function collectGroupScores(){
+    const scores = {};
+    document.querySelectorAll('.golpes-row').forEach(row=>{
+      const pIndex = row.dataset.playerIndex;
+      scores[pIndex] = scores[pIndex] || {};
+      row.querySelectorAll('.golpes-input').forEach(input=>{
+        scores[pIndex][input.dataset.hole] = input.value;
+      });
+    });
+    return scores;
+  }
+  function applyGroupScores(scores){
+    document.querySelectorAll('.golpes-row').forEach(row=>{
+      const pIndex = row.dataset.playerIndex;
+      row.querySelectorAll('.golpes-input').forEach(input=>{
+        const v = scores[pIndex] && scores[pIndex][input.dataset.hole];
+        input.value = v !== undefined ? v : '';
+      });
+    });
+  }
+  function renderGroupSwitcher(){
+    const section = document.getElementById('groupSwitchSection');
+    const wrap = document.getElementById('groupSwitchToggle');
+    if(!section || !wrap) return;
+    if(!matchGroups[1].players.length){ section.style.display = 'none'; return; }
+    section.style.display = '';
+    wrap.innerHTML = [0, 1].map(i =>
+      '<div class="tab' + (i === activeGroup ? ' active' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + ' (' + matchGroups[i].players.length + ')</div>'
+    ).join('');
+    wrap.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=> switchGroup(parseInt(tab.dataset.g, 10)));
+    });
+  }
+  function switchGroup(newGroup){
+    if(newGroup === activeGroup) return;
+    matchGroups[activeGroup].scores = collectGroupScores();
+    activeGroup = newGroup;
+    const g = matchGroups[activeGroup];
+    players = g.players.length ? g.players : ['Jugador 1'];
+    playerHandicaps = g.handicaps.length ? g.handicaps : [0];
+    if(selectedCourse){
+      applyCourseToScoreGrids(selectedCourse);
+      applyGroupScores(g.scores);
+      recalcResultados();
+    }
+    renderGroupSwitcher();
+    diagActivePlayer = 0;
+  }
+
   // Jugadores guardados en este navegador (los que se han escrito en partidas anteriores)
   function getStoredPlayerHistory(){
     try {
@@ -974,7 +1058,140 @@
   prevBtn.addEventListener('click', () => { if(current>0){ current--; render(); }});
   nextBtn.addEventListener('click', () => { if(current<screens.length-1){ current++; render(); }});
   dots.forEach(d => d.addEventListener('click', () => { current = +d.dataset.goto; render(); }));
-  function goTo(n){ current = n; render(); }
+  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); }
+
+  // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
+  const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
+  const DIAG_TIPS = {
+    'Drive': ['Trabaja el tempo del backswing, no la fuerza', 'Chequea la alineación de pies antes de cada salida'],
+    'Approach': ['Rango con objetivo estrecho, no solo distancia al green', 'Chequeo de alineación antes de cada approach'],
+    'Juego corto': ['Juego corto centrado en línea de tiro, no en fuerza', 'Practica distancias de wedge de 30-50m'],
+    'Putt': ['Lee la línea dos veces antes de golpear', 'Practica putts cortos de 1-2 metros a diario'],
+  };
+  let diagAnswers = {}; // diagAnswers["grupo-jugador"][hole] = categoría elegida
+  let diagActivePlayer = 0;
+  function diagKey(pIndex){ return activeGroup + '-' + pIndex; }
+
+  function getPlayerHoles(pIndex){
+    const holes = [];
+    document.querySelectorAll('.golpes-row[data-player-index="' + pIndex + '"] .golpes-input').forEach(input=>{
+      const golpes = parseInt(input.value, 10);
+      const par = parseInt(input.dataset.par, 10);
+      if(!isNaN(golpes) && golpes > 0){
+        holes.push({ hole: parseInt(input.dataset.hole, 10), par: par, strokes: golpes, diff: golpes - par });
+      }
+    });
+    return holes.sort((a, b) => a.hole - b.hole);
+  }
+
+  function renderDiagPlayerTabs(){
+    const section = document.getElementById('s4PlayerTabSection');
+    const wrap = document.getElementById('s4PlayerTabToggle');
+    if(!section || !wrap) return;
+    if(players.length <= 1){ section.style.display = 'none'; return; }
+    section.style.display = '';
+    wrap.innerHTML = players.map((name, i) =>
+      '<div class="tab' + (i === diagActivePlayer ? ' active' : '') + '" data-i="' + i + '">' + name + '</div>'
+    ).join('');
+    wrap.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        diagActivePlayer = parseInt(tab.dataset.i, 10);
+        renderDiagnostico();
+      });
+    });
+  }
+
+  function renderDiagQuestionCard(pIndex, h){
+    const chosen = diagAnswers[diagKey(pIndex)] && diagAnswers[diagKey(pIndex)][h.hole];
+    const pills = DIAG_CATEGORIES.map(c =>
+      '<div class="pill-opt' + (chosen === c ? ' selected' : '') + '" data-hole="' + h.hole + '" data-value="' + c + '">' + c + '</div>'
+    ).join('');
+    return '<div style="padding:12px 0; border-top:1px solid var(--line-soft);">'
+      + '<div class="hole-tag">HOYO ' + h.hole + ' · +' + h.diff + ' sobre par</div>'
+      + '<div class="section-sub" style="margin:6px 0 8px;">¿Dónde falló?</div>'
+      + '<div class="pill-row">' + pills + '</div>'
+      + '</div>';
+  }
+
+  function renderDiagPattern(pIndex, worst){
+    const patternEl = document.getElementById('s4Pattern');
+    const planSection = document.getElementById('s4PlanSection');
+    const planEl = document.getElementById('s4Plan');
+    const answered = worst.filter(h => diagAnswers[diagKey(pIndex)] && diagAnswers[diagKey(pIndex)][h.hole]);
+    if(!worst.length || !answered.length){
+      patternEl.innerHTML = '<p>Responde el cuestionario de arriba para ver tu patrón.</p>';
+      planSection.style.display = 'none';
+      return;
+    }
+    const counts = {};
+    answered.forEach(h => {
+      const cat = diagAnswers[diagKey(pIndex)][h.hole];
+      counts[cat] = (counts[cat] || 0) + 1;
+    });
+    let topCat = null, topCount = 0;
+    Object.keys(counts).forEach(c => { if(counts[c] > topCount){ topCount = counts[c]; topCat = c; } });
+    const pct = Math.round((topCount / answered.length) * 100);
+    patternEl.innerHTML = '<div class="pct">' + pct + '%</div><p>de los hoyos flojos respondidos vienen de fallos en <strong>' + topCat + '</strong>.</p>';
+    planSection.style.display = '';
+    planEl.innerHTML = (DIAG_TIPS[topCat] || []).map(tip =>
+      '<div class="plan-item"><div class="dot2"></div><div>' + tip + '</div></div>'
+    ).join('');
+  }
+
+  function renderDiagnostico(){
+    if(diagActivePlayer >= players.length) diagActivePlayer = 0;
+    renderDiagPlayerTabs();
+    const pIndex = diagActivePlayer;
+    const name = players[pIndex] || 'Jugador 1';
+    const holes = getPlayerHoles(pIndex);
+    const total = holes.reduce((a, h) => a + h.strokes, 0);
+    const diff = total - currentCoursePar;
+
+    const backEl = document.getElementById('s4Back');
+    if(backEl) backEl.textContent = selectedCourse ? ('‹ ' + selectedCourse.name) : '‹ Campo';
+    const metaEl = document.getElementById('s4Meta');
+    if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name + (matchGroups[1].players.length ? ' · Grupo ' + (activeGroup + 1) : '');
+    const scoreLine = document.getElementById('s4ScoreLine');
+    if(scoreLine){
+      scoreLine.innerHTML = holes.length
+        ? '<span class="total">' + total + '</span><span class="vs">golpes</span><span class="diff">' + (diff >= 0 ? '+' + diff : diff) + ' sobre par ' + currentCoursePar + '</span>'
+        : '<span class="total">—</span><span class="vs">golpes</span><span class="diff">Sin datos</span>';
+    }
+
+    const worst = holes.filter(h => h.diff > 0).sort((a, b) => (b.diff - a.diff) || (a.hole - b.hole)).slice(0, 3);
+    const heading = document.getElementById('s4WorstHeading');
+    const worstHolesEl = document.getElementById('s4WorstHoles');
+    const questionsSection = document.getElementById('s4QuestionsSection');
+    const questionsEl = document.getElementById('s4Questions');
+
+    if(!holes.length){
+      heading.textContent = 'Todavía no hay golpes anotados';
+      worstHolesEl.innerHTML = '<div class="helper-note">Anota los golpes de ' + name + ' en "Introducir resultados" para ver su diagnóstico.</div>';
+      questionsSection.style.display = 'none';
+    } else if(!worst.length){
+      heading.textContent = '¡Ronda sólida!';
+      worstHolesEl.innerHTML = '<div class="helper-note">' + name + ' no tuvo hoyos por encima del par. Sin fallos que analizar 🎉</div>';
+      questionsSection.style.display = 'none';
+    } else {
+      heading.textContent = worst.length + ' hoyo' + (worst.length > 1 ? 's' : '') + ' con mayor pérdida';
+      worstHolesEl.innerHTML = worst.map(h =>
+        '<div class="hole-row"><div class="hole-badge">' + h.hole + '</div><div class="hole-par">Par ' + h.par + '</div><div class="hole-strokes">' + h.strokes + '</div><div class="hole-diff">+' + h.diff + '</div></div>'
+      ).join('');
+      questionsSection.style.display = '';
+      questionsEl.innerHTML = worst.map(h => renderDiagQuestionCard(pIndex, h)).join('');
+      questionsEl.querySelectorAll('.pill-opt').forEach(pill=>{
+        pill.addEventListener('click', ()=>{
+          const key = diagKey(pIndex);
+          diagAnswers[key] = diagAnswers[key] || {};
+          diagAnswers[key][pill.dataset.hole] = pill.dataset.value;
+          renderDiagnostico();
+        });
+      });
+    }
+    renderDiagPattern(pIndex, worst);
+  }
+  const s4GuardarBtn = document.getElementById('s4GuardarBtn');
+  if(s4GuardarBtn) s4GuardarBtn.addEventListener('click', ()=> goTo(6));
   render();
 
   // ---- Interacciones dentro de cada pantalla ----
@@ -1043,18 +1260,29 @@
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
-  // "Configurar partida": recoge los jugadores (1 a 4) y sus hándicaps antes de empezar a anotar
+  // "Configurar partida": pestañas Grupo 1 / Grupo 2 (no pierden lo escrito al cambiar)
+  document.querySelectorAll('#configGroupToggle .tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      saveConfigGroupFields();
+      document.querySelectorAll('#configGroupToggle .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      configGroup = parseInt(tab.dataset.group, 10);
+      writeConfigFields(configGroup);
+    });
+  });
+
+  // "Configurar partida": recoge ambos grupos (1 a 4 jugadores cada uno, con hándicap) antes de empezar a anotar
   const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
   if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
-    const slots = ['player1', 'player2', 'player3', 'player4'].map(id => ({
-      name: ((document.getElementById(id + 'Input') || {}).value || '').trim(),
-      hcp: parseFloat((document.getElementById(id + 'Hcp') || {}).value),
-    })).filter(s => s.name.length > 0);
-    const names = slots.map(s => s.name);
-    const handicaps = slots.map(s => s.hcp);
-    setPlayers(names, handicaps);
-    rememberPlayers(names);
+    saveConfigGroupFields();
+    matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los dos grupos
+    activeGroup = 0;
+    diagAnswers = {};
+    const g0 = matchGroups[0];
+    setPlayers(g0.players, g0.handicaps);
+    rememberPlayers(matchGroups[0].players.concat(matchGroups[1].players));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
+    renderGroupSwitcher();
     goTo(3);
   });
 
