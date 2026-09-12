@@ -333,8 +333,16 @@
           </div>
         </section>
         <section>
+          <div class="eyebrow">Partidas</div>
+          <div class="section-sub">Hasta 2 grupos de 4 jugadores a la vez, cada uno con su propia tarjeta.</div>
+          <div class="tab-toggle" id="configGroupToggle">
+            <div class="tab active" data-group="0">Grupo 1</div>
+            <div class="tab" data-group="1">Grupo 2</div>
+          </div>
+        </section>
+        <section>
           <div class="eyebrow">Jugadores</div>
-          <div class="section-sub">Hasta 4 jugadores en la misma partida. Escribe para ver jugadores anteriores (se rellena su hándicap solo), o deja en blanco los que no vayan a jugar.</div>
+          <div class="section-sub">Hasta 4 jugadores por grupo. Escribe para ver jugadores anteriores (se rellena su hándicap solo), o deja en blanco los que no vayan a jugar.</div>
           <div class="field-row">
             <div class="field" style="flex:2;">
               <label>Jugador 1</label>
@@ -434,6 +442,10 @@
         <div class="meta">Hoy · Individual Stableford</div>
       </div>
       <div class="screen-content">
+        <section id="groupSwitchSection" style="display:none;">
+          <div class="eyebrow">Grupo</div>
+          <div class="tab-toggle" id="groupSwitchToggle"></div>
+        </section>
         <section>
           <div class="eyebrow">Golpes por hoyo</div>
           <div class="section-sub">Cada jugador anota en su propia fila</div>
@@ -755,6 +767,86 @@
     playerHandicaps = players.map((n, i) => (handicaps && !isNaN(handicaps[i])) ? handicaps[i] : 0);
   }
 
+  // Hasta 2 grupos de 4 jugadores jugando la misma ronda, cada uno con su propia tarjeta
+  let matchGroups = [
+    { players: [], handicaps: [], scores: {} },
+    { players: [], handicaps: [], scores: {} },
+  ];
+  let configGroup = 0; // qué grupo se está rellenando en "Configurar partida"
+  let activeGroup = 0; // qué grupo se está viendo en "Introducir resultados" / Diagnóstico
+
+  function readConfigFields(){
+    const slots = ['player1', 'player2', 'player3', 'player4'].map(id => ({
+      name: ((document.getElementById(id + 'Input') || {}).value || '').trim(),
+      hcp: parseFloat((document.getElementById(id + 'Hcp') || {}).value),
+    })).filter(s => s.name.length > 0);
+    return { players: slots.map(s => s.name), handicaps: slots.map(s => isNaN(s.hcp) ? 0 : s.hcp) };
+  }
+  function writeConfigFields(group){
+    const g = matchGroups[group];
+    for(let i = 0; i < 4; i++){
+      const nameInput = document.getElementById('player' + (i + 1) + 'Input');
+      const hcpInput = document.getElementById('player' + (i + 1) + 'Hcp');
+      if(nameInput) nameInput.value = g.players[i] || '';
+      if(hcpInput) hcpInput.value = g.handicaps[i] ? g.handicaps[i] : '';
+    }
+  }
+  function saveConfigGroupFields(){
+    const data = readConfigFields();
+    matchGroups[configGroup].players = data.players;
+    matchGroups[configGroup].handicaps = data.handicaps;
+  }
+
+  // Recoge/aplica los golpes ya escritos en la tarjeta, por jugador y hoyo (para cambiar de grupo sin perderlos)
+  function collectGroupScores(){
+    const scores = {};
+    document.querySelectorAll('.golpes-row').forEach(row=>{
+      const pIndex = row.dataset.playerIndex;
+      scores[pIndex] = scores[pIndex] || {};
+      row.querySelectorAll('.golpes-input').forEach(input=>{
+        scores[pIndex][input.dataset.hole] = input.value;
+      });
+    });
+    return scores;
+  }
+  function applyGroupScores(scores){
+    document.querySelectorAll('.golpes-row').forEach(row=>{
+      const pIndex = row.dataset.playerIndex;
+      row.querySelectorAll('.golpes-input').forEach(input=>{
+        const v = scores[pIndex] && scores[pIndex][input.dataset.hole];
+        input.value = v !== undefined ? v : '';
+      });
+    });
+  }
+  function renderGroupSwitcher(){
+    const section = document.getElementById('groupSwitchSection');
+    const wrap = document.getElementById('groupSwitchToggle');
+    if(!section || !wrap) return;
+    if(!matchGroups[1].players.length){ section.style.display = 'none'; return; }
+    section.style.display = '';
+    wrap.innerHTML = [0, 1].map(i =>
+      '<div class="tab' + (i === activeGroup ? ' active' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + ' (' + matchGroups[i].players.length + ')</div>'
+    ).join('');
+    wrap.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=> switchGroup(parseInt(tab.dataset.g, 10)));
+    });
+  }
+  function switchGroup(newGroup){
+    if(newGroup === activeGroup) return;
+    matchGroups[activeGroup].scores = collectGroupScores();
+    activeGroup = newGroup;
+    const g = matchGroups[activeGroup];
+    players = g.players.length ? g.players : ['Jugador 1'];
+    playerHandicaps = g.handicaps.length ? g.handicaps : [0];
+    if(selectedCourse){
+      applyCourseToScoreGrids(selectedCourse);
+      applyGroupScores(g.scores);
+      recalcResultados();
+    }
+    renderGroupSwitcher();
+    diagActivePlayer = 0;
+  }
+
   // Jugadores guardados en este navegador (los que se han escrito en partidas anteriores)
   function getStoredPlayerHistory(){
     try {
@@ -976,8 +1068,9 @@
     'Juego corto': ['Juego corto centrado en línea de tiro, no en fuerza', 'Practica distancias de wedge de 30-50m'],
     'Putt': ['Lee la línea dos veces antes de golpear', 'Practica putts cortos de 1-2 metros a diario'],
   };
-  let diagAnswers = {}; // diagAnswers[playerIndex][hole] = categoría elegida
+  let diagAnswers = {}; // diagAnswers["grupo-jugador"][hole] = categoría elegida
   let diagActivePlayer = 0;
+  function diagKey(pIndex){ return activeGroup + '-' + pIndex; }
 
   function getPlayerHoles(pIndex){
     const holes = [];
@@ -1009,7 +1102,7 @@
   }
 
   function renderDiagQuestionCard(pIndex, h){
-    const chosen = diagAnswers[pIndex] && diagAnswers[pIndex][h.hole];
+    const chosen = diagAnswers[diagKey(pIndex)] && diagAnswers[diagKey(pIndex)][h.hole];
     const pills = DIAG_CATEGORIES.map(c =>
       '<div class="pill-opt' + (chosen === c ? ' selected' : '') + '" data-hole="' + h.hole + '" data-value="' + c + '">' + c + '</div>'
     ).join('');
@@ -1024,7 +1117,7 @@
     const patternEl = document.getElementById('s4Pattern');
     const planSection = document.getElementById('s4PlanSection');
     const planEl = document.getElementById('s4Plan');
-    const answered = worst.filter(h => diagAnswers[pIndex] && diagAnswers[pIndex][h.hole]);
+    const answered = worst.filter(h => diagAnswers[diagKey(pIndex)] && diagAnswers[diagKey(pIndex)][h.hole]);
     if(!worst.length || !answered.length){
       patternEl.innerHTML = '<p>Responde el cuestionario de arriba para ver tu patrón.</p>';
       planSection.style.display = 'none';
@@ -1032,7 +1125,7 @@
     }
     const counts = {};
     answered.forEach(h => {
-      const cat = diagAnswers[pIndex][h.hole];
+      const cat = diagAnswers[diagKey(pIndex)][h.hole];
       counts[cat] = (counts[cat] || 0) + 1;
     });
     let topCat = null, topCount = 0;
@@ -1057,7 +1150,7 @@
     const backEl = document.getElementById('s4Back');
     if(backEl) backEl.textContent = selectedCourse ? ('‹ ' + selectedCourse.name) : '‹ Campo';
     const metaEl = document.getElementById('s4Meta');
-    if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name;
+    if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name + (matchGroups[1].players.length ? ' · Grupo ' + (activeGroup + 1) : '');
     const scoreLine = document.getElementById('s4ScoreLine');
     if(scoreLine){
       scoreLine.innerHTML = holes.length
@@ -1088,8 +1181,9 @@
       questionsEl.innerHTML = worst.map(h => renderDiagQuestionCard(pIndex, h)).join('');
       questionsEl.querySelectorAll('.pill-opt').forEach(pill=>{
         pill.addEventListener('click', ()=>{
-          diagAnswers[pIndex] = diagAnswers[pIndex] || {};
-          diagAnswers[pIndex][pill.dataset.hole] = pill.dataset.value;
+          const key = diagKey(pIndex);
+          diagAnswers[key] = diagAnswers[key] || {};
+          diagAnswers[key][pill.dataset.hole] = pill.dataset.value;
           renderDiagnostico();
         });
       });
@@ -1166,18 +1260,29 @@
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
-  // "Configurar partida": recoge los jugadores (1 a 4) y sus hándicaps antes de empezar a anotar
+  // "Configurar partida": pestañas Grupo 1 / Grupo 2 (no pierden lo escrito al cambiar)
+  document.querySelectorAll('#configGroupToggle .tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      saveConfigGroupFields();
+      document.querySelectorAll('#configGroupToggle .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      configGroup = parseInt(tab.dataset.group, 10);
+      writeConfigFields(configGroup);
+    });
+  });
+
+  // "Configurar partida": recoge ambos grupos (1 a 4 jugadores cada uno, con hándicap) antes de empezar a anotar
   const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
   if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
-    const slots = ['player1', 'player2', 'player3', 'player4'].map(id => ({
-      name: ((document.getElementById(id + 'Input') || {}).value || '').trim(),
-      hcp: parseFloat((document.getElementById(id + 'Hcp') || {}).value),
-    })).filter(s => s.name.length > 0);
-    const names = slots.map(s => s.name);
-    const handicaps = slots.map(s => s.hcp);
-    setPlayers(names, handicaps);
-    rememberPlayers(names);
+    saveConfigGroupFields();
+    matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los dos grupos
+    activeGroup = 0;
+    diagAnswers = {};
+    const g0 = matchGroups[0];
+    setPlayers(g0.players, g0.handicaps);
+    rememberPlayers(matchGroups[0].players.concat(matchGroups[1].players));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
+    renderGroupSwitcher();
     goTo(3);
   });
 
