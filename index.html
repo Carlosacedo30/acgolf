@@ -78,6 +78,7 @@
   .search-box .chevron{ opacity:0.4; }
   .search-source{ font-size:11.5px; color:#7A8A80; margin-top:8px; }
   .dropdown{ margin-top:2px; border:1px solid var(--line); border-top:none; border-radius:0 0 3px 3px; background:#fff; overflow:hidden; }
+  .dropdown:not(.open){ display:none; }
   .dropdown-item{ display:flex; align-items:center; gap:10px; padding:11px 14px; border-top:1px solid var(--line-soft); font-size:14px; }
   .dropdown-item:first-child{ border-top:none; }
   .dropdown-item .pin{ color:var(--forest-soft); flex:none; }
@@ -264,14 +265,10 @@
           <div class="eyebrow">Buscar campo</div>
           <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" value="Hato">
+            <input type="text" id="screen0-search" value="" placeholder="Busca un campo o ubicación">
             <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          <div class="dropdown" id="screen0-dropdown">
-            <div class="dropdown-item"><span class="pin">📍</span><div><div class="name">Club de Golf Hato Verde</div><div class="loc">España</div></div></div>
-            <div class="dropdown-item"><span class="pin">📍</span><div><div class="name">Hato Blanco Golf</div><div class="loc">España</div></div></div>
-            <div class="dropdown-item add-new">+ Añadir un campo nuevo</div>
-          </div>
+          <div class="dropdown" id="screen0-dropdown"></div>
         </section>
         <section>
           <div class="eyebrow">Recientes</div>
@@ -296,12 +293,12 @@
       <div class="app-bar">
         <div class="back">‹ Jugar</div>
         <h1>Configurar partida</h1>
-        <div class="meta">Club de Golf Hato Verde</div>
+        <div class="meta" id="s1CourseMeta">Club de Golf Hato Verde</div>
       </div>
       <div class="screen-content">
         <section>
           <div class="eyebrow">Detalles</div>
-          <div class="field"><label>Nombre de la partida</label><input type="text" value="Partida del sábado"></div>
+          <div class="field"><label>Nombre de la partida</label><input type="text" placeholder="Ponle un nombre a tu partida"></div>
           <div class="field-row">
             <div class="field"><label>Día de comienzo</label><input type="date" value="2026-09-12"></div>
             <div class="field"><label>Hora de comienzo</label><input type="time" value="09:00"></div>
@@ -334,7 +331,7 @@
           </div>
         </section>
       </div>
-      <div class="actions"><div class="btn primary full">Empezar partida</div></div>
+      <div class="actions"><div class="btn primary full" id="empezarPartidaBtn">Empezar partida</div></div>
     </div>
 
     <!-- SCREEN 2: Añadir campo -->
@@ -349,27 +346,27 @@
           <div class="eyebrow">Buscar campo</div>
           <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" value="Club de Golf Hato Verde">
+            <input type="text" id="campoSearchInput" value="Club de Golf Hato Verde">
           </div>
           <div class="search-source">Buscando en OpenStreetMap…</div>
-          <div class="not-found">No hemos encontrado datos completos de <strong>Club de Golf Hato Verde</strong> en el mapa abierto. Puedes crearlo tú ahora — solo lo harás una vez.</div>
+          <div class="not-found">No hemos encontrado datos completos de <strong id="campoNotFoundName">Club de Golf Hato Verde</strong> en el mapa abierto. Puedes crearlo tú ahora — solo lo harás una vez.</div>
         </section>
         <section>
           <div class="eyebrow">Datos del campo</div>
-          <h2>Club de Golf Hato Verde</h2>
+          <h2 id="campoHeading">Club de Golf Hato Verde</h2>
           <div class="section-sub">Rellena par y hándicap de cada hoyo, como en tu tarjeta</div>
-          <div class="field"><label>Nombre del campo</label><input type="text" value="Club de Golf Hato Verde"></div>
+          <div class="field"><label>Nombre del campo</label><input type="text" id="campoNombreInput" value="Club de Golf Hato Verde"></div>
           <div class="field-row">
-            <div class="field"><label>Ubicación</label><input type="text" value="España"></div>
+            <div class="field"><label>Ubicación</label><input type="text" id="campoUbicacionInput" value="España"></div>
             <div class="field"><label>Par total</label><input type="text" value="70"></div>
           </div>
           <div class="tab-toggle" id="campoTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
-          <div class="card-grid nine-block" data-nine="ida">
+          <div class="card-grid nine-block" data-nine="ida" id="campoGridIda">
             <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
             <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell" style="font-weight:600;">34</div></div>
             <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="1"></div><div class="grid-cell"><input value="7"></div><div class="grid-cell"><input value="13"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="9"></div><div class="grid-cell"><input value="11"></div><div class="grid-cell"><input value="17"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="15"></div><div class="grid-cell">—</div></div>
           </div>
-          <div class="card-grid nine-block" data-nine="vuelta" style="display:none;">
+          <div class="card-grid nine-block" data-nine="vuelta" id="campoGridVuelta" style="display:none;">
             <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
             <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell" style="font-weight:600;">36</div></div>
             <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="8"></div><div class="grid-cell"><input value="18"></div><div class="grid-cell"><input value="10"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="6"></div><div class="grid-cell"><input value="12"></div><div class="grid-cell"><input value="2"></div><div class="grid-cell"><input value="16"></div><div class="grid-cell"><input value="14"></div><div class="grid-cell">—</div></div>
@@ -382,9 +379,9 @@
 
     <!-- SCREEN 3: Introducir resultados -->
     <div class="screen" data-screen="3">
-      <div class="toast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Campo guardado — ya puedes anotar tu ronda</div>
+      <div class="toast" id="s3Toast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Campo guardado — ya puedes anotar tu ronda</div>
       <div class="app-bar">
-        <div class="back">‹ Club de Golf Hato Verde</div>
+        <div class="back" id="s3Back">‹ Club de Golf Hato Verde</div>
         <h1>Nueva ronda</h1>
         <div class="meta">Hoy · Individual Stableford</div>
       </div>
@@ -394,7 +391,7 @@
           <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
           <div class="card-grid nine-block" data-nine="ida" id="resultGridIda">
             <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" style="font-weight:600;">34</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" id="idaParTotal" style="font-weight:600;">34</div></div>
             <div class="grid-row golpes-row"><div class="grid-cell side-label">Golpes</div><div class="grid-cell"><input class="golpes-input" data-hole="1" data-par="5" inputmode="numeric" value="7"></div><div class="grid-cell"><input class="golpes-input" data-hole="2" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="3" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="4" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="5" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="6" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell"><input class="golpes-input" data-hole="7" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell"><input class="golpes-input" data-hole="8" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="9" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell nine-total" style="font-weight:600;">41</div></div>
             <div class="grid-row result-row">
               <div class="grid-cell side-label">Result.</div>
@@ -404,7 +401,7 @@
           </div>
           <div class="card-grid nine-block" data-nine="vuelta" id="resultGridVuelta" style="display:none;">
             <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" style="font-weight:600;">36</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" id="vueltaParTotal" style="font-weight:600;">36</div></div>
             <div class="grid-row golpes-row"><div class="grid-cell side-label">Golpes</div><div class="grid-cell"><input class="golpes-input" data-hole="10" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="11" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="12" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="13" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="14" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="15" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="16" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="17" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="18" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell nine-total" style="font-weight:600;">49</div></div>
             <div class="grid-row result-row">
               <div class="grid-cell side-label">Result.</div>
@@ -417,7 +414,7 @@
         <section>
           <div class="totals-strip">
             <div class="item"><div class="num" id="totalGolpes">90</div><div class="lbl">Total golpes</div></div>
-            <div class="item diff"><div class="num" id="totalDiff">+20</div><div class="lbl">Sobre par 70</div></div>
+            <div class="item diff"><div class="num" id="totalDiff">+20</div><div class="lbl">Sobre par <span id="totalDiffParLbl">70</span></div></div>
             <div class="item"><div class="num" id="totalHoyos">18</div><div class="lbl">Hoyos completados</div></div>
           </div>
         </section>
@@ -428,7 +425,7 @@
     <!-- SCREEN 4: Diagnóstico post-ronda -->
     <div class="screen" data-screen="4">
       <div class="app-bar">
-        <div class="back">‹ Club de Golf Hato Verde</div>
+        <div class="back" id="s4Back">‹ Club de Golf Hato Verde</div>
         <h1>Diagnóstico post-ronda</h1>
         <div class="meta">Stroke Play · 6 de septiembre</div>
         <div class="score-line"><span class="total">90</span><span class="vs">golpes</span><span class="diff">+20 sobre par 70</span></div>
@@ -586,6 +583,148 @@
   </div>
 
 <script>
+  // Base de datos de campos de golf reales (par y hándicap por hoyo).
+  // Fuentes: tarjetas oficiales de cada club y RFEG (Real Federación Española de Golf).
+  const COURSES = [
+    { id:'isla-canela-links', name:'Isla Canela Links', location:'Ayamonte, Huelva',
+      par:[5,4,3,4,4,4,3,5,4, 4,4,3,4,3,5,4,4,5],
+      hcp:[3,1,11,13,7,17,15,5,9, 16,2,14,4,18,8,12,10,6] },
+    { id:'isla-canela-old', name:'Isla Canela Old Course', location:'Ayamonte, Huelva',
+      par:[3,5,4,4,3,4,5,4,4, 4,3,4,5,4,4,3,5,4],
+      hcp:[17,2,5,11,13,12,7,9,15, 10,16,3,6,1,14,18,4,8] },
+    { id:'islantilla', name:'Islantilla Golf Resort (Azul-Amarillo)', location:'Isla Cristina / Lepe, Huelva',
+      par:[4,3,4,5,4,4,5,3,4, 5,3,5,3,5,3,4,4,4],
+      hcp:[15,5,9,3,1,7,11,17,13, 3,5,1,15,7,17,13,9,11] },
+    { id:'rompido-norte', name:'Golf El Rompido — Recorrido Norte', location:'Cartaya, Huelva',
+      par:[4,4,3,4,5,3,4,5,4, 4,4,3,4,5,4,3,4,5],
+      hcp:[9,13,17,5,7,15,3,1,11, 10,6,18,8,12,16,4,2,14] },
+    { id:'rompido-sur', name:'Golf El Rompido — Recorrido Sur', location:'Cartaya, Huelva',
+      par:[4,3,4,4,5,4,4,3,5, 4,4,5,3,5,4,3,4,4],
+      hcp:[4,14,16,12,8,6,10,18,2, 3,11,9,15,1,13,17,5,7] },
+    { id:'nuevo-portil', name:'Golf Nuevo Portil', location:'Cartaya, Huelva',
+      par:[5,3,4,4,4,4,3,4,4, 4,5,4,3,4,5,4,3,4],
+      hcp:[2,12,18,16,4,10,14,6,8, 11,3,9,17,13,1,7,15,5] },
+    { id:'bellavista', name:'Bellavista Huelva Golf Club', location:'Aljaraque, Huelva',
+      par:[4,4,3,5,3,4,5,4,3, 4,4,5,3,4,4,4,5,3],
+      hcp:[4,10,18,2,12,8,14,6,16, 13,11,15,9,1,17,3,7,5] },
+    { id:'monacilla', name:'La Monacilla Golf Club', location:'Aljaraque, Huelva',
+      par:[4,4,3,5,4,4,5,4,4, 3,4,3,5,3,4,5,4,4],
+      hcp:[16,14,12,8,4,18,6,10,2, 13,9,17,7,15,5,11,1,3] },
+    { id:'corta-atalaya', name:'Corta Atalaya Golf', location:'Minas de Riotinto, Huelva', holes9:true,
+      par:[4,3,4,5,4,4,3,3,4],
+      hcp:[1,17,5,3,11,9,7,15,13] },
+    { id:'sevilla-golf', name:'Real Club de Golf Sevilla', location:'Alcalá de Guadaíra, Sevilla',
+      par:[4,4,3,4,5,4,3,4,5, 4,3,4,5,4,4,5,3,4],
+      hcp:[14,2,12,6,18,4,8,16,10, 11,9,15,17,5,1,13,7,3] },
+    { id:'rc-pineda', name:'Real Club Pineda', location:'Sevilla',
+      par:[4,4,4,5,3,4,4,5,3, 4,4,5,3,4,4,3,5,4],
+      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5] },
+    { id:'las-minas', name:'Las Minas Golf', location:'Aznalcázar, Sevilla', holes9:true,
+      par:[4,5,3,4,4,4,4,3,5],
+      hcp:[9,3,15,7,17,13,5,11,1] },
+    { id:'hato-verde', name:'Club Hato Verde', location:'Las Pajanosas-Guillena, Sevilla',
+      par:[5,4,4,4,3,3,3,5,3, 5,3,5,4,4,3,4,4,4],
+      hcp:[1,7,13,5,9,11,17,3,15, 8,18,10,4,6,12,2,16,14] },
+    { id:'la-cartuja', name:'Instalaciones Deportivas La Cartuja', location:'Sevilla', holes9:true,
+      par:[4,3,3,3,3,3,4,3,3],
+      hcp:[3,5,13,12,10,15,2,11,9] },
+    { id:'zaudin', name:'Club Zaudín Golf', location:'Tomares, Sevilla',
+      par:[4,4,3,5,4,4,4,5,3, 4,3,5,4,4,4,3,4,4],
+      hcp:[16,6,2,14,4,10,12,18,8, 5,7,15,9,11,13,17,1,3] },
+  ];
+
+  let selectedCourse = null;
+
+  // Rellena las dos tarjetas de 9 hoyos de "Introducir resultados" con el par real del campo elegido
+  function applyCourseToScoreGrids(course){
+    const nineDefs = [
+      { grid: document.getElementById('resultGridIda'), totalId:'idaParTotal', offset:0 },
+      { grid: document.getElementById('resultGridVuelta'), totalId:'vueltaParTotal', offset: course.holes9 ? 0 : 9 },
+    ];
+    nineDefs.forEach(def=>{
+      if(!def.grid) return;
+      const parRow = def.grid.querySelector('.grid-row:nth-of-type(2)');
+      const parCells = Array.from(parRow.querySelectorAll('.grid-cell')).slice(1, -1);
+      let nineTotal = 0;
+      parCells.forEach((cell, i)=>{
+        const par = course.par[def.offset + i];
+        cell.textContent = par;
+        cell.dataset.par = par;
+        nineTotal += par;
+      });
+      const totalCell = document.getElementById(def.totalId);
+      if(totalCell) totalCell.textContent = nineTotal;
+      def.grid.querySelectorAll('.golpes-input').forEach((input, i)=>{
+        input.dataset.par = course.par[def.offset + i];
+        input.value = '';
+      });
+    });
+    const nineSum = course.par.reduce((a, b) => a + b, 0);
+    const coursePar = course.holes9 ? nineSum * 2 : nineSum;
+    const totalDiffParLbl = document.getElementById('totalDiffParLbl');
+    if(totalDiffParLbl) totalDiffParLbl.textContent = coursePar;
+    recalcResultados();
+  }
+
+  function selectCourse(course, opts){
+    opts = opts || {};
+    selectedCourse = course;
+    const s1Meta = document.getElementById('s1CourseMeta');
+    const s3Back = document.getElementById('s3Back');
+    const s4Back = document.getElementById('s4Back');
+    const s3Toast = document.getElementById('s3Toast');
+    if(s1Meta) s1Meta.textContent = course.name;
+    if(s3Back) s3Back.textContent = '‹ ' + course.name;
+    if(s4Back) s4Back.textContent = '‹ ' + course.name;
+    if(s3Toast) s3Toast.style.display = opts.fromAddCampo ? '' : 'none';
+    applyCourseToScoreGrids(course);
+  }
+
+  // Pantalla "Jugar": construye el desplegable de campos a partir de COURSES, filtrando por lo que se escriba
+  function renderDropdown(query){
+    const q = (query || '').trim().toLowerCase();
+    const matches = COURSES.filter(c => !q || c.name.toLowerCase().includes(q) || c.location.toLowerCase().includes(q));
+    const dropdown = document.getElementById('screen0-dropdown');
+    if(!dropdown) return;
+    dropdown.innerHTML = matches.map(c =>
+      '<div class="dropdown-item" data-course-id="' + c.id + '"><span class="pin">📍</span><div><div class="name">' + c.name + '</div><div class="loc">' + c.location + '</div></div></div>'
+    ).join('') + '<div class="dropdown-item add-new">+ Añadir un campo nuevo</div>';
+    dropdown.querySelectorAll('.dropdown-item').forEach(item=>{
+      item.addEventListener('click', ()=>{
+        if(item.classList.contains('add-new')){
+          const typed = (screen0Search ? screen0Search.value.trim() : '') || 'Campo nuevo';
+          ['campoNombreInput','campoSearchInput'].forEach(id=>{
+            const el = document.getElementById(id);
+            if(el) el.value = typed;
+          });
+          ['campoNotFoundName','campoHeading'].forEach(id=>{
+            const el = document.getElementById(id);
+            if(el) el.textContent = typed;
+          });
+          closeDropdown();
+          goTo(2); // Añadir campo
+          return;
+        }
+        const course = COURSES.find(c => c.id === item.dataset.courseId);
+        if(course){
+          selectCourse(course);
+          if(screen0Search) screen0Search.value = course.name; // marca la selección en el buscador
+        }
+        closeDropdown();
+        goTo(1); // Configurar partida
+      });
+    });
+  }
+
+  function openDropdown(){
+    const dropdown = document.getElementById('screen0-dropdown');
+    if(dropdown) dropdown.classList.add('open');
+  }
+  function closeDropdown(){
+    const dropdown = document.getElementById('screen0-dropdown');
+    if(dropdown) dropdown.classList.remove('open');
+  }
+
   const labels = ["1. Jugar","2. Configurar partida","3. Añadir campo","4. Introducir resultados","5. Diagnóstico post-ronda","6. Overlay de swing","7. Informe semanal"];
   let current = 0;
   const screens = document.querySelectorAll('.screen');
@@ -642,16 +781,21 @@
     });
   });
 
-  // Pantalla "Jugar": elegir club en el desplegable
-  document.querySelectorAll('#screen0-dropdown .dropdown-item').forEach(item=>{
-    item.addEventListener('click', ()=>{
-      if(item.classList.contains('add-new')){
-        goTo(2); // Añadir campo
-      } else {
-        goTo(1); // Configurar partida
-      }
-    });
+  // Pantalla "Jugar": desplegable de campos (poblado desde COURSES), cerrado hasta que se toque o se escriba
+  renderDropdown('');
+  const screen0Search = document.getElementById('screen0-search');
+  if(screen0Search){
+    screen0Search.addEventListener('focus', ()=>{ renderDropdown(screen0Search.value); openDropdown(); });
+    screen0Search.addEventListener('input', ()=>{ renderDropdown(screen0Search.value); openDropdown(); });
+  }
+  document.addEventListener('click', (e)=>{
+    const searchBox = screen0Search ? screen0Search.closest('.search-box') : null;
+    const dropdown = document.getElementById('screen0-dropdown');
+    if(!dropdown) return;
+    if(searchBox && (searchBox.contains(e.target) || dropdown.contains(e.target))) return;
+    closeDropdown();
   });
+
   // Pantalla "Jugar": botón "Jugar" en recientes va directo a anotar resultados
   document.querySelectorAll('.recent-row .play-btn').forEach(btn=>{
     btn.addEventListener('click', ()=> goTo(3));
@@ -659,10 +803,30 @@
 
   // Botones de navegación de flujo dentro de cada pantalla
   const clickGoTo = (id, n) => { const el = document.getElementById(id); if(el) el.addEventListener('click', ()=> goTo(n)); };
-  clickGoTo('guardarCampoBtn', 3);
   clickGoTo('cancelarCampoBtn', 0);
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
+  clickGoTo('empezarPartidaBtn', 3);
+
+  // "Añadir campo": guarda el campo nuevo (con los pares que se hayan escrito) y pasa a anotar resultados
+  const guardarCampoBtn = document.getElementById('guardarCampoBtn');
+  if(guardarCampoBtn) guardarCampoBtn.addEventListener('click', ()=>{
+    const name = (document.getElementById('campoNombreInput') || {}).value || 'Campo nuevo';
+    const readNinePar = (gridId) => {
+      const grid = document.getElementById(gridId);
+      if(!grid) return [4,4,4,4,4,4,4,4,4];
+      const parRow = grid.querySelector('.grid-row:nth-of-type(2)');
+      return Array.from(parRow.querySelectorAll('.grid-cell input')).map(input => parseInt(input.value, 10) || 4);
+    };
+    const customCourse = {
+      id: 'custom-' + Date.now(),
+      name: name,
+      location: (document.getElementById('campoUbicacionInput') || {}).value || '',
+      par: readNinePar('campoGridIda').concat(readNinePar('campoGridVuelta')),
+    };
+    selectCourse(customCourse, { fromAddCampo: true });
+    goTo(3);
+  });
 
   // Cálculo automático de resultados (Introducir resultados)
   function recalcResultados(){
