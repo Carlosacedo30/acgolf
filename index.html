@@ -321,6 +321,14 @@
           </div>
         </section>
         <section>
+          <div class="eyebrow">Jugadores</div>
+          <div class="section-sub">Hasta 4 jugadores en la misma partida. Deja en blanco los que no vayan a jugar.</div>
+          <div class="field"><label>Jugador 1</label><input type="text" id="player1Input" value="Tú" placeholder="Nombre del jugador 1"></div>
+          <div class="field"><label>Jugador 2</label><input type="text" id="player2Input" placeholder="Nombre del jugador 2 (opcional)"></div>
+          <div class="field"><label>Jugador 3</label><input type="text" id="player3Input" placeholder="Nombre del jugador 3 (opcional)"></div>
+          <div class="field"><label>Jugador 4</label><input type="text" id="player4Input" placeholder="Nombre del jugador 4 (opcional)"></div>
+        </section>
+        <section>
           <div class="eyebrow">Barra de salida</div>
           <div class="gender-toggle"><div class="tab active">Hombres</div><div class="tab">Mujeres</div></div>
           <div class="tee-grid">
@@ -386,6 +394,10 @@
         <div class="meta">Hoy · Individual Stableford</div>
       </div>
       <div class="screen-content">
+        <section id="playerTabSection" style="display:none;">
+          <div class="eyebrow">Jugador</div>
+          <div class="tab-toggle" id="playerTabToggle"></div>
+        </section>
         <section>
           <div class="eyebrow">Golpes por hoyo</div>
           <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
@@ -634,6 +646,57 @@
   ];
 
   let selectedCourse = null;
+  let players = ['Jugador 1'];
+  let activePlayerIndex = 0;
+  let playerScores = [{}]; // por jugador: { "1": "4", "2": "5", ... } golpes escritos por hoyo
+
+  // Lee los golpes actualmente escritos en la tarjeta (por hoyo)
+  function collectGridValues(){
+    const scores = {};
+    document.querySelectorAll('.golpes-input').forEach(input=>{
+      scores[input.dataset.hole] = input.value;
+    });
+    return scores;
+  }
+  // Vuelca en la tarjeta los golpes guardados de un jugador
+  function applyGridValues(scores){
+    document.querySelectorAll('.golpes-input').forEach(input=>{
+      input.value = (scores && scores[input.dataset.hole] !== undefined) ? scores[input.dataset.hole] : '';
+    });
+  }
+
+  function renderPlayerTabs(){
+    const section = document.getElementById('playerTabSection');
+    const wrap = document.getElementById('playerTabToggle');
+    if(!section || !wrap) return;
+    if(players.length <= 1){
+      section.style.display = 'none';
+      return;
+    }
+    section.style.display = '';
+    wrap.innerHTML = players.map((name, i) =>
+      '<div class="tab' + (i === activePlayerIndex ? ' active' : '') + '" data-player-index="' + i + '">' + name + '</div>'
+    ).join('');
+    wrap.querySelectorAll('.tab').forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        const newIndex = parseInt(tab.dataset.playerIndex, 10);
+        if(newIndex === activePlayerIndex) return;
+        playerScores[activePlayerIndex] = collectGridValues();
+        activePlayerIndex = newIndex;
+        applyGridValues(playerScores[activePlayerIndex]);
+        recalcResultados();
+        renderPlayerTabs();
+      });
+    });
+  }
+
+  // Define quiénes juegan esta ronda (1 a 4 jugadores) y reinicia sus marcadores
+  function setPlayers(names){
+    players = names && names.length ? names.slice(0, 4) : ['Jugador 1'];
+    activePlayerIndex = 0;
+    playerScores = players.map(()=> ({}));
+    renderPlayerTabs();
+  }
 
   // Rellena las dos tarjetas de 9 hoyos de "Introducir resultados" con el par real del campo elegido
   function applyCourseToScoreGrids(course){
@@ -663,6 +726,9 @@
     const coursePar = course.holes9 ? nineSum * 2 : nineSum;
     const totalDiffParLbl = document.getElementById('totalDiffParLbl');
     if(totalDiffParLbl) totalDiffParLbl.textContent = coursePar;
+    playerScores = players.map(()=> ({})); // ronda nueva: se borran los golpes guardados de todos
+    activePlayerIndex = 0;
+    renderPlayerTabs();
     recalcResultados();
   }
 
@@ -806,7 +872,17 @@
   clickGoTo('cancelarCampoBtn', 0);
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
-  clickGoTo('empezarPartidaBtn', 3);
+
+  // "Configurar partida": recoge los jugadores (1 a 4) antes de empezar a anotar
+  const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
+  if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
+    const names = ['player1Input', 'player2Input', 'player3Input', 'player4Input']
+      .map(id => ((document.getElementById(id) || {}).value || '').trim())
+      .filter(name => name.length > 0);
+    setPlayers(names);
+    if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
+    goTo(3);
+  });
 
   // "Añadir campo": guarda el campo nuevo (con los pares que se hayan escrito) y pasa a anotar resultados
   const guardarCampoBtn = document.getElementById('guardarCampoBtn');
