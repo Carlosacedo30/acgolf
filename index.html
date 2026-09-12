@@ -713,6 +713,32 @@
     'Jesus Antonio Castaño Alba': 17.8,
     'Francisco Javier Romero Jimeno': 28,
   };
+  // Última vez que jugó cada favorito (de "Hoyo 19"), para mostrarlo también en la lista
+  const FAVORITE_LAST_PLAYED = {
+    'Carlos Acedo Domínguez': '2026-09-10',
+    'Francisco Javier Garcia Martinez': '2026-08-30',
+    'Juan Jimenez Jimenez': '2026-09-10',
+    'Jose Moises Romero Martinez': '2026-08-30',
+    'Juan Ramon Burgos Cantos': '2026-09-10',
+    'Rafael Ruiz Romero': '2026-08-07',
+    'Jesus Jimenez Lopez de Lemus': '2026-08-07',
+    'Fernando Rumayor Zarzuelo': '2026-09-10',
+    'Alvaro Rodriguez Gonzalez': '2026-08-04',
+    'Álvaro Lainez Garcia-Alexandre': '2026-07-09',
+    'Juan Manuel Jimenez Lopez de Lemus': '2026-01-18',
+    'Alejandro Azancot Cabello': '2025-08-14',
+    'Moises Hermida Luna': '2026-09-05',
+    'Emilio Martin Carrero': '2026-03-15',
+    'Jose Maria Hurtado Leon': '2026-03-01',
+    'Manuel Medina Morian': '2026-03-01',
+    'Jesus Antonio Castaño Alba': '2025-08-06',
+    'Francisco Javier Romero Jimeno': '2025-08-05',
+  };
+  const MONTH_NAMES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  function formatShortDate(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.getDate() + ' ' + MONTH_NAMES[d.getMonth()];
+  }
   let playerHandicaps = [0];
   // Golpes de regalo que le tocan a un hándicap en un hoyo de un índice de dificultad dado (1-18)
   function strokesForHole(handicap, strokeIndex){
@@ -765,9 +791,13 @@
         dropdown.classList.remove('open');
         return;
       }
-      dropdown.innerHTML = matches.map(name =>
-        '<div class="dropdown-item"><div><div class="name">' + name + '</div></div></div>'
-      ).join('');
+      dropdown.innerHTML = matches.map(name => {
+        const bits = [];
+        if(FAVORITE_HANDICAPS[name] !== undefined) bits.push('Hcp ' + FAVORITE_HANDICAPS[name]);
+        if(FAVORITE_LAST_PLAYED[name]) bits.push('Última vez ' + formatShortDate(FAVORITE_LAST_PLAYED[name]));
+        const sub = bits.length ? '<div class="loc">' + bits.join(' · ') + '</div>' : '';
+        return '<div class="dropdown-item"><div><div class="name">' + name + '</div>' + sub + '</div></div>';
+      }).join('');
       dropdown.classList.add('open');
       dropdown.querySelectorAll('.dropdown-item').forEach((item, i)=>{
         item.addEventListener('click', ()=>{
