@@ -142,7 +142,8 @@
   .grid-row{ display:grid; grid-template-columns:56px repeat(9, 1fr) 42px; border-bottom:1px solid var(--line-soft); }
   .grid-row:last-child{ border-bottom:none; }
   .grid-row.label-row{ background:var(--paper-dim); }
-  .grid-cell{ padding:6px 2px; text-align:center; font-size:10.5px; font-family:'IBM Plex Mono', monospace; border-right:1px solid var(--line-soft); }
+  .grid-cell{ position:relative; padding:6px 2px; text-align:center; font-size:10.5px; font-family:'IBM Plex Mono', monospace; border-right:1px solid var(--line-soft); }
+  .msg-badge{ position:absolute; top:0; right:1px; font-size:9px; line-height:1; }
   .grid-cell:last-child{ border-right:none; }
   .grid-row.label-row .grid-cell{ font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10px; color:var(--forest-soft); }
   .grid-cell.side-label{ text-align:left; padding-left:9px; font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--forest-soft); background:var(--paper-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -429,6 +430,14 @@
           <div class="eyebrow">Resumen</div>
           <div class="section-sub" id="parSummaryLbl">Par total del campo: 70</div>
           <div id="playerTotals"></div>
+        </section>
+        <section id="roundMessagesSection" style="display:none;">
+          <div class="eyebrow">Mensajes de la ronda</div>
+          <div id="roundMessages"></div>
+        </section>
+        <section id="roundWinnerSection" style="display:none;">
+          <div class="eyebrow">¡Ronda completa!</div>
+          <div class="pattern" id="roundWinner"></div>
         </section>
       </div>
       <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
@@ -944,9 +953,17 @@
     goTo(3);
   });
 
-  // Cálculo automático de resultados (Introducir resultados): un total por cada jugador
+  // Frases de la ronda: se calculan siempre a partir de lo escrito, así que "quedan grabadas"
+  // mientras el golpe siga anotado en esa celda
+  const PAR_MESSAGE = '¡Qué bueno eres!';
+  const BIRDIE_MESSAGE = 'Te como los huevos';
+  const WINNER_MESSAGE = 'Hoy te hacen el chivito';
+
+  // Cálculo automático de resultados (Introducir resultados): un total por cada jugador,
+  // más los mensajes de par/birdie de cada hoyo y el mensaje final para quien va ganando
   function recalcResultados(){
     const summaries = players.map(()=> ({ total: 0, holesFilled: 0 }));
+    const roundMessages = [];
     document.querySelectorAll('.nine-block[id^="resultGrid"]').forEach(block=>{
       players.forEach((name, pIndex)=>{
         const row = block.querySelector('.golpes-row[data-player-index="' + pIndex + '"]');
@@ -957,18 +974,32 @@
           const golpes = parseInt(input.value, 10);
           const cell = input.parentElement;
           cell.classList.remove('result-par', 'result-over');
+          const oldBadge = cell.querySelector('.msg-badge');
+          if(oldBadge) oldBadge.remove();
           if(!isNaN(golpes) && golpes > 0){
             nineGolpes += golpes;
             summaries[pIndex].total += golpes;
             summaries[pIndex].holesFilled++;
             const diff = golpes - par;
             cell.classList.add(diff > 0 ? 'result-over' : 'result-par');
+            let msg = null, icon = null;
+            if(diff === 0){ msg = PAR_MESSAGE; icon = '👍'; }
+            else if(diff === -1){ msg = BIRDIE_MESSAGE; icon = '🥚'; }
+            if(msg){
+              const badge = document.createElement('span');
+              badge.className = 'msg-badge';
+              badge.title = name + ' — ' + msg;
+              badge.textContent = icon;
+              cell.appendChild(badge);
+              roundMessages.push({ hole: input.dataset.hole, player: name, text: msg });
+            }
           }
         });
         const nineTotalCell = row.querySelector('.nine-total');
         if(nineTotalCell) nineTotalCell.textContent = nineGolpes;
       });
     });
+
     const playerTotals = document.getElementById('playerTotals');
     if(playerTotals){
       playerTotals.innerHTML = players.map((name, pIndex)=>{
@@ -977,6 +1008,32 @@
         const diffStr = s.total > 0 ? (diff >= 0 ? '+' + diff : diff) : '—';
         return '<div class="round-row"><div><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos</div></div><div class="score">' + s.total + ' <small>' + diffStr + '</small></div></div>';
       }).join('');
+    }
+
+    // Registro de mensajes de la ronda (par y birdie), ordenados por hoyo
+    const messagesSection = document.getElementById('roundMessagesSection');
+    const messagesList = document.getElementById('roundMessages');
+    if(messagesList){
+      roundMessages.sort((a, b) => (+a.hole) - (+b.hole));
+      messagesList.innerHTML = roundMessages.map(m =>
+        '<div class="plan-item"><div class="dot2"></div><div><strong>Hoyo ' + m.hole + '</strong> · ' + m.player + ' — ' + m.text + '</div></div>'
+      ).join('');
+      if(messagesSection) messagesSection.style.display = roundMessages.length ? '' : 'none';
+    }
+
+    // Mensaje final: cuando todos los jugadores completaron sus 18 hoyos, para quien va ganando
+    const winnerSection = document.getElementById('roundWinnerSection');
+    const winnerBox = document.getElementById('roundWinner');
+    if(winnerSection && winnerBox){
+      const roundDone = players.length > 0 && summaries.every(s => s.holesFilled >= 18);
+      if(roundDone){
+        const minTotal = Math.min(...summaries.map(s => s.total));
+        const winners = players.filter((name, i) => summaries[i].total === minTotal);
+        winnerSection.style.display = '';
+        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + '.</p>';
+      } else {
+        winnerSection.style.display = 'none';
+      }
     }
   }
 </script>
