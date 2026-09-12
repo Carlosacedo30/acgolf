@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>App de Golf</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="App Golf">
+<meta name="theme-color" content="#1B3A2F">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F1EEE3; --paper-dim:#E7E3D4; --ink:#1C2B26;
+    --forest:#1B3A2F; --forest-soft:#2F5344;
+    --clay:#A83E36; --clay-soft:#F1DCD6;
+    --navy:#2C4A6E; --navy-soft:#D9E2EC;
+    --gold:#9C7A2E; --gold-soft:#EFE3C3;
+    --line:#C9C3AE; --line-soft:#DAD5C4;
+    --you:#5FA98A; --ref:#B08D57;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  html, body{ height:100%; overscroll-behavior:none; }
+  body{
+    background:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    padding:0;
+  }
+  .proto-title, .proto-sub{ display:none; }
+
+  .dots{
+    display:flex; gap:6px; justify-content:center;
+    padding:calc(env(safe-area-inset-top, 0px) + 8px) 0 6px;
+    background:var(--forest);
+  }
+  .dot{ width:6px;height:6px;border-radius:50%; background:rgba(241,238,227,0.35); cursor:pointer; border:none; padding:0; }
+  .dot.active{ background:var(--paper); width:16px; border-radius:4px; }
+
+  .frame{
+    width:100%; background:var(--paper);
+    border:none; border-radius:0; overflow-y:auto;
+    box-shadow:none; position:relative;
+    display:flex; flex-direction:column; flex:1;
+  }
+  .screen{ display:none; flex-direction:column; flex:1; }
+  .screen.active{ display:flex; }
+  .screen-content{ flex:1; }
+
+  .toast{ background:var(--gold-soft); border-bottom:1px solid #DCC98B; padding:9px 20px; font-size:12.5px; color:var(--forest); display:flex; align-items:center; gap:8px; }
+
+  .app-bar{ background:var(--forest); color:var(--paper); padding:16px 20px 16px; }
+  .app-bar .back{ font-size:13px; color:#B9CFC2; margin-bottom:10px; }
+  .app-bar h1{ font-family:'Newsreader', serif; font-weight:500; font-size:22px; margin:0 0 4px; }
+  .app-bar.big h1{ font-size:26px; }
+  .app-bar .meta{ font-size:13px; color:#A9C2B4; }
+  .score-line{ display:flex; align-items:baseline; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(241,238,227,0.18); }
+  .score-line .total{ font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; }
+  .score-line .vs{ font-size:13px; color:#A9C2B4; }
+  .score-line .diff{ margin-left:auto; font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; color:#E7B9A9; }
+
+  section{ padding:17px 20px; border-bottom:1px solid var(--line-soft); }
+  section:last-child{ border-bottom:none; }
+  .eyebrow{ font-size:11px; color:var(--forest-soft); font-weight:600; margin-bottom:10px; }
+  h2{ font-family:'Newsreader', serif; font-weight:500; font-size:16.5px; margin:0 0 2px; }
+  .section-sub{ font-size:12.5px; color:#5B6B62; margin-bottom:10px; }
+
+  /* search / dropdown (Jugar) */
+  .search-box{ display:flex; align-items:center; gap:10px; background:#fff; border:1px solid var(--line); border-radius:3px; padding:11px 14px; }
+  .search-box svg{ flex:none; opacity:0.5; }
+  .search-box input{ border:none; outline:none; background:none; font-family:'IBM Plex Sans', sans-serif; font-size:14.5px; color:var(--ink); width:100%; }
+  .search-box .chevron{ opacity:0.4; }
+  .search-source{ font-size:11.5px; color:#7A8A80; margin-top:8px; }
+  .dropdown{ margin-top:2px; border:1px solid var(--line); border-top:none; border-radius:0 0 3px 3px; background:#fff; overflow:hidden; }
+  .dropdown-item{ display:flex; align-items:center; gap:10px; padding:11px 14px; border-top:1px solid var(--line-soft); font-size:14px; }
+  .dropdown-item:first-child{ border-top:none; }
+  .dropdown-item .pin{ color:var(--forest-soft); flex:none; }
+  .dropdown-item .name{ font-weight:500; }
+  .dropdown-item .loc{ font-size:12px; color:#7A8A80; margin-top:1px; }
+  .dropdown-item.add-new{ color:var(--forest); font-weight:600; background:var(--gold-soft); }
+  .not-found{ margin-top:14px; background:var(--gold-soft); border:1px solid #DCC98B; border-radius:3px; padding:13px 15px; font-size:13.5px; line-height:1.5; }
+  .not-found strong{ color:var(--forest); }
+
+  .recent-row{ display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line-soft); }
+  .recent-row:first-of-type{ border-top:none; }
+  .recent-row .club{ font-size:14.5px; font-weight:500; }
+  .recent-row .date{ font-size:12px; color:#7A8A80; margin-top:2px; }
+  .play-btn{ font-size:12.5px; font-weight:600; color:var(--forest); border:1px solid var(--forest); padding:6px 14px; border-radius:20px; }
+  .empty-hint{ font-size:12.5px; color:#7A8A80; text-align:center; padding:6px 0 2px; }
+
+  .tab-bar{ display:flex; border-top:1px solid var(--line); background:var(--paper-dim); }
+  .tab-bar .tab-item{ flex:1; text-align:center; padding:11px 0 9px; font-size:10.5px; color:#7A8A80; font-weight:600; }
+  .tab-bar .tab-item.active{ color:var(--forest); }
+  .tab-bar .tab-item .ic{ display:block; margin:0 auto 4px; width:20px; height:20px; }
+
+  /* forms (Configurar partida, Añadir campo) */
+  .field{ margin-bottom:14px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{ display:block; font-size:12px; color:var(--forest-soft); font-weight:600; margin-bottom:5px; }
+  .field input{ width:100%; border:1px solid var(--line); border-radius:3px; padding:10px 12px; font-family:'IBM Plex Sans', sans-serif; font-size:14.5px; background:#fff; color:var(--ink); }
+  .field-row{ display:flex; gap:10px; }
+  .field-row .field{ flex:1; }
+
+  .pill-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pill-opt{ font-size:13px; font-weight:600; padding:8px 16px; border-radius:20px; border:1px solid var(--line); color:#5B6B62; }
+  .pill-opt.selected{ background:var(--forest); color:var(--paper); border-color:var(--forest); }
+
+  .modality-row{ display:flex; flex-direction:column; gap:8px; }
+  .modality-opt{ display:flex; align-items:center; gap:10px; padding:11px 13px; border:1px solid var(--line); border-radius:3px; font-size:14px; background:#fff; }
+  .modality-opt.selected{ border-color:var(--forest); background:var(--gold-soft); font-weight:600; }
+  .radio-dot{ width:16px; height:16px; border-radius:50%; border:1.5px solid var(--line); flex:none; display:flex; align-items:center; justify-content:center; }
+  .modality-opt.selected .radio-dot{ border-color:var(--forest); }
+  .radio-dot .inner{ width:8px; height:8px; border-radius:50%; background:var(--forest); display:none; }
+  .modality-opt.selected .radio-dot .inner{ display:block; }
+
+  .gender-toggle{ display:flex; gap:6px; margin-bottom:14px; }
+  .gender-toggle .tab{ flex:1; text-align:center; padding:9px 0; border-radius:3px; font-size:13px; font-weight:600; border:1px solid var(--forest); color:var(--forest); }
+  .gender-toggle .tab.active{ background:var(--forest); color:var(--paper); }
+  .tee-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:10px; }
+  .tee-opt{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:8px 4px; border-radius:4px; border:1.5px solid transparent; }
+  .tee-opt.selected{ border-color:var(--forest); background:var(--gold-soft); }
+  .tee-swatch{ width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(28,43,38,0.25); }
+  .tee-swatch.blanca{ background:#F7F5EE; }
+  .tee-swatch.amarilla{ background:#E0B93C; }
+  .tee-swatch.azul{ background:#2C4A6E; }
+  .tee-swatch.roja{ background:#A83E36; }
+  .tee-opt .lbl{ font-size:10.5px; color:#5B6B62; font-weight:600; }
+  .tee-opt.selected .lbl{ color:var(--forest); }
+
+  .tab-toggle{ display:flex; gap:6px; margin-bottom:12px; }
+  .tab-toggle .tab{ padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:600; border:1px solid var(--forest); color:var(--forest); }
+  .tab-toggle .tab.active{ background:var(--forest); color:var(--paper); }
+
+  .card-grid{ border:1px solid var(--line); border-radius:3px; overflow:hidden; background:#fff; }
+  .grid-row{ display:grid; grid-template-columns:56px repeat(9, 1fr) 42px; border-bottom:1px solid var(--line-soft); }
+  .grid-row:last-child{ border-bottom:none; }
+  .grid-row.label-row{ background:var(--paper-dim); }
+  .grid-cell{ padding:6px 2px; text-align:center; font-size:10.5px; font-family:'IBM Plex Mono', monospace; border-right:1px solid var(--line-soft); }
+  .grid-cell:last-child{ border-right:none; }
+  .grid-row.label-row .grid-cell{ font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10px; color:var(--forest-soft); }
+  .grid-cell.side-label{ text-align:left; padding-left:9px; font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--forest-soft); background:var(--paper-dim); }
+  .grid-cell input{ width:100%; border:none; background:none; text-align:center; font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600; color:var(--ink); padding:2px 0; }
+  .grid-cell input:focus{ outline:1px solid var(--forest); border-radius:2px; }
+  .grid-cell.result-par{ color:#5B6B62; font-weight:600; }
+  .grid-cell.result-over{ background:var(--clay-soft); color:var(--clay); font-weight:600; }
+  .helper-note{ font-size:12px; color:#7A8A80; margin-top:10px; line-height:1.5; }
+
+  .totals-strip{ display:flex; justify-content:space-between; align-items:center; padding:14px 4px 4px; }
+  .totals-strip .item{ text-align:center; flex:1; }
+  .totals-strip .item .num{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; color:var(--forest); }
+  .totals-strip .item .lbl{ font-size:10.5px; color:#5B6B62; margin-top:2px; }
+  .totals-strip .item.diff .num{ color:var(--clay); }
+
+  .hole-row{ display:grid; grid-template-columns:36px 1fr auto auto; align-items:center; gap:12px; padding:10px 0; border-top:1px solid var(--line-soft); }
+  .hole-row:first-of-type{ border-top:none; }
+  .hole-badge{ width:32px;height:32px; border-radius:50%; border:1.5px solid var(--forest); display:flex;align-items:center;justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--forest); }
+  .hole-par{ font-size:13px; color:#5B6B62; }
+  .hole-strokes{ font-family:'IBM Plex Mono', monospace; font-size:15px; font-weight:600; text-align:right; }
+  .hole-diff{ font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--clay); background:var(--clay-soft); padding:2px 7px; border-radius:3px; }
+  .answer-row{ padding:12px 0; border-top:1px solid var(--line-soft); }
+  .answer-row:first-of-type{ border-top:none; }
+  .answer-row .hole-tag{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--forest-soft); margin-bottom:3px; }
+  .answer-row .answer-main{ font-size:14.5px; font-weight:500; }
+  .answer-row .answer-sub{ font-size:13px; color:#5B6B62; margin-top:1px; }
+  .pattern{ background:var(--gold-soft); border:1px solid #DCC98B; border-radius:3px; padding:16px 18px; }
+  .pattern .pct{ font-family:'Newsreader', serif; font-style:italic; font-size:32px; color:var(--gold); line-height:1; margin-bottom:6px; }
+  .pattern p{ margin:0; font-size:14px; line-height:1.5; }
+  .pattern p strong{ color:var(--forest); }
+  .plan-item{ display:flex; gap:12px; padding:11px 0; border-top:1px solid var(--line-soft); font-size:14px; line-height:1.45; }
+  .plan-item:first-of-type{ border-top:none; }
+  .plan-item .dot2{ flex:none; width:6px;height:6px; border-radius:50%; background:var(--forest); margin-top:7px; }
+
+  .viewer{ position:relative; aspect-ratio: 4 / 5; background:#0F1F19; border-radius:4px; overflow:hidden; }
+  .swing-svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .badge{ position:absolute; top:10px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; color:#fff; }
+  .badge.youb{ left:10px; background:var(--forest-soft); }
+  .badge.refb{ right:10px; background:var(--ref); }
+  .frame-label{ position:absolute; bottom:10px; left:10px; color:#EFEBDD; font-family:'IBM Plex Mono', monospace; font-size:12px; background:rgba(15,31,25,0.55); padding:3px 9px; border-radius:3px; }
+  .opacity-control{ margin-top:14px; }
+  .opacity-control .row{ display:flex; justify-content:space-between; font-size:12px; color:#5B6B62; margin-bottom:6px; }
+  .opacity-control .row span.youc{ color:var(--forest-soft); font-weight:600; }
+  .opacity-control .row span.refc{ color:var(--ref); font-weight:600; }
+  input[type=range]{ width:100%; accent-color:var(--forest); }
+  .timeline{ margin-top:16px; }
+  .timeline-track{ position:relative; height:34px; background:#fff; border:1px solid var(--line); border-radius:3px; }
+  .marker{ position:absolute; top:0; bottom:0; width:2px; background:var(--gold); }
+  .marker.mactive{ background:var(--forest); width:3px; }
+  .marker .tag{ position:absolute; top:-18px; left:50%; transform:translateX(-50%); font-size:9.5px; font-weight:600; color:var(--forest-soft); white-space:nowrap; }
+  .playhead{ position:absolute; top:-4px; width:10px; height:10px; border-radius:50%; background:var(--clay); transform:translateX(-50%); }
+  .phase-pills{ display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  .pill{ font-size:11px; padding:5px 10px; border-radius:20px; border:1px solid var(--line); color:#5B6B62; }
+  .pill.pactive{ border-color:var(--forest); color:var(--forest); font-weight:600; background:var(--gold-soft); }
+  .note-box{ margin-top:12px; background:var(--gold-soft); border:1px solid #DCC98B; border-radius:3px; padding:13px 15px; font-size:13.5px; line-height:1.5; }
+  .note-box strong{ color:var(--forest); }
+
+  .hcp-hero{ display:flex; align-items:baseline; gap:10px; }
+  .hcp-hero .num{ font-family:'IBM Plex Mono', monospace; font-size:36px; font-weight:600; color:var(--forest); }
+  .hcp-hero .delta{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; color:#3D7A5C; background:#E1EEE5; padding:3px 9px; border-radius:12px; }
+  .hcp-hero .lbl{ font-size:12.5px; color:#5B6B62; }
+  .chart{ margin-top:16px; }
+  .chart svg{ width:100%; height:auto; display:block; }
+  .chart-labels{ display:flex; justify-content:space-between; font-size:10.5px; color:#8B968C; margin-top:4px; padding:0 2px; }
+  .stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line-soft); border:1px solid var(--line-soft); border-radius:3px; overflow:hidden; }
+  .stat-cell{ background:#fff; padding:12px 14px; }
+  .stat-cell .val{ font-family:'IBM Plex Mono', monospace; font-size:19px; font-weight:600; color:var(--ink); }
+  .stat-cell .val small{ font-size:11px; font-weight:600; margin-left:4px; }
+  .stat-cell .val small.up{ color:#3D7A5C; }
+  .stat-cell .val small.down{ color:var(--clay); }
+  .stat-cell .lbl{ font-size:11.5px; color:#5B6B62; margin-top:3px; }
+  .round-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-top:1px solid var(--line-soft); }
+  .round-row:first-of-type{ border-top:none; }
+  .round-row .club{ font-size:13.5px; font-weight:500; }
+  .round-row .date{ font-size:11.5px; color:#5B6B62; }
+  .round-row .score{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; text-align:right; }
+  .round-row .score small{ display:block; font-size:10.5px; font-weight:600; color:var(--clay); }
+
+  .actions{ display:flex; gap:10px; padding:16px 20px 20px; }
+  .btn{ flex:1; text-align:center; padding:13px 0; border-radius:3px; font-size:14px; font-weight:600; border:1px solid var(--forest); cursor:default; }
+  .btn.primary{ background:var(--forest); color:var(--paper); }
+  .btn.ghost{ background:transparent; color:var(--forest); }
+  .btn.full{ flex:1; }
+
+  .flow-nav{
+    display:flex; justify-content:space-between; align-items:center;
+    width:100%; padding:10px 16px calc(env(safe-area-inset-bottom, 0px) + 10px);
+    background:var(--forest); position:sticky; bottom:0;
+  }
+  .nav-btn{ background:rgba(241,238,227,0.14); color:var(--paper); border:1px solid rgba(241,238,227,0.3); padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:600; font-family:'IBM Plex Sans', sans-serif; cursor:pointer; }
+  .nav-btn:disabled{ background:transparent; color:rgba(241,238,227,0.35); border-color:rgba(241,238,227,0.15); cursor:default; }
+  .nav-label{ font-size:11.5px; color:var(--paper); font-weight:600; opacity:0.85; }
+</style>
+</head>
+<body>
+
+  <div class="proto-title">Prototipo — App de Golf</div>
+  <div class="proto-sub">Flujo completo: Jugar → Configurar partida → Añadir campo → Resultados → Diagnóstico → Swing → Informe</div>
+
+  <div class="dots">
+    <button class="dot active" data-goto="0"></button>
+    <button class="dot" data-goto="1"></button>
+    <button class="dot" data-goto="2"></button>
+    <button class="dot" data-goto="3"></button>
+    <button class="dot" data-goto="4"></button>
+    <button class="dot" data-goto="5"></button>
+    <button class="dot" data-goto="6"></button>
+  </div>
+
+  <div class="frame">
+
+    <!-- SCREEN 0: Jugar -->
+    <div class="screen active" data-screen="0">
+      <div class="app-bar big">
+        <h1>Jugar</h1>
+        <div class="meta">Elige campo para empezar una partida</div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Buscar campo</div>
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" value="Hato">
+            <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="dropdown" id="screen0-dropdown">
+            <div class="dropdown-item"><span class="pin">📍</span><div><div class="name">Club de Golf Hato Verde</div><div class="loc">España</div></div></div>
+            <div class="dropdown-item"><span class="pin">📍</span><div><div class="name">Hato Blanco Golf</div><div class="loc">España</div></div></div>
+            <div class="dropdown-item add-new">+ Añadir un campo nuevo</div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Recientes</div>
+          <div>
+            <div class="recent-row"><div><div class="club">Club de Golf Hato Verde</div><div class="date">Jugado el 6 de septiembre</div></div><div class="play-btn">Jugar</div></div>
+            <div class="recent-row"><div><div class="club">La Dehesa</div><div class="date">Jugado el 1 de septiembre</div></div><div class="play-btn">Jugar</div></div>
+            <div class="recent-row"><div><div class="club">Real Club de Golf Guadalmina</div><div class="date">Jugado el 18 de agosto</div></div><div class="play-btn">Jugar</div></div>
+          </div>
+          <div class="empty-hint">Tus últimos 3 campos aparecen aquí para acceso rápido</div>
+        </section>
+      </div>
+      <div class="tab-bar">
+        <div class="tab-item active"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5" fill="currentColor" stroke="none"/></svg>Jugar</div>
+        <div class="tab-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg>Informes</div>
+        <div class="tab-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>Swing</div>
+        <div class="tab-item"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Perfil</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 1: Configurar partida -->
+    <div class="screen" data-screen="1">
+      <div class="app-bar">
+        <div class="back">‹ Jugar</div>
+        <h1>Configurar partida</h1>
+        <div class="meta">Club de Golf Hato Verde</div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Detalles</div>
+          <div class="field"><label>Nombre de la partida</label><input type="text" value="Partida del sábado"></div>
+          <div class="field-row">
+            <div class="field"><label>Día de comienzo</label><input type="date" value="2026-09-12"></div>
+            <div class="field"><label>Hora de comienzo</label><input type="time" value="09:00"></div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Hoyos</div>
+          <div class="pill-row"><div class="pill-opt">9 hoyos</div><div class="pill-opt selected">18 hoyos</div></div>
+        </section>
+        <section>
+          <div class="eyebrow">Tipo de puntuación</div>
+          <div class="pill-row"><div class="pill-opt selected">Stableford</div><div class="pill-opt">Stroke Play</div><div class="pill-opt">Match Play</div></div>
+        </section>
+        <section>
+          <div class="eyebrow">Modalidad de juego</div>
+          <div class="modality-row">
+            <div class="modality-opt selected"><div class="radio-dot"><div class="inner"></div></div>Individual</div>
+            <div class="modality-opt"><div class="radio-dot"><div class="inner"></div></div>Parejas (Foursome)</div>
+            <div class="modality-opt"><div class="radio-dot"><div class="inner"></div></div>Mejor bola (Fourball)</div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Barra de salida</div>
+          <div class="gender-toggle"><div class="tab active">Hombres</div><div class="tab">Mujeres</div></div>
+          <div class="tee-grid">
+            <div class="tee-opt"><div class="tee-swatch blanca"></div><div class="lbl">Blancas</div></div>
+            <div class="tee-opt selected"><div class="tee-swatch amarilla"></div><div class="lbl">Amarillas</div></div>
+            <div class="tee-opt"><div class="tee-swatch azul"></div><div class="lbl">Azules</div></div>
+            <div class="tee-opt"><div class="tee-swatch roja"></div><div class="lbl">Rojas</div></div>
+          </div>
+        </section>
+      </div>
+      <div class="actions"><div class="btn primary full">Empezar partida</div></div>
+    </div>
+
+    <!-- SCREEN 2: Añadir campo -->
+    <div class="screen" data-screen="2">
+      <div class="app-bar">
+        <div class="back">‹ Mis campos</div>
+        <h1>Añadir un campo</h1>
+        <div class="meta">Búscalo primero, si no está lo creas tú</div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Buscar campo</div>
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" value="Club de Golf Hato Verde">
+          </div>
+          <div class="search-source">Buscando en OpenStreetMap…</div>
+          <div class="not-found">No hemos encontrado datos completos de <strong>Club de Golf Hato Verde</strong> en el mapa abierto. Puedes crearlo tú ahora — solo lo harás una vez.</div>
+        </section>
+        <section>
+          <div class="eyebrow">Datos del campo</div>
+          <h2>Club de Golf Hato Verde</h2>
+          <div class="section-sub">Rellena par y hándicap de cada hoyo, como en tu tarjeta</div>
+          <div class="field"><label>Nombre del campo</label><input type="text" value="Club de Golf Hato Verde"></div>
+          <div class="field-row">
+            <div class="field"><label>Ubicación</label><input type="text" value="España"></div>
+            <div class="field"><label>Par total</label><input type="text" value="70"></div>
+          </div>
+          <div class="tab-toggle" id="campoTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
+          <div class="card-grid nine-block" data-nine="ida">
+            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell" style="font-weight:600;">34</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="1"></div><div class="grid-cell"><input value="7"></div><div class="grid-cell"><input value="13"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="9"></div><div class="grid-cell"><input value="11"></div><div class="grid-cell"><input value="17"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="15"></div><div class="grid-cell">—</div></div>
+          </div>
+          <div class="card-grid nine-block" data-nine="vuelta" style="display:none;">
+            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell" style="font-weight:600;">36</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="8"></div><div class="grid-cell"><input value="18"></div><div class="grid-cell"><input value="10"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="6"></div><div class="grid-cell"><input value="12"></div><div class="grid-cell"><input value="2"></div><div class="grid-cell"><input value="16"></div><div class="grid-cell"><input value="14"></div><div class="grid-cell">—</div></div>
+          </div>
+          <div class="helper-note">Toca "Vuelta (10–18)" para completar los últimos 9 hoyos. Todos los campos son editables.</div>
+        </section>
+      </div>
+      <div class="actions"><div class="btn ghost" id="cancelarCampoBtn">Cancelar</div><div class="btn primary" id="guardarCampoBtn">Guardar campo</div></div>
+    </div>
+
+    <!-- SCREEN 3: Introducir resultados -->
+    <div class="screen" data-screen="3">
+      <div class="toast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Campo guardado — ya puedes anotar tu ronda</div>
+      <div class="app-bar">
+        <div class="back">‹ Club de Golf Hato Verde</div>
+        <h1>Nueva ronda</h1>
+        <div class="meta">Hoy · Individual Stableford</div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Golpes por hoyo</div>
+          <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
+          <div class="card-grid nine-block" data-nine="ida" id="resultGridIda">
+            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" style="font-weight:600;">34</div></div>
+            <div class="grid-row golpes-row"><div class="grid-cell side-label">Golpes</div><div class="grid-cell"><input class="golpes-input" data-hole="1" data-par="5" inputmode="numeric" value="7"></div><div class="grid-cell"><input class="golpes-input" data-hole="2" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="3" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="4" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="5" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="6" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell"><input class="golpes-input" data-hole="7" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell"><input class="golpes-input" data-hole="8" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="9" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell nine-total" style="font-weight:600;">41</div></div>
+            <div class="grid-row result-row">
+              <div class="grid-cell side-label">Result.</div>
+              <div class="grid-cell result-cell" data-hole="1"></div><div class="grid-cell result-cell" data-hole="2"></div><div class="grid-cell result-cell" data-hole="3"></div><div class="grid-cell result-cell" data-hole="4"></div><div class="grid-cell result-cell" data-hole="5"></div><div class="grid-cell result-cell" data-hole="6"></div><div class="grid-cell result-cell" data-hole="7"></div><div class="grid-cell result-cell" data-hole="8"></div><div class="grid-cell result-cell" data-hole="9"></div>
+              <div class="grid-cell nine-diff" style="font-weight:600;"></div>
+            </div>
+          </div>
+          <div class="card-grid nine-block" data-nine="vuelta" id="resultGridVuelta" style="display:none;">
+            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
+            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" style="font-weight:600;">36</div></div>
+            <div class="grid-row golpes-row"><div class="grid-cell side-label">Golpes</div><div class="grid-cell"><input class="golpes-input" data-hole="10" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="11" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="12" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="13" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="14" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="15" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="16" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="17" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="18" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell nine-total" style="font-weight:600;">49</div></div>
+            <div class="grid-row result-row">
+              <div class="grid-cell side-label">Result.</div>
+              <div class="grid-cell result-cell" data-hole="10"></div><div class="grid-cell result-cell" data-hole="11"></div><div class="grid-cell result-cell" data-hole="12"></div><div class="grid-cell result-cell" data-hole="13"></div><div class="grid-cell result-cell" data-hole="14"></div><div class="grid-cell result-cell" data-hole="15"></div><div class="grid-cell result-cell" data-hole="16"></div><div class="grid-cell result-cell" data-hole="17"></div><div class="grid-cell result-cell" data-hole="18"></div>
+              <div class="grid-cell nine-diff" style="font-weight:600;"></div>
+            </div>
+          </div>
+          <div class="helper-note">El resultado (PAR / +1 / +2…) se calcula solo al escribir los golpes. Todos los campos son editables.</div>
+        </section>
+        <section>
+          <div class="totals-strip">
+            <div class="item"><div class="num" id="totalGolpes">90</div><div class="lbl">Total golpes</div></div>
+            <div class="item diff"><div class="num" id="totalDiff">+20</div><div class="lbl">Sobre par 70</div></div>
+            <div class="item"><div class="num" id="totalHoyos">18</div><div class="lbl">Hoyos completados</div></div>
+          </div>
+        </section>
+      </div>
+      <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
+    </div>
+
+    <!-- SCREEN 4: Diagnóstico post-ronda -->
+    <div class="screen" data-screen="4">
+      <div class="app-bar">
+        <div class="back">‹ Club de Golf Hato Verde</div>
+        <h1>Diagnóstico post-ronda</h1>
+        <div class="meta">Stroke Play · 6 de septiembre</div>
+        <div class="score-line"><span class="total">90</span><span class="vs">golpes</span><span class="diff">+20 sobre par 70</span></div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Hoyos a revisar</div>
+          <h2>3 hoyos con mayor pérdida</h2>
+          <div class="section-sub">Seleccionados automáticamente por desviación sobre par</div>
+          <div style="margin-top:12px;">
+            <div class="hole-row"><div class="hole-badge">1</div><div class="hole-par">Par 5</div><div class="hole-strokes">7</div><div class="hole-diff">+2</div></div>
+            <div class="hole-row"><div class="hole-badge">14</div><div class="hole-par">Par 4</div><div class="hole-strokes">6</div><div class="hole-diff">+2</div></div>
+            <div class="hole-row"><div class="hole-badge">18</div><div class="hole-par">Par 4</div><div class="hole-strokes">6</div><div class="hole-diff">+2</div></div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Tus respuestas</div>
+          <h2>Cuestionario rápido</h2>
+          <div style="margin-top:8px;">
+            <div class="answer-row"><div class="hole-tag">HOYO 1</div><div class="answer-main">Juego corto</div><div class="answer-sub">Mala dirección (izq/dcha)</div></div>
+            <div class="answer-row"><div class="hole-tag">HOYO 14</div><div class="answer-main">Approach</div><div class="answer-sub">Largo — se pasó del green</div></div>
+            <div class="answer-row"><div class="hole-tag">HOYO 18</div><div class="answer-main">Approach</div><div class="answer-sub">Mala dirección (izq/dcha)</div></div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Patrón detectado</div>
+          <div class="pattern"><div class="pct">67%</div><p>de tus hoyos malos vienen de fallos de <strong>precisión en approach</strong> — dirección, no distancia.</p></div>
+        </section>
+        <section>
+          <div class="eyebrow">Plan de trabajo sugerido</div>
+          <div style="margin-top:10px;">
+            <div class="plan-item"><div class="dot2"></div><div>Rango con objetivo estrecho, no solo distancia al green</div></div>
+            <div class="plan-item"><div class="dot2"></div><div>Chequeo de alineación antes de cada approach</div></div>
+            <div class="plan-item"><div class="dot2"></div><div>Juego corto centrado en línea de tiro, no en fuerza</div></div>
+          </div>
+        </section>
+      </div>
+      <div class="actions"><div class="btn ghost">Revisar 13 y 16</div><div class="btn primary">Guardar plan</div></div>
+    </div>
+
+    <!-- SCREEN 5: Overlay de swing -->
+    <div class="screen" data-screen="5">
+      <div class="app-bar">
+        <div class="back">‹ Mis sesiones</div>
+        <h1>Overlay de swing</h1>
+        <div class="meta">Driver · marcado manual de fases</div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Comparativa</div>
+          <div class="viewer">
+            <svg class="swing-svg" viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice">
+              <rect width="300" height="375" fill="#12241D"/>
+              <line x1="0" y1="330" x2="300" y2="330" stroke="#2A4438" stroke-width="2"/>
+              <g stroke="#B08D57" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
+                <line x1="150" y1="330" x2="150" y2="205" />
+                <circle cx="150" cy="192" r="13" fill="none"/>
+                <line x1="150" y1="230" x2="95" y2="150" />
+                <line x1="95" y1="150" x2="60" y2="90" />
+                <line x1="150" y1="280" x2="120" y2="330" />
+                <line x1="150" y1="280" x2="182" y2="330" />
+              </g>
+              <g stroke="#5FA98A" stroke-width="4" fill="none" stroke-linecap="round">
+                <line x1="158" y1="330" x2="152" y2="200" />
+                <circle cx="151" cy="186" r="13" fill="none"/>
+                <line x1="152" y1="228" x2="108" y2="160" />
+                <line x1="108" y1="160" x2="82" y2="105" />
+                <line x1="152" y1="278" x2="128" y2="330" />
+                <line x1="152" y1="278" x2="176" y2="330" />
+              </g>
+            </svg>
+            <div class="badge youb">Tú</div>
+            <div class="badge refb">Referencia</div>
+            <div class="frame-label">Impacto · frame 42/96</div>
+          </div>
+          <div class="opacity-control">
+            <div class="row"><span class="youc">Tú 65%</span><span class="refc">Referencia 35%</span></div>
+            <input type="range" min="0" max="100" value="65" disabled>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Fases marcadas</div>
+          <h2>Línea de tiempo</h2>
+          <div class="timeline" style="margin-top:10px;">
+            <div class="timeline-track">
+              <div class="playhead" style="left:44%;"></div>
+              <div class="marker" style="left:8%;"><div class="tag">Setup</div></div>
+              <div class="marker" style="left:28%;"><div class="tag">Arriba</div></div>
+              <div class="marker mactive" style="left:44%;"><div class="tag">Impacto</div></div>
+              <div class="marker" style="left:70%;"><div class="tag">Follow</div></div>
+            </div>
+          </div>
+          <div class="phase-pills"><div class="pill">Setup</div><div class="pill">Backswing arriba</div><div class="pill pactive">Impacto</div><div class="pill">Follow-through</div></div>
+        </section>
+        <section>
+          <div class="note-box">En el <strong>impacto</strong>, tu columna está más inclinada hacia el objetivo que en el swing de referencia — coherente con el fallo de dirección visto en tus últimos approaches.</div>
+        </section>
+      </div>
+      <div class="actions"><div class="btn ghost">Cambiar referencia</div><div class="btn primary">Guardar en mi progreso</div></div>
+    </div>
+
+    <!-- SCREEN 6: Informe semanal -->
+    <div class="screen" data-screen="6">
+      <div class="app-bar">
+        <div class="back">‹ Inicio</div>
+        <h1>Informe semanal</h1>
+        <div class="meta">1 – 7 de septiembre · 3 rondas jugadas</div>
+      </div>
+      <div class="screen-content">
+        <section>
+          <div class="eyebrow">Evolución de hándicap</div>
+          <div class="hcp-hero"><span class="num">18.4</span><span class="delta">↓ 0.6</span><span class="lbl">esta semana</span></div>
+          <div class="chart">
+            <svg viewBox="0 0 320 90" preserveAspectRatio="none">
+              <polyline points="10,30 80,42 150,38 220,55 290,20" fill="none" stroke="#C9C3AE" stroke-width="1.5" stroke-dasharray="3,3"/>
+              <polyline points="10,30 80,42 150,38 220,55 290,20" fill="none" stroke="#1B3A2F" stroke-width="2.5"/>
+              <circle cx="10" cy="30" r="3.5" fill="#1B3A2F"/><circle cx="80" cy="42" r="3.5" fill="#1B3A2F"/><circle cx="150" cy="38" r="3.5" fill="#1B3A2F"/><circle cx="220" cy="55" r="3.5" fill="#1B3A2F"/>
+              <circle cx="290" cy="20" r="5" fill="#9C7A2E"/>
+            </svg>
+            <div class="chart-labels"><span>4 sem.</span><span>3 sem.</span><span>2 sem.</span><span>1 sem.</span><span>Hoy</span></div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Estadísticas de la semana</div>
+          <h2>Comparado con tu media</h2>
+          <div class="stats-grid" style="margin-top:10px;">
+            <div class="stat-cell"><div class="val">38% <small class="up">↑4%</small></div><div class="lbl">Greens en regulación</div></div>
+            <div class="stat-cell"><div class="val">2.1 <small class="down">↑0.2</small></div><div class="lbl">Putts por hoyo</div></div>
+            <div class="stat-cell"><div class="val">51% <small class="up">↑2%</small></div><div class="lbl">Fairways en golpe 1</div></div>
+            <div class="stat-cell"><div class="val">61% <small class="down">↓5%</small></div><div class="lbl">Precisión approach</div></div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Patrón de la semana</div>
+          <div class="pattern"><div class="pct">3 de 3</div><p>rondas siguen mostrando <strong>fallos de precisión en approach</strong> como causa principal. Segundo informe seguido con este patrón.</p></div>
+        </section>
+        <section>
+          <div class="eyebrow">Rondas de esta semana</div>
+          <div>
+            <div class="round-row"><div><div class="club">Club de Golf Hato Verde</div><div class="date">6 de septiembre</div></div><div class="score">90 <small>+20</small></div></div>
+            <div class="round-row"><div><div class="club">Club de Golf Hato Verde</div><div class="date">3 de septiembre</div></div><div class="score">88 <small>+18</small></div></div>
+            <div class="round-row"><div><div class="club">La Dehesa</div><div class="date">1 de septiembre</div></div><div class="score">85 <small>+13</small></div></div>
+          </div>
+        </section>
+      </div>
+      <div class="actions"><div class="btn ghost">Ver historial completo</div><div class="btn primary">Ver plan de práctica</div></div>
+    </div>
+
+  </div>
+
+  <div class="flow-nav">
+    <button class="nav-btn" id="prevBtn" disabled>‹ Anterior</button>
+    <span class="nav-label" id="navLabel">1. Jugar</span>
+    <button class="nav-btn" id="nextBtn">Siguiente ›</button>
+  </div>
+
+<script>
+  const labels = ["1. Jugar","2. Configurar partida","3. Añadir campo","4. Introducir resultados","5. Diagnóstico post-ronda","6. Overlay de swing","7. Informe semanal"];
+  let current = 0;
+  const screens = document.querySelectorAll('.screen');
+  const dots = document.querySelectorAll('.dot');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const navLabel = document.getElementById('navLabel');
+
+  function render(){
+    screens.forEach(s => s.classList.toggle('active', +s.dataset.screen === current));
+    dots.forEach(d => d.classList.toggle('active', +d.dataset.goto === current));
+    navLabel.textContent = labels[current];
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === screens.length - 1;
+    nextBtn.textContent = current === screens.length - 1 ? 'Fin ›' : 'Siguiente ›';
+  }
+  prevBtn.addEventListener('click', () => { if(current>0){ current--; render(); }});
+  nextBtn.addEventListener('click', () => { if(current<screens.length-1){ current++; render(); }});
+  dots.forEach(d => d.addEventListener('click', () => { current = +d.dataset.goto; render(); }));
+  function goTo(n){ current = n; render(); }
+  render();
+
+  // ---- Interacciones dentro de cada pantalla ----
+
+  // Grupos de selección simple: solo uno activo dentro del mismo contenedor padre inmediato
+  function setupExclusiveGroup(selector, activeClass){
+    document.querySelectorAll(selector).forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const siblings = el.parentElement.querySelectorAll(selector);
+        siblings.forEach(s=>s.classList.remove(activeClass));
+        el.classList.add(activeClass);
+      });
+    });
+  }
+  setupExclusiveGroup('.pill-opt', 'selected');
+  setupExclusiveGroup('.modality-opt', 'selected');
+  setupExclusiveGroup('.tee-opt', 'selected');
+  setupExclusiveGroup('.gender-toggle .tab', 'active');
+
+  // Pestañas Ida/Vuelta: alternan bloques de 9 hoyos (Añadir campo e Introducir resultados)
+  document.querySelectorAll('.tab-toggle').forEach(toggle=>{
+    const tabs = toggle.querySelectorAll('.tab');
+    tabs.forEach(tab=>{
+      tab.addEventListener('click', ()=>{
+        tabs.forEach(t=>t.classList.remove('active'));
+        tab.classList.add('active');
+        const nine = tab.dataset.nine;
+        if(!nine) return;
+        const container = toggle.closest('section');
+        container.querySelectorAll('.nine-block').forEach(block=>{
+          block.style.display = (block.dataset.nine === nine) ? '' : 'none';
+        });
+      });
+    });
+  });
+
+  // Pantalla "Jugar": elegir club en el desplegable
+  document.querySelectorAll('#screen0-dropdown .dropdown-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      if(item.classList.contains('add-new')){
+        goTo(2); // Añadir campo
+      } else {
+        goTo(1); // Configurar partida
+      }
+    });
+  });
+  // Pantalla "Jugar": botón "Jugar" en recientes va directo a anotar resultados
+  document.querySelectorAll('.recent-row .play-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> goTo(3));
+  });
+
+  // Botones de navegación de flujo dentro de cada pantalla
+  const clickGoTo = (id, n) => { const el = document.getElementById(id); if(el) el.addEventListener('click', ()=> goTo(n)); };
+  clickGoTo('guardarCampoBtn', 3);
+  clickGoTo('cancelarCampoBtn', 0);
+  clickGoTo('finalizarRondaBtn', 4);
+  clickGoTo('guardarLuegoBtn', 0);
+
+  // Cálculo automático de resultados (Introducir resultados)
+  function recalcResultados(){
+    let totalGolpes = 0, totalPar = 0, holesFilled = 0;
+    document.querySelectorAll('.nine-block[id^="resultGrid"]').forEach(block=>{
+      let nineGolpes = 0, ninePar = 0;
+      block.querySelectorAll('.golpes-input').forEach(input=>{
+        const hole = input.dataset.hole;
+        const par = parseInt(input.dataset.par, 10);
+        const golpes = parseInt(input.value, 10);
+        ninePar += par;
+        const resultCell = block.querySelector('.result-cell[data-hole="'+hole+'"]');
+        if(!isNaN(golpes) && golpes > 0){
+          nineGolpes += golpes;
+          totalGolpes += golpes;
+          holesFilled++;
+          const diff = golpes - par;
+          resultCell.classList.remove('result-par','result-over');
+          if(diff === 0){ resultCell.textContent = 'PAR'; resultCell.classList.add('result-par'); }
+          else if(diff > 0){ resultCell.textContent = '+'+diff; resultCell.classList.add('result-over'); }
+          else { resultCell.textContent = diff; resultCell.classList.add('result-par'); }
+        } else {
+          resultCell.textContent = '';
+          resultCell.classList.remove('result-par','result-over');
+        }
+      });
+      totalPar += ninePar;
+      const nineTotalCell = block.querySelector('.nine-total');
+      if(nineTotalCell) nineTotalCell.textContent = nineGolpes;
+      const nineDiffCell = block.querySelector('.nine-diff');
+      if(nineDiffCell){
+        const d = nineGolpes - ninePar;
+        nineDiffCell.textContent = nineGolpes > 0 ? (d>=0? '+'+d : d) : '';
+      }
+    });
+    const totalGolpesEl = document.getElementById('totalGolpes');
+    const totalDiffEl = document.getElementById('totalDiff');
+    const totalHoyosEl = document.getElementById('totalHoyos');
+    if(totalGolpesEl) totalGolpesEl.textContent = totalGolpes;
+    if(totalDiffEl){ const d = totalGolpes - totalPar; totalDiffEl.textContent = (d>=0? '+'+d : d); }
+    if(totalHoyosEl) totalHoyosEl.textContent = holesFilled;
+  }
+  document.querySelectorAll('.golpes-input').forEach(input=>{
+    input.addEventListener('input', recalcResultados);
+  });
+  recalcResultados();
+</script>
+
+</body>
+</html>
