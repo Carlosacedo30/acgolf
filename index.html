@@ -193,6 +193,9 @@
   .badge{ position:absolute; top:10px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; color:#fff; }
   .badge.youb{ left:10px; background:var(--forest-soft); }
   .badge.refb{ right:10px; background:var(--ref); }
+  .mode-badge{ display:inline-block; font-size:10px; font-weight:600; padding:1px 7px; border-radius:20px; text-transform:uppercase; letter-spacing:.02em; vertical-align:1px; }
+  .mode-badge.stableford{ background:var(--gold-soft); color:var(--gold-ink, var(--gold)); }
+  .mode-badge.strokeplay{ background:var(--navy-soft); color:var(--navy); }
   .frame-label{ position:absolute; bottom:10px; left:10px; color:#EFEBDD; font-family:'IBM Plex Mono', monospace; font-size:12px; background:rgba(15,31,25,0.55); padding:3px 9px; border-radius:3px; }
   .opacity-control{ margin-top:14px; }
   .opacity-control .row{ display:flex; justify-content:space-between; font-size:12px; color:#5B6B62; margin-bottom:6px; }
@@ -760,12 +763,28 @@
     ],
     bestStableford: { points: 46, name: 'Francisco Javier vs Carlos', date: '2025-06-26', strokes: 60 },
     bestStrokeplay: { net: -6, name: 'Trueno', date: '2026-09-05', strokes: 64 },
+    // Últimas 20 rondas reales registradas (mezclando Stableford y Stroke Play, como en golfdirecto)
     recentRounds: [
-      { date: '2026-09-10', name: 'Los colgáis', club: 'Club Hato Verde', strokes: 68, net: -2 },
-      { date: '2026-09-06', name: 'Los tres', club: 'Club Hato Verde', strokes: 65, net: -5 },
-      { date: '2026-09-05', name: 'Trueno', club: 'Club Hato Verde', strokes: 64, net: -6 },
-      { date: '2026-09-02', name: 'Los locis', club: 'Club Hato Verde', strokes: 34, net: 0 },
-      { date: '2026-08-30', name: 'Los 4', club: 'Club Hato Verde', strokes: 69, net: -1 },
+      { date: '2026-07-14', name: '3', club: 'Club Zaudín Golf', strokes: 88, net: 21, mode: 'stableford' },
+      { date: '2026-07-17', name: 'Repaso', club: 'Club Hato Verde', strokes: 76, net: 6, mode: 'strokeplay' },
+      { date: '2026-07-19', name: 'Los golfos', club: 'Club Hato Verde', strokes: 65, net: -5, mode: 'strokeplay' },
+      { date: '2026-07-21', name: '3', club: 'Club Hato Verde', strokes: 65, net: 41, mode: 'stableford' },
+      { date: '2026-07-23', name: 'Fco. Javier vs Carlos', club: 'Club Hato Verde', strokes: 35, net: 19, mode: 'stableford' },
+      { date: '2026-07-23', name: '2', club: 'Club Hato Verde', strokes: 35, net: 19, mode: 'stableford' },
+      { date: '2026-07-26', name: 'Fco. Javier vs Carlos', club: 'Club Hato Verde', strokes: 63, net: 43, mode: 'stableford' },
+      { date: '2026-08-04', name: 'Los 4', club: 'Islantilla Golf Resort', strokes: 44, net: 10, mode: 'stableford' },
+      { date: '2026-08-06', name: 'Torneo Golf Divino', club: 'Golf El Rompido', strokes: 97, net: 11, mode: 'stableford' },
+      { date: '2026-08-07', name: 'Golf', club: 'Islantilla Golf Resort', strokes: 39, net: 15, mode: 'stableford' },
+      { date: '2026-08-16', name: 'Golf', club: 'Club Hato Verde', strokes: 67, net: -3, mode: 'strokeplay' },
+      { date: '2026-08-18', name: 'Los locos', club: 'Club Hato Verde', strokes: 38, net: 4, mode: 'strokeplay' },
+      { date: '2026-08-20', name: 'Locos', club: 'Club Zaudín Golf', strokes: 74, net: 3, mode: 'strokeplay' },
+      { date: '2026-08-23', name: '3', club: 'Club Hato Verde', strokes: 69, net: 37, mode: 'stableford' },
+      { date: '2026-08-26', name: '3 II', club: 'Club Hato Verde', strokes: 76, net: 32, mode: 'stableford' },
+      { date: '2026-08-30', name: 'Los 4', club: 'Club Hato Verde', strokes: 69, net: -1, mode: 'strokeplay' },
+      { date: '2026-09-02', name: 'Los locis', club: 'Club Hato Verde', strokes: 34, net: 0, mode: 'strokeplay' },
+      { date: '2026-09-05', name: 'Trueno', club: 'Club Hato Verde', strokes: 64, net: -6, mode: 'strokeplay' },
+      { date: '2026-09-06', name: 'Los tres', club: 'Club Hato Verde', strokes: 65, net: -5, mode: 'strokeplay' },
+      { date: '2026-09-10', name: 'Los colgáis', club: 'Club Hato Verde', strokes: 68, net: -2, mode: 'strokeplay' },
     ],
   };
   let playerHandicaps = [0];
@@ -1453,6 +1472,10 @@
         + '<div class="hcp-hero"><span class="num">' + r.currentHcp + '</span><span class="delta">' + (delta >= 0 ? '↓ ' + delta : '↑ ' + Math.abs(delta)) + '</span><span class="lbl">desde ' + MONTH_NAMES[parseInt(r.monthly[0].month.slice(5, 7), 10) - 1] + '</span></div>'
         + '<div class="chart">' + buildHcpChartSvg(chartPoints) + '<div class="chart-labels">' + r.monthly.map(m => '<span>' + MONTH_NAMES[parseInt(m.month.slice(5, 7), 10) - 1] + '</span>').join('') + '</div></div>'
         + '</section>'
+        + '<section><div class="eyebrow">Evolución de tus rondas</div>'
+        + '<div class="section-sub">Golpes totales en cada una de tus últimas ' + r.recentRounds.length + ' rondas registradas</div>'
+        + '<div class="chart" style="margin-top:10px;">' + buildHcpChartSvg(r.recentRounds.map(round => ({ hcp: round.strokes }))) + '<div class="chart-labels"><span>' + formatShortDate(r.recentRounds[0].date) + '</span><span>' + formatShortDate(r.recentRounds[r.recentRounds.length - 1].date) + '</span></div></div>'
+        + '</section>'
         + '<section><div class="eyebrow">Mejores marcas</div>'
         + '<div class="stats-grid" style="margin-top:10px;">'
         + '<div class="stat-cell"><div class="val">' + r.bestStableford.points + ' pts</div><div class="lbl">Mejor Stableford</div></div>'
@@ -1462,8 +1485,8 @@
         + '</div>'
         + '</section>'
         + '<section><div class="eyebrow">Rondas recientes</div><div>'
-        + r.recentRounds.map(round =>
-            '<div class="round-row"><div><div class="club">' + round.name + ' · ' + round.club + '</div><div class="date">' + formatShortDate(round.date) + '</div></div><div class="score">' + round.strokes + ' <small>' + (round.net >= 0 ? '+' + round.net : round.net) + '</small></div></div>'
+        + r.recentRounds.slice().reverse().slice(0, 8).map(round =>
+            '<div class="round-row"><div><div class="club">' + round.name + ' · ' + round.club + ' <span class="' + (round.mode === 'stableford' ? 'mode-badge stableford' : 'mode-badge strokeplay') + '">' + (round.mode === 'stableford' ? 'stableford' : 'stroke play') + '</span></div><div class="date">' + formatShortDate(round.date) + '</div></div><div class="score">' + round.strokes + ' <small>' + (round.mode === 'stableford' ? round.net + ' pts' : (round.net >= 0 ? '+' + round.net : round.net)) + '</small></div></div>'
           ).join('')
         + '</div></section>';
     } else {
