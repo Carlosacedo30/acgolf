@@ -322,11 +322,27 @@
         </section>
         <section>
           <div class="eyebrow">Jugadores</div>
-          <div class="section-sub">Hasta 4 jugadores en la misma partida. Deja en blanco los que no vayan a jugar.</div>
-          <div class="field"><label>Jugador 1</label><input type="text" id="player1Input" value="Tú" placeholder="Nombre del jugador 1"></div>
-          <div class="field"><label>Jugador 2</label><input type="text" id="player2Input" placeholder="Nombre del jugador 2 (opcional)"></div>
-          <div class="field"><label>Jugador 3</label><input type="text" id="player3Input" placeholder="Nombre del jugador 3 (opcional)"></div>
-          <div class="field"><label>Jugador 4</label><input type="text" id="player4Input" placeholder="Nombre del jugador 4 (opcional)"></div>
+          <div class="section-sub">Hasta 4 jugadores en la misma partida. Escribe para ver jugadores anteriores, o deja en blanco los que no vayan a jugar.</div>
+          <div class="field">
+            <label>Jugador 1</label>
+            <div class="search-box"><input type="text" id="player1Input" value="Tú" placeholder="Nombre del jugador 1" autocomplete="off"></div>
+            <div class="dropdown" id="player1Dropdown"></div>
+          </div>
+          <div class="field">
+            <label>Jugador 2</label>
+            <div class="search-box"><input type="text" id="player2Input" placeholder="Nombre del jugador 2 (opcional)" autocomplete="off"></div>
+            <div class="dropdown" id="player2Dropdown"></div>
+          </div>
+          <div class="field">
+            <label>Jugador 3</label>
+            <div class="search-box"><input type="text" id="player3Input" placeholder="Nombre del jugador 3 (opcional)" autocomplete="off"></div>
+            <div class="dropdown" id="player3Dropdown"></div>
+          </div>
+          <div class="field">
+            <label>Jugador 4</label>
+            <div class="search-box"><input type="text" id="player4Input" placeholder="Nombre del jugador 4 (opcional)" autocomplete="off"></div>
+            <div class="dropdown" id="player4Dropdown"></div>
+          </div>
         </section>
         <section>
           <div class="eyebrow">Barra de salida</div>
@@ -394,41 +410,24 @@
         <div class="meta">Hoy · Individual Stableford</div>
       </div>
       <div class="screen-content">
-        <section id="playerTabSection" style="display:none;">
-          <div class="eyebrow">Jugador</div>
-          <div class="tab-toggle" id="playerTabToggle"></div>
-        </section>
         <section>
           <div class="eyebrow">Golpes por hoyo</div>
+          <div class="section-sub">Cada jugador anota en su propia fila</div>
           <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
           <div class="card-grid nine-block" data-nine="ida" id="resultGridIda">
             <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
             <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" id="idaParTotal" style="font-weight:600;">34</div></div>
-            <div class="grid-row golpes-row"><div class="grid-cell side-label">Golpes</div><div class="grid-cell"><input class="golpes-input" data-hole="1" data-par="5" inputmode="numeric" value="7"></div><div class="grid-cell"><input class="golpes-input" data-hole="2" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="3" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="4" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="5" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="6" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell"><input class="golpes-input" data-hole="7" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell"><input class="golpes-input" data-hole="8" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="9" data-par="3" inputmode="numeric" value="3"></div><div class="grid-cell nine-total" style="font-weight:600;">41</div></div>
-            <div class="grid-row result-row">
-              <div class="grid-cell side-label">Result.</div>
-              <div class="grid-cell result-cell" data-hole="1"></div><div class="grid-cell result-cell" data-hole="2"></div><div class="grid-cell result-cell" data-hole="3"></div><div class="grid-cell result-cell" data-hole="4"></div><div class="grid-cell result-cell" data-hole="5"></div><div class="grid-cell result-cell" data-hole="6"></div><div class="grid-cell result-cell" data-hole="7"></div><div class="grid-cell result-cell" data-hole="8"></div><div class="grid-cell result-cell" data-hole="9"></div>
-              <div class="grid-cell nine-diff" style="font-weight:600;"></div>
-            </div>
           </div>
           <div class="card-grid nine-block" data-nine="vuelta" id="resultGridVuelta" style="display:none;">
             <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
             <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" id="vueltaParTotal" style="font-weight:600;">36</div></div>
-            <div class="grid-row golpes-row"><div class="grid-cell side-label">Golpes</div><div class="grid-cell"><input class="golpes-input" data-hole="10" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="11" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="12" data-par="5" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="13" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="14" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="15" data-par="3" inputmode="numeric" value="4"></div><div class="grid-cell"><input class="golpes-input" data-hole="16" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell"><input class="golpes-input" data-hole="17" data-par="4" inputmode="numeric" value="5"></div><div class="grid-cell"><input class="golpes-input" data-hole="18" data-par="4" inputmode="numeric" value="6"></div><div class="grid-cell nine-total" style="font-weight:600;">49</div></div>
-            <div class="grid-row result-row">
-              <div class="grid-cell side-label">Result.</div>
-              <div class="grid-cell result-cell" data-hole="10"></div><div class="grid-cell result-cell" data-hole="11"></div><div class="grid-cell result-cell" data-hole="12"></div><div class="grid-cell result-cell" data-hole="13"></div><div class="grid-cell result-cell" data-hole="14"></div><div class="grid-cell result-cell" data-hole="15"></div><div class="grid-cell result-cell" data-hole="16"></div><div class="grid-cell result-cell" data-hole="17"></div><div class="grid-cell result-cell" data-hole="18"></div>
-              <div class="grid-cell nine-diff" style="font-weight:600;"></div>
-            </div>
           </div>
-          <div class="helper-note">El resultado (PAR / +1 / +2…) se calcula solo al escribir los golpes. Todos los campos son editables.</div>
+          <div class="helper-note">Cada fila es un jugador. El color de la celda avisa cuando te pasas de par. Todos los campos son editables.</div>
         </section>
         <section>
-          <div class="totals-strip">
-            <div class="item"><div class="num" id="totalGolpes">90</div><div class="lbl">Total golpes</div></div>
-            <div class="item diff"><div class="num" id="totalDiff">+20</div><div class="lbl">Sobre par <span id="totalDiffParLbl">70</span></div></div>
-            <div class="item"><div class="num" id="totalHoyos">18</div><div class="lbl">Hoyos completados</div></div>
-          </div>
+          <div class="eyebrow">Resumen</div>
+          <div class="section-sub" id="parSummaryLbl">Par total del campo: 70</div>
+          <div id="playerTotals"></div>
         </section>
       </div>
       <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
@@ -647,88 +646,124 @@
 
   let selectedCourse = null;
   let players = ['Jugador 1'];
-  let activePlayerIndex = 0;
-  let playerScores = [{}]; // por jugador: { "1": "4", "2": "5", ... } golpes escritos por hoyo
+  let currentCoursePar = 0;
 
-  // Lee los golpes actualmente escritos en la tarjeta (por hoyo)
-  function collectGridValues(){
-    const scores = {};
-    document.querySelectorAll('.golpes-input').forEach(input=>{
-      scores[input.dataset.hole] = input.value;
-    });
-    return scores;
-  }
-  // Vuelca en la tarjeta los golpes guardados de un jugador
-  function applyGridValues(scores){
-    document.querySelectorAll('.golpes-input').forEach(input=>{
-      input.value = (scores && scores[input.dataset.hole] !== undefined) ? scores[input.dataset.hole] : '';
-    });
-  }
-
-  function renderPlayerTabs(){
-    const section = document.getElementById('playerTabSection');
-    const wrap = document.getElementById('playerTabToggle');
-    if(!section || !wrap) return;
-    if(players.length <= 1){
-      section.style.display = 'none';
-      return;
-    }
-    section.style.display = '';
-    wrap.innerHTML = players.map((name, i) =>
-      '<div class="tab' + (i === activePlayerIndex ? ' active' : '') + '" data-player-index="' + i + '">' + name + '</div>'
-    ).join('');
-    wrap.querySelectorAll('.tab').forEach(tab=>{
-      tab.addEventListener('click', ()=>{
-        const newIndex = parseInt(tab.dataset.playerIndex, 10);
-        if(newIndex === activePlayerIndex) return;
-        playerScores[activePlayerIndex] = collectGridValues();
-        activePlayerIndex = newIndex;
-        applyGridValues(playerScores[activePlayerIndex]);
-        recalcResultados();
-        renderPlayerTabs();
-      });
-    });
-  }
-
-  // Define quiénes juegan esta ronda (1 a 4 jugadores) y reinicia sus marcadores
+  // Define quiénes juegan esta ronda (1 a 4 jugadores)
   function setPlayers(names){
     players = names && names.length ? names.slice(0, 4) : ['Jugador 1'];
-    activePlayerIndex = 0;
-    playerScores = players.map(()=> ({}));
-    renderPlayerTabs();
   }
 
-  // Rellena las dos tarjetas de 9 hoyos de "Introducir resultados" con el par real del campo elegido
+  // Historial de jugadores (guardado en este navegador) para sugerir nombres ya usados
+  function getPlayerHistory(){
+    try {
+      const raw = localStorage.getItem('golfAppPlayerHistory');
+      return raw ? JSON.parse(raw) : [];
+    } catch(e){ return []; }
+  }
+  function rememberPlayers(names){
+    try {
+      const history = getPlayerHistory();
+      names.forEach(name=>{
+        if(name && !history.some(h => h.toLowerCase() === name.toLowerCase())) history.push(name);
+      });
+      localStorage.setItem('golfAppPlayerHistory', JSON.stringify(history));
+    } catch(e){ /* almacenamiento no disponible en este navegador */ }
+  }
+
+  // Conecta un campo "Jugador N" con un desplegable de jugadores usados antes
+  function setupPlayerSearch(inputId, dropdownId){
+    const input = document.getElementById(inputId);
+    const dropdown = document.getElementById(dropdownId);
+    if(!input || !dropdown) return;
+    function renderOptions(query){
+      const q = (query || '').trim().toLowerCase();
+      const matches = getPlayerHistory().filter(name => !q || name.toLowerCase().includes(q));
+      if(!matches.length){
+        dropdown.innerHTML = '';
+        dropdown.classList.remove('open');
+        return;
+      }
+      dropdown.innerHTML = matches.map(name =>
+        '<div class="dropdown-item"><div><div class="name">' + name + '</div></div></div>'
+      ).join('');
+      dropdown.classList.add('open');
+      dropdown.querySelectorAll('.dropdown-item').forEach((item, i)=>{
+        item.addEventListener('click', ()=>{
+          input.value = matches[i];
+          dropdown.classList.remove('open');
+        });
+      });
+    }
+    input.addEventListener('focus', ()=> renderOptions(input.value));
+    input.addEventListener('input', ()=> renderOptions(input.value));
+    document.addEventListener('click', (e)=>{
+      if(input.contains(e.target) || dropdown.contains(e.target)) return;
+      dropdown.classList.remove('open');
+    });
+  }
+
+  // Crea, dentro de una tarjeta de 9 hoyos, una fila de golpes por cada jugador
+  function buildPlayerRows(grid, pars, startHole){
+    grid.querySelectorAll('.golpes-row').forEach(row => row.remove());
+    players.forEach((name, pIndex)=>{
+      const row = document.createElement('div');
+      row.className = 'grid-row golpes-row';
+      row.dataset.playerIndex = pIndex;
+      const label = document.createElement('div');
+      label.className = 'grid-cell side-label';
+      label.textContent = name;
+      row.appendChild(label);
+      pars.forEach((par, i)=>{
+        const cell = document.createElement('div');
+        cell.className = 'grid-cell';
+        const input = document.createElement('input');
+        input.className = 'golpes-input';
+        input.type = 'text';
+        input.inputMode = 'numeric';
+        input.dataset.hole = startHole + i;
+        input.dataset.par = par;
+        input.dataset.playerIndex = pIndex;
+        input.addEventListener('input', recalcResultados);
+        cell.appendChild(input);
+        row.appendChild(cell);
+      });
+      const totalCell = document.createElement('div');
+      totalCell.className = 'grid-cell nine-total';
+      totalCell.style.fontWeight = '600';
+      totalCell.textContent = '0';
+      row.appendChild(totalCell);
+      grid.appendChild(row);
+    });
+  }
+
+  // Rellena las dos tarjetas de 9 hoyos de "Introducir resultados" con el par real del campo elegido,
+  // y crea una fila de golpes por cada jugador de la partida
   function applyCourseToScoreGrids(course){
     const nineDefs = [
-      { grid: document.getElementById('resultGridIda'), totalId:'idaParTotal', offset:0 },
-      { grid: document.getElementById('resultGridVuelta'), totalId:'vueltaParTotal', offset: course.holes9 ? 0 : 9 },
+      { grid: document.getElementById('resultGridIda'), totalId:'idaParTotal', offset:0, startHole:1 },
+      { grid: document.getElementById('resultGridVuelta'), totalId:'vueltaParTotal', offset: course.holes9 ? 0 : 9, startHole:10 },
     ];
     nineDefs.forEach(def=>{
       if(!def.grid) return;
       const parRow = def.grid.querySelector('.grid-row:nth-of-type(2)');
       const parCells = Array.from(parRow.querySelectorAll('.grid-cell')).slice(1, -1);
       let nineTotal = 0;
+      const pars = [];
       parCells.forEach((cell, i)=>{
         const par = course.par[def.offset + i];
         cell.textContent = par;
         cell.dataset.par = par;
+        pars.push(par);
         nineTotal += par;
       });
       const totalCell = document.getElementById(def.totalId);
       if(totalCell) totalCell.textContent = nineTotal;
-      def.grid.querySelectorAll('.golpes-input').forEach((input, i)=>{
-        input.dataset.par = course.par[def.offset + i];
-        input.value = '';
-      });
+      buildPlayerRows(def.grid, pars, def.startHole);
     });
     const nineSum = course.par.reduce((a, b) => a + b, 0);
-    const coursePar = course.holes9 ? nineSum * 2 : nineSum;
-    const totalDiffParLbl = document.getElementById('totalDiffParLbl');
-    if(totalDiffParLbl) totalDiffParLbl.textContent = coursePar;
-    playerScores = players.map(()=> ({})); // ronda nueva: se borran los golpes guardados de todos
-    activePlayerIndex = 0;
-    renderPlayerTabs();
+    currentCoursePar = course.holes9 ? nineSum * 2 : nineSum;
+    const parSummaryLbl = document.getElementById('parSummaryLbl');
+    if(parSummaryLbl) parSummaryLbl.textContent = 'Par total del campo: ' + currentCoursePar;
     recalcResultados();
   }
 
@@ -880,9 +915,13 @@
       .map(id => ((document.getElementById(id) || {}).value || '').trim())
       .filter(name => name.length > 0);
     setPlayers(names);
+    rememberPlayers(names);
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     goTo(3);
   });
+
+  // Buscadores de "Jugador 1..4" con sugerencias de jugadores usados antes
+  ['player1', 'player2', 'player3', 'player4'].forEach(id => setupPlayerSearch(id + 'Input', id + 'Dropdown'));
 
   // "Añadir campo": guarda el campo nuevo (con los pares que se hayan escrito) y pasa a anotar resultados
   const guardarCampoBtn = document.getElementById('guardarCampoBtn');
@@ -904,51 +943,41 @@
     goTo(3);
   });
 
-  // Cálculo automático de resultados (Introducir resultados)
+  // Cálculo automático de resultados (Introducir resultados): un total por cada jugador
   function recalcResultados(){
-    let totalGolpes = 0, totalPar = 0, holesFilled = 0;
+    const summaries = players.map(()=> ({ total: 0, holesFilled: 0 }));
     document.querySelectorAll('.nine-block[id^="resultGrid"]').forEach(block=>{
-      let nineGolpes = 0, ninePar = 0;
-      block.querySelectorAll('.golpes-input').forEach(input=>{
-        const hole = input.dataset.hole;
-        const par = parseInt(input.dataset.par, 10);
-        const golpes = parseInt(input.value, 10);
-        ninePar += par;
-        const resultCell = block.querySelector('.result-cell[data-hole="'+hole+'"]');
-        if(!isNaN(golpes) && golpes > 0){
-          nineGolpes += golpes;
-          totalGolpes += golpes;
-          holesFilled++;
-          const diff = golpes - par;
-          resultCell.classList.remove('result-par','result-over');
-          if(diff === 0){ resultCell.textContent = 'PAR'; resultCell.classList.add('result-par'); }
-          else if(diff > 0){ resultCell.textContent = '+'+diff; resultCell.classList.add('result-over'); }
-          else { resultCell.textContent = diff; resultCell.classList.add('result-par'); }
-        } else {
-          resultCell.textContent = '';
-          resultCell.classList.remove('result-par','result-over');
-        }
+      players.forEach((name, pIndex)=>{
+        const row = block.querySelector('.golpes-row[data-player-index="' + pIndex + '"]');
+        if(!row) return;
+        let nineGolpes = 0;
+        row.querySelectorAll('.golpes-input').forEach(input=>{
+          const par = parseInt(input.dataset.par, 10);
+          const golpes = parseInt(input.value, 10);
+          const cell = input.parentElement;
+          cell.classList.remove('result-par', 'result-over');
+          if(!isNaN(golpes) && golpes > 0){
+            nineGolpes += golpes;
+            summaries[pIndex].total += golpes;
+            summaries[pIndex].holesFilled++;
+            const diff = golpes - par;
+            cell.classList.add(diff > 0 ? 'result-over' : 'result-par');
+          }
+        });
+        const nineTotalCell = row.querySelector('.nine-total');
+        if(nineTotalCell) nineTotalCell.textContent = nineGolpes;
       });
-      totalPar += ninePar;
-      const nineTotalCell = block.querySelector('.nine-total');
-      if(nineTotalCell) nineTotalCell.textContent = nineGolpes;
-      const nineDiffCell = block.querySelector('.nine-diff');
-      if(nineDiffCell){
-        const d = nineGolpes - ninePar;
-        nineDiffCell.textContent = nineGolpes > 0 ? (d>=0? '+'+d : d) : '';
-      }
     });
-    const totalGolpesEl = document.getElementById('totalGolpes');
-    const totalDiffEl = document.getElementById('totalDiff');
-    const totalHoyosEl = document.getElementById('totalHoyos');
-    if(totalGolpesEl) totalGolpesEl.textContent = totalGolpes;
-    if(totalDiffEl){ const d = totalGolpes - totalPar; totalDiffEl.textContent = (d>=0? '+'+d : d); }
-    if(totalHoyosEl) totalHoyosEl.textContent = holesFilled;
+    const playerTotals = document.getElementById('playerTotals');
+    if(playerTotals){
+      playerTotals.innerHTML = players.map((name, pIndex)=>{
+        const s = summaries[pIndex];
+        const diff = s.total - currentCoursePar;
+        const diffStr = s.total > 0 ? (diff >= 0 ? '+' + diff : diff) : '—';
+        return '<div class="round-row"><div><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos</div></div><div class="score">' + s.total + ' <small>' + diffStr + '</small></div></div>';
+      }).join('');
+    }
   }
-  document.querySelectorAll('.golpes-input').forEach(input=>{
-    input.addEventListener('input', recalcResultados);
-  });
-  recalcResultados();
 </script>
 
 </body>
