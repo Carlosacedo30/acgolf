@@ -579,46 +579,17 @@
       <div class="app-bar">
         <div class="back">‹ Inicio</div>
         <h1>Informe semanal</h1>
-        <div class="meta">1 – 7 de septiembre · 3 rondas jugadas</div>
+        <div class="meta" id="s6Meta">Datos reales de "Hoyo 19" (golfdirecto)</div>
       </div>
       <div class="screen-content">
         <section>
-          <div class="eyebrow">Evolución de hándicap</div>
-          <div class="hcp-hero"><span class="num">18.4</span><span class="delta">↓ 0.6</span><span class="lbl">esta semana</span></div>
-          <div class="chart">
-            <svg viewBox="0 0 320 90" preserveAspectRatio="none">
-              <polyline points="10,30 80,42 150,38 220,55 290,20" fill="none" stroke="#C9C3AE" stroke-width="1.5" stroke-dasharray="3,3"/>
-              <polyline points="10,30 80,42 150,38 220,55 290,20" fill="none" stroke="#1B3A2F" stroke-width="2.5"/>
-              <circle cx="10" cy="30" r="3.5" fill="#1B3A2F"/><circle cx="80" cy="42" r="3.5" fill="#1B3A2F"/><circle cx="150" cy="38" r="3.5" fill="#1B3A2F"/><circle cx="220" cy="55" r="3.5" fill="#1B3A2F"/>
-              <circle cx="290" cy="20" r="5" fill="#9C7A2E"/>
-            </svg>
-            <div class="chart-labels"><span>4 sem.</span><span>3 sem.</span><span>2 sem.</span><span>1 sem.</span><span>Hoy</span></div>
-          </div>
+          <div class="eyebrow">Jugador</div>
+          <div class="search-box"><input type="text" id="reportPlayerInput" placeholder="Busca un jugador" autocomplete="off"></div>
+          <div class="dropdown" id="reportPlayerDropdown"></div>
         </section>
-        <section>
-          <div class="eyebrow">Estadísticas de la semana</div>
-          <h2>Comparado con tu media</h2>
-          <div class="stats-grid" style="margin-top:10px;">
-            <div class="stat-cell"><div class="val">38% <small class="up">↑4%</small></div><div class="lbl">Greens en regulación</div></div>
-            <div class="stat-cell"><div class="val">2.1 <small class="down">↑0.2</small></div><div class="lbl">Putts por hoyo</div></div>
-            <div class="stat-cell"><div class="val">51% <small class="up">↑2%</small></div><div class="lbl">Fairways en golpe 1</div></div>
-            <div class="stat-cell"><div class="val">61% <small class="down">↓5%</small></div><div class="lbl">Precisión approach</div></div>
-          </div>
-        </section>
-        <section>
-          <div class="eyebrow">Patrón de la semana</div>
-          <div class="pattern"><div class="pct">3 de 3</div><p>rondas siguen mostrando <strong>fallos de precisión en approach</strong> como causa principal. Segundo informe seguido con este patrón.</p></div>
-        </section>
-        <section>
-          <div class="eyebrow">Rondas de esta semana</div>
-          <div>
-            <div class="round-row"><div><div class="club">Club de Golf Hato Verde</div><div class="date">6 de septiembre</div></div><div class="score">90 <small>+20</small></div></div>
-            <div class="round-row"><div><div class="club">Club de Golf Hato Verde</div><div class="date">3 de septiembre</div></div><div class="score">88 <small>+18</small></div></div>
-            <div class="round-row"><div><div class="club">La Dehesa</div><div class="date">1 de septiembre</div></div><div class="score">85 <small>+13</small></div></div>
-          </div>
-        </section>
+        <div id="s6Content"></div>
       </div>
-      <div class="actions"><div class="btn ghost">Ver historial completo</div><div class="btn primary">Ver plan de práctica</div></div>
+      <div class="actions"><div class="btn primary full" id="s6VolverBtn">‹ Volver a Jugar</div></div>
     </div>
 
   </div>
@@ -753,6 +724,50 @@
     const d = new Date(iso + 'T00:00:00');
     return d.getDate() + ' ' + MONTH_NAMES[d.getMonth()];
   }
+  // Estadísticas reales de compañeros (rondas jugadas junto a Carlos), de "Hoyo 19"
+  const COMPANION_STATS = {
+    'Francisco Javier Garcia Martinez': { roundsTogether: 89, avgNet: 29.3, bestNet: -5 },
+    'Juan Jimenez Jimenez': { roundsTogether: 87, avgNet: 26.4, bestNet: -7 },
+    'Jose Moises Romero Martinez': { roundsTogether: 60, avgNet: 25.7, bestNet: -8 },
+    'Juan Ramon Burgos Cantos': { roundsTogether: 41, avgNet: 24.2, bestNet: -9 },
+    'Rafael Ruiz Romero': { roundsTogether: 43, avgNet: 26.3, bestNet: 6 },
+    'Jesus Jimenez Lopez de Lemus': { roundsTogether: 46, avgNet: 25.6, bestNet: -2 },
+    'Fernando Rumayor Zarzuelo': { roundsTogether: 8, avgNet: 14.5, bestNet: -2 },
+    'Alvaro Rodriguez Gonzalez': { roundsTogether: 2, avgNet: 7.5, bestNet: 6 },
+    'Álvaro Lainez Garcia-Alexandre': { roundsTogether: 6, avgNet: 27, bestNet: -1 },
+    'Juan Manuel Jimenez Lopez de Lemus': { roundsTogether: 3, avgNet: 24.7, bestNet: 22 },
+    'Alejandro Azancot Cabello': { roundsTogether: 2, avgNet: 17.5, bestNet: 11 },
+    'Moises Hermida Luna': { roundsTogether: 11, avgNet: 18.4, bestNet: -7 },
+    'Emilio Martin Carrero': { roundsTogether: 8, avgNet: 31.6, bestNet: 13 },
+    'Jose Maria Hurtado Leon': { roundsTogether: 2, avgNet: 33, bestNet: 33 },
+    'Manuel Medina Morian': { roundsTogether: 3, avgNet: 16.5, bestNet: 7 },
+    'Jesus Antonio Castaño Alba': { roundsTogether: 1, avgNet: null, bestNet: null },
+    'Francisco Javier Romero Jimeno': { roundsTogether: 2, avgNet: 18, bestNet: 18 },
+  };
+  // Informe real de Carlos (de "Hoyo 19" / golfdirecto), condensado a los últimos meses
+  const CARLOS_REPORT = {
+    currentHcp: 22.1,
+    totalRounds: 173,
+    monthly: [
+      { month: '2026-02', rounds: 9, avgNet: 21.3, hcpEnd: 23 },
+      { month: '2026-03', rounds: 6, avgNet: 28.8, hcpEnd: 20 },
+      { month: '2026-04', rounds: 5, avgNet: 33.8, hcpEnd: 22.7 },
+      { month: '2026-05', rounds: 8, avgNet: 32.5, hcpEnd: 22.3 },
+      { month: '2026-06', rounds: 8, avgNet: 28.3, hcpEnd: 22.1 },
+      { month: '2026-07', rounds: 12, avgNet: 23, hcpEnd: 22.1 },
+      { month: '2026-08', rounds: 9, avgNet: 12, hcpEnd: 22.1 },
+      { month: '2026-09', rounds: 4, avgNet: -3.3, hcpEnd: 22.1 },
+    ],
+    bestStableford: { points: 46, name: 'Francisco Javier vs Carlos', date: '2025-06-26', strokes: 60 },
+    bestStrokeplay: { net: -6, name: 'Trueno', date: '2026-09-05', strokes: 64 },
+    recentRounds: [
+      { date: '2026-09-10', name: 'Los colgáis', club: 'Club Hato Verde', strokes: 68, net: -2 },
+      { date: '2026-09-06', name: 'Los tres', club: 'Club Hato Verde', strokes: 65, net: -5 },
+      { date: '2026-09-05', name: 'Trueno', club: 'Club Hato Verde', strokes: 64, net: -6 },
+      { date: '2026-09-02', name: 'Los locis', club: 'Club Hato Verde', strokes: 34, net: 0 },
+      { date: '2026-08-30', name: 'Los 4', club: 'Club Hato Verde', strokes: 69, net: -1 },
+    ],
+  };
   let playerHandicaps = [0];
   // Golpes de regalo que le tocan a un hándicap en un hoyo de un índice de dificultad dado (1-18)
   function strokesForHole(handicap, strokeIndex){
@@ -1058,7 +1073,7 @@
   prevBtn.addEventListener('click', () => { if(current>0){ current--; render(); }});
   nextBtn.addEventListener('click', () => { if(current<screens.length-1){ current++; render(); }});
   dots.forEach(d => d.addEventListener('click', () => { current = +d.dataset.goto; render(); }));
-  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); }
+  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); }
 
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
   const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
@@ -1397,6 +1412,116 @@
       }
     }
   }
+
+  // --- Informe semanal: informe real de Carlos ("Hoyo 19") o ficha de un compañero, con buscador ---
+  let reportPlayerName = 'Carlos Acedo Domínguez';
+
+  function buildHcpChartSvg(points){
+    // points: [{label, hcp}], de más antiguo a más reciente
+    const xs = points.map((p, i) => 10 + i * (280 / Math.max(1, points.length - 1)));
+    const hcps = points.map(p => p.hcp);
+    const maxHcp = Math.max(...hcps), minHcp = Math.min(...hcps);
+    const range = Math.max(1, maxHcp - minHcp);
+    const ys = hcps.map(h => 75 - ((h - minHcp) / range) * 60);
+    const coords = xs.map((x, i) => x.toFixed(1) + ',' + ys[i].toFixed(1));
+    const dots = xs.map((x, i) =>
+      '<circle cx="' + x.toFixed(1) + '" cy="' + ys[i].toFixed(1) + '" r="' + (i === xs.length - 1 ? 5 : 3.5) + '" fill="' + (i === xs.length - 1 ? '#9C7A2E' : '#1B3A2F') + '"/>'
+    ).join('');
+    return '<svg viewBox="0 0 320 90" preserveAspectRatio="none">'
+      + '<polyline points="' + coords.join(' ') + '" fill="none" stroke="#C9C3AE" stroke-width="1.5" stroke-dasharray="3,3"/>'
+      + '<polyline points="' + coords.join(' ') + '" fill="none" stroke="#1B3A2F" stroke-width="2.5"/>'
+      + dots
+      + '</svg>';
+  }
+
+  function renderInforme(name){
+    reportPlayerName = name;
+    const input = document.getElementById('reportPlayerInput');
+    if(input) input.value = name;
+    const content = document.getElementById('s6Content');
+    const meta = document.getElementById('s6Meta');
+    if(!content) return;
+
+    if(name === 'Carlos Acedo Domínguez'){
+      const r = CARLOS_REPORT;
+      if(meta) meta.textContent = 'Datos reales de "Hoyo 19" (golfdirecto) · ' + r.totalRounds + ' rondas registradas';
+      const chartPoints = r.monthly.map(m => ({ label: m.month.slice(5), hcp: m.hcpEnd }));
+      const delta = +(r.monthly[0].hcpEnd - r.currentHcp).toFixed(1);
+      const bestMonth = r.monthly.reduce((best, m) => m.rounds > best.rounds ? m : best, r.monthly[0]);
+      content.innerHTML =
+        '<section><div class="eyebrow">Evolución de hándicap</div>'
+        + '<div class="hcp-hero"><span class="num">' + r.currentHcp + '</span><span class="delta">' + (delta >= 0 ? '↓ ' + delta : '↑ ' + Math.abs(delta)) + '</span><span class="lbl">desde ' + MONTH_NAMES[parseInt(r.monthly[0].month.slice(5, 7), 10) - 1] + '</span></div>'
+        + '<div class="chart">' + buildHcpChartSvg(chartPoints) + '<div class="chart-labels">' + r.monthly.map(m => '<span>' + MONTH_NAMES[parseInt(m.month.slice(5, 7), 10) - 1] + '</span>').join('') + '</div></div>'
+        + '</section>'
+        + '<section><div class="eyebrow">Mejores marcas</div>'
+        + '<div class="stats-grid" style="margin-top:10px;">'
+        + '<div class="stat-cell"><div class="val">' + r.bestStableford.points + ' pts</div><div class="lbl">Mejor Stableford</div></div>'
+        + '<div class="stat-cell"><div class="val">' + (r.bestStrokeplay.net >= 0 ? '+' + r.bestStrokeplay.net : r.bestStrokeplay.net) + '</div><div class="lbl">Mejor Stroke Play (neto)</div></div>'
+        + '<div class="stat-cell"><div class="val">' + r.totalRounds + '</div><div class="lbl">Rondas registradas</div></div>'
+        + '<div class="stat-cell"><div class="val">' + bestMonth.rounds + '</div><div class="lbl">Rondas en ' + MONTH_NAMES[parseInt(bestMonth.month.slice(5, 7), 10) - 1] + ' (mejor mes)</div></div>'
+        + '</div>'
+        + '</section>'
+        + '<section><div class="eyebrow">Rondas recientes</div><div>'
+        + r.recentRounds.map(round =>
+            '<div class="round-row"><div><div class="club">' + round.name + ' · ' + round.club + '</div><div class="date">' + formatShortDate(round.date) + '</div></div><div class="score">' + round.strokes + ' <small>' + (round.net >= 0 ? '+' + round.net : round.net) + '</small></div></div>'
+          ).join('')
+        + '</div></section>';
+    } else {
+      const stats = COMPANION_STATS[name];
+      const hcp = FAVORITE_HANDICAPS[name];
+      const last = FAVORITE_LAST_PLAYED[name];
+      if(meta) meta.textContent = 'Ficha del compañero (de "Hoyo 19")';
+      if(!stats){
+        content.innerHTML = '<section><div class="helper-note">No tenemos datos de este jugador todavía.</div></section>';
+        return;
+      }
+      content.innerHTML =
+        '<section><div class="eyebrow">Ficha del jugador</div>'
+        + '<h2>' + name + '</h2>'
+        + '<div class="stats-grid" style="margin-top:10px;">'
+        + '<div class="stat-cell"><div class="val">' + (hcp !== undefined ? hcp : '—') + '</div><div class="lbl">Hándicap actual</div></div>'
+        + '<div class="stat-cell"><div class="val">' + stats.roundsTogether + '</div><div class="lbl">Rondas jugadas con Carlos</div></div>'
+        + '<div class="stat-cell"><div class="val">' + (stats.avgNet !== null ? stats.avgNet : '—') + '</div><div class="lbl">Resultado medio (neto)</div></div>'
+        + '<div class="stat-cell"><div class="val">' + (stats.bestNet !== null ? (stats.bestNet >= 0 ? '+' + stats.bestNet : stats.bestNet) : '—') + '</div><div class="lbl">Mejor resultado (neto)</div></div>'
+        + '</div>'
+        + '</section>'
+        + '<section><div class="helper-note">Última vez jugado con Carlos: ' + (last ? formatShortDate(last) : '—') + '. Todavía no tenemos su historial de rondas completo — solo lo que sabemos de las partidas jugadas junto a Carlos.</div></section>';
+    }
+  }
+
+  // Buscador de jugador en "Informe semanal" (reutiliza el mismo historial de favoritos)
+  (function setupReportPlayerSearch(){
+    const input = document.getElementById('reportPlayerInput');
+    const dropdown = document.getElementById('reportPlayerDropdown');
+    if(!input || !dropdown) return;
+    function renderOptions(query){
+      const q = (query || '').trim().toLowerCase();
+      const matches = getPlayerHistory().filter(name => !q || name.toLowerCase().includes(q));
+      if(!matches.length){ dropdown.innerHTML = ''; dropdown.classList.remove('open'); return; }
+      dropdown.innerHTML = matches.map(name => {
+        const bits = [];
+        if(FAVORITE_HANDICAPS[name] !== undefined) bits.push('Hcp ' + FAVORITE_HANDICAPS[name]);
+        if(FAVORITE_LAST_PLAYED[name]) bits.push('Última vez ' + formatShortDate(FAVORITE_LAST_PLAYED[name]));
+        const sub = bits.length ? '<div class="loc">' + bits.join(' · ') + '</div>' : '';
+        return '<div class="dropdown-item"><div><div class="name">' + name + '</div>' + sub + '</div></div>';
+      }).join('');
+      dropdown.classList.add('open');
+      dropdown.querySelectorAll('.dropdown-item').forEach((item, i)=>{
+        item.addEventListener('click', ()=>{
+          dropdown.classList.remove('open');
+          renderInforme(matches[i]);
+        });
+      });
+    }
+    input.addEventListener('focus', ()=> renderOptions(input.value));
+    input.addEventListener('input', ()=> renderOptions(input.value));
+    document.addEventListener('click', (e)=>{
+      if(input.contains(e.target) || dropdown.contains(e.target)) return;
+      dropdown.classList.remove('open');
+    });
+  })();
+  const s6VolverBtn = document.getElementById('s6VolverBtn');
+  if(s6VolverBtn) s6VolverBtn.addEventListener('click', ()=> goTo(0));
 </script>
 
 </body>
