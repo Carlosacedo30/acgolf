@@ -145,7 +145,8 @@
   .grid-cell{ padding:6px 2px; text-align:center; font-size:10.5px; font-family:'IBM Plex Mono', monospace; border-right:1px solid var(--line-soft); }
   .grid-cell:last-child{ border-right:none; }
   .grid-row.label-row .grid-cell{ font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10px; color:var(--forest-soft); }
-  .grid-cell.side-label{ text-align:left; padding-left:9px; font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--forest-soft); background:var(--paper-dim); }
+  .grid-cell.side-label{ text-align:left; padding-left:9px; font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:10.5px; color:var(--forest-soft); background:var(--paper-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .golpes-row .side-label{ font-size:10px; }
   .grid-cell input{ width:100%; border:none; background:none; text-align:center; font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600; color:var(--ink); padding:2px 0; }
   .grid-cell input:focus{ outline:1px solid var(--forest); border-radius:2px; }
   .grid-cell.result-par{ color:#5B6B62; font-weight:600; }
