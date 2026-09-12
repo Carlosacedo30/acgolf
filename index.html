@@ -324,26 +324,38 @@
         </section>
         <section>
           <div class="eyebrow">Jugadores</div>
-          <div class="section-sub">Hasta 4 jugadores en la misma partida. Escribe para ver jugadores anteriores, o deja en blanco los que no vayan a jugar.</div>
-          <div class="field">
-            <label>Jugador 1</label>
-            <div class="search-box"><input type="text" id="player1Input" placeholder="Nombre del jugador 1" autocomplete="off"></div>
-            <div class="dropdown" id="player1Dropdown"></div>
+          <div class="section-sub">Hasta 4 jugadores en la misma partida. Escribe para ver jugadores anteriores (se rellena su hándicap solo), o deja en blanco los que no vayan a jugar.</div>
+          <div class="field-row">
+            <div class="field" style="flex:2;">
+              <label>Jugador 1</label>
+              <div class="search-box"><input type="text" id="player1Input" placeholder="Nombre del jugador 1" autocomplete="off"></div>
+              <div class="dropdown" id="player1Dropdown"></div>
+            </div>
+            <div class="field" style="flex:0 0 64px;"><label>Hcp</label><input type="number" id="player1Hcp" placeholder="—" step="0.1" min="0" max="54"></div>
           </div>
-          <div class="field">
-            <label>Jugador 2</label>
-            <div class="search-box"><input type="text" id="player2Input" placeholder="Nombre del jugador 2 (opcional)" autocomplete="off"></div>
-            <div class="dropdown" id="player2Dropdown"></div>
+          <div class="field-row">
+            <div class="field" style="flex:2;">
+              <label>Jugador 2</label>
+              <div class="search-box"><input type="text" id="player2Input" placeholder="Nombre del jugador 2 (opcional)" autocomplete="off"></div>
+              <div class="dropdown" id="player2Dropdown"></div>
+            </div>
+            <div class="field" style="flex:0 0 64px;"><label>Hcp</label><input type="number" id="player2Hcp" placeholder="—" step="0.1" min="0" max="54"></div>
           </div>
-          <div class="field">
-            <label>Jugador 3</label>
-            <div class="search-box"><input type="text" id="player3Input" placeholder="Nombre del jugador 3 (opcional)" autocomplete="off"></div>
-            <div class="dropdown" id="player3Dropdown"></div>
+          <div class="field-row">
+            <div class="field" style="flex:2;">
+              <label>Jugador 3</label>
+              <div class="search-box"><input type="text" id="player3Input" placeholder="Nombre del jugador 3 (opcional)" autocomplete="off"></div>
+              <div class="dropdown" id="player3Dropdown"></div>
+            </div>
+            <div class="field" style="flex:0 0 64px;"><label>Hcp</label><input type="number" id="player3Hcp" placeholder="—" step="0.1" min="0" max="54"></div>
           </div>
-          <div class="field">
-            <label>Jugador 4</label>
-            <div class="search-box"><input type="text" id="player4Input" placeholder="Nombre del jugador 4 (opcional)" autocomplete="off"></div>
-            <div class="dropdown" id="player4Dropdown"></div>
+          <div class="field-row">
+            <div class="field" style="flex:2;">
+              <label>Jugador 4</label>
+              <div class="search-box"><input type="text" id="player4Input" placeholder="Nombre del jugador 4 (opcional)" autocomplete="off"></div>
+              <div class="dropdown" id="player4Dropdown"></div>
+            </div>
+            <div class="field" style="flex:0 0 64px;"><label>Hcp</label><input type="number" id="player4Hcp" placeholder="—" step="0.1" min="0" max="54"></div>
           </div>
         </section>
         <section>
@@ -680,10 +692,39 @@
     'Jesus Antonio Castaño Alba',
     'Francisco Javier Romero Jimeno',
   ];
+  // Hándicap real de cada favorito (de "Hoyo 19"), para autorrellenarlo al elegirlo
+  const FAVORITE_HANDICAPS = {
+    'Carlos Acedo Domínguez': 22.1,
+    'Francisco Javier Garcia Martinez': 27.7,
+    'Juan Jimenez Jimenez': 11.2,
+    'Jose Moises Romero Martinez': 27.1,
+    'Juan Ramon Burgos Cantos': 21.1,
+    'Rafael Ruiz Romero': 26.1,
+    'Jesus Jimenez Lopez de Lemus': 25.3,
+    'Fernando Rumayor Zarzuelo': 35,
+    'Alvaro Rodriguez Gonzalez': 30.4,
+    'Álvaro Lainez Garcia-Alexandre': 26.5,
+    'Juan Manuel Jimenez Lopez de Lemus': 27.1,
+    'Alejandro Azancot Cabello': 22.6,
+    'Moises Hermida Luna': 23.9,
+    'Emilio Martin Carrero': 18.2,
+    'Jose Maria Hurtado Leon': 20.4,
+    'Manuel Medina Morian': 22.7,
+    'Jesus Antonio Castaño Alba': 17.8,
+    'Francisco Javier Romero Jimeno': 28,
+  };
+  let playerHandicaps = [0];
+  // Golpes de regalo que le tocan a un hándicap en un hoyo de un índice de dificultad dado (1-18)
+  function strokesForHole(handicap, strokeIndex){
+    if(isNaN(handicap) || handicap <= 0) return 0;
+    const h = Math.round(handicap);
+    return Math.floor(h / 18) + ((h % 18) >= strokeIndex ? 1 : 0);
+  }
 
-  // Define quiénes juegan esta ronda (1 a 4 jugadores)
-  function setPlayers(names){
+  // Define quiénes juegan esta ronda (1 a 4 jugadores) y sus hándicaps
+  function setPlayers(names, handicaps){
     players = names && names.length ? names.slice(0, 4) : ['Jugador 1'];
+    playerHandicaps = players.map((n, i) => (handicaps && !isNaN(handicaps[i])) ? handicaps[i] : 0);
   }
 
   // Jugadores guardados en este navegador (los que se han escrito en partidas anteriores)
@@ -732,6 +773,10 @@
         item.addEventListener('click', ()=>{
           input.value = matches[i];
           dropdown.classList.remove('open');
+          const hcpInput = document.getElementById(inputId.replace('Input', 'Hcp'));
+          if(hcpInput && FAVORITE_HANDICAPS[matches[i]] !== undefined){
+            hcpInput.value = FAVORITE_HANDICAPS[matches[i]];
+          }
         });
       });
     }
@@ -744,7 +789,7 @@
   }
 
   // Crea, dentro de una tarjeta de 9 hoyos, una fila de golpes por cada jugador
-  function buildPlayerRows(grid, pars, startHole){
+  function buildPlayerRows(grid, pars, startHole, hcps){
     grid.querySelectorAll('.golpes-row').forEach(row => row.remove());
     players.forEach((name, pIndex)=>{
       const row = document.createElement('div');
@@ -763,6 +808,7 @@
         input.inputMode = 'numeric';
         input.dataset.hole = startHole + i;
         input.dataset.par = par;
+        input.dataset.strokeIndex = hcps[i];
         input.dataset.playerIndex = pIndex;
         input.addEventListener('input', recalcResultados);
         cell.appendChild(input);
@@ -790,16 +836,18 @@
       const parCells = Array.from(parRow.querySelectorAll('.grid-cell')).slice(1, -1);
       let nineTotal = 0;
       const pars = [];
+      const hcps = [];
       parCells.forEach((cell, i)=>{
         const par = course.par[def.offset + i];
         cell.textContent = par;
         cell.dataset.par = par;
         pars.push(par);
         nineTotal += par;
+        hcps.push((course.hcp && course.hcp[def.offset + i] !== undefined) ? course.hcp[def.offset + i] : (i + 1));
       });
       const totalCell = document.getElementById(def.totalId);
       if(totalCell) totalCell.textContent = nineTotal;
-      buildPlayerRows(def.grid, pars, def.startHole);
+      buildPlayerRows(def.grid, pars, def.startHole, hcps);
     });
     const nineSum = course.par.reduce((a, b) => a + b, 0);
     currentCoursePar = course.holes9 ? nineSum * 2 : nineSum;
@@ -955,13 +1003,16 @@
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
-  // "Configurar partida": recoge los jugadores (1 a 4) antes de empezar a anotar
+  // "Configurar partida": recoge los jugadores (1 a 4) y sus hándicaps antes de empezar a anotar
   const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
   if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
-    const names = ['player1Input', 'player2Input', 'player3Input', 'player4Input']
-      .map(id => ((document.getElementById(id) || {}).value || '').trim())
-      .filter(name => name.length > 0);
-    setPlayers(names);
+    const slots = ['player1', 'player2', 'player3', 'player4'].map(id => ({
+      name: ((document.getElementById(id + 'Input') || {}).value || '').trim(),
+      hcp: parseFloat((document.getElementById(id + 'Hcp') || {}).value),
+    })).filter(s => s.name.length > 0);
+    const names = slots.map(s => s.name);
+    const handicaps = slots.map(s => s.hcp);
+    setPlayers(names, handicaps);
     rememberPlayers(names);
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     goTo(3);
@@ -974,17 +1025,18 @@
   const guardarCampoBtn = document.getElementById('guardarCampoBtn');
   if(guardarCampoBtn) guardarCampoBtn.addEventListener('click', ()=>{
     const name = (document.getElementById('campoNombreInput') || {}).value || 'Campo nuevo';
-    const readNinePar = (gridId) => {
+    const readNineRow = (gridId, rowIndex, fallback) => {
       const grid = document.getElementById(gridId);
-      if(!grid) return [4,4,4,4,4,4,4,4,4];
-      const parRow = grid.querySelector('.grid-row:nth-of-type(2)');
-      return Array.from(parRow.querySelectorAll('.grid-cell input')).map(input => parseInt(input.value, 10) || 4);
+      if(!grid) return [fallback,fallback,fallback,fallback,fallback,fallback,fallback,fallback,fallback];
+      const row = grid.querySelector('.grid-row:nth-of-type(' + rowIndex + ')');
+      return Array.from(row.querySelectorAll('.grid-cell input')).map(input => parseInt(input.value, 10) || fallback);
     };
     const customCourse = {
       id: 'custom-' + Date.now(),
       name: name,
       location: (document.getElementById('campoUbicacionInput') || {}).value || '',
-      par: readNinePar('campoGridIda').concat(readNinePar('campoGridVuelta')),
+      par: readNineRow('campoGridIda', 2, 4).concat(readNineRow('campoGridVuelta', 2, 4)),
+      hcp: readNineRow('campoGridIda', 3, 9).concat(readNineRow('campoGridVuelta', 3, 9)),
     };
     selectCourse(customCourse, { fromAddCampo: true });
     goTo(3);
@@ -999,7 +1051,7 @@
   // Cálculo automático de resultados (Introducir resultados): un total por cada jugador,
   // más los mensajes de par/birdie de cada hoyo y el mensaje final para quien va ganando
   function recalcResultados(){
-    const summaries = players.map(()=> ({ total: 0, holesFilled: 0 }));
+    const summaries = players.map(()=> ({ total: 0, net: 0, holesFilled: 0 }));
     const roundMessages = [];
     document.querySelectorAll('.nine-block[id^="resultGrid"]').forEach(block=>{
       players.forEach((name, pIndex)=>{
@@ -1016,6 +1068,9 @@
           if(!isNaN(golpes) && golpes > 0){
             nineGolpes += golpes;
             summaries[pIndex].total += golpes;
+            const strokeIndex = parseInt(input.dataset.strokeIndex, 10);
+            const recibidos = strokesForHole(playerHandicaps[pIndex], strokeIndex);
+            summaries[pIndex].net += golpes - recibidos;
             summaries[pIndex].holesFilled++;
             const diff = golpes - par;
             cell.classList.add(diff > 0 ? 'result-over' : 'result-par');
@@ -1041,9 +1096,10 @@
     if(playerTotals){
       playerTotals.innerHTML = players.map((name, pIndex)=>{
         const s = summaries[pIndex];
-        const diff = s.total - currentCoursePar;
-        const diffStr = s.total > 0 ? (diff >= 0 ? '+' + diff : diff) : '—';
-        return '<div class="round-row"><div><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos</div></div><div class="score">' + s.total + ' <small>' + diffStr + '</small></div></div>';
+        const netDiff = s.net - currentCoursePar;
+        const netDiffStr = s.total > 0 ? (netDiff >= 0 ? '+' + netDiff : netDiff) : '—';
+        const hcp = playerHandicaps[pIndex] || 0;
+        return '<div class="round-row"><div><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Hcp ' + hcp + '</div></div><div class="score">' + s.total + '<small>neto ' + (s.total > 0 ? s.net : '—') + ' (' + netDiffStr + ')</small></div></div>';
       }).join('');
     }
 
@@ -1064,10 +1120,10 @@
     if(winnerSection && winnerBox){
       const roundDone = players.length > 0 && summaries.every(s => s.holesFilled >= 18);
       if(roundDone){
-        const minTotal = Math.min(...summaries.map(s => s.total));
-        const winners = players.filter((name, i) => summaries[i].total === minTotal);
+        const minNet = Math.min(...summaries.map(s => s.net));
+        const winners = players.filter((name, i) => summaries[i].net === minNet);
         winnerSection.style.display = '';
-        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + '.</p>';
+        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #5B6B62); font-weight:400;">(ganan en neto, ' + minNet + ')</span>.</p>';
       } else {
         winnerSection.style.display = 'none';
       }
