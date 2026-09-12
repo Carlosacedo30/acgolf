@@ -64,7 +64,10 @@
       linear-gradient(180deg, rgba(15,31,25,0.55) 0%, rgba(15,31,25,0.75) 60%, var(--forest) 100%),
       url('bg-golf.jpg');
     background-size:cover; background-position:center 65%;
+    padding-top:56px; padding-bottom:32px; min-height:280px;
+    display:flex; flex-direction:column; justify-content:flex-end;
   }
+  .app-bar.big.with-photo h1{ font-size:34px; }
   .app-bar .meta{ font-size:13px; color:#A9C2B4; }
   .score-line{ display:flex; align-items:baseline; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(241,238,227,0.18); }
   .score-line .total{ font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; }
@@ -265,7 +268,7 @@
     <!-- SCREEN 0: Jugar -->
     <div class="screen active" data-screen="0">
       <div class="app-bar big with-photo">
-        <div style="font-size:80px; line-height:1; margin-bottom:8px;">🐐</div>
+        <div style="font-size:110px; line-height:1; margin-bottom:8px;">🐐</div>
         <h1>¿Quién te hará el chivito hoy?</h1>
         <div class="meta">Elige campo para empezar una partida</div>
       </div>
