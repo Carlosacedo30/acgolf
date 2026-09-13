@@ -30,13 +30,13 @@
 
   .frame{
     width:100%; background:var(--paper);
-    border:none; border-radius:0; overflow-y:auto;
+    border:none; border-radius:0; overflow:hidden;
     box-shadow:none; position:relative;
-    display:flex; flex-direction:column; flex:1;
+    display:flex; flex-direction:column; flex:1; min-height:0;
   }
-  .screen{ display:none; flex-direction:column; flex:1; }
+  .screen{ display:none; flex-direction:column; flex:1; min-height:0; }
   .screen.active{ display:flex; }
-  .screen-content{ flex:1; }
+  .screen-content{ flex:1; min-height:0; overflow-y:auto; }
 
   .toast{ background:var(--gold-soft); border-bottom:1px solid #F0C4C9; padding:9px 20px; font-size:12.5px; color:var(--forest); display:flex; align-items:center; gap:8px; }
 
@@ -220,7 +220,7 @@
   .round-row .score{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; text-align:right; }
   .round-row .score small{ display:block; font-size:10.5px; font-weight:600; color:var(--clay); }
 
-  .actions{ display:flex; gap:10px; padding:16px 20px; background:var(--paper); border-top:1px solid var(--line-soft); position:sticky; bottom:104px; z-index:2; }
+  .actions{ display:flex; gap:10px; padding:16px 20px; background:var(--paper); border-top:1px solid var(--line-soft); flex-shrink:0; }
   .btn{ flex:1; text-align:center; padding:13px 0; border-radius:3px; font-size:14px; font-weight:600; border:1px solid var(--forest); cursor:default; }
   .btn.primary{ background:var(--forest); color:var(--paper); }
   .btn.ghost{ background:transparent; color:var(--forest); }
