@@ -63,6 +63,12 @@
     const value = document.getElementById('roundCodeValue');
     if(section) section.style.display = '';
     if(value) value.textContent = code;
+    const shareLink = document.getElementById('shareCodeWhatsapp');
+    if(shareLink){
+      const courseName = selectedCourse ? selectedCourse.name : 'el campo';
+      const text = '⛳ Partida en ' + courseName + ' — únete con el código ' + code + ' en ' + location.href;
+      shareLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+    }
   }
 
   async function createSharedRound(){

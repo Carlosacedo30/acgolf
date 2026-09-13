@@ -133,6 +133,13 @@
         if(selectedCourse && selectedCourse.id === LEAGUE_COURSE_ID){
           setTimeout(updateLeagueHandicaps, 1200);
         }
+        const shareResultLink = document.getElementById('shareResultWhatsapp');
+        if(shareResultLink){
+          const lines = players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')');
+          const text = '⛳ Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
+            + lines.join('\n') + '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE;
+          shareResultLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+        }
       } else {
         winnerSection.style.display = 'none';
       }
