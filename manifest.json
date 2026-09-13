@@ -3,8 +3,8 @@
   "short_name": "App Golf",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1B3A2F",
-  "theme_color": "#1B3A2F",
+  "background_color": "#FFFFFF",
+  "theme_color": "#1B3B6F",
   "orientation": "portrait",
   "icons": [
     {
