@@ -256,6 +256,39 @@
   .sync-status{ font-size:11.5px; color:#7A8A80; margin-top:6px; display:flex; align-items:center; gap:6px; }
   .sync-status .dot3{ width:6px; height:6px; border-radius:50%; background:#7A8A80; }
   .sync-status.live .dot3{ background:#3D7A5C; }
+
+  /* Vista "un hoyo a la vez" */
+  .hole-card-header{ display:flex; align-items:center; justify-content:center; gap:18px; }
+  .hole-nav-btn{ width:38px; height:38px; border-radius:50%; border:1.5px solid var(--forest); color:var(--forest); display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:600; cursor:pointer; flex:none; }
+  .hole-nav-btn.disabled{ opacity:0.3; pointer-events:none; }
+  .hole-badge-big{ width:88px; height:88px; border-radius:50%; background:var(--forest); color:var(--paper); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .hole-badge-big .hoyo-num{ font-family:'IBM Plex Mono', monospace; font-size:34px; font-weight:600; line-height:1; }
+  .hole-badge-big .hoyo-lbl{ font-size:9.5px; font-weight:600; letter-spacing:.06em; opacity:0.75; margin-top:2px; }
+  .hole-meta-row{ display:flex; justify-content:center; gap:28px; margin-top:14px; }
+  .hole-meta-item{ text-align:center; }
+  .hole-meta-item .k{ font-size:10.5px; color:#7A8A80; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
+  .hole-meta-item .v{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; color:var(--ink); margin-top:2px; }
+  .player-hole-card{ margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+  .player-hole-card .php-name{ font-size:14.5px; font-weight:600; }
+  .player-hole-badges{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+  .medal-badge{ display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; background:var(--paper-dim); color:var(--forest-soft); }
+  .medal-badge.gold{ background:var(--gold-soft); color:var(--gold-ink, var(--gold)); }
+  .php-controls{ display:flex; align-items:center; gap:10px; margin-top:12px; }
+  .stroke-box{ width:64px; height:56px; border:2px solid var(--forest); border-radius:8px; background:#fff; font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; color:var(--forest); text-align:center; }
+  .stroke-box::placeholder{ font-size:24px; color:var(--forest); opacity:0.6; }
+  .stroke-box.filled{ background:var(--forest); color:var(--paper); }
+  .result-box{ flex:1; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:700; background:var(--paper-dim); color:#9AA69E; }
+  .result-box.par{ background:var(--gold-soft); color:var(--gold-ink, var(--gold)); }
+  .result-box.over{ background:#241A19; color:#F2B3A4; }
+  .result-box.under{ background:var(--forest); color:#A9D9BF; }
+  .clasif-btn{ margin-top:16px; text-align:center; padding:12px 0; border:1px solid var(--forest); border-radius:20px; color:var(--forest); font-weight:600; font-size:13.5px; cursor:pointer; }
+  .leaderboard-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-top:1px solid var(--line-soft); }
+  .leaderboard-row:first-of-type{ border-top:none; }
+  .leaderboard-pos{ width:26px; height:26px; border-radius:50%; background:var(--paper-dim); color:var(--forest-soft); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex:none; }
+  .leaderboard-row.p1 .leaderboard-pos{ background:var(--gold); color:#fff; }
+  .leaderboard-name{ flex:1; font-size:14px; font-weight:600; }
+  .leaderboard-score{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; color:var(--forest); }
+  .toggle-grid-lbl{ cursor:pointer; }
 </style>
 </head>
 <body>
@@ -470,19 +503,35 @@
           <div class="eyebrow">Grupo</div>
           <div class="tab-toggle" id="groupSwitchToggle"></div>
         </section>
+        <section id="holeViewSection">
+          <div class="hole-card-header">
+            <div class="hole-nav-btn" id="holePrevBtn">‹</div>
+            <div class="hole-badge-big"><div class="hoyo-num" id="hvHoleNum">1</div><div class="hoyo-lbl">HOYO</div></div>
+            <div class="hole-nav-btn" id="holeNextBtn">›</div>
+          </div>
+          <div class="hole-meta-row">
+            <div class="hole-meta-item"><div class="k">Par</div><div class="v" id="hvPar">4</div></div>
+            <div class="hole-meta-item"><div class="k">Hcp</div><div class="v" id="hvHcp">10</div></div>
+          </div>
+          <div id="hvPlayers"></div>
+          <div class="clasif-btn" id="clasificacionBtn">🏆 Clasificación</div>
+          <div id="leaderboardSection" style="display:none;"></div>
+        </section>
         <section>
-          <div class="eyebrow">Golpes por hoyo</div>
-          <div class="section-sub">Cada jugador anota en su propia fila</div>
-          <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
-          <div class="card-grid nine-block" data-nine="ida" id="resultGridIda">
-            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" id="idaParTotal" style="font-weight:600;">34</div></div>
+          <div class="eyebrow toggle-grid-lbl" id="toggleGridLbl">Ver tabla completa ▾</div>
+          <div id="gridWrap" style="display:none;">
+            <div class="section-sub">Cada jugador anota en su propia fila</div>
+            <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
+            <div class="card-grid nine-block" data-nine="ida" id="resultGridIda">
+              <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
+              <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" id="idaParTotal" style="font-weight:600;">34</div></div>
+            </div>
+            <div class="card-grid nine-block" data-nine="vuelta" id="resultGridVuelta" style="display:none;">
+              <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
+              <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" id="vueltaParTotal" style="font-weight:600;">36</div></div>
+            </div>
+            <div class="helper-note">Cada fila es un jugador. El color de la celda avisa cuando te pasas de par. Todos los campos son editables.</div>
           </div>
-          <div class="card-grid nine-block" data-nine="vuelta" id="resultGridVuelta" style="display:none;">
-            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="5">5</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="3">3</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" data-par="4">4</div><div class="grid-cell" id="vueltaParTotal" style="font-weight:600;">36</div></div>
-          </div>
-          <div class="helper-note">Cada fila es un jugador. El color de la celda avisa cuando te pasas de par. Todos los campos son editables.</div>
         </section>
         <section>
           <div class="eyebrow">Resumen</div>
@@ -975,6 +1024,7 @@
   async function createSharedRound(){
     const client = initSupabase();
     if(!client){ setSyncStatus('error'); return; }
+    matchGroups[activeGroup].scores = collectGroupScores(); // por si ya hay golpes escritos en pantalla
     const code = genRoundCode();
     setSyncStatus('connecting');
     try {
@@ -1544,6 +1594,7 @@
     const rcSection = document.getElementById('roundCodeSection');
     if(rcSection) rcSection.style.display = 'none';
     matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los dos grupos
+    currentHole = 1;
     activeGroup = 0;
     diagAnswers = {};
     const g0 = matchGroups[0];
@@ -1685,8 +1736,121 @@
         winnerSection.style.display = 'none';
       }
     }
+    renderHoleView();
     saveRoundState();
   }
+
+  // --- Vista "un hoyo a la vez" (estilo golfdirecto): navegación, resultado grande y clasificación ---
+  let currentHole = 1;
+
+  // Calcula la clasificación actual (por neto) a partir de lo escrito en la tarjeta
+  function computeStandings(){
+    const summaries = players.map(()=> ({ total: 0, net: 0, holesFilled: 0 }));
+    document.querySelectorAll('.nine-block[id^="resultGrid"]').forEach(block=>{
+      players.forEach((name, pIndex)=>{
+        const row = block.querySelector('.golpes-row[data-player-index="' + pIndex + '"]');
+        if(!row) return;
+        row.querySelectorAll('.golpes-input').forEach(input=>{
+          const golpes = parseInt(input.value, 10);
+          if(!isNaN(golpes) && golpes > 0){
+            const par = parseInt(input.dataset.par, 10);
+            const si = parseInt(input.dataset.strokeIndex, 10);
+            summaries[pIndex].total += golpes;
+            summaries[pIndex].net += golpes - strokesForHole(playerHandicaps[pIndex], si);
+            summaries[pIndex].holesFilled++;
+          }
+        });
+      });
+    });
+    return players
+      .map((name, pIndex) => ({ name: name, pIndex: pIndex, total: summaries[pIndex].total, net: summaries[pIndex].net, holesFilled: summaries[pIndex].holesFilled }))
+      .sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || a.net - b.net);
+  }
+
+  function renderHoleView(){
+    const holeNumEl = document.getElementById('hvHoleNum');
+    if(!holeNumEl) return; // la pantalla 3 todavía no está en el DOM montado
+    if(currentHole < 1) currentHole = 1;
+    if(currentHole > 18) currentHole = 18;
+    const input0 = document.querySelector('.golpes-input[data-hole="' + currentHole + '"]');
+    const par = input0 ? parseInt(input0.dataset.par, 10) : null;
+    const strokeIndex = input0 ? parseInt(input0.dataset.strokeIndex, 10) : null;
+    holeNumEl.textContent = currentHole;
+    const parEl = document.getElementById('hvPar'); if(parEl) parEl.textContent = par != null ? par : '—';
+    const hcpEl = document.getElementById('hvHcp'); if(hcpEl) hcpEl.textContent = strokeIndex != null ? strokeIndex : '—';
+    const prevBtn = document.getElementById('holePrevBtn');
+    const nextBtn = document.getElementById('holeNextBtn');
+    if(prevBtn) prevBtn.classList.toggle('disabled', currentHole <= 1);
+    if(nextBtn) nextBtn.classList.toggle('disabled', currentHole >= 18);
+
+    const standings = computeStandings();
+    const leader = standings.find(s => s.holesFilled > 0);
+
+    const wrap = document.getElementById('hvPlayers');
+    if(wrap){
+      wrap.innerHTML = players.map((name, pIndex)=>{
+        const input = document.querySelector('.golpes-input[data-hole="' + currentHole + '"][data-player-index="' + pIndex + '"]');
+        const val = input ? input.value : '';
+        const rank = standings.findIndex(s => s.pIndex === pIndex);
+        const s = standings[rank];
+        const posBadge = (s && s.holesFilled > 0) ? '<span class="medal-badge' + (rank === 0 ? ' gold' : '') + '">🏆 ' + (rank + 1) + '</span>' : '';
+        const diffToLeader = (s && leader && s.holesFilled > 0) ? (s.net - leader.net) : null;
+        const diffBadge = (diffToLeader !== null) ? '<span class="medal-badge">' + (diffToLeader === 0 ? 'Líder' : (diffToLeader > 0 ? '+' + diffToLeader : diffToLeader)) + '</span>' : '';
+        const hcpBadge = playerHandicaps[pIndex] ? '<span class="medal-badge">Hcp ' + playerHandicaps[pIndex] + '</span>' : '';
+        let resultClass = '', resultText = '—';
+        if(val && par != null){
+          const diff = parseInt(val, 10) - par;
+          resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
+          resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
+        }
+        return '<div class="player-hole-card">'
+          + '<div class="php-name">' + name + '</div>'
+          + '<div class="player-hole-badges">' + posBadge + diffBadge + hcpBadge + '</div>'
+          + '<div class="php-controls">'
+          + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="numeric" placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '">'
+          + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
+          + '</div>'
+          + '</div>';
+      }).join('');
+      wrap.querySelectorAll('.stroke-box').forEach(box=>{
+        box.addEventListener('input', ()=>{
+          const pIndex = box.dataset.holeInputFor;
+          const realInput = document.querySelector('.golpes-input[data-hole="' + currentHole + '"][data-player-index="' + pIndex + '"]');
+          if(realInput){
+            realInput.value = box.value;
+            realInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        });
+      });
+    }
+
+    const leaderboardSection = document.getElementById('leaderboardSection');
+    if(leaderboardSection && leaderboardSection.style.display !== 'none'){
+      leaderboardSection.innerHTML = standings.map((s, i)=>
+        '<div class="leaderboard-row' + (i === 0 && s.holesFilled > 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + s.name + '</div><div class="leaderboard-score">' + (s.holesFilled > 0 ? 'neto ' + s.net : 'sin golpes') + '</div></div>'
+      ).join('');
+    }
+  }
+
+  const holePrevBtn = document.getElementById('holePrevBtn');
+  if(holePrevBtn) holePrevBtn.addEventListener('click', ()=>{ currentHole--; renderHoleView(); });
+  const holeNextBtn = document.getElementById('holeNextBtn');
+  if(holeNextBtn) holeNextBtn.addEventListener('click', ()=>{ currentHole++; renderHoleView(); });
+  const clasificacionBtn = document.getElementById('clasificacionBtn');
+  if(clasificacionBtn) clasificacionBtn.addEventListener('click', ()=>{
+    const el = document.getElementById('leaderboardSection');
+    if(!el) return;
+    el.style.display = el.style.display === 'none' ? '' : 'none';
+    renderHoleView();
+  });
+  const toggleGridLbl = document.getElementById('toggleGridLbl');
+  if(toggleGridLbl) toggleGridLbl.addEventListener('click', ()=>{
+    const el = document.getElementById('gridWrap');
+    if(!el) return;
+    const open = el.style.display !== 'none';
+    el.style.display = open ? 'none' : '';
+    toggleGridLbl.textContent = open ? 'Ver tabla completa ▾' : 'Ocultar tabla completa ▴';
+  });
 
   // --- Informe semanal: informe real de Carlos ("Hoyo 19") o ficha de un compañero, con buscador ---
   let reportPlayerName = 'Carlos Acedo Domínguez';
