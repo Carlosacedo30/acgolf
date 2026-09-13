@@ -1,6 +1,6 @@
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
   const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
-  // Consejos de la "Biblia del Golf" del usuario, uno por categoría de fallo
+  // Consejos de "Consejos de Golf" del usuario, uno por categoría de fallo
   const DIAG_TIPS = {
     'Drive': [
       'Pegar hacia arriba, con ritmo — no se necesita fuerza, se busca un buen contacto.',

@@ -1,4 +1,4 @@
-  const labels = ["1. Jugar","2. Configurar partida","3. Añadir campo","4. Introducir resultados","5. Diagnóstico post-ronda","6. Overlay de swing","7. Informe semanal","8. Biblia del Golf"];
+  const labels = ["1. Jugar","2. Configurar partida","3. Añadir campo","4. Introducir resultados","5. Diagnóstico post-ronda","6. Overlay de swing","7. Informe semanal","8. Consejos de Golf"];
   let current = 0;
   const screens = document.querySelectorAll('.screen');
   const dots = document.querySelectorAll('.dot');
@@ -17,4 +17,4 @@
   prevBtn.addEventListener('click', () => { if(current>0){ current--; render(); }});
   nextBtn.addEventListener('click', () => { if(current<screens.length-1){ current++; render(); }});
   dots.forEach(d => d.addEventListener('click', () => { current = +d.dataset.goto; render(); }));
-  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); if(n === 0) renderRecentRounds(); if(n === 7) renderBiblia(); }
+  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); if(n === 0) renderRecentRounds(); if(n === 7) renderConsejos(); }

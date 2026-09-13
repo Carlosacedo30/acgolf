@@ -182,8 +182,8 @@
     ],
   };
 
-  // "Biblia del Golf" del usuario: manual de referencia propio, transcrito de su chuleta personal
-  const BIBLIA_GOLF = {
+  // "Consejos de Golf" del usuario: manual de referencia propio, transcrito de su chuleta personal
+  const CONSEJOS_GOLF = {
     antesDeJugar: {
       titulo: 'Antes de jugar',
       calentamiento: ['Putting green', 'Approach', 'Bunker', 'Driving range'],
@@ -205,7 +205,7 @@
     },
     ejecucion: {
       titulo: 'Ejecución de golpes',
-      preShotRoutine: ['See it', 'Feel it', 'Trust it'],
+      preShotRoutine: ['Visualízalo', 'Siéntelo', 'Confía'],
       golpes: [
         { t: 'Driver', d: 'Pegar hacia arriba, con ritmo. No se necesita fuerza, se busca un buen contacto.' },
         { t: 'Entre palos', d: 'Tome el palo más largo y haga un swing ¾ con compromiso.' },
@@ -237,7 +237,7 @@
     },
   };
 
-  // Consejos rápidos para un hoyo malo (neto doble bogey o peor), sacados de la Biblia del Golf
+  // Consejos rápidos para un hoyo malo (neto doble bogey o peor), sacados de Consejos de Golf
   const BAD_HOLE_TIPS = [
     'Cuando llegue el error: vuelva inmediatamente al fairway (idealmente a 100 yardas). No cometa dos errores seguidos.',
     'Maneje la frustración — el 90% de las veces no sale como quiere. Suelte el resultado y siga, con garra, sin forzar.',

@@ -1,8 +1,8 @@
-  // Pantalla "Biblia del Golf": el manual de referencia del usuario, generado desde BIBLIA_GOLF
-  function renderBiblia(){
-    const el = document.getElementById('bibliaContent');
+  // Pantalla "Consejos de Golf": el manual de referencia del usuario, generado desde CONSEJOS_GOLF
+  function renderConsejos(){
+    const el = document.getElementById('consejosContent');
     if(!el) return;
-    const b = BIBLIA_GOLF;
+    const b = CONSEJOS_GOLF;
     el.innerHTML =
       '<details open><summary>' + b.antesDeJugar.titulo + '</summary>'
       + '<div class="section-sub" style="margin-top:10px;">Orden para calentar: ' + b.antesDeJugar.calentamiento.join(' → ') + '</div>'
@@ -14,7 +14,7 @@
       + '</details>'
 
       + '<details><summary>' + b.ejecucion.titulo + '</summary>'
-      + '<div class="section-sub" style="margin-top:10px;">Pre-shot routine: ' + b.ejecucion.preShotRoutine.join(' · ') + '</div>'
+      + '<div class="section-sub" style="margin-top:10px;">Rutina previa al golpe: ' + b.ejecucion.preShotRoutine.join(' · ') + '</div>'
       + '<div style="margin-top:10px;">' + b.ejecucion.golpes.map(g =>
           '<div class="answer-row"><div class="answer-main">' + g.t + '</div><div class="answer-sub">' + g.d + '</div></div>'
         ).join('') + '</div>'
@@ -36,5 +36,5 @@
   const s7VolverBtn = document.getElementById('s7VolverBtn');
   if(s7VolverBtn) s7VolverBtn.addEventListener('click', ()=> goTo(0));
 
-  const bibliaLinkBtn = document.getElementById('bibliaLinkBtn');
-  if(bibliaLinkBtn) bibliaLinkBtn.addEventListener('click', ()=> goTo(7));
+  const consejosLinkBtn = document.getElementById('consejosLinkBtn');
+  if(consejosLinkBtn) consejosLinkBtn.addEventListener('click', ()=> goTo(7));

@@ -68,7 +68,7 @@
               cell.appendChild(badge);
               roundMessages.push({ hole: input.dataset.hole, player: name, text: msg });
             }
-            // Hoyo malo (neto doble bogey o peor): consejo rápido de la Biblia del Golf
+            // Hoyo malo (neto doble bogey o peor): consejo rápido de Consejos de Golf
             if(netDiff >= 2){
               const tip = BAD_HOLE_TIPS[(parseInt(input.dataset.hole, 10) + pIndex) % BAD_HOLE_TIPS.length];
               const tipMsg = { hole: input.dataset.hole, player: name, text: '💡 ' + tip };
@@ -127,7 +127,7 @@
         winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #5B6B62); font-weight:400;">(ganan en neto, ' + minNet + ')</span>.</p>';
         const mentalNote = document.getElementById('roundMentalNote');
         if(mentalNote){
-          mentalNote.textContent = minNet < currentCoursePar ? BIBLIA_GOLF.mentalidad.cuandoSiSalga : BIBLIA_GOLF.mentalidad.cuandoNadaSalga;
+          mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad.cuandoSiSalga : CONSEJOS_GOLF.mentalidad.cuandoNadaSalga;
         }
       } else {
         winnerSection.style.display = 'none';
