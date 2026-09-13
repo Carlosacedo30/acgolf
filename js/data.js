@@ -181,3 +181,66 @@
       { date: '2026-09-10', name: 'Los colgáis', club: 'Club Hato Verde', strokes: 68, net: -2, mode: 'strokeplay' },
     ],
   };
+
+  // "Biblia del Golf" del usuario: manual de referencia propio, transcrito de su chuleta personal
+  const BIBLIA_GOLF = {
+    antesDeJugar: {
+      titulo: 'Antes de jugar',
+      calentamiento: ['Putting green', 'Approach', 'Bunker', 'Driving range'],
+      drivingRange: [
+        'Empezar con tiros cortos ¾ de swing.',
+        'Despacio para atrás, iniciar el downswing suave.',
+        'Enfoque en ritmo, buen contacto y un buen finish.',
+      ],
+      estrategia: [
+        'Caminar siempre adelante en el grupo, cabeza arriba.',
+        'Mantener un diálogo interno positivo.',
+        'Pateperro a la derecha: pararse a la derecha del tee, apuntar a la izquierda y hacer un swing de afuera hacia adentro (fade).',
+        'Pateperro a la izquierda: pararse a la izquierda del tee, apuntar a la derecha y hacer un swing de adentro hacia afuera (draw).',
+        'Pares 3: tee un poco más alto, pegar hacia arriba, buscando solo buen contacto.',
+        'Cuando llegue el error: vuelva inmediatamente al fairway (idealmente a 100 yardas usando el recovery shot). No cometer dos errores seguidos.',
+        'Emociones: cuando haga triple, doble, birdie o águila, mantenga su mente estable. No se caiga de la mesa.',
+      ],
+      cierre: 'Los errores son parte del juego. Acéptelos, suéltelos y siga adelante. No pierda energía mirando atrás. Haga su trabajo tiro a tiro… sin pensar en el resultado.',
+    },
+    ejecucion: {
+      titulo: 'Ejecución de golpes',
+      preShotRoutine: ['See it', 'Feel it', 'Trust it'],
+      golpes: [
+        { t: 'Driver', d: 'Pegar hacia arriba, con ritmo. No se necesita fuerza, se busca un buen contacto.' },
+        { t: 'Entre palos', d: 'Tome el palo más largo y haga un swing ¾ con compromiso.' },
+        { t: 'Lie de subida', d: 'Un palo más, peso en pie derecho, apuntar a la derecha, pegar hacia arriba.' },
+        { t: 'Lie de bajada', d: 'Un palo menos, peso en pie izquierdo, apuntar a la izquierda, bola más atrás en el stance, pegar hacia abajo.' },
+        { t: 'Desde 100 yardas o menos', d: 'Evitar hinge e ir muy abajo. Pegar medio tiro, suave, con confianza.' },
+        { t: 'Para salir del rough', d: 'Abra la cara y pegue hacia abajo.' },
+        { t: 'Recovery shot', d: 'Pelota atrás, manos adelante, pegar vertical.' },
+        { t: 'Alrededor del green', d: 'Usar PW o hierro 9. Más fácil y consistente.' },
+        { t: 'Bunker', d: 'Entrar con confianza, abrir el stance, grip a la ebilla, peso al pie izquierdo y acelerar siempre.' },
+        { t: 'Leer caídas', d: 'Encontrar el punto más bajo. Verde oscuro = pelo en contra, verde claro = pelo a favor.' },
+        { t: 'Putt largo', d: 'Enfocarse en la velocidad.' },
+        { t: 'Putt de compromiso', d: 'Golpear con confianza y dejar la cabeza quieta.' },
+      ],
+    },
+    correcciones: {
+      titulo: 'Correcciones de swing',
+      lista: [
+        { t: 'Corregir slice', d: 'Pelota más atrás y sentir el swing de adentro hacia afuera. Si sigue, fortalezca la mano izquierda en el grip.' },
+        { t: 'Corregir hook', d: 'Pelota más adelante, sentir el swing más de afuera hacia adentro. Si sigue, debilite la mano izquierda en el grip. Abrir la cara del palo al salir.' },
+        { t: 'Corregir shank', d: 'Sentir la cadera izquierda yendo hacia atrás en el impacto, creando espacio.' },
+      ],
+    },
+    mentalidad: {
+      titulo: 'Mentalidad',
+      cerrarBuenaRonda: 'Para cerrar una buena ronda: no se vaya al futuro, maneje la ansiedad, camine un poco más despacio y piense que va en el hoyo 2, empezando la ronda.',
+      cuandoNadaSalga: 'Cuando nada salga: maneje la frustración. En golf, el 90% de las veces no sale como quiere. Suelte el resultado y siga. Juegue con garra, sin forzar. No reaccione a cada error. Incluso las malas rondas hacen parte del camino. Disfrute el proceso.',
+      cuandoSiSalga: 'Cuando sí salga: disfrútelo con humildad. Agradezca el día, pero maneje las expectativas para la próxima ronda. No se confíe ni se relaje. Siga trabajando, siga presente y vuelva a empezar.',
+    },
+  };
+
+  // Consejos rápidos para un hoyo malo (neto doble bogey o peor), sacados de la Biblia del Golf
+  const BAD_HOLE_TIPS = [
+    'Cuando llegue el error: vuelva inmediatamente al fairway (idealmente a 100 yardas). No cometa dos errores seguidos.',
+    'Maneje la frustración — el 90% de las veces no sale como quiere. Suelte el resultado y siga, con garra, sin forzar.',
+    'Emociones: mantenga la mente estable. No se caiga de la mesa por un mal hoyo.',
+    'No reaccione a cada error. Incluso las malas rondas hacen parte del camino. Disfrute el proceso.',
+  ];
