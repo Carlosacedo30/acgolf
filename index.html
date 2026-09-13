@@ -1686,8 +1686,9 @@
             const recibidos = strokesForHole(playerHandicaps[pIndex], strokeIndex);
             summaries[pIndex].net += golpes - recibidos;
             summaries[pIndex].holesFilled++;
-            const diff = golpes - par;
-            cell.classList.add(diff > 0 ? 'result-over' : 'result-par');
+            const diff = golpes - par; // en bruto: para los mensajes de par/birdie "de verdad"
+            const netDiff = (golpes - recibidos) - par; // ajustado a su hándicap: para el color de la celda
+            cell.classList.add(netDiff > 0 ? 'result-over' : 'result-par');
             let msg = null, icon = null;
             if(diff === 0){ msg = PAR_MESSAGE; icon = '👍'; }
             else if(diff === -1){ msg = BIRDIE_MESSAGE; icon = '🥚'; }
@@ -1860,7 +1861,8 @@
         const hcpBadge = playerHandicaps[pIndex] ? '<span class="medal-badge">Hcp ' + playerHandicaps[pIndex] + '</span>' : '';
         let resultClass = '', resultText = '—';
         if(val && par != null){
-          const diff = parseInt(val, 10) - par;
+          const recibidos = strokesForHole(playerHandicaps[pIndex], strokeIndex); // golpes de regalo de ESTE jugador en ESTE hoyo
+          const diff = (parseInt(val, 10) - recibidos) - par; // resultado ya ajustado a su hándicap, como en golfdirecto
           resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
           resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
         }
