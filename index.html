@@ -249,9 +249,17 @@
   .nav-btn{ background:rgba(241,238,227,0.14); color:var(--paper); border:1px solid rgba(241,238,227,0.3); padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:600; font-family:'IBM Plex Sans', sans-serif; cursor:pointer; }
   .nav-btn:disabled{ background:transparent; color:rgba(241,238,227,0.35); border-color:rgba(241,238,227,0.15); cursor:default; }
   .nav-label{ font-size:11.5px; color:var(--paper); font-weight:600; opacity:0.85; }
+  .round-code-banner{ background:var(--gold-soft); border:1px solid #DCC98B; border-radius:3px; padding:13px 15px; }
+  .round-code-banner .lbl{ font-size:11px; color:var(--forest-soft); font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+  .round-code-banner .code{ font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; color:var(--forest); letter-spacing:.06em; margin:4px 0; }
+  .round-code-banner .hint{ font-size:12px; color:#7A8A80; }
+  .sync-status{ font-size:11.5px; color:#7A8A80; margin-top:6px; display:flex; align-items:center; gap:6px; }
+  .sync-status .dot3{ width:6px; height:6px; border-radius:50%; background:#7A8A80; }
+  .sync-status.live .dot3{ background:#3D7A5C; }
 </style>
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <div class="proto-title">Prototipo — App de Golf</div>
   <div class="proto-sub">Flujo completo: Jugar → Configurar partida → Añadir campo → Resultados → Diagnóstico → Swing → Informe</div>
@@ -286,13 +294,18 @@
           <div class="dropdown" id="screen0-dropdown"></div>
         </section>
         <section>
-          <div class="eyebrow">Recientes</div>
-          <div>
-            <div class="recent-row"><div><div class="club">Club Hato Verde</div><div class="date">Jugado el 6 de septiembre</div></div><div class="play-btn">Jugar</div></div>
-            <div class="recent-row"><div><div class="club">La Dehesa</div><div class="date">Jugado el 1 de septiembre</div></div><div class="play-btn">Jugar</div></div>
-            <div class="recent-row"><div><div class="club">Real Club de Golf Guadalmina</div><div class="date">Jugado el 18 de agosto</div></div><div class="play-btn">Jugar</div></div>
+          <div class="eyebrow">Unirse a una partida</div>
+          <div class="section-sub">¿Alguien ya empezó? Escribe su código para anotar los golpes en la misma partida, en vivo.</div>
+          <div class="field-row" style="margin-top:8px;">
+            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'IBM Plex Mono', monospace;"></div>
+            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
           </div>
-          <div class="empty-hint">Tus últimos 3 campos aparecen aquí para acceso rápido</div>
+          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay); margin-top:6px;"></div>
+        </section>
+        <section>
+          <div class="eyebrow">Tus partidas</div>
+          <div id="recentRoundsList"></div>
+          <div class="empty-hint" id="recentRoundsEmpty">Todavía no has jugado ninguna partida con esta app — cuando empieces una, aparecerá aquí para poder volver a ella.</div>
         </section>
       </div>
       <div class="tab-bar">
@@ -445,6 +458,14 @@
         <div class="meta">Hoy · Individual Stableford</div>
       </div>
       <div class="screen-content">
+        <section id="roundCodeSection" style="display:none;">
+          <div class="round-code-banner">
+            <div class="lbl">Código de esta partida</div>
+            <div class="code" id="roundCodeValue">——————</div>
+            <div class="hint">Compártelo para que otros móviles anoten golpes aquí en vivo</div>
+            <div class="sync-status" id="syncStatus"><div class="dot3"></div><span>Conectando…</span></div>
+          </div>
+        </section>
         <section id="groupSwitchSection" style="display:none;">
           <div class="eyebrow">Grupo</div>
           <div class="tab-toggle" id="groupSwitchToggle"></div>
@@ -873,12 +894,221 @@
     players = g.players.length ? g.players : ['Jugador 1'];
     playerHandicaps = g.handicaps.length ? g.handicaps : [0];
     if(selectedCourse){
+      restoringScores = true;
       applyCourseToScoreGrids(selectedCourse);
       applyGroupScores(g.scores);
+      restoringScores = false;
       recalcResultados();
     }
     renderGroupSwitcher();
     diagActivePlayer = 0;
+    saveRoundState();
+  }
+
+  // --- Partidas compartidas en vivo (Supabase): código, guardado y tiempo real ---
+  const SUPABASE_URL = 'https://qjtsjcfalettgvrlwwnr.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_HnUJlKmYnPGw8z-CAv87nA_EyN0l-cJ';
+  let sb = null;
+  let currentRoundId = null;
+  let currentRoundCode = null;
+  let realtimeChannel = null;
+  let suppressRemoteEcho = false;
+  let saveTimer = null;
+
+  function initSupabase(){
+    if(!sb && window.supabase && window.supabase.createClient){
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+    return sb;
+  }
+
+  function genRoundCode(){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin caracteres ambiguos (0/O, 1/I)
+    let code = '';
+    for(let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+    return code;
+  }
+
+  // Asegura que siempre haya exactamente 2 grupos con forma válida, venga lo que venga de la base de datos
+  function normalizeMatchGroups(mg){
+    const blank = () => ({ players: [], handicaps: [], scores: {} });
+    const arr = Array.isArray(mg) ? mg.slice(0, 2) : [];
+    while(arr.length < 2) arr.push(blank());
+    return arr.map(g => ({
+      players: Array.isArray(g && g.players) ? g.players : [],
+      handicaps: Array.isArray(g && g.handicaps) ? g.handicaps : [],
+      scores: (g && typeof g.scores === 'object' && g.scores) ? g.scores : {},
+    }));
+  }
+
+  function getLocalRoundHistory(){
+    try {
+      const raw = localStorage.getItem('golfAppRoundHistory');
+      return raw ? JSON.parse(raw) : [];
+    } catch(e){ return []; }
+  }
+  function rememberRoundCode(code, courseName){
+    try {
+      const history = getLocalRoundHistory().filter(r => r.code !== code);
+      history.unshift({ code: code, courseName: courseName || '', date: new Date().toISOString() });
+      localStorage.setItem('golfAppRoundHistory', JSON.stringify(history.slice(0, 15)));
+    } catch(e){ /* almacenamiento no disponible */ }
+  }
+
+  function setSyncStatus(state){
+    const el = document.getElementById('syncStatus');
+    if(!el) return;
+    el.classList.toggle('live', state === 'live');
+    el.querySelector('span').textContent = state === 'live' ? 'Guardado en vivo · todos los móviles ven lo mismo'
+      : state === 'error' ? 'Sin conexión — se guarda solo en este móvil'
+      : 'Conectando…';
+  }
+
+  function showRoundCode(code){
+    currentRoundCode = code;
+    const section = document.getElementById('roundCodeSection');
+    const value = document.getElementById('roundCodeValue');
+    if(section) section.style.display = '';
+    if(value) value.textContent = code;
+  }
+
+  async function createSharedRound(){
+    const client = initSupabase();
+    if(!client){ setSyncStatus('error'); return; }
+    const code = genRoundCode();
+    setSyncStatus('connecting');
+    try {
+      const { data, error } = await client.from('rounds').insert({
+        code: code,
+        course_id: selectedCourse ? selectedCourse.id : null,
+        course_name: selectedCourse ? selectedCourse.name : null,
+        course_par: selectedCourse ? selectedCourse.par : null,
+        course_hcp: selectedCourse ? (selectedCourse.hcp || null) : null,
+        match_groups: matchGroups,
+      }).select().single();
+      if(error) throw error;
+      currentRoundId = data.id;
+      showRoundCode(data.code);
+      rememberRoundCode(data.code, data.course_name);
+      subscribeToRound(data.id);
+      setSyncStatus('live');
+    } catch(e){
+      console.error('No se pudo crear la partida compartida', e);
+      setSyncStatus('error');
+    }
+  }
+
+  async function joinSharedRound(codeRaw){
+    const client = initSupabase();
+    if(!client) return { ok: false, msg: 'Sin conexión a la base de datos.' };
+    const code = (codeRaw || '').trim().toUpperCase();
+    if(code.length < 4) return { ok: false, msg: 'Escribe el código completo.' };
+    try {
+      const { data, error } = await client.from('rounds').select('*').eq('code', code).single();
+      if(error || !data) return { ok: false, msg: 'No encontramos ninguna partida con ese código.' };
+      currentRoundId = data.id;
+      matchGroups = (data.match_groups && data.match_groups.length) ? normalizeMatchGroups(data.match_groups) : matchGroups;
+      const course = COURSES.find(c => c.id === data.course_id);
+      selectedCourse = course || (data.course_name ? {
+        id: data.course_id || 'custom',
+        name: data.course_name,
+        par: (data.course_par && data.course_par.length) ? data.course_par : Array(18).fill(4),
+        hcp: data.course_hcp || null,
+        holes9: false,
+      } : selectedCourse);
+      activeGroup = 0;
+      diagAnswers = {};
+      const g0 = matchGroups[0];
+      players = g0.players.length ? g0.players : ['Jugador 1'];
+      playerHandicaps = g0.handicaps.length ? g0.handicaps : [0];
+      rememberRoundCode(data.code, data.course_name);
+      if(selectedCourse){
+        restoringScores = true;
+        applyCourseToScoreGrids(selectedCourse);
+        applyGroupScores(g0.scores || {});
+        restoringScores = false;
+        recalcResultados();
+      }
+      renderGroupSwitcher();
+      showRoundCode(data.code);
+      subscribeToRound(data.id);
+      setSyncStatus('live');
+      return { ok: true };
+    } catch(e){
+      console.error('No se pudo unir a la partida', e);
+      return { ok: false, msg: 'No se pudo conectar. Revisa tu internet e inténtalo de nuevo.' };
+    }
+  }
+
+  function subscribeToRound(id){
+    const client = initSupabase();
+    if(!client) return;
+    if(realtimeChannel){ client.removeChannel(realtimeChannel); realtimeChannel = null; }
+    realtimeChannel = client.channel('round-' + id)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rounds', filter: 'id=eq.' + id }, payload => {
+        if(suppressRemoteEcho) return;
+        const row = payload.new;
+        if(!row || !row.match_groups) return;
+        matchGroups = normalizeMatchGroups(row.match_groups);
+        const g = matchGroups[activeGroup] || matchGroups[0];
+        players = g.players.length ? g.players : ['Jugador 1'];
+        playerHandicaps = g.handicaps.length ? g.handicaps : [0];
+        if(selectedCourse){
+          restoringScores = true;
+          applyCourseToScoreGrids(selectedCourse);
+          applyGroupScores(g.scores || {});
+          restoringScores = false;
+          recalcResultados();
+        }
+        renderGroupSwitcher();
+        if(current === 4) renderDiagnostico();
+      })
+      .subscribe(status => { setSyncStatus(status === 'SUBSCRIBED' ? 'live' : 'connecting'); });
+  }
+
+  // Guarda en Supabase el estado actual de la partida (con un pequeño retraso para no saturar)
+  let restoringScores = false; // true mientras se reconstruye la tarjeta antes de repoblarla (evita guardar una tarjeta vacía a medio camino)
+  function saveRoundState(){
+    if(!currentRoundId || restoringScores) return;
+    const client = initSupabase();
+    if(!client) return;
+    matchGroups[activeGroup].scores = collectGroupScores();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async ()=>{
+      suppressRemoteEcho = true;
+      try {
+        await client.from('rounds').update({
+          match_groups: matchGroups,
+          updated_at: new Date().toISOString(),
+        }).eq('id', currentRoundId);
+      } catch(e){
+        console.error('No se pudo guardar la partida', e);
+      }
+      setTimeout(()=>{ suppressRemoteEcho = false; }, 400);
+    }, 600);
+  }
+
+  // Historial real: partidas jugadas con esta app en este móvil
+  async function renderRecentRounds(){
+    const list = document.getElementById('recentRoundsList');
+    const empty = document.getElementById('recentRoundsEmpty');
+    if(!list) return;
+    const history = getLocalRoundHistory();
+    if(!history.length){
+      list.innerHTML = '';
+      if(empty) empty.style.display = '';
+      return;
+    }
+    if(empty) empty.style.display = 'none';
+    list.innerHTML = history.slice(0, 5).map(r =>
+      '<div class="recent-row"><div><div class="club">' + (r.courseName || 'Campo') + '</div><div class="date">Código ' + r.code + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div><div class="play-btn" data-code="' + r.code + '" style="cursor:pointer;">Continuar</div></div>'
+    ).join('');
+    list.querySelectorAll('.play-btn[data-code]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const res = await joinSharedRound(btn.dataset.code);
+        if(res.ok) goTo(3);
+      });
+    });
   }
 
   // Jugadores guardados en este navegador (los que se han escrito en partidas anteriores)
@@ -1092,7 +1322,7 @@
   prevBtn.addEventListener('click', () => { if(current>0){ current--; render(); }});
   nextBtn.addEventListener('click', () => { if(current<screens.length-1){ current++; render(); }});
   dots.forEach(d => d.addEventListener('click', () => { current = +d.dataset.goto; render(); }));
-  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); }
+  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); if(n === 0) renderRecentRounds(); }
 
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
   const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
@@ -1227,6 +1457,7 @@
   const s4GuardarBtn = document.getElementById('s4GuardarBtn');
   if(s4GuardarBtn) s4GuardarBtn.addEventListener('click', ()=> goTo(6));
   render();
+  renderRecentRounds();
 
   // ---- Interacciones dentro de cada pantalla ----
 
@@ -1309,6 +1540,9 @@
   const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
   if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
     saveConfigGroupFields();
+    currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
+    const rcSection = document.getElementById('roundCodeSection');
+    if(rcSection) rcSection.style.display = 'none';
     matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los dos grupos
     activeGroup = 0;
     diagAnswers = {};
@@ -1317,6 +1551,7 @@
     rememberPlayers(matchGroups[0].players.concat(matchGroups[1].players));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     renderGroupSwitcher();
+    createSharedRound();
     goTo(3);
   });
 
@@ -1340,7 +1575,27 @@
       par: readNineRow('campoGridIda', 2, 4).concat(readNineRow('campoGridVuelta', 2, 4)),
       hcp: readNineRow('campoGridIda', 3, 9).concat(readNineRow('campoGridVuelta', 3, 9)),
     };
+    currentRoundId = null;
+    const rcSection = document.getElementById('roundCodeSection');
+    if(rcSection) rcSection.style.display = 'none';
     selectCourse(customCourse, { fromAddCampo: true });
+    createSharedRound();
+    goTo(3);
+  });
+
+  // Pantalla "Jugar": unirse a una partida ya empezada con su código
+  const joinCodeBtn = document.getElementById('joinCodeBtn');
+  if(joinCodeBtn) joinCodeBtn.addEventListener('click', async ()=>{
+    const input = document.getElementById('joinCodeInput');
+    const errorEl = document.getElementById('joinCodeError');
+    joinCodeBtn.textContent = 'Uniendo…';
+    const res = await joinSharedRound(input ? input.value : '');
+    joinCodeBtn.textContent = 'Unirme';
+    if(!res.ok){
+      if(errorEl){ errorEl.textContent = res.msg; errorEl.style.display = ''; }
+      return;
+    }
+    if(errorEl) errorEl.style.display = 'none';
     goTo(3);
   });
 
@@ -1430,6 +1685,7 @@
         winnerSection.style.display = 'none';
       }
     }
+    saveRoundState();
   }
 
   // --- Informe semanal: informe real de Carlos ("Hoyo 19") o ficha de un compañero, con buscador ---
