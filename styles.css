@@ -46,13 +46,13 @@
   .app-bar.big h1{ font-size:26px; }
   .app-bar.big.with-photo{
     background:
-      linear-gradient(180deg, rgba(15,27,46,0.55) 0%, rgba(15,27,46,0.75) 60%, var(--forest) 100%),
+      linear-gradient(180deg, rgba(15,27,46,0.45) 0%, rgba(15,27,46,0.75) 60%, var(--forest) 100%),
       url('bg-golf.jpg');
     background-size:cover; background-position:center 65%;
-    padding-top:56px; padding-bottom:32px; min-height:min(280px, 40vh);
+    padding-top:24px; padding-bottom:20px; min-height:min(150px, 20vh);
     display:flex; flex-direction:column; justify-content:flex-end;
   }
-  .app-bar.big.with-photo h1{ font-size:34px; }
+  .app-bar.big.with-photo h1{ font-size:26px; }
   .app-bar .meta{ font-size:13px; color:#A9C2E0; }
   .score-line{ display:flex; align-items:baseline; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.18); }
   .score-line .total{ font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; }

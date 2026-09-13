@@ -37,12 +37,11 @@
 
     <!-- SCREEN 0: Jugar -->
     <div class="screen active" data-screen="0">
-      <div class="app-bar big with-photo">
-        <div style="font-size:110px; line-height:1; margin-bottom:8px;">🐐</div>
-        <h1>¿Quién te hará el chivito hoy?</h1>
-        <div class="meta">Elige campo para empezar una partida</div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar big with-photo">
+          <h1>¿Quién te hará el chivito hoy?</h1>
+          <div class="meta">Elige campo para empezar una partida</div>
+        </div>
         <section>
           <div class="eyebrow">Buscar campo</div>
           <div class="search-box">
@@ -83,12 +82,12 @@
 
     <!-- SCREEN 1: Configurar partida -->
     <div class="screen" data-screen="1">
-      <div class="app-bar">
-        <div class="back">‹ Jugar</div>
-        <h1>Configurar partida</h1>
-        <div class="meta" id="s1CourseMeta">Club de Golf Hato Verde</div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar">
+          <div class="back">‹ Jugar</div>
+          <h1>Configurar partida</h1>
+          <div class="meta" id="s1CourseMeta">Club de Golf Hato Verde</div>
+        </div>
         <section>
           <div class="eyebrow">Detalles</div>
           <div class="field"><label>Nombre de la partida</label><input type="text" placeholder="Ponle un nombre a tu partida"></div>
@@ -173,12 +172,12 @@
 
     <!-- SCREEN 2: Añadir campo -->
     <div class="screen" data-screen="2">
-      <div class="app-bar">
-        <div class="back">‹ Mis campos</div>
-        <h1>Añadir un campo</h1>
-        <div class="meta">Búscalo primero, si no está lo creas tú</div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar">
+          <div class="back">‹ Mis campos</div>
+          <h1>Añadir un campo</h1>
+          <div class="meta">Búscalo primero, si no está lo creas tú</div>
+        </div>
         <section>
           <div class="eyebrow">Buscar campo</div>
           <div class="search-box">
@@ -217,12 +216,12 @@
     <!-- SCREEN 3: Introducir resultados -->
     <div class="screen" data-screen="3">
       <div class="toast" id="s3Toast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Campo guardado — ya puedes anotar tu ronda</div>
-      <div class="app-bar">
-        <div class="back" id="s3Back">‹ Club de Golf Hato Verde</div>
-        <h1>Nueva ronda</h1>
-        <div class="meta" id="s3ScoringMeta">Hoy · Stableford</div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar">
+          <div class="back" id="s3Back">‹ Club de Golf Hato Verde</div>
+          <h1>Nueva ronda</h1>
+          <div class="meta" id="s3ScoringMeta">Hoy · Stableford</div>
+        </div>
         <section id="roundCodeSection" style="display:none;">
           <div class="round-code-banner">
             <div class="lbl">Código de esta partida</div>
@@ -285,13 +284,13 @@
 
     <!-- SCREEN 4: Diagnóstico post-ronda -->
     <div class="screen" data-screen="4">
-      <div class="app-bar">
-        <div class="back" id="s4Back">‹ Club de Golf Hato Verde</div>
-        <h1>Diagnóstico post-ronda</h1>
-        <div class="meta" id="s4Meta">Ronda de hoy</div>
-        <div class="score-line" id="s4ScoreLine"><span class="total">—</span><span class="vs">golpes</span><span class="diff">Sin datos</span></div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar">
+          <div class="back" id="s4Back">‹ Club de Golf Hato Verde</div>
+          <h1>Diagnóstico post-ronda</h1>
+          <div class="meta" id="s4Meta">Ronda de hoy</div>
+          <div class="score-line" id="s4ScoreLine"><span class="total">—</span><span class="vs">golpes</span><span class="diff">Sin datos</span></div>
+        </div>
         <section id="s4PlayerTabSection" style="display:none;">
           <div class="eyebrow">Jugador</div>
           <div class="tab-toggle" id="s4PlayerTabToggle"></div>
@@ -321,12 +320,12 @@
 
     <!-- SCREEN 5: Overlay de swing -->
     <div class="screen" data-screen="5">
-      <div class="app-bar">
-        <div class="back">‹ Mis sesiones</div>
-        <h1>Overlay de swing</h1>
-        <div class="meta">Driver · marcado manual de fases</div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar">
+          <div class="back">‹ Mis sesiones</div>
+          <h1>Overlay de swing</h1>
+          <div class="meta">Driver · marcado manual de fases</div>
+        </div>
         <section>
           <div class="eyebrow">Comparativa</div>
           <div class="viewer">
@@ -382,12 +381,12 @@
 
     <!-- SCREEN 6: Informe semanal -->
     <div class="screen" data-screen="6">
-      <div class="app-bar">
-        <div class="back">‹ Inicio</div>
-        <h1>Informe semanal</h1>
-        <div class="meta" id="s6Meta">Datos reales de "Hoyo 19" (golfdirecto)</div>
-      </div>
       <div class="screen-content">
+        <div class="app-bar">
+          <div class="back">‹ Inicio</div>
+          <h1>Informe semanal</h1>
+          <div class="meta" id="s6Meta">Datos reales de "Hoyo 19" (golfdirecto)</div>
+        </div>
         <section>
           <div class="eyebrow">Jugador</div>
           <div class="search-box"><input type="text" id="reportPlayerInput" placeholder="Busca un jugador" autocomplete="off"></div>
@@ -400,12 +399,14 @@
 
     <!-- SCREEN 7: Consejos de Golf -->
     <div class="screen" data-screen="7">
-      <div class="app-bar">
-        <div class="back">‹ Inicio</div>
-        <h1>Consejos de Golf</h1>
-        <div class="meta">Tu manual de referencia</div>
+      <div class="screen-content">
+        <div class="app-bar">
+          <div class="back">‹ Inicio</div>
+          <h1>Consejos de Golf</h1>
+          <div class="meta">Tu manual de referencia</div>
+        </div>
+        <div id="consejosContent"></div>
       </div>
-      <div class="screen-content" id="consejosContent"></div>
       <div class="actions"><div class="btn primary full" id="s7VolverBtn">‹ Volver a Jugar</div></div>
     </div>
 
