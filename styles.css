@@ -9,7 +9,7 @@
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
-  html, body{ height:100%; overscroll-behavior:none; }
+  html, body{ height:100%; height:100dvh; overscroll-behavior:none; }
   body{
     background:var(--paper);
     font-family:'Inter', sans-serif;
@@ -36,7 +36,7 @@
   }
   .screen{ display:none; flex-direction:column; flex:1; min-height:0; }
   .screen.active{ display:flex; }
-  .screen-content{ flex:1; min-height:0; overflow-y:auto; }
+  .screen-content{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
 
   .toast{ background:var(--gold-soft); border-bottom:1px solid #F0C4C9; padding:9px 20px; font-size:12.5px; color:var(--forest); display:flex; align-items:center; gap:8px; }
 
@@ -49,7 +49,7 @@
       linear-gradient(180deg, rgba(15,27,46,0.55) 0%, rgba(15,27,46,0.75) 60%, var(--forest) 100%),
       url('bg-golf.jpg');
     background-size:cover; background-position:center 65%;
-    padding-top:56px; padding-bottom:32px; min-height:280px;
+    padding-top:56px; padding-bottom:32px; min-height:min(280px, 40vh);
     display:flex; flex-direction:column; justify-content:flex-end;
   }
   .app-bar.big.with-photo h1{ font-size:34px; }
