@@ -4,7 +4,7 @@ Prototipo interactivo de una app de golf, pensado para desplegarse en Netlify co
 
 ## Qué incluye
 
-Un único archivo `index.html` (sin dependencias de build) que simula el flujo completo de la app:
+`index.html` (sin dependencias de build, dividido en `styles.css` y varios archivos en `js/`) que simula el flujo completo de la app:
 
 1. **Jugar** — buscar o elegir un campo para empezar una partida
 2. **Configurar partida** — hoyos, tipo de puntuación, modalidad y barra de salida
@@ -22,6 +22,8 @@ Abre `index.html` directamente en un navegador, o despliega la carpeta en [Netli
 
 ## Archivos
 
-- `index.html` — la app completa (HTML, CSS y JS)
+- `index.html` — estructura de las 7 pantallas
+- `styles.css` — todos los estilos
+- `js/` — lógica de la app, dividida por función (datos de campos, jugadores, partidas compartidas en vivo, tarjeta de resultados, navegación, diagnóstico, informe semanal, etc.)
 - `manifest.json` — manifiesto para instalar la app como PWA
 - `icon-180.png`, `icon-512.png` — íconos de la app
