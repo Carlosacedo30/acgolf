@@ -17,4 +17,4 @@
   prevBtn.addEventListener('click', () => { if(current>0){ current--; render(); }});
   nextBtn.addEventListener('click', () => { if(current<screens.length-1){ current++; render(); }});
   dots.forEach(d => d.addEventListener('click', () => { current = +d.dataset.goto; render(); }));
-  function goTo(n){ current = n; render(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); if(n === 0) renderRecentRounds(); if(n === 7) renderConsejos(); }
+  function goTo(n){ current = n; render(); if(n === 1) updateLeagueHandicaps(); if(n === 4) renderDiagnostico(); if(n === 6) renderInforme(reportPlayerName); if(n === 0) renderRecentRounds(); if(n === 7) renderConsejos(); }
