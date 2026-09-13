@@ -4,6 +4,32 @@
   const BIRDIE_MESSAGE = 'Te como los huevos';
   const WINNER_MESSAGE = 'Hoy te hacen el chivito';
 
+  // Aviso emergente (~4s) cuando aparece un mensaje NUEVO (no al restaurar golpes ya guardados)
+  const shownMessageKeys = new Set();
+  let toastQueue = [];
+  let toastShowing = false;
+  function toastKey(m){ return activeGroup + '|' + m.hole + '|' + m.player + '|' + m.text; }
+  function showMessageToast(m){
+    toastQueue.push(m);
+    processToastQueue();
+  }
+  function processToastQueue(){
+    if(toastShowing || !toastQueue.length) return;
+    const m = toastQueue.shift();
+    const el = document.getElementById('messageToast');
+    const holeEl = document.getElementById('messageToastHole');
+    const textEl = document.getElementById('messageToastText');
+    if(!el || !holeEl || !textEl) return;
+    toastShowing = true;
+    holeEl.textContent = 'Hoyo ' + m.hole;
+    textEl.textContent = m.player + ' — ' + m.text;
+    el.classList.add('show');
+    setTimeout(()=>{
+      el.classList.remove('show');
+      setTimeout(()=>{ toastShowing = false; processToastQueue(); }, 300);
+    }, 4000);
+  }
+
   // Cálculo automático de resultados (Introducir resultados): un total por cada jugador,
   // más los mensajes de par/birdie de cada hoyo y el mensaje final para quien va ganando
   function recalcResultados(){
@@ -70,6 +96,14 @@
       ).join('');
       if(messagesSection) messagesSection.style.display = roundMessages.length ? '' : 'none';
     }
+    // Solo mostrar el aviso emergente para mensajes de verdad nuevos (no al restaurar/sincronizar)
+    roundMessages.forEach(m=>{
+      const key = toastKey(m);
+      if(!shownMessageKeys.has(key)){
+        shownMessageKeys.add(key);
+        if(!restoringScores) showMessageToast(m);
+      }
+    });
 
     // Mensaje final: cuando todos los jugadores completaron sus 18 hoyos, para quien va ganando
     const winnerSection = document.getElementById('roundWinnerSection');
