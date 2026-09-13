@@ -39,7 +39,14 @@
       hcp:[9,3,15,7,17,13,5,11,1] },
     { id:'hato-verde', name:'Club Hato Verde', location:'Las Pajanosas-Guillena, Sevilla',
       par:[5,4,4,4,3,3,3,5,3, 5,3,5,4,4,3,4,4,4],
-      hcp:[1,7,13,5,9,11,17,3,15, 8,18,10,4,6,12,2,16,14] },
+      hcp:[1,7,13,5,9,11,17,3,15, 8,18,10,4,6,12,2,16,14],
+      // Course Rating / Slope oficiales por barra de salida (masculino), fuente: mScorecard
+      tees:{
+        blancas:  { rating:70.7, slope:121 },
+        amarillas:{ rating:69.5, slope:119 },
+        azules:   { rating:67.5, slope:115 },
+        rojas:    { rating:66.0, slope:113 },
+      } },
     { id:'la-cartuja', name:'Instalaciones Deportivas La Cartuja', location:'Sevilla', holes9:true,
       par:[4,3,3,3,3,3,4,3,3],
       hcp:[3,5,13,12,10,15,2,11,9] },
