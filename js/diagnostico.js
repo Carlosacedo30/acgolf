@@ -1,10 +1,28 @@
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
   const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
+  // Consejos de "Consejos de Golf" del usuario, uno por categoría de fallo
   const DIAG_TIPS = {
-    'Drive': ['Trabaja el tempo del backswing, no la fuerza', 'Chequea la alineación de pies antes de cada salida'],
-    'Approach': ['Rango con objetivo estrecho, no solo distancia al green', 'Chequeo de alineación antes de cada approach'],
-    'Juego corto': ['Juego corto centrado en línea de tiro, no en fuerza', 'Practica distancias de wedge de 30-50m'],
-    'Putt': ['Lee la línea dos veces antes de golpear', 'Practica putts cortos de 1-2 metros a diario'],
+    'Drive': [
+      'Pegar hacia arriba, con ritmo — no se necesita fuerza, se busca un buen contacto.',
+      'Si haces slice: pelota más atrás, siente el swing de adentro hacia afuera. Si sigue, fortalece la mano izquierda en el grip.',
+      'Si haces hook: pelota más adelante, siente el swing más de afuera hacia adentro. Si sigue, debilita la mano izquierda en el grip.',
+    ],
+    'Approach': [
+      'Entre palos: toma el más largo y haz un swing ¾ con compromiso.',
+      'Lie de subida: un palo más, peso en pie derecho, apunta a la derecha, pega hacia arriba.',
+      'Lie de bajada: un palo menos, peso en pie izquierdo, apunta a la izquierda, pega hacia abajo.',
+    ],
+    'Juego corto': [
+      'Desde 100 yardas o menos: medio tiro, suave, con confianza — evita el hinge, ve muy abajo.',
+      'Alrededor del green: usa PW o hierro 9, es más fácil y consistente.',
+      'Recovery shot: pelota atrás, manos adelante, pega vertical.',
+      'Corregir shank: siente la cadera izquierda yendo hacia atrás en el impacto, creando espacio.',
+    ],
+    'Putt': [
+      'Putt largo: enfócate en la velocidad, no solo en la línea.',
+      'Putt de compromiso: golpea con confianza y deja la cabeza quieta.',
+      'Lee las caídas: verde oscuro = pelo en contra, verde claro = pelo a favor.',
+    ],
   };
   let diagAnswers = {}; // diagAnswers["grupo-jugador"][hole] = categoría elegida
   let diagActivePlayer = 0;

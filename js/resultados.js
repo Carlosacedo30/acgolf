@@ -68,6 +68,16 @@
               cell.appendChild(badge);
               roundMessages.push({ hole: input.dataset.hole, player: name, text: msg });
             }
+            // Hoyo malo (neto doble bogey o peor): consejo rápido de Consejos de Golf
+            if(netDiff >= 2){
+              const tip = BAD_HOLE_TIPS[(parseInt(input.dataset.hole, 10) + pIndex) % BAD_HOLE_TIPS.length];
+              const tipMsg = { hole: input.dataset.hole, player: name, text: '💡 ' + tip };
+              const tipKey = toastKey(tipMsg) + '-tip';
+              if(!shownMessageKeys.has(tipKey)){
+                shownMessageKeys.add(tipKey);
+                if(!restoringScores) showMessageToast(tipMsg);
+              }
+            }
           }
         });
         const nineTotalCell = row.querySelector('.nine-total');
@@ -115,6 +125,10 @@
         const winners = players.filter((name, i) => summaries[i].net === minNet);
         winnerSection.style.display = '';
         winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #5B6B62); font-weight:400;">(ganan en neto, ' + minNet + ')</span>.</p>';
+        const mentalNote = document.getElementById('roundMentalNote');
+        if(mentalNote){
+          mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad.cuandoSiSalga : CONSEJOS_GOLF.mentalidad.cuandoNadaSalga;
+        }
       } else {
         winnerSection.style.display = 'none';
       }

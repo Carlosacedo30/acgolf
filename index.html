@@ -30,6 +30,7 @@
     <button class="dot" data-goto="4"></button>
     <button class="dot" data-goto="5"></button>
     <button class="dot" data-goto="6"></button>
+    <button class="dot" data-goto="7"></button>
   </div>
 
   <div class="frame">
@@ -64,6 +65,12 @@
           <div class="eyebrow">Tus partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no has jugado ninguna partida con esta app — cuando empieces una, aparecerá aquí para poder volver a ella.</div>
+        </section>
+        <section>
+          <div class="answer-row" id="consejosLinkBtn" style="cursor:pointer;">
+            <div class="answer-main">💡 Consejos de Golf</div>
+            <div class="answer-sub">Calentamiento, ejecución, correcciones y mentalidad</div>
+          </div>
         </section>
       </div>
       <div class="tab-bar">
@@ -270,6 +277,7 @@
         <section id="roundWinnerSection" style="display:none;">
           <div class="eyebrow">¡Ronda completa!</div>
           <div class="pattern" id="roundWinner"></div>
+          <div class="helper-note" id="roundMentalNote" style="margin-top:12px;"></div>
         </section>
       </div>
       <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
@@ -390,6 +398,17 @@
       <div class="actions"><div class="btn primary full" id="s6VolverBtn">‹ Volver a Jugar</div></div>
     </div>
 
+    <!-- SCREEN 7: Consejos de Golf -->
+    <div class="screen" data-screen="7">
+      <div class="app-bar">
+        <div class="back">‹ Inicio</div>
+        <h1>Consejos de Golf</h1>
+        <div class="meta">Tu manual de referencia</div>
+      </div>
+      <div class="screen-content" id="consejosContent"></div>
+      <div class="actions"><div class="btn primary full" id="s7VolverBtn">‹ Volver a Jugar</div></div>
+    </div>
+
   </div>
 
   <div class="flow-nav">
@@ -409,7 +428,7 @@
 <script src="js/resultados.js"></script>
 <script src="js/vista-hoyo.js"></script>
 <script src="js/informe.js"></script>
-</script>
+<script src="js/consejos.js"></script>
 
 </body>
 </html>
