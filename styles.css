@@ -253,7 +253,7 @@
   .flow-nav{
     display:flex; justify-content:space-between; align-items:center;
     width:100%; padding:10px 16px calc(env(safe-area-inset-bottom, 0px) + 10px);
-    background:var(--forest); position:sticky; bottom:48px;
+    background:var(--forest); position:sticky; bottom:0;
   }
   .nav-btn{ background:rgba(255,255,255,0.14); color:var(--paper); border:1px solid rgba(255,255,255,0.3); padding:9px 16px; border-radius:20px; font-size:12.5px; font-weight:600; font-family:'Inter', sans-serif; cursor:pointer; }
   .nav-btn:disabled{ background:transparent; color:rgba(255,255,255,0.35); border-color:rgba(255,255,255,0.15); cursor:default; }
