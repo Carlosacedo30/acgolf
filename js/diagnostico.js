@@ -106,7 +106,8 @@
     const backEl = document.getElementById('s4Back');
     if(backEl) backEl.textContent = selectedCourse ? ('‹ ' + selectedCourse.name) : '‹ Campo';
     const metaEl = document.getElementById('s4Meta');
-    if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name + (matchGroups[1].players.length ? ' · Grupo ' + (activeGroup + 1) : '');
+    const multiGroup = matchGroups.filter(g => g.players.length).length > 1;
+    if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name + (multiGroup ? ' · Grupo ' + (activeGroup + 1) : '');
     const scoreLine = document.getElementById('s4ScoreLine');
     if(scoreLine){
       scoreLine.innerHTML = holes.length

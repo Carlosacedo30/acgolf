@@ -88,7 +88,7 @@
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
-  // "Configurar partida": pestañas Grupo 1 / Grupo 2 (no pierden lo escrito al cambiar)
+  // "Configurar partida": pestañas Grupo 1 a 4 (no pierden lo escrito al cambiar)
   document.querySelectorAll('#configGroupToggle .tab').forEach(tab=>{
     tab.addEventListener('click', ()=>{
       saveConfigGroupFields();
@@ -108,13 +108,13 @@
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
     const rcSection = document.getElementById('roundCodeSection');
     if(rcSection) rcSection.style.display = 'none';
-    matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los dos grupos
+    matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los 4 grupos
     currentHole = 1;
     activeGroup = 0;
     diagAnswers = {};
     const g0 = matchGroups[0];
     setPlayers(g0.players, g0.handicaps);
-    rememberPlayers(matchGroups[0].players.concat(matchGroups[1].players));
+    rememberPlayers(matchGroups.reduce((acc, g) => acc.concat(g.players), []));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     renderGroupSwitcher();
     createSharedRound();
