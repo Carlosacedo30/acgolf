@@ -66,18 +66,47 @@
     recalcResultados();
   }
 
-  function selectCourse(course, opts){
-    opts = opts || {};
+  function selectCourse(course){
     selectedCourse = course;
     const s1Meta = document.getElementById('s1CourseMeta');
     const s3Back = document.getElementById('s3Back');
     const s4Back = document.getElementById('s4Back');
-    const s3Toast = document.getElementById('s3Toast');
     if(s1Meta) s1Meta.textContent = course.name;
     if(s3Back) s3Back.textContent = '‹ ' + course.name;
     if(s4Back) s4Back.textContent = '‹ ' + course.name;
-    if(s3Toast) s3Toast.style.display = opts.fromAddCampo ? '' : 'none';
     applyCourseToScoreGrids(course);
+  }
+
+  // Tabla de solo lectura (Par/Hcp por hoyo) para la pantalla "Empezar tu partida" de un campo ya conocido
+  function renderReadOnlyNineGrid(grid, pars, hcps, startHole){
+    if(!grid) return;
+    const holeCells = pars.map((p, i) => '<div class="grid-cell">' + (startHole + i) + '</div>').join('');
+    const parCells = pars.map(p => '<div class="grid-cell">' + p + '</div>').join('');
+    const hcpCells = hcps.map(h => '<div class="grid-cell">' + h + '</div>').join('');
+    const total = pars.reduce((a, b) => a + b, 0);
+    grid.innerHTML =
+      '<div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div>' + holeCells + '<div class="grid-cell">' + (startHole === 1 ? 'Ida' : 'Vuelta') + '</div></div>'
+      + '<div class="grid-row"><div class="grid-cell side-label">Par</div>' + parCells + '<div class="grid-cell" style="font-weight:600;">' + total + '</div></div>'
+      + '<div class="grid-row"><div class="grid-cell side-label">Hcp</div>' + hcpCells + '<div class="grid-cell">—</div></div>';
+  }
+
+  // Rellena la vista de confirmación "Hoy juegas en este campo" para un campo ya conocido
+  function renderCampoKnown(course){
+    const nameEl = document.getElementById('campoKnownName');
+    const metaEl = document.getElementById('campoKnownMeta');
+    if(nameEl) nameEl.textContent = course.name;
+    const total = course.par.reduce((a, b) => a + b, 0);
+    if(metaEl) metaEl.textContent = (course.location ? course.location + ' · ' : '') + 'Par ' + total;
+    renderReadOnlyNineGrid(document.getElementById('campoKnownGridIda'), course.par.slice(0, 9), course.hcp.slice(0, 9), 1);
+    if(!course.holes9){
+      renderReadOnlyNineGrid(document.getElementById('campoKnownGridVuelta'), course.par.slice(9, 18), course.hcp.slice(9, 18), 10);
+    }
+  }
+
+  // Pantalla 2 "Empezar tu partida": confirma el campo ya elegido (siempre uno de nuestra base de datos)
+  function showCampoScreen(course){
+    renderCampoKnown(course);
+    goTo(2);
   }
 
   // Pantalla "Jugar": construye el desplegable de campos a partir de COURSES, filtrando por lo que se escriba
@@ -86,32 +115,18 @@
     const matches = COURSES.filter(c => !q || c.name.toLowerCase().includes(q) || c.location.toLowerCase().includes(q));
     const dropdown = document.getElementById('screen0-dropdown');
     if(!dropdown) return;
-    dropdown.innerHTML = matches.map(c =>
+    dropdown.innerHTML = matches.length ? matches.map(c =>
       '<div class="dropdown-item" data-course-id="' + c.id + '"><span class="pin">📍</span><div><div class="name">' + c.name + '</div><div class="loc">' + c.location + '</div></div></div>'
-    ).join('') + '<div class="dropdown-item add-new">+ Añadir un campo nuevo</div>';
-    dropdown.querySelectorAll('.dropdown-item').forEach(item=>{
+    ).join('') : '<div class="dropdown-item" style="color:#7A8A99;">Ningún campo de nuestra base de datos coincide</div>';
+    dropdown.querySelectorAll('.dropdown-item[data-course-id]').forEach(item=>{
       item.addEventListener('click', ()=>{
-        if(item.classList.contains('add-new')){
-          const typed = (screen0Search ? screen0Search.value.trim() : '') || 'Campo nuevo';
-          ['campoNombreInput','campoSearchInput'].forEach(id=>{
-            const el = document.getElementById(id);
-            if(el) el.value = typed;
-          });
-          ['campoNotFoundName','campoHeading'].forEach(id=>{
-            const el = document.getElementById(id);
-            if(el) el.textContent = typed;
-          });
-          closeDropdown();
-          goTo(2); // Añadir campo
-          return;
-        }
         const course = COURSES.find(c => c.id === item.dataset.courseId);
         if(course){
           selectCourse(course);
           if(screen0Search) screen0Search.value = course.name; // marca la selección en el buscador
         }
         closeDropdown();
-        goTo(1); // Configurar partida
+        showCampoScreen(course); // Empezar tu partida
       });
     });
   }

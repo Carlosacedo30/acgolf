@@ -22,11 +22,11 @@
     return code;
   }
 
-  // Asegura que siempre haya exactamente 2 grupos con forma válida, venga lo que venga de la base de datos
+  // Asegura que siempre haya exactamente MAX_GROUPS grupos con forma válida, venga lo que venga de la base de datos
   function normalizeMatchGroups(mg){
     const blank = () => ({ players: [], handicaps: [], scores: {} });
-    const arr = Array.isArray(mg) ? mg.slice(0, 2) : [];
-    while(arr.length < 2) arr.push(blank());
+    const arr = Array.isArray(mg) ? mg.slice(0, MAX_GROUPS) : [];
+    while(arr.length < MAX_GROUPS) arr.push(blank());
     return arr.map(g => ({
       players: Array.isArray(g && g.players) ? g.players : [],
       handicaps: Array.isArray(g && g.handicaps) ? g.handicaps : [],

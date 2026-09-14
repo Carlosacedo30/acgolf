@@ -84,11 +84,11 @@
 
   // Botones de navegación de flujo dentro de cada pantalla
   const clickGoTo = (id, n) => { const el = document.getElementById(id); if(el) el.addEventListener('click', ()=> goTo(n)); };
-  clickGoTo('cancelarCampoBtn', 0);
+  clickGoTo('empezarPartidaDesdeCampoBtn', 1);
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
-  // "Configurar partida": pestañas Grupo 1 / Grupo 2 (no pierden lo escrito al cambiar)
+  // "Configurar partida": pestañas Grupo 1 a 4 (no pierden lo escrito al cambiar)
   document.querySelectorAll('#configGroupToggle .tab').forEach(tab=>{
     tab.addEventListener('click', ()=>{
       saveConfigGroupFields();
@@ -108,13 +108,13 @@
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
     const rcSection = document.getElementById('roundCodeSection');
     if(rcSection) rcSection.style.display = 'none';
-    matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los dos grupos
+    matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los 4 grupos
     currentHole = 1;
     activeGroup = 0;
     diagAnswers = {};
     const g0 = matchGroups[0];
     setPlayers(g0.players, g0.handicaps);
-    rememberPlayers(matchGroups[0].players.concat(matchGroups[1].players));
+    rememberPlayers(matchGroups.reduce((acc, g) => acc.concat(g.players), []));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     renderGroupSwitcher();
     createSharedRound();
@@ -123,31 +123,6 @@
 
   // Buscadores de "Jugador 1..4" con sugerencias de jugadores usados antes
   ['player1', 'player2', 'player3', 'player4'].forEach(id => setupPlayerSearch(id + 'Input', id + 'Dropdown'));
-
-  // "Añadir campo": guarda el campo nuevo (con los pares que se hayan escrito) y pasa a anotar resultados
-  const guardarCampoBtn = document.getElementById('guardarCampoBtn');
-  if(guardarCampoBtn) guardarCampoBtn.addEventListener('click', ()=>{
-    const name = (document.getElementById('campoNombreInput') || {}).value || 'Campo nuevo';
-    const readNineRow = (gridId, rowIndex, fallback) => {
-      const grid = document.getElementById(gridId);
-      if(!grid) return [fallback,fallback,fallback,fallback,fallback,fallback,fallback,fallback,fallback];
-      const row = grid.querySelector('.grid-row:nth-of-type(' + rowIndex + ')');
-      return Array.from(row.querySelectorAll('.grid-cell input')).map(input => parseInt(input.value, 10) || fallback);
-    };
-    const customCourse = {
-      id: 'custom-' + Date.now(),
-      name: name,
-      location: (document.getElementById('campoUbicacionInput') || {}).value || '',
-      par: readNineRow('campoGridIda', 2, 4).concat(readNineRow('campoGridVuelta', 2, 4)),
-      hcp: readNineRow('campoGridIda', 3, 9).concat(readNineRow('campoGridVuelta', 3, 9)),
-    };
-    currentRoundId = null;
-    const rcSection = document.getElementById('roundCodeSection');
-    if(rcSection) rcSection.style.display = 'none';
-    selectCourse(customCourse, { fromAddCampo: true });
-    createSharedRound();
-    goTo(3);
-  });
 
   // Pantalla "Jugar": unirse a una partida ya empezada con su código
   const joinCodeBtn = document.getElementById('joinCodeBtn');

@@ -37,7 +37,7 @@
   if(s7VolverBtn) s7VolverBtn.addEventListener('click', ()=> goTo(0));
 
   const consejosLinkBtn = document.getElementById('consejosLinkBtn');
-  if(consejosLinkBtn) consejosLinkBtn.addEventListener('click', ()=> goTo(7));
+  if(consejosLinkBtn) consejosLinkBtn.addEventListener('click', ()=> goTo(5));
 
   // Tarjeta de Inicio: un consejo distinto cada día, sacado de las mismas secciones
   const consejosTeaserEl = document.getElementById('consejosTeaser');

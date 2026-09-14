@@ -18,7 +18,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <div class="proto-title">Prototipo — App de Golf</div>
-  <div class="proto-sub">Flujo completo: Jugar → Configurar partida → Añadir campo → Resultados → Diagnóstico → Swing → Informe</div>
+  <div class="proto-sub">Flujo completo: Jugar → Configurar partida → Empezar partida → Resultados → Diagnóstico → Consejos</div>
 
   <div class="message-toast" id="messageToast"><span class="toast-hole" id="messageToastHole">Hoyo 1</span><span class="toast-text" id="messageToastText"></span></div>
 
@@ -29,8 +29,6 @@
     <button class="dot" data-goto="3"></button>
     <button class="dot" data-goto="4"></button>
     <button class="dot" data-goto="5"></button>
-    <button class="dot" data-goto="6"></button>
-    <button class="dot" data-goto="7"></button>
   </div>
 
   <div class="frame">
@@ -133,10 +131,12 @@
         </section>
         <section>
           <div class="eyebrow">Partidas</div>
-          <div class="section-sub">Hasta 2 grupos de 4 jugadores a la vez, cada uno con su propia tarjeta.</div>
+          <div class="section-sub">Hasta 4 grupos de 4 jugadores a la vez, cada uno con su propia tarjeta.</div>
           <div class="tab-toggle" id="configGroupToggle">
             <div class="tab active" data-group="0">Grupo 1</div>
             <div class="tab" data-group="1">Grupo 2</div>
+            <div class="tab" data-group="2">Grupo 3</div>
+            <div class="tab" data-group="3">Grupo 4</div>
           </div>
         </section>
         <section>
@@ -189,52 +189,27 @@
       <div class="actions"><div class="btn primary full" id="empezarPartidaBtn">Empezar partida</div></div>
     </div>
 
-    <!-- SCREEN 2: Añadir campo -->
+    <!-- SCREEN 2: Empezar partida (confirmación del campo ya elegido) -->
     <div class="screen" data-screen="2">
       <div class="screen-content">
         <div class="app-bar">
-          <div class="back">‹ Mis campos</div>
-          <h1>Añadir un campo</h1>
-          <div class="meta">Búscalo primero, si no está lo creas tú</div>
+          <div class="back">‹ Inicio</div>
+          <h1>Empezar tu partida</h1>
         </div>
-        <section>
-          <div class="eyebrow">Buscar campo</div>
-          <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="campoSearchInput" value="Club de Golf Hato Verde">
-          </div>
-          <div class="search-source">Buscando en OpenStreetMap…</div>
-          <div class="not-found">No hemos encontrado datos completos de <strong id="campoNotFoundName">Club de Golf Hato Verde</strong> en el mapa abierto. Puedes crearlo tú ahora — solo lo harás una vez.</div>
-        </section>
-        <section>
-          <div class="eyebrow">Datos del campo</div>
-          <h2 id="campoHeading">Club de Golf Hato Verde</h2>
-          <div class="section-sub">Rellena par y hándicap de cada hoyo, como en tu tarjeta</div>
-          <div class="field"><label>Nombre del campo</label><input type="text" id="campoNombreInput" value="Club de Golf Hato Verde"></div>
-          <div class="field-row">
-            <div class="field"><label>Ubicación</label><input type="text" id="campoUbicacionInput" value="España"></div>
-            <div class="field"><label>Par total</label><input type="text" value="70"></div>
-          </div>
-          <div class="tab-toggle" id="campoTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
-          <div class="card-grid nine-block" data-nine="ida" id="campoGridIda">
-            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell" style="font-weight:600;">34</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="1"></div><div class="grid-cell"><input value="7"></div><div class="grid-cell"><input value="13"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="9"></div><div class="grid-cell"><input value="11"></div><div class="grid-cell"><input value="17"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="15"></div><div class="grid-cell">—</div></div>
-          </div>
-          <div class="card-grid nine-block" data-nine="vuelta" id="campoGridVuelta" style="display:none;">
-            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell" style="font-weight:600;">36</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="8"></div><div class="grid-cell"><input value="18"></div><div class="grid-cell"><input value="10"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="6"></div><div class="grid-cell"><input value="12"></div><div class="grid-cell"><input value="2"></div><div class="grid-cell"><input value="16"></div><div class="grid-cell"><input value="14"></div><div class="grid-cell">—</div></div>
-          </div>
-          <div class="helper-note">Toca "Vuelta (10–18)" para completar los últimos 9 hoyos. Todos los campos son editables.</div>
+        <section id="campoKnownSection">
+          <div class="eyebrow">Hoy juegas en este campo</div>
+          <h2 id="campoKnownName">Club Hato Verde</h2>
+          <div class="section-sub" id="campoKnownMeta">Las Pajanosas-Guillena, Sevilla · Par 70</div>
+          <div class="tab-toggle" id="campoKnownTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
+          <div class="card-grid nine-block compact" data-nine="ida" id="campoKnownGridIda"></div>
+          <div class="card-grid nine-block compact" data-nine="vuelta" id="campoKnownGridVuelta" style="display:none;"></div>
         </section>
       </div>
-      <div class="actions"><div class="btn ghost" id="cancelarCampoBtn">Cancelar</div><div class="btn primary" id="guardarCampoBtn">Guardar campo</div></div>
+      <div class="actions"><div class="btn primary full" id="empezarPartidaDesdeCampoBtn">▶ Empezar partida</div></div>
     </div>
 
     <!-- SCREEN 3: Introducir resultados -->
     <div class="screen" data-screen="3">
-      <div class="toast" id="s3Toast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Campo guardado — ya puedes anotar tu ronda</div>
       <div class="screen-content">
         <div class="app-bar">
           <div class="back" id="s3Back">‹ Club de Golf Hato Verde</div>
@@ -339,87 +314,8 @@
       <div class="actions"><div class="btn primary full" id="s4GuardarBtn">Guardar diagnóstico</div></div>
     </div>
 
-    <!-- SCREEN 5: Overlay de swing -->
+    <!-- SCREEN 5: Consejos de Golf -->
     <div class="screen" data-screen="5">
-      <div class="screen-content">
-        <div class="app-bar">
-          <div class="back">‹ Mis sesiones</div>
-          <h1>Overlay de swing</h1>
-          <div class="meta">Driver · marcado manual de fases</div>
-        </div>
-        <section>
-          <div class="eyebrow">Comparativa</div>
-          <div class="viewer">
-            <svg class="swing-svg" viewBox="0 0 300 375" preserveAspectRatio="xMidYMid slice">
-              <rect width="300" height="375" fill="#12241D"/>
-              <line x1="0" y1="330" x2="300" y2="330" stroke="#2A4438" stroke-width="2"/>
-              <g stroke="#B08D57" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.85">
-                <line x1="150" y1="330" x2="150" y2="205" />
-                <circle cx="150" cy="192" r="13" fill="none"/>
-                <line x1="150" y1="230" x2="95" y2="150" />
-                <line x1="95" y1="150" x2="60" y2="90" />
-                <line x1="150" y1="280" x2="120" y2="330" />
-                <line x1="150" y1="280" x2="182" y2="330" />
-              </g>
-              <g stroke="#5FA98A" stroke-width="4" fill="none" stroke-linecap="round">
-                <line x1="158" y1="330" x2="152" y2="200" />
-                <circle cx="151" cy="186" r="13" fill="none"/>
-                <line x1="152" y1="228" x2="108" y2="160" />
-                <line x1="108" y1="160" x2="82" y2="105" />
-                <line x1="152" y1="278" x2="128" y2="330" />
-                <line x1="152" y1="278" x2="176" y2="330" />
-              </g>
-            </svg>
-            <div class="badge youb">Tú</div>
-            <div class="badge refb">Referencia</div>
-            <div class="frame-label">Impacto · frame 42/96</div>
-          </div>
-          <div class="opacity-control">
-            <div class="row"><span class="youc">Tú 65%</span><span class="refc">Referencia 35%</span></div>
-            <input type="range" min="0" max="100" value="65" disabled>
-          </div>
-        </section>
-        <section>
-          <div class="eyebrow">Fases marcadas</div>
-          <h2>Línea de tiempo</h2>
-          <div class="timeline" style="margin-top:10px;">
-            <div class="timeline-track">
-              <div class="playhead" style="left:44%;"></div>
-              <div class="marker" style="left:8%;"><div class="tag">Setup</div></div>
-              <div class="marker" style="left:28%;"><div class="tag">Arriba</div></div>
-              <div class="marker mactive" style="left:44%;"><div class="tag">Impacto</div></div>
-              <div class="marker" style="left:70%;"><div class="tag">Follow</div></div>
-            </div>
-          </div>
-          <div class="phase-pills"><div class="pill">Setup</div><div class="pill">Backswing arriba</div><div class="pill pactive">Impacto</div><div class="pill">Follow-through</div></div>
-        </section>
-        <section>
-          <div class="note-box">En el <strong>impacto</strong>, tu columna está más inclinada hacia el objetivo que en el swing de referencia — coherente con el fallo de dirección visto en tus últimos approaches.</div>
-        </section>
-      </div>
-      <div class="actions"><div class="btn ghost">Cambiar referencia</div><div class="btn primary">Guardar en mi progreso</div></div>
-    </div>
-
-    <!-- SCREEN 6: Informe semanal -->
-    <div class="screen" data-screen="6">
-      <div class="screen-content">
-        <div class="app-bar">
-          <div class="back">‹ Inicio</div>
-          <h1>Informe semanal</h1>
-          <div class="meta" id="s6Meta">Datos reales de "Hoyo 19" (golfdirecto)</div>
-        </div>
-        <section>
-          <div class="eyebrow">Jugador</div>
-          <div class="search-box"><input type="text" id="reportPlayerInput" placeholder="Busca un jugador" autocomplete="off"></div>
-          <div class="dropdown" id="reportPlayerDropdown"></div>
-        </section>
-        <div id="s6Content"></div>
-      </div>
-      <div class="actions"><div class="btn primary full" id="s6VolverBtn">‹ Volver a Jugar</div></div>
-    </div>
-
-    <!-- SCREEN 7: Consejos de Golf -->
-    <div class="screen" data-screen="7">
       <div class="screen-content">
         <div class="app-bar">
           <div class="back">‹ Inicio</div>
@@ -449,7 +345,6 @@
 <script src="js/interactions.js"></script>
 <script src="js/resultados.js"></script>
 <script src="js/vista-hoyo.js"></script>
-<script src="js/informe.js"></script>
 <script src="js/consejos.js"></script>
 <script src="js/liga.js"></script>
 

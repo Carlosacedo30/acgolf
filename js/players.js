@@ -12,11 +12,9 @@
     playerHandicaps = players.map((n, i) => (handicaps && !isNaN(handicaps[i])) ? handicaps[i] : 0);
   }
 
-  // Hasta 2 grupos de 4 jugadores jugando la misma ronda, cada uno con su propia tarjeta
-  let matchGroups = [
-    { players: [], handicaps: [], scores: {} },
-    { players: [], handicaps: [], scores: {} },
-  ];
+  // Hasta 4 grupos de 4 jugadores jugando la misma ronda, cada uno con su propia tarjeta
+  const MAX_GROUPS = 4;
+  let matchGroups = Array.from({ length: MAX_GROUPS }, () => ({ players: [], handicaps: [], scores: {} }));
   let configGroup = 0; // qué grupo se está rellenando en "Configurar partida"
   let activeGroup = 0; // qué grupo se está viendo en "Introducir resultados" / Diagnóstico
 
@@ -67,10 +65,11 @@
     const section = document.getElementById('groupSwitchSection');
     const wrap = document.getElementById('groupSwitchToggle');
     if(!section || !wrap) return;
-    if(!matchGroups[1].players.length){ section.style.display = 'none'; return; }
+    const groupsWithPlayers = matchGroups.filter(g => g.players.length).length;
+    if(groupsWithPlayers <= 1){ section.style.display = 'none'; return; }
     section.style.display = '';
-    wrap.innerHTML = [0, 1].map(i =>
-      '<div class="tab' + (i === activeGroup ? ' active' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + ' (' + matchGroups[i].players.length + ')</div>'
+    wrap.innerHTML = matchGroups.map((g, i) => g.players.length ?
+      '<div class="tab' + (i === activeGroup ? ' active' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + ' (' + g.players.length + ')</div>' : ''
     ).join('');
     wrap.querySelectorAll('.tab').forEach(tab=>{
       tab.addEventListener('click', ()=> switchGroup(parseInt(tab.dataset.g, 10)));
