@@ -84,7 +84,7 @@
 
   // Botones de navegación de flujo dentro de cada pantalla
   const clickGoTo = (id, n) => { const el = document.getElementById(id); if(el) el.addEventListener('click', ()=> goTo(n)); };
-  clickGoTo('cancelarCampoBtn', 0);
+  clickGoTo('empezarPartidaDesdeCampoBtn', 1);
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
@@ -123,31 +123,6 @@
 
   // Buscadores de "Jugador 1..4" con sugerencias de jugadores usados antes
   ['player1', 'player2', 'player3', 'player4'].forEach(id => setupPlayerSearch(id + 'Input', id + 'Dropdown'));
-
-  // "Añadir campo": guarda el campo nuevo (con los pares que se hayan escrito) y pasa a anotar resultados
-  const guardarCampoBtn = document.getElementById('guardarCampoBtn');
-  if(guardarCampoBtn) guardarCampoBtn.addEventListener('click', ()=>{
-    const name = (document.getElementById('campoNombreInput') || {}).value || 'Campo nuevo';
-    const readNineRow = (gridId, rowIndex, fallback) => {
-      const grid = document.getElementById(gridId);
-      if(!grid) return [fallback,fallback,fallback,fallback,fallback,fallback,fallback,fallback,fallback];
-      const row = grid.querySelector('.grid-row:nth-of-type(' + rowIndex + ')');
-      return Array.from(row.querySelectorAll('.grid-cell input')).map(input => parseInt(input.value, 10) || fallback);
-    };
-    const customCourse = {
-      id: 'custom-' + Date.now(),
-      name: name,
-      location: (document.getElementById('campoUbicacionInput') || {}).value || '',
-      par: readNineRow('campoGridIda', 2, 4).concat(readNineRow('campoGridVuelta', 2, 4)),
-      hcp: readNineRow('campoGridIda', 3, 9).concat(readNineRow('campoGridVuelta', 3, 9)),
-    };
-    currentRoundId = null;
-    const rcSection = document.getElementById('roundCodeSection');
-    if(rcSection) rcSection.style.display = 'none';
-    selectCourse(customCourse, { fromAddCampo: true });
-    createSharedRound();
-    goTo(3);
-  });
 
   // Pantalla "Jugar": unirse a una partida ya empezada con su código
   const joinCodeBtn = document.getElementById('joinCodeBtn');

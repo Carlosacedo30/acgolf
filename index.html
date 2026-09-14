@@ -191,52 +191,27 @@
       <div class="actions"><div class="btn primary full" id="empezarPartidaBtn">Empezar partida</div></div>
     </div>
 
-    <!-- SCREEN 2: Añadir campo -->
+    <!-- SCREEN 2: Empezar partida (confirmación del campo ya elegido) -->
     <div class="screen" data-screen="2">
       <div class="screen-content">
         <div class="app-bar">
-          <div class="back">‹ Mis campos</div>
-          <h1>Añadir un campo</h1>
-          <div class="meta">Búscalo primero, si no está lo creas tú</div>
+          <div class="back">‹ Inicio</div>
+          <h1>Empezar tu partida</h1>
         </div>
-        <section>
-          <div class="eyebrow">Buscar campo</div>
-          <div class="search-box">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" id="campoSearchInput" value="Club de Golf Hato Verde">
-          </div>
-          <div class="search-source">Buscando en OpenStreetMap…</div>
-          <div class="not-found">No hemos encontrado datos completos de <strong id="campoNotFoundName">Club de Golf Hato Verde</strong> en el mapa abierto. Puedes crearlo tú ahora — solo lo harás una vez.</div>
-        </section>
-        <section>
-          <div class="eyebrow">Datos del campo</div>
-          <h2 id="campoHeading">Club de Golf Hato Verde</h2>
-          <div class="section-sub">Rellena par y hándicap de cada hoyo, como en tu tarjeta</div>
-          <div class="field"><label>Nombre del campo</label><input type="text" id="campoNombreInput" value="Club de Golf Hato Verde"></div>
-          <div class="field-row">
-            <div class="field"><label>Ubicación</label><input type="text" id="campoUbicacionInput" value="España"></div>
-            <div class="field"><label>Par total</label><input type="text" value="70"></div>
-          </div>
-          <div class="tab-toggle" id="campoTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
-          <div class="card-grid nine-block" data-nine="ida" id="campoGridIda">
-            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">1</div><div class="grid-cell">2</div><div class="grid-cell">3</div><div class="grid-cell">4</div><div class="grid-cell">5</div><div class="grid-cell">6</div><div class="grid-cell">7</div><div class="grid-cell">8</div><div class="grid-cell">9</div><div class="grid-cell">Ida</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell" style="font-weight:600;">34</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="1"></div><div class="grid-cell"><input value="7"></div><div class="grid-cell"><input value="13"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="9"></div><div class="grid-cell"><input value="11"></div><div class="grid-cell"><input value="17"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="15"></div><div class="grid-cell">—</div></div>
-          </div>
-          <div class="card-grid nine-block" data-nine="vuelta" id="campoGridVuelta" style="display:none;">
-            <div class="grid-row label-row"><div class="grid-cell side-label">Hoyo</div><div class="grid-cell">10</div><div class="grid-cell">11</div><div class="grid-cell">12</div><div class="grid-cell">13</div><div class="grid-cell">14</div><div class="grid-cell">15</div><div class="grid-cell">16</div><div class="grid-cell">17</div><div class="grid-cell">18</div><div class="grid-cell">Vuelta</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Par</div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="5"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="3"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell" style="font-weight:600;">36</div></div>
-            <div class="grid-row"><div class="grid-cell side-label">Hcp</div><div class="grid-cell"><input value="8"></div><div class="grid-cell"><input value="18"></div><div class="grid-cell"><input value="10"></div><div class="grid-cell"><input value="4"></div><div class="grid-cell"><input value="6"></div><div class="grid-cell"><input value="12"></div><div class="grid-cell"><input value="2"></div><div class="grid-cell"><input value="16"></div><div class="grid-cell"><input value="14"></div><div class="grid-cell">—</div></div>
-          </div>
-          <div class="helper-note">Toca "Vuelta (10–18)" para completar los últimos 9 hoyos. Todos los campos son editables.</div>
+        <section id="campoKnownSection">
+          <div class="eyebrow">Hoy juegas en este campo</div>
+          <h2 id="campoKnownName">Club Hato Verde</h2>
+          <div class="section-sub" id="campoKnownMeta">Las Pajanosas-Guillena, Sevilla · Par 70</div>
+          <div class="tab-toggle" id="campoKnownTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
+          <div class="card-grid nine-block compact" data-nine="ida" id="campoKnownGridIda"></div>
+          <div class="card-grid nine-block compact" data-nine="vuelta" id="campoKnownGridVuelta" style="display:none;"></div>
         </section>
       </div>
-      <div class="actions"><div class="btn ghost" id="cancelarCampoBtn">Cancelar</div><div class="btn primary" id="guardarCampoBtn">Guardar campo</div></div>
+      <div class="actions"><div class="btn primary full" id="empezarPartidaDesdeCampoBtn">▶ Empezar partida</div></div>
     </div>
 
     <!-- SCREEN 3: Introducir resultados -->
     <div class="screen" data-screen="3">
-      <div class="toast" id="s3Toast"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Campo guardado — ya puedes anotar tu ronda</div>
       <div class="screen-content">
         <div class="app-bar">
           <div class="back" id="s3Back">‹ Club de Golf Hato Verde</div>

@@ -2,6 +2,19 @@
   let currentHole = 1;
   let scoringType = 'stableford'; // 'stableford' | 'strokeplay' | 'matchplay' — se elige en "Configurar partida"
 
+  // Avisos de golpe(s) extra en un hoyo (según el hándicap), para animar un poco la partida
+  const EXTRA_STROKE_MESSAGES = [
+    '🎯 Golpe extra aquí, no hay excusa',
+    '🎁 Golpe de regalo — no lo desperdicies',
+    '💪 Aquí te dan uno gratis, aprovéchalo',
+    '⚡ Golpe extra: tu oportunidad de oro',
+    '🔑 En este hoyo juegas con ventaja',
+    '🧉 Golpe extra, así que sin agobios',
+  ];
+  function extraStrokeMessage(hole, pIndex){
+    return EXTRA_STROKE_MESSAGES[(hole + pIndex) % EXTRA_STROKE_MESSAGES.length];
+  }
+
   // Puntos Stableford para un hoyo: 2 - (diferencia del neto sobre par), sin bajar de 0
   // (par=2, bogey=1, birdie=3, doble bogey neto o peor=0 — tabla oficial de Stableford)
   function stablefordPoints(netDiff){
@@ -111,16 +124,20 @@
         const posBadge = (s && s.holesFilled > 0) ? '<span class="medal-badge' + (rank === 0 ? ' gold' : '') + '">🏆 ' + (rank + 1) + '</span>' : '';
         const scoreBadge = (s && s.holesFilled > 0) ? '<span class="medal-badge">' + formatStandingScore(s) + '</span>' : '';
         const hcpBadge = playerHandicaps[pIndex] ? '<span class="medal-badge">Hcp ' + playerHandicaps[pIndex] + '</span>' : '';
+        const recibidos = strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0; // golpes de regalo de ESTE jugador en ESTE hoyo
         let resultClass = '', resultText = '—';
         if(val && par != null){
-          const recibidos = strokesForHole(playerHandicaps[pIndex], strokeIndex); // golpes de regalo de ESTE jugador en ESTE hoyo
           const diff = (parseInt(val, 10) - recibidos) - par; // resultado ya ajustado a su hándicap, como en golfdirecto
           resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
           resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
         }
+        const extraStrokeNote = recibidos > 0
+          ? '<div class="extra-stroke-note">' + extraStrokeMessage(currentHole, pIndex) + (recibidos > 1 ? ' (×' + recibidos + ')' : '') + '</div>'
+          : '';
         return '<div class="player-hole-card">'
           + '<div class="php-name">' + name + '</div>'
           + '<div class="player-hole-badges">' + posBadge + scoreBadge + hcpBadge + '</div>'
+          + extraStrokeNote
           + '<div class="php-controls">'
           + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="numeric" placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '">'
           + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
