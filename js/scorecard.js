@@ -103,12 +103,6 @@
     }
   }
 
-  // Pantalla 2 "Empezar tu partida": confirma el campo ya elegido (siempre uno de nuestra base de datos)
-  function showCampoScreen(course){
-    renderCampoKnown(course);
-    goTo(2);
-  }
-
   // Pantalla "Jugar": construye el desplegable de campos a partir de COURSES, filtrando por lo que se escriba
   function renderDropdown(query){
     const q = (query || '').trim().toLowerCase();
@@ -126,7 +120,7 @@
           if(screen0Search) screen0Search.value = course.name; // marca la selección en el buscador
         }
         closeDropdown();
-        showCampoScreen(course); // Empezar tu partida
+        goTo(1); // Configurar partida
       });
     });
   }

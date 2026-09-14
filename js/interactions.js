@@ -84,7 +84,6 @@
 
   // Botones de navegación de flujo dentro de cada pantalla
   const clickGoTo = (id, n) => { const el = document.getElementById(id); if(el) el.addEventListener('click', ()=> goTo(n)); };
-  clickGoTo('empezarPartidaDesdeCampoBtn', 1);
   clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
 
@@ -99,12 +98,20 @@
     });
   });
 
-  // "Configurar partida": recoge ambos grupos (1 a 4 jugadores cada uno, con hándicap) antes de empezar a anotar
+  // "Configurar partida": recoge los grupos (1 a 4 jugadores cada uno, con hándicap) y pasa a la
+  // confirmación final "Empezar tu partida" (campo + cuadrícula), donde se empieza de verdad
   const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
   if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
     saveConfigGroupFields();
     const scoringPill = document.querySelector('#scoringTypeRow .pill-opt.selected');
     scoringType = scoringPill ? scoringPill.dataset.scoring : 'stableford';
+    if(selectedCourse) renderCampoKnown(selectedCourse);
+    goTo(2);
+  });
+
+  // "Empezar tu partida": aquí sí arranca la ronda de verdad (único botón que dice "Empezar partida")
+  const empezarPartidaDesdeCampoBtn = document.getElementById('empezarPartidaDesdeCampoBtn');
+  if(empezarPartidaDesdeCampoBtn) empezarPartidaDesdeCampoBtn.addEventListener('click', ()=>{
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
     const rcSection = document.getElementById('roundCodeSection');
     if(rcSection) rcSection.style.display = 'none';
