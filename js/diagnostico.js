@@ -148,6 +148,6 @@
     renderDiagPattern(pIndex, worst);
   }
   const s4GuardarBtn = document.getElementById('s4GuardarBtn');
-  if(s4GuardarBtn) s4GuardarBtn.addEventListener('click', ()=> goTo(6));
+  if(s4GuardarBtn) s4GuardarBtn.addEventListener('click', ()=> goTo(0));
   render();
   renderRecentRounds();
