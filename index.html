@@ -43,6 +43,21 @@
           <div class="meta">Elige campo para empezar una partida</div>
         </div>
         <section>
+          <div class="eyebrow">¿Qué quieres hacer?</div>
+          <div class="start-choice">
+            <div class="start-choice-opt" id="startChoiceCrear">
+              <div class="ic">🏌️</div>
+              <div class="lbl">Crear partida</div>
+              <div class="sub">Elige campo y empieza</div>
+            </div>
+            <div class="start-choice-opt" id="startChoiceCodigo">
+              <div class="ic">🔑</div>
+              <div class="lbl">Tengo un código</div>
+              <div class="sub">Únete a una ya empezada</div>
+            </div>
+          </div>
+        </section>
+        <section id="createGameSection" style="display:none;">
           <div class="eyebrow">Buscar campo</div>
           <div class="search-box">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -51,9 +66,9 @@
           </div>
           <div class="dropdown" id="screen0-dropdown"></div>
         </section>
-        <section>
+        <section id="joinGameSection" style="display:none;">
           <div class="eyebrow">Unirse a una partida</div>
-          <div class="section-sub">¿Alguien ya empezó? Escribe su código para anotar los golpes en la misma partida, en vivo.</div>
+          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
           <div class="field-row" style="margin-top:8px;">
             <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'IBM Plex Mono', monospace;"></div>
             <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
@@ -61,15 +76,19 @@
           <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay); margin-top:6px;"></div>
         </section>
         <section>
+          <div class="pattern" id="consejosLinkBtn" style="cursor:pointer; display:flex; gap:14px; align-items:flex-start;">
+            <div style="font-size:32px; line-height:1;">💡</div>
+            <div>
+              <div style="font-family:'Playfair Display', serif; font-size:18px; font-weight:600; color:var(--forest); margin-bottom:4px;">Consejos de Golf</div>
+              <div style="font-size:13px; color:var(--ink); line-height:1.4;" id="consejosTeaser">Calentamiento, ejecución, correcciones y mentalidad.</div>
+              <div style="font-size:11.5px; color:var(--forest-soft); font-weight:600; margin-top:8px;">Ver todos los consejos ›</div>
+            </div>
+          </div>
+        </section>
+        <section>
           <div class="eyebrow">Tus partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no has jugado ninguna partida con esta app — cuando empieces una, aparecerá aquí para poder volver a ella.</div>
-        </section>
-        <section>
-          <div class="answer-row" id="consejosLinkBtn" style="cursor:pointer;">
-            <div class="answer-main">💡 Consejos de Golf</div>
-            <div class="answer-sub">Calentamiento, ejecución, correcciones y mentalidad</div>
-          </div>
         </section>
       </div>
       <div class="tab-bar">

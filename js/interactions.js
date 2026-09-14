@@ -32,6 +32,30 @@
     });
   });
 
+  // Pantalla "Jugar": elegir entre crear partida (buscar campo) o unirse con código
+  const startChoiceCrear = document.getElementById('startChoiceCrear');
+  const startChoiceCodigo = document.getElementById('startChoiceCodigo');
+  const createGameSection = document.getElementById('createGameSection');
+  const joinGameSection = document.getElementById('joinGameSection');
+  if(startChoiceCrear && startChoiceCodigo){
+    startChoiceCrear.addEventListener('click', ()=>{
+      startChoiceCrear.classList.add('active');
+      startChoiceCodigo.classList.remove('active');
+      createGameSection.style.display = '';
+      joinGameSection.style.display = 'none';
+      const input = document.getElementById('screen0-search');
+      if(input) input.focus();
+    });
+    startChoiceCodigo.addEventListener('click', ()=>{
+      startChoiceCodigo.classList.add('active');
+      startChoiceCrear.classList.remove('active');
+      joinGameSection.style.display = '';
+      createGameSection.style.display = 'none';
+      const input = document.getElementById('joinCodeInput');
+      if(input) input.focus();
+    });
+  }
+
   // Pantalla "Jugar": desplegable de campos (poblado desde COURSES), cerrado hasta que se toque o se escriba
   renderDropdown('');
   const screen0Search = document.getElementById('screen0-search');
