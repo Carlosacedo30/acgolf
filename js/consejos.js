@@ -38,3 +38,18 @@
 
   const consejosLinkBtn = document.getElementById('consejosLinkBtn');
   if(consejosLinkBtn) consejosLinkBtn.addEventListener('click', ()=> goTo(7));
+
+  // Tarjeta de Inicio: un consejo distinto cada día, sacado de las mismas secciones
+  const consejosTeaserEl = document.getElementById('consejosTeaser');
+  if(consejosTeaserEl){
+    const teasers = [
+      CONSEJOS_GOLF.antesDeJugar.drivingRange[2],
+      CONSEJOS_GOLF.ejecucion.golpes[0].d,
+      CONSEJOS_GOLF.correcciones.lista[0].d,
+      CONSEJOS_GOLF.mentalidad.cerrarBuenaRonda,
+      CONSEJOS_GOLF.ejecucion.golpes[9].d,
+      CONSEJOS_GOLF.antesDeJugar.estrategia[1],
+    ];
+    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+    consejosTeaserEl.textContent = teasers[dayOfYear % teasers.length];
+  }
