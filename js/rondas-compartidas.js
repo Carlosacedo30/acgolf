@@ -108,6 +108,7 @@
       const { data, error } = await client.from('rounds').select('*').eq('code', code).single();
       if(error || !data) return { ok: false, msg: 'No encontramos ninguna partida con ese código.' };
       currentRoundId = data.id;
+      leagueHandicapUpdateScheduled = false; // ronda distinta: permitir recalcular la liga cuando esta termine
       matchGroups = (data.match_groups && data.match_groups.length) ? normalizeMatchGroups(data.match_groups) : matchGroups;
       const course = COURSES.find(c => c.id === data.course_id);
       selectedCourse = course || (data.course_name ? {

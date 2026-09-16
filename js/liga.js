@@ -1,6 +1,9 @@
   // --- Liga en Club Hato Verde: hándicap real (WHS) y clasificación acumulada ---
   const LEAGUE_COURSE_ID = 'hato-verde';
   const LEAGUE_TEE = 'amarillas'; // barra de salida habitual del grupo
+  // Evita recalcular (con su consulta a la base de datos) en cada pulsación una vez la ronda ya está completa;
+  // se reinicia al empezar una ronda nueva
+  let leagueHandicapUpdateScheduled = false;
 
   // Tope de doble bogey neto por hoyo (Equitable Stroke Control de la WHS):
   // ningún hoyo cuenta, para el cálculo del hándicap, por encima de par + 2 + golpes recibidos ahí

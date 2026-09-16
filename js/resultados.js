@@ -130,7 +130,9 @@
           mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad.cuandoSiSalga : CONSEJOS_GOLF.mentalidad.cuandoNadaSalga;
         }
         // Ronda completa en Hato Verde: recalcular el hándicap real de la liga con este resultado ya guardado
-        if(selectedCourse && selectedCourse.id === LEAGUE_COURSE_ID){
+        // (solo una vez por ronda, no en cada pulsación mientras siga completa)
+        if(selectedCourse && selectedCourse.id === LEAGUE_COURSE_ID && !leagueHandicapUpdateScheduled){
+          leagueHandicapUpdateScheduled = true;
           setTimeout(updateLeagueHandicaps, 1200);
         }
         const shareResultLink = document.getElementById('shareResultWhatsapp');
