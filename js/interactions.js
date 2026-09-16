@@ -102,6 +102,16 @@
   // confirmación final "Empezar tu partida" (campo + cuadrícula), donde se empieza de verdad
   const empezarPartidaBtn = document.getElementById('empezarPartidaBtn');
   if(empezarPartidaBtn) empezarPartidaBtn.addEventListener('click', ()=>{
+    const roundNameInput = document.getElementById('roundNameInput');
+    const roundNameError = document.getElementById('roundNameError');
+    const typedName = roundNameInput ? roundNameInput.value.trim() : '';
+    if(!typedName){
+      if(roundNameError) roundNameError.style.display = '';
+      if(roundNameInput) roundNameInput.focus();
+      return; // nombre obligatorio: no se puede seguir sin él
+    }
+    if(roundNameError) roundNameError.style.display = 'none';
+    roundName = typedName;
     saveConfigGroupFields();
     const scoringPill = document.querySelector('#scoringTypeRow .pill-opt.selected');
     scoringType = scoringPill ? scoringPill.dataset.scoring : 'stableford';

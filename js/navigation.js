@@ -19,4 +19,18 @@
   prevBtn.addEventListener('click', () => { if(current>0) goTo(current - 1); });
   nextBtn.addEventListener('click', () => { if(current<screens.length-1) goTo(current + 1); });
   dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.goto)));
-  function goTo(n){ current = n; render(); if(n === 1) updateLeagueHandicaps(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); }
+  // Si el día/hora de comienzo están vacíos (partida nueva), los rellena con el momento actual
+  function setDefaultRoundDateTime(){
+    const dateInput = document.getElementById('roundDateInput');
+    const timeInput = document.getElementById('roundTimeInput');
+    const now = new Date();
+    if(dateInput && !dateInput.value){
+      const pad = n => String(n).padStart(2, '0');
+      dateInput.value = now.getFullYear() + '-' + pad(now.getMonth() + 1) + '-' + pad(now.getDate());
+    }
+    if(timeInput && !timeInput.value){
+      const pad = n => String(n).padStart(2, '0');
+      timeInput.value = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    }
+  }
+  function goTo(n){ current = n; render(); if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); } if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); }

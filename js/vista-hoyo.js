@@ -131,8 +131,8 @@
           resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
           resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
         }
-        const extraStrokeNote = recibidos > 0
-          ? '<div class="extra-stroke-note">' + extraStrokeMessage(currentHole, pIndex) + (recibidos > 1 ? ' (×' + recibidos + ')' : '') + '</div>'
+        const extraStrokeNote = recibidos >= 2
+          ? '<div class="extra-stroke-note">' + extraStrokeMessage(currentHole, pIndex) + ' (×' + recibidos + ')</div>'
           : '';
         return '<div class="player-hole-card">'
           + '<div class="php-name">' + name + '</div>'

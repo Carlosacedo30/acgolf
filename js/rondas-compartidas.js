@@ -40,12 +40,18 @@
       return raw ? JSON.parse(raw) : [];
     } catch(e){ return []; }
   }
-  function rememberRoundCode(code, courseName){
+  function rememberRoundCode(code, courseName, roundNameVal){
     try {
       const history = getLocalRoundHistory().filter(r => r.code !== code);
-      history.unshift({ code: code, courseName: courseName || '', date: new Date().toISOString() });
+      history.unshift({ code: code, courseName: courseName || '', roundName: roundNameVal || '', date: new Date().toISOString() });
       localStorage.setItem('golfAppRoundHistory', JSON.stringify(history.slice(0, 15)));
     } catch(e){ /* almacenamiento no disponible */ }
+  }
+
+  // Título de "Introducir resultados": el nombre que le puso el jugador, o un texto genérico si no lo hay
+  function updateS3Title(){
+    const titleEl = document.getElementById('s3Title');
+    if(titleEl) titleEl.textContent = roundName || 'Nueva ronda';
   }
 
   function setSyncStatus(state){
@@ -86,11 +92,13 @@
         course_hcp: selectedCourse ? (selectedCourse.hcp || null) : null,
         scoring_type: scoringType,
         match_groups: matchGroups,
+        round_name: roundName || null,
       }).select().single();
       if(error) throw error;
       currentRoundId = data.id;
       showRoundCode(data.code);
-      rememberRoundCode(data.code, data.course_name);
+      rememberRoundCode(data.code, data.course_name, data.round_name);
+      updateS3Title();
       subscribeToRound(data.id);
       setSyncStatus('live');
     } catch(e){
@@ -109,6 +117,7 @@
       if(error || !data) return { ok: false, msg: 'No encontramos ninguna partida con ese código.' };
       currentRoundId = data.id;
       leagueHandicapUpdateScheduled = false; // ronda distinta: permitir recalcular la liga cuando esta termine
+      roundName = data.round_name || '';
       matchGroups = (data.match_groups && data.match_groups.length) ? normalizeMatchGroups(data.match_groups) : matchGroups;
       const course = COURSES.find(c => c.id === data.course_id);
       selectedCourse = course || (data.course_name ? {
@@ -125,7 +134,8 @@
       const g0 = matchGroups[0];
       players = g0.players.length ? g0.players : ['Jugador 1'];
       playerHandicaps = g0.handicaps.length ? g0.handicaps : [0];
-      rememberRoundCode(data.code, data.course_name);
+      rememberRoundCode(data.code, data.course_name, data.round_name);
+      updateS3Title();
       if(selectedCourse){
         restoringScores = true;
         applyCourseToScoreGrids(selectedCourse);
@@ -155,6 +165,7 @@
         if(!row || !row.match_groups) return;
         matchGroups = normalizeMatchGroups(row.match_groups);
         if(row.scoring_type) scoringType = row.scoring_type;
+        if(row.round_name) { roundName = row.round_name; updateS3Title(); }
         const g = matchGroups[activeGroup] || matchGroups[0];
         players = g.players.length ? g.players : ['Jugador 1'];
         playerHandicaps = g.handicaps.length ? g.handicaps : [0];
@@ -219,19 +230,20 @@
     }
     if(empty) empty.style.display = 'none';
     const recent = history.slice(0, 5);
-    let finishedByCode = {};
+    let finishedByCode = {}, roundNameByCode = {};
     const client = initSupabase();
     if(client){
       try {
-        const { data } = await client.from('rounds').select('code, match_groups').in('code', recent.map(r => r.code));
-        (data || []).forEach(r => { finishedByCode[r.code] = isRoundFinished(r.match_groups); });
+        const { data } = await client.from('rounds').select('code, match_groups, round_name').in('code', recent.map(r => r.code));
+        (data || []).forEach(r => { finishedByCode[r.code] = isRoundFinished(r.match_groups); roundNameByCode[r.code] = r.round_name; });
       } catch(e){ /* si falla, se muestra sin la etiqueta de "sin terminar" */ }
     }
     const sorted = recent.slice().sort((a, b) => (finishedByCode[a.code] === false ? 0 : 1) - (finishedByCode[b.code] === false ? 0 : 1));
     list.innerHTML = sorted.map(r => {
       const unfinished = finishedByCode[r.code] === false;
+      const title = roundNameByCode[r.code] || r.roundName || r.courseName || 'Partida';
       return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft); margin:0 -20px; padding:12px 20px; border-top:none;"' : '') + '>'
-        + '<div><div class="club">' + (r.courseName || 'Campo') + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">Código ' + r.code + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
+        + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + (r.courseName || 'Campo') + ' · Código ' + r.code + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
         + '<div class="play-btn" data-code="' + r.code + '" style="cursor:pointer;">Continuar</div></div>';
     }).join('');
     list.querySelectorAll('.play-btn[data-code]').forEach(btn=>{
