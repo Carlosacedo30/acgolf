@@ -17,6 +17,7 @@
   let matchGroups = Array.from({ length: MAX_GROUPS }, () => ({ players: [], handicaps: [], scores: {} }));
   let configGroup = 0; // qué grupo se está rellenando en "Configurar partida"
   let activeGroup = 0; // qué grupo se está viendo en "Introducir resultados" / Diagnóstico
+  let roundName = ''; // nombre de la partida, obligatorio
 
   function readConfigFields(){
     const slots = ['player1', 'player2', 'player3', 'player4'].map(id => ({

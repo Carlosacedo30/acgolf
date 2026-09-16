@@ -120,6 +120,13 @@
           if(screen0Search) screen0Search.value = course.name; // marca la selección en el buscador
         }
         closeDropdown();
+        // Partida nueva de verdad: no arrastrar el nombre/fecha/hora de una anterior
+        const roundNameInput = document.getElementById('roundNameInput');
+        const roundDateInput = document.getElementById('roundDateInput');
+        const roundTimeInput = document.getElementById('roundTimeInput');
+        if(roundNameInput) roundNameInput.value = '';
+        if(roundDateInput) roundDateInput.value = '';
+        if(roundTimeInput) roundTimeInput.value = '';
         goTo(1); // Configurar partida
       });
     });

@@ -107,10 +107,14 @@
         </div>
         <section>
           <div class="eyebrow">Detalles</div>
-          <div class="field"><label>Nombre de la partida</label><input type="text" placeholder="Ponle un nombre a tu partida"></div>
+          <div class="field">
+            <label>Nombre de la partida *</label>
+            <input type="text" id="roundNameInput" placeholder="Ponle un nombre a tu partida">
+            <div class="section-sub" id="roundNameError" style="display:none; color:var(--clay); margin-top:6px;">Ponle un nombre a la partida para continuar</div>
+          </div>
           <div class="field-row">
-            <div class="field"><label>Día de comienzo</label><input type="date" value="2026-09-12"></div>
-            <div class="field"><label>Hora de comienzo</label><input type="time" value="09:00"></div>
+            <div class="field"><label>Día de comienzo</label><input type="date" id="roundDateInput"></div>
+            <div class="field"><label>Hora de comienzo</label><input type="time" id="roundTimeInput"></div>
           </div>
         </section>
         <section>
@@ -213,7 +217,7 @@
       <div class="screen-content">
         <div class="app-bar">
           <div class="back" id="s3Back">‹ Club de Golf Hato Verde</div>
-          <h1>Nueva ronda</h1>
+          <h1 id="s3Title">Nueva ronda</h1>
           <div class="meta" id="s3ScoringMeta">Hoy · Stableford</div>
         </div>
         <section id="roundCodeSection" style="display:none;">
