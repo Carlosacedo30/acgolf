@@ -84,8 +84,26 @@
 
   // Botones de navegación de flujo dentro de cada pantalla
   const clickGoTo = (id, n) => { const el = document.getElementById(id); if(el) el.addEventListener('click', ()=> goTo(n)); };
-  clickGoTo('finalizarRondaBtn', 4);
   clickGoTo('guardarLuegoBtn', 0);
+
+  // "Finalizar ronda": avisa si a algún jugador le faltan hoyos, en vez de dejar que "termine" a medias
+  const incompleteRoundOverlay = document.getElementById('incompleteRoundOverlay');
+  const incompleteRoundText = document.getElementById('incompleteRoundText');
+  const incompleteRoundCancel = document.getElementById('incompleteRoundCancel');
+  const incompleteRoundContinue = document.getElementById('incompleteRoundContinue');
+  if(incompleteRoundCancel) incompleteRoundCancel.addEventListener('click', ()=>{ incompleteRoundOverlay.style.display = 'none'; });
+  if(incompleteRoundContinue) incompleteRoundContinue.addEventListener('click', ()=>{ incompleteRoundOverlay.style.display = 'none'; goTo(4); });
+  const finalizarRondaBtn = document.getElementById('finalizarRondaBtn');
+  if(finalizarRondaBtn) finalizarRondaBtn.addEventListener('click', ()=>{
+    const missing = getPlayerHolesFilled().filter(s => s.filled < 18);
+    if(missing.length && incompleteRoundOverlay && incompleteRoundText){
+      incompleteRoundText.textContent = 'Todavía les faltan hoyos por anotar:\n'
+        + missing.map(s => '• ' + s.name + ': ' + s.filled + '/18 hoyos').join('\n');
+      incompleteRoundOverlay.style.display = '';
+      return;
+    }
+    goTo(4);
+  });
 
   // "Configurar partida": pestañas Grupo 1 a 4 (no pierden lo escrito al cambiar)
   document.querySelectorAll('#configGroupToggle .tab').forEach(tab=>{

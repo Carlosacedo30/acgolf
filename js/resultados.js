@@ -1,3 +1,15 @@
+  // Cuántos hoyos lleva realmente rellenados cada jugador del grupo activo (para avisar antes de
+  // "Finalizar ronda" si a alguien le falta alguno, en vez de dejar que pase sin más)
+  function getPlayerHolesFilled(){
+    return players.map((name, pIndex)=>{
+      let filled = 0;
+      document.querySelectorAll('.golpes-row[data-player-index="' + pIndex + '"] .golpes-input').forEach(input=>{
+        if(input.value && parseInt(input.value, 10) > 0) filled++;
+      });
+      return { name: name, filled: filled };
+    });
+  }
+
   // Frases de la ronda: se calculan siempre a partir de lo escrito, así que "quedan grabadas"
   // mientras el golpe siga anotado en esa celda
   const PAR_MESSAGE = '¡Qué bueno eres!';
