@@ -113,8 +113,11 @@
   const empezarPartidaDesdeCampoBtn = document.getElementById('empezarPartidaDesdeCampoBtn');
   if(empezarPartidaDesdeCampoBtn) empezarPartidaDesdeCampoBtn.addEventListener('click', ()=>{
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
+    leagueHandicapUpdateScheduled = false; // ronda nueva: permitir recalcular la liga cuando esta también termine
     const rcSection = document.getElementById('roundCodeSection');
     if(rcSection) rcSection.style.display = 'none';
+    const leagueNote = document.getElementById('leagueHandicapUpdateNote');
+    if(leagueNote) leagueNote.style.display = 'none';
     matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los 4 grupos
     currentHole = 1;
     activeGroup = 0;

@@ -108,6 +108,7 @@
       const { data, error } = await client.from('rounds').select('*').eq('code', code).single();
       if(error || !data) return { ok: false, msg: 'No encontramos ninguna partida con ese código.' };
       currentRoundId = data.id;
+      leagueHandicapUpdateScheduled = false; // ronda distinta: permitir recalcular la liga cuando esta termine
       matchGroups = (data.match_groups && data.match_groups.length) ? normalizeMatchGroups(data.match_groups) : matchGroups;
       const course = COURSES.find(c => c.id === data.course_id);
       selectedCourse = course || (data.course_name ? {
@@ -193,6 +194,19 @@
   }
 
   // Historial real: partidas jugadas con esta app en este móvil
+  // ¿Tiene esta ronda a todos sus jugadores con los 18 hoyos rellenos?
+  function isRoundFinished(matchGroups){
+    let hasAnyPlayer = false;
+    return (matchGroups || []).every(group => (group.players || []).every((name, pIndex) => {
+      if(!name) return true;
+      hasAnyPlayer = true;
+      const scores = group.scores && group.scores[pIndex];
+      if(!scores) return false;
+      const filled = Object.keys(scores).filter(h => scores[h] !== '' && scores[h] != null).length;
+      return filled >= 18;
+    })) && hasAnyPlayer;
+  }
+
   async function renderRecentRounds(){
     const list = document.getElementById('recentRoundsList');
     const empty = document.getElementById('recentRoundsEmpty');
@@ -204,9 +218,22 @@
       return;
     }
     if(empty) empty.style.display = 'none';
-    list.innerHTML = history.slice(0, 5).map(r =>
-      '<div class="recent-row"><div><div class="club">' + (r.courseName || 'Campo') + '</div><div class="date">Código ' + r.code + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div><div class="play-btn" data-code="' + r.code + '" style="cursor:pointer;">Continuar</div></div>'
-    ).join('');
+    const recent = history.slice(0, 5);
+    let finishedByCode = {};
+    const client = initSupabase();
+    if(client){
+      try {
+        const { data } = await client.from('rounds').select('code, match_groups').in('code', recent.map(r => r.code));
+        (data || []).forEach(r => { finishedByCode[r.code] = isRoundFinished(r.match_groups); });
+      } catch(e){ /* si falla, se muestra sin la etiqueta de "sin terminar" */ }
+    }
+    const sorted = recent.slice().sort((a, b) => (finishedByCode[a.code] === false ? 0 : 1) - (finishedByCode[b.code] === false ? 0 : 1));
+    list.innerHTML = sorted.map(r => {
+      const unfinished = finishedByCode[r.code] === false;
+      return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft); margin:0 -20px; padding:12px 20px; border-top:none;"' : '') + '>'
+        + '<div><div class="club">' + (r.courseName || 'Campo') + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">Código ' + r.code + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
+        + '<div class="play-btn" data-code="' + r.code + '" style="cursor:pointer;">Continuar</div></div>';
+    }).join('');
     list.querySelectorAll('.play-btn[data-code]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         const res = await joinSharedRound(btn.dataset.code);
