@@ -110,8 +110,8 @@
   });
 
   // "Empezar tu partida": aquí sí arranca la ronda de verdad (único botón que dice "Empezar partida")
-  const empezarPartidaDesdeCampoBtn = document.getElementById('empezarPartidaDesdeCampoBtn');
-  if(empezarPartidaDesdeCampoBtn) empezarPartidaDesdeCampoBtn.addEventListener('click', ()=>{
+  // Arranca la ronda de verdad (crea la partida compartida y pasa a anotar)
+  function startNewRoundNow(){
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
     leagueHandicapUpdateScheduled = false; // ronda nueva: permitir recalcular la liga cuando esta también termine
     const rcSection = document.getElementById('roundCodeSection');
@@ -129,6 +129,39 @@
     renderGroupSwitcher();
     createSharedRound();
     goTo(3);
+  }
+
+  // Antes de crear una partida nueva, avisa si ya hay una sin terminar en este mismo campo
+  const duplicateRoundOverlay = document.getElementById('duplicateRoundOverlay');
+  const duplicateRoundText = document.getElementById('duplicateRoundText');
+  const duplicateRoundContinue = document.getElementById('duplicateRoundContinue');
+  const duplicateRoundCreateNew = document.getElementById('duplicateRoundCreateNew');
+  function hideDuplicateRoundWarning(){
+    if(duplicateRoundOverlay) duplicateRoundOverlay.style.display = 'none';
+  }
+  function showDuplicateRoundWarning(round){
+    if(!duplicateRoundOverlay || !duplicateRoundText) { startNewRoundNow(); return; }
+    duplicateRoundText.textContent = 'Tienes la partida con código ' + round.code + ' sin terminar en este campo. ¿Sigues con esa o creas una nueva?';
+    duplicateRoundOverlay.style.display = '';
+    duplicateRoundContinue.onclick = async ()=>{
+      hideDuplicateRoundWarning();
+      const res = await joinSharedRound(round.code);
+      if(res.ok) goTo(3);
+    };
+    duplicateRoundCreateNew.onclick = ()=>{
+      hideDuplicateRoundWarning();
+      startNewRoundNow();
+    };
+  }
+
+  const empezarPartidaDesdeCampoBtn = document.getElementById('empezarPartidaDesdeCampoBtn');
+  if(empezarPartidaDesdeCampoBtn) empezarPartidaDesdeCampoBtn.addEventListener('click', async ()=>{
+    const unfinished = selectedCourse ? await findUnfinishedRoundForCourse(selectedCourse.id) : null;
+    if(unfinished){
+      showDuplicateRoundWarning(unfinished);
+      return;
+    }
+    startNewRoundNow();
   });
 
   // Buscadores de "Jugador 1..4" con sugerencias de jugadores usados antes
