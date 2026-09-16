@@ -218,6 +218,22 @@
     })) && hasAnyPlayer;
   }
 
+  // Busca, entre las partidas recordadas en este móvil, una sin terminar en este mismo campo
+  // (para avisar antes de crear otra por error, en vez de dejar que pase sin más)
+  async function findUnfinishedRoundForCourse(courseId){
+    const client = initSupabase();
+    if(!client || !courseId) return null;
+    const history = getLocalRoundHistory();
+    if(!history.length) return null;
+    try {
+      const { data } = await client.from('rounds').select('code, course_id, match_groups, updated_at').in('code', history.map(r => r.code));
+      if(!data) return null;
+      const candidates = data.filter(r => r.course_id === courseId && !isRoundFinished(r.match_groups));
+      candidates.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+      return candidates[0] || null;
+    } catch(e){ return null; }
+  }
+
   async function renderRecentRounds(){
     const list = document.getElementById('recentRoundsList');
     const empty = document.getElementById('recentRoundsEmpty');

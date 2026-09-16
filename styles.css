@@ -273,6 +273,12 @@
   .message-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto; }
   .message-toast .toast-hole{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:700; background:var(--gold); color:#fff; padding:3px 9px; border-radius:12px; flex:none; white-space:nowrap; }
   .message-toast .toast-text{ font-size:13.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+  /* Aviso de partida sin terminar antes de crear una nueva */
+  .modal-overlay{ position:fixed; inset:0; background:rgba(15,27,46,0.55); z-index:90; display:flex; align-items:center; justify-content:center; padding:24px; }
+  .modal-card{ background:var(--paper); border-radius:10px; padding:20px; width:100%; max-width:360px; box-shadow:0 20px 50px rgba(15,27,46,0.35); }
+  .modal-card .actions{ display:flex; gap:10px; }
+  .modal-card .btn{ flex:1; }
   .round-code-banner .lbl{ font-size:11px; color:var(--forest-soft); font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
   .round-code-banner .code{ font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; color:var(--forest); letter-spacing:.06em; margin:4px 0; }
   .round-code-banner .hint{ font-size:12px; color:#7A8A99; }
@@ -291,17 +297,18 @@
   .hole-meta-item{ text-align:center; }
   .hole-meta-item .k{ font-size:10.5px; color:#7A8A99; font-weight:600; text-transform:uppercase; letter-spacing:.04em; }
   .hole-meta-item .v{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; color:var(--ink); margin-top:2px; }
-  .player-hole-card{ margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:6px; background:#fff; }
+  #hvPlayers{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:16px; }
+  .player-hole-card{ padding:12px; border:1px solid var(--line); border-radius:6px; background:#fff; }
   .player-hole-card .php-name{ font-size:14.5px; font-weight:600; }
   .player-hole-badges{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
   .medal-badge{ display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:600; padding:2px 8px; border-radius:20px; background:var(--paper-dim); color:var(--forest-soft); }
   .medal-badge.gold{ background:var(--gold-soft); color:var(--gold-ink, var(--gold)); }
   .extra-stroke-note{ margin-top:8px; font-size:12px; font-weight:600; color:var(--gold-ink, var(--gold)); background:var(--gold-soft); padding:6px 10px; border-radius:6px; }
-  .php-controls{ display:flex; align-items:center; gap:10px; margin-top:12px; }
-  .stroke-box{ width:64px; height:56px; border:2px solid var(--forest); border-radius:8px; background:#fff; font-family:'IBM Plex Mono', monospace; font-size:26px; font-weight:600; color:var(--forest); text-align:center; }
-  .stroke-box::placeholder{ font-size:24px; color:var(--forest); opacity:0.6; }
+  .php-controls{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .stroke-box{ width:52px; height:52px; border:2px solid var(--forest); border-radius:8px; background:#fff; font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600; color:var(--forest); text-align:center; }
+  .stroke-box::placeholder{ font-size:20px; color:var(--forest); opacity:0.6; }
   .stroke-box.filled{ background:var(--forest); color:var(--paper); }
-  .result-box{ flex:1; height:56px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:700; background:var(--paper-dim); color:#9AA6B5; }
+  .result-box{ flex:1; height:52px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-size:18px; font-weight:700; background:var(--paper-dim); color:#9AA6B5; }
   .result-box.par{ background:var(--gold-soft); color:var(--gold-ink, var(--gold)); }
   .result-box.over{ background:#3A1416; color:#F5B8BD; }
   .result-box.under{ background:var(--forest); color:#AFD4F0; }
