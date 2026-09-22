@@ -108,6 +108,9 @@
     }
   }
 
+  // La clasificación arranca de cero: solo cuentan rondas grabadas a partir de esta fecha
+  const LEAGUE_STANDINGS_START_DATE = '2026-09-23T00:00:00+02:00';
+
   // Clasificación de la liga: por cada ronda de 18 hoyos completa, puntos = par del campo − resultado neto
   // (golpes en bruto − hándicap de ese momento). Así compite en igualdad quien tiene hándicap alto y bajo.
   async function computeLeagueStandings(){
@@ -116,7 +119,8 @@
     try {
       const { data, error } = await client.from('rounds')
         .select('match_groups, course_par')
-        .eq('course_id', LEAGUE_COURSE_ID);
+        .eq('course_id', LEAGUE_COURSE_ID)
+        .gte('created_at', LEAGUE_STANDINGS_START_DATE);
       if(error || !data) return [];
       const byPlayer = {}; // nombre -> { rounds, points }
       data.forEach(round => {
