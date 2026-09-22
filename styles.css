@@ -97,11 +97,6 @@
   .start-choice-opt .lbl{ font-weight:600; font-size:14px; color:var(--ink); margin-bottom:2px; }
   .start-choice-opt .sub{ font-size:11px; color:#5B6B7A; }
 
-  .tab-bar{ display:flex; border-top:1px solid var(--line); background:var(--paper-dim); }
-  .tab-bar .tab-item{ flex:1; text-align:center; padding:11px 0 9px; font-size:10.5px; color:#7A8A99; font-weight:600; }
-  .tab-bar .tab-item.active{ color:var(--forest); }
-  .tab-bar .tab-item .ic{ display:block; margin:0 auto 4px; width:20px; height:20px; }
-
   /* forms (Configurar partida, Añadir campo) */
   .field{ margin-bottom:14px; }
   .field:last-child{ margin-bottom:0; }
