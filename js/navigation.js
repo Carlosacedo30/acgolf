@@ -1,4 +1,4 @@
-  const labels = ["1. Jugar","2. Configurar partida","3. Empezar partida","4. Introducir resultados","5. Diagnóstico post-ronda","6. Consejos de Golf"];
+  const labels = ["1. Jugar","2. Configurar partida","3. Empezar partida","4. Introducir resultados","5. Diagnóstico post-ronda","6. Consejos de Golf","7. Liga"];
   let current = 0;
   const screens = document.querySelectorAll('.screen');
   const dots = document.querySelectorAll('.dot');
@@ -33,4 +33,4 @@
       timeInput.value = pad(now.getHours()) + ':' + pad(now.getMinutes());
     }
   }
-  function goTo(n){ current = n; render(); if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); } if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); }
+  function goTo(n){ current = n; render(); if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); } if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6) renderLigaStandings(); }

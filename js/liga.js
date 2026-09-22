@@ -107,3 +107,67 @@
       noteEl.style.display = 'none';
     }
   }
+
+  // Clasificación de la liga: por cada ronda de 18 hoyos completa, puntos = par del campo − resultado neto
+  // (golpes en bruto − hándicap de ese momento). Así compite en igualdad quien tiene hándicap alto y bajo.
+  async function computeLeagueStandings(){
+    const client = initSupabase();
+    if(!client) return [];
+    try {
+      const { data, error } = await client.from('rounds')
+        .select('match_groups, course_par')
+        .eq('course_id', LEAGUE_COURSE_ID);
+      if(error || !data) return [];
+      const byPlayer = {}; // nombre -> { rounds, points }
+      data.forEach(round => {
+        const par = round.course_par;
+        if(!par) return;
+        const parTotal = par.reduce((a, b) => a + b, 0);
+        (round.match_groups || []).forEach(group => {
+          (group.players || []).forEach((name, pIndex) => {
+            if(!name) return;
+            const scores = group.scores && group.scores[pIndex];
+            if(!scores) return;
+            let total = 0, holesFilled = 0;
+            for(let h = 1; h <= 18; h++){
+              const strokes = parseInt(scores[h], 10);
+              if(isNaN(strokes) || strokes <= 0) continue;
+              total += strokes;
+              holesFilled++;
+            }
+            if(holesFilled < 18) return; // solo cuentan rondas completas
+            const hcp = Math.round((group.handicaps && group.handicaps[pIndex]) || 0);
+            const points = parTotal - (total - hcp);
+            byPlayer[name] = byPlayer[name] || { name: name, rounds: 0, points: 0 };
+            byPlayer[name].rounds++;
+            byPlayer[name].points += points;
+          });
+        });
+      });
+      return Object.values(byPlayer).sort((a, b) => b.points - a.points);
+    } catch(e){
+      console.error('No se pudo calcular la clasificación de la liga', e);
+      return [];
+    }
+  }
+
+  async function renderLigaStandings(){
+    const wrap = document.getElementById('ligaStandings');
+    const empty = document.getElementById('ligaEmpty');
+    if(!wrap) return;
+    const standings = await computeLeagueStandings();
+    if(!standings.length){
+      wrap.innerHTML = '';
+      if(empty) empty.style.display = '';
+      return;
+    }
+    if(empty) empty.style.display = 'none';
+    wrap.innerHTML = standings.map((s, i) =>
+      '<div class="leaderboard-row' + (i === 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + s.name + ' <span style="color:#7A8A99; font-weight:400;">· ' + s.rounds + (s.rounds === 1 ? ' ronda' : ' rondas') + '</span></div><div class="leaderboard-score">' + (s.points >= 0 ? '+' + s.points : s.points) + '</div></div>'
+    ).join('');
+  }
+
+  const ligaLinkBtn = document.getElementById('ligaLinkBtn');
+  if(ligaLinkBtn) ligaLinkBtn.addEventListener('click', ()=> goTo(6));
+  const ligaVolverBtn = document.getElementById('ligaVolverBtn');
+  if(ligaVolverBtn) ligaVolverBtn.addEventListener('click', ()=> goTo(0));
