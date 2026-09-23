@@ -234,33 +234,60 @@
     } catch(e){ return null; }
   }
 
+  // Escapa texto que escriben los usuarios (nombres, títulos) antes de meterlo en el HTML
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch]));
+  }
+
+  // Partidas recientes de todos los jugadores (no solo las de este móvil), las más recientes primero;
+  // si no hay conexión, se usa el historial guardado en este móvil
+  async function fetchRecentRounds(){
+    const client = initSupabase();
+    if(client){
+      try {
+        const { data, error } = await client.from('rounds')
+          .select('code, course_name, round_name, match_groups, updated_at')
+          .not('course_id', 'is', null)
+          .order('updated_at', { ascending: false })
+          .limit(15);
+        if(!error && data){
+          return data
+            .map(r => ({
+              code: r.code,
+              courseName: r.course_name || '',
+              roundName: r.round_name || '',
+              date: r.updated_at,
+              players: (r.match_groups || []).flatMap(g => (g.players || []).filter(Boolean)),
+              finished: isRoundFinished(r.match_groups),
+            }))
+            .filter(r => r.players.length) // fuera las partidas creadas y abandonadas sin jugadores
+            .slice(0, 10);
+        }
+      } catch(e){ /* sin conexión: se tira del historial local */ }
+    }
+    return getLocalRoundHistory().slice(0, 5).map(r => ({ ...r, players: [], finished: null }));
+  }
+
   async function renderRecentRounds(){
     const list = document.getElementById('recentRoundsList');
     const empty = document.getElementById('recentRoundsEmpty');
     if(!list) return;
-    const history = getLocalRoundHistory();
-    if(!history.length){
+    const recent = await fetchRecentRounds();
+    if(!recent.length){
       list.innerHTML = '';
       if(empty) empty.style.display = '';
       return;
     }
     if(empty) empty.style.display = 'none';
-    const recent = history.slice(0, 5);
-    let finishedByCode = {}, roundNameByCode = {};
-    const client = initSupabase();
-    if(client){
-      try {
-        const { data } = await client.from('rounds').select('code, match_groups, round_name').in('code', recent.map(r => r.code));
-        (data || []).forEach(r => { finishedByCode[r.code] = isRoundFinished(r.match_groups); roundNameByCode[r.code] = r.round_name; });
-      } catch(e){ /* si falla, se muestra sin la etiqueta de "sin terminar" */ }
-    }
-    const sorted = recent.slice().sort((a, b) => (finishedByCode[a.code] === false ? 0 : 1) - (finishedByCode[b.code] === false ? 0 : 1));
+    // Las que están sin terminar, arriba
+    const sorted = recent.slice().sort((a, b) => (a.finished === false ? 0 : 1) - (b.finished === false ? 0 : 1));
     list.innerHTML = sorted.map(r => {
-      const unfinished = finishedByCode[r.code] === false;
-      const title = roundNameByCode[r.code] || r.roundName || r.courseName || 'Partida';
+      const unfinished = r.finished === false;
+      const title = escapeHtml(r.roundName || r.courseName || 'Partida');
+      const who = r.players.length ? escapeHtml(r.players.map(n => n.split(' ')[0]).join(', ')) + ' · ' : '';
       return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft); margin:0 -20px; padding:12px 20px; border-top:none;"' : '') + '>'
-        + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + (r.courseName || 'Campo') + ' · Código ' + r.code + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
-        + '<div class="play-btn" data-code="' + r.code + '" style="cursor:pointer;">Continuar</div></div>';
+        + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + who + escapeHtml(r.courseName || 'Campo') + ' · Código ' + escapeHtml(r.code) + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
+        + '<div class="play-btn" data-code="' + escapeHtml(r.code) + '" style="cursor:pointer;">' + (unfinished ? 'Continuar' : 'Ver') + '</div></div>';
     }).join('');
     list.querySelectorAll('.play-btn[data-code]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
@@ -269,3 +296,4 @@
       });
     });
   }
+

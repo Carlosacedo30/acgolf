@@ -169,7 +169,7 @@
     }
     if(empty) empty.style.display = 'none';
     wrap.innerHTML = standings.map((s, i) =>
-      '<div class="leaderboard-row' + (i === 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + s.name + ' <span style="color:#7A8A99; font-weight:400;">· ' + s.rounds + (s.rounds === 1 ? ' ronda' : ' rondas') + '</span></div><div class="leaderboard-score">' + (s.toPar > 0 ? '+' + s.toPar : s.toPar) + '</div></div>'
+      '<div class="leaderboard-row' + (i === 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + escapeHtml(s.name) + ' <span style="color:#7A8A99; font-weight:400;">· ' + s.rounds + (s.rounds === 1 ? ' ronda' : ' rondas') + '</span></div><div class="leaderboard-score">' + (s.toPar > 0 ? '+' + s.toPar : s.toPar) + '</div></div>'
     ).join('');
   }
 
