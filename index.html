@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=2">
+<link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -109,7 +109,7 @@
         <section>
           <div class="answer-row" id="ligaLinkBtn" style="cursor:pointer;">
             <div class="answer-main">🏆 Liga en Hato Verde</div>
-            <div class="answer-sub">Clasificación por puntos, ajustada al hándicap de cada uno</div>
+            <div class="answer-sub">Clasificación por resultado neto, ajustada al hándicap de cada uno</div>
           </div>
         </section>
         <section>
@@ -361,10 +361,10 @@
         <div class="app-bar">
           <div class="back">‹ Inicio</div>
           <h1>Liga en Hato Verde</h1>
-          <div class="meta">Puntos según tu resultado neto frente al par</div>
+          <div class="meta">Tu resultado neto frente al par</div>
         </div>
         <section>
-          <div class="section-sub">Cada ronda suma (o resta) el par del campo menos tu resultado neto — así compite en igualdad quien tiene hándicap alto y quien lo tiene bajo. Solo cuentan rondas de 18 hoyos completos.</div>
+          <div class="section-sub">Cada ronda suma tu resultado neto frente al par (−6 = seis bajo par; gana el más bajo) — así compite en igualdad quien tiene hándicap alto y quien lo tiene bajo. Solo cuentan rondas de 18 hoyos completos.</div>
           <div id="ligaStandings"></div>
           <div class="empty-hint" id="ligaEmpty" style="display:none;">Todavía no hay ninguna ronda completa jugada en Hato Verde.</div>
         </section>
@@ -380,18 +380,18 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
-<script src="js/data.js?v=2"></script>
-<script src="js/players.js?v=2"></script>
-<script src="js/rondas-compartidas.js?v=2"></script>
-<script src="js/historial-jugadores.js?v=2"></script>
-<script src="js/scorecard.js?v=2"></script>
-<script src="js/navigation.js?v=2"></script>
-<script src="js/diagnostico.js?v=2"></script>
-<script src="js/interactions.js?v=2"></script>
-<script src="js/resultados.js?v=2"></script>
-<script src="js/vista-hoyo.js?v=2"></script>
-<script src="js/consejos.js?v=2"></script>
-<script src="js/liga.js?v=2"></script>
+<script src="js/data.js?v=3"></script>
+<script src="js/players.js?v=3"></script>
+<script src="js/rondas-compartidas.js?v=3"></script>
+<script src="js/historial-jugadores.js?v=3"></script>
+<script src="js/scorecard.js?v=3"></script>
+<script src="js/navigation.js?v=3"></script>
+<script src="js/diagnostico.js?v=3"></script>
+<script src="js/interactions.js?v=3"></script>
+<script src="js/resultados.js?v=3"></script>
+<script src="js/vista-hoyo.js?v=3"></script>
+<script src="js/consejos.js?v=3"></script>
+<script src="js/liga.js?v=3"></script>
 
 </body>
 </html>

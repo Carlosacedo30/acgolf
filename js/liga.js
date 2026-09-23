@@ -108,10 +108,12 @@
     }
   }
 
-  // La clasificación arranca de cero: solo cuentan rondas grabadas a partir de esta fecha
+  // La clasificación arranca de cero: solo cuentan rondas jugadas (anotadas por última vez) a partir de esta fecha.
+  // Se mira updated_at y no created_at porque una partida puede crearse la víspera y jugarse al día siguiente
   const LEAGUE_STANDINGS_START_DATE = '2026-09-23T00:00:00+02:00';
 
-  // Clasificación de la liga: por cada ronda de 18 hoyos completa, puntos = par del campo − resultado neto
+  // Clasificación de la liga: por cada ronda de 18 hoyos completa, resultado = neto − par del campo
+  // (como en una tarjeta: −6 es 6 bajo par; gana el más bajo)
   // (golpes en bruto − hándicap de ese momento). Así compite en igualdad quien tiene hándicap alto y bajo.
   async function computeLeagueStandings(){
     const client = initSupabase();
@@ -120,9 +122,9 @@
       const { data, error } = await client.from('rounds')
         .select('match_groups, course_par')
         .eq('course_id', LEAGUE_COURSE_ID)
-        .gte('created_at', LEAGUE_STANDINGS_START_DATE);
+        .gte('updated_at', LEAGUE_STANDINGS_START_DATE);
       if(error || !data) return [];
-      const byPlayer = {}; // nombre -> { rounds, points }
+      const byPlayer = {}; // nombre -> { rounds, toPar }
       data.forEach(round => {
         const par = round.course_par;
         if(!par) return;
@@ -141,14 +143,14 @@
             }
             if(holesFilled < 18) return; // solo cuentan rondas completas
             const hcp = Math.round((group.handicaps && group.handicaps[pIndex]) || 0);
-            const points = parTotal - (total - hcp);
-            byPlayer[name] = byPlayer[name] || { name: name, rounds: 0, points: 0 };
+            const toPar = (total - hcp) - parTotal;
+            byPlayer[name] = byPlayer[name] || { name: name, rounds: 0, toPar: 0 };
             byPlayer[name].rounds++;
-            byPlayer[name].points += points;
+            byPlayer[name].toPar += toPar;
           });
         });
       });
-      return Object.values(byPlayer).sort((a, b) => b.points - a.points);
+      return Object.values(byPlayer).sort((a, b) => a.toPar - b.toPar);
     } catch(e){
       console.error('No se pudo calcular la clasificación de la liga', e);
       return [];
@@ -167,7 +169,7 @@
     }
     if(empty) empty.style.display = 'none';
     wrap.innerHTML = standings.map((s, i) =>
-      '<div class="leaderboard-row' + (i === 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + s.name + ' <span style="color:#7A8A99; font-weight:400;">· ' + s.rounds + (s.rounds === 1 ? ' ronda' : ' rondas') + '</span></div><div class="leaderboard-score">' + (s.points >= 0 ? '+' + s.points : s.points) + '</div></div>'
+      '<div class="leaderboard-row' + (i === 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + s.name + ' <span style="color:#7A8A99; font-weight:400;">· ' + s.rounds + (s.rounds === 1 ? ' ronda' : ' rondas') + '</span></div><div class="leaderboard-score">' + (s.toPar > 0 ? '+' + s.toPar : s.toPar) + '</div></div>'
     ).join('');
   }
 
