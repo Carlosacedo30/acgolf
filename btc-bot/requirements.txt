@@ -1,0 +1,4 @@
+# Opcional: stream en tiempo real por websocket. Sin él, el bot consulta Binance por REST cada segundo.
+websockets>=12
+# Solo para los tests
+pytest>=7

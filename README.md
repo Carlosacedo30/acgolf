@@ -27,3 +27,8 @@ Abre `index.html` directamente en un navegador, o despliega la carpeta en [Netli
 - `js/` — lógica de la app, dividida por función (datos de campos, jugadores, partidas compartidas en vivo, tarjeta de resultados, navegación, diagnóstico, informe semanal, etc.)
 - `manifest.json` — manifiesto para instalar la app como PWA
 - `icon-180.png`, `icon-512.png` — íconos de la app
+
+## Otros proyectos en este repo
+
+- [`btc-bot/`](btc-bot/) — escáner en Python de errores de precio en mercados de predicción de BTC
+  (Polymarket + Binance en vivo), con modo demo y cartera en papel. No forma parte de la app de golf.

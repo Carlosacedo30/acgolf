@@ -1,0 +1,4 @@
+__pycache__/
+*.pyc
+paper_book*.json
+.pytest_cache/
