@@ -1,0 +1,507 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Compras o no?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  :root {
+    --bg: #eef2ee;
+    --surface: #fbfcfa;
+    --ink: #17231d;
+    --muted: #5b6a62;
+    --line: #d3ddd6;
+    --accent: #1f5fae;
+    --accent-ink: #ffffff;
+    --gain: #1c7a4b;
+    --gain-soft: #dcefe3;
+    --loss: #b2402e;
+    --loss-soft: #f6e0db;
+    --hold: #9a6a12;
+    --hold-soft: #f4ead3;
+    --track: #e1e8e3;
+    --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #0e1411; --surface: #17201b; --ink: #e5ede8; --muted: #9aaba1; --line: #2a362f;
+      --accent: #6aa5ec; --accent-ink: #0b1420;
+      --gain: #5cc88f; --gain-soft: #173326; --loss: #ef8a78; --loss-soft: #3a1f1a;
+      --hold: #e0b25a; --hold-soft: #3a2f17; --track: #25302a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0e1411; --surface: #17201b; --ink: #e5ede8; --muted: #9aaba1; --line: #2a362f;
+    --accent: #6aa5ec; --accent-ink: #0b1420;
+    --gain: #5cc88f; --gain-soft: #173326; --loss: #ef8a78; --loss-soft: #3a1f1a;
+    --hold: #e0b25a; --hold-soft: #3a2f17; --track: #25302a;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.5 var(--body);
+    padding-inline: 16px; padding-block: 20px 40px;
+  }
+  .wrap { max-width: 620px; margin: 0 auto; display: grid; gap: 16px; }
+  h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.1; }
+  h1 { font-size: clamp(30px, 7vw, 42px); font-weight: 800; letter-spacing: -0.01em; }
+  h2 { font-size: 22px; font-weight: 600; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 700; }
+
+  header { display: grid; gap: 6px; }
+  header p { margin: 0; color: var(--muted); max-width: 60ch; }
+
+  .hud { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .hud div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; display: grid; gap: 2px; }
+  .hud .num { font-size: 18px; font-weight: 600; }
+  @media (max-width: 440px) { .hud { grid-template-columns: repeat(2, 1fr); } }
+
+  .progress { display: flex; gap: 4px; }
+  .progress span { flex: 1; height: 6px; border-radius: 3px; background: var(--track); }
+  .progress span.ok { background: var(--gain); }
+  .progress span.ko { background: var(--loss); }
+  .progress span.now { background: var(--accent); }
+
+  /* El "boleto": la apuesta que hay que decidir */
+  .ticket {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px; display: grid; gap: 14px;
+    border-top: 5px dashed var(--line);
+  }
+  .kind { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+          color: var(--accent); }
+  .question { font-family: var(--display); font-weight: 600; font-size: 22px; line-height: 1.2; text-wrap: balance; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .fact { display: grid; gap: 2px; align-content: start; }
+  .fact .num { font-size: 20px; font-weight: 600; }
+  .note { margin: 0; color: var(--muted); font-size: 15px; }
+
+  /* Escala de 0 a 1 $: dónde está el precio y dónde el valor */
+  .scale { position: relative; height: 58px; margin-top: 4px; margin-inline: 34px; }
+  .scale .bar { position: absolute; left: 0; right: 0; top: 26px; height: 8px; border-radius: 4px; background: var(--track); }
+  .scale .gap { position: absolute; top: 26px; height: 8px; border-radius: 4px; }
+  .scale .pin { position: absolute; top: 0; transform: translateX(-50%); display: grid; justify-items: center; gap: 2px; font-size: 12px; white-space: nowrap; }
+  .scale .pin i { width: 3px; height: 22px; border-radius: 2px; display: block; }
+  .scale .pin.low { top: 22px; }
+  .scale .pin.low i { order: -1; }
+  .scale .ends { position: absolute; top: 40px; left: 0; right: 0; display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+
+  .markets { display: grid; gap: 8px; }
+  .market { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+  .market b { font-weight: 700; }
+
+  .choices { display: grid; gap: 10px; }
+  .choices.cols { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  button {
+    font: inherit; cursor: pointer; border-radius: 12px; border: 2px solid var(--line);
+    background: var(--surface); color: var(--ink); padding: 14px 16px; text-align: left; font-weight: 700;
+    transition: transform .08s ease, border-color .15s ease;
+  }
+  button:hover:not(:disabled) { border-color: var(--accent); }
+  button:active:not(:disabled) { transform: translateY(1px); }
+  button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  button:disabled { cursor: default; opacity: .55; }
+  button.picked.right { opacity: 1; border-color: var(--gain); background: var(--gain-soft); }
+  button.picked.wrong { opacity: 1; border-color: var(--loss); background: var(--loss-soft); }
+  button.answer { opacity: 1; border-color: var(--gain); }
+  button small { display: block; font-weight: 400; color: var(--muted); font-size: 14px; }
+  .primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); text-align: center; }
+  .primary:hover:not(:disabled) { filter: brightness(1.08); border-color: var(--accent); }
+
+  .feedback { border-radius: 14px; padding: 16px 18px; display: grid; gap: 10px; border: 1px solid var(--line); background: var(--surface); }
+  .feedback.right { border-left: 6px solid var(--gain); }
+  .feedback.wrong { border-left: 6px solid var(--loss); }
+  .feedback h2 { font-size: 20px; }
+  .feedback p { margin: 0; }
+  .outcome { border-radius: 10px; padding: 10px 12px; background: var(--bg); display: grid; gap: 4px; font-size: 15px; }
+  .pos { color: var(--gain); font-weight: 700; }
+  .neg { color: var(--loss); font-weight: 700; }
+  .holdc { color: var(--hold); font-weight: 700; }
+
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--muted); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+
+  .summary { display: grid; gap: 14px; }
+  .big { font-family: var(--display); font-size: 56px; font-weight: 800; line-height: 1; }
+  .luck { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .luck div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; }
+  ul.lessons { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  footer { color: var(--muted); font-size: 13px; }
+  @media (prefers-reduced-motion: reduce) { button { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="label">Juego de práctica · dinero de juguete</span>
+    <h1>¿Compras o no?</h1>
+    <p>10 situaciones reales de mercado. Decide como lo haría el bot: mira lo que cuesta, lo que vale y tus reglas de oro.</p>
+  </header>
+
+  <div class="hud" aria-live="polite">
+    <div><span class="label">Ronda</span><span class="num" id="hudRound">1/10</span></div>
+    <div><span class="label">Puntos</span><span class="num" id="hudPoints">0</span></div>
+    <div><span class="label">Racha</span><span class="num" id="hudStreak">0</span></div>
+    <div><span class="label">Dinero</span><span class="num" id="hudMoney">1.000 $</span></div>
+  </div>
+  <div class="progress" id="progress"></div>
+
+  <main id="stage"></main>
+
+  <footer>Nada de esto es dinero real ni una recomendación de inversión. Es un simulador para entrenar el criterio.</footer>
+</div>
+
+<script>
+(function () {
+  const ROUNDS = 10;
+  const START_MONEY = 1000;
+
+  // ---------- utilidades ----------
+  const fmt = (x, d = 2) => x.toLocaleString("es-ES", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const usd = (x, d = 2) => fmt(x, d) + " $";
+  const signed = (x) => (x > 0 ? "+" : x < 0 ? "−" : "") + usd(Math.abs(x));
+  const cls = (x) => (x > 0.004 ? "pos" : x < -0.004 ? "neg" : "");
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const round2 = (x) => Math.round(x * 100) / 100;
+  const shuffle = (arr) => { const a = arr.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  function btcNow() { return Math.round(rnd(96000, 104000) / 50) * 50; }
+  const HORIZONS = ["15 minutos", "30 minutos", "1 hora", "2 horas", "hoy a las 18:00"];
+
+  // ---------- generadores de rondas ----------
+  function valueRound() {
+    const btc = btcNow();
+    const q = round2(rnd(0.2, 0.8));                     // lo que vale el SÍ de verdad
+    const edge = pick([0.12, 0.09, 0.06, 0.05, 0.02, 0.01, 0, -0.02, -0.05, -0.06, -0.09, -0.12]);
+    const p = round2(Math.min(0.95, Math.max(0.05, q - edge))); // lo que cuesta el SÍ
+    const d = round2(q - p);
+    let answer = "none";
+    if (d >= 0.04) answer = "yes";
+    else if (-d >= 0.04) answer = "no";
+    const strike = btc + pick([-1, 1]) * pick([200, 400, 600, 1000]);
+    return {
+      type: "value", btc, q, p, d, answer, strike,
+      horizon: pick(HORIZONS),
+      options: [
+        { id: "yes", title: "Comprar SÍ", sub: "a " + usd(p) },
+        { id: "no", title: "Comprar NO", sub: "a " + usd(1 - p) },
+        { id: "none", title: "No hacer nada", sub: "esperar otra" },
+      ],
+    };
+  }
+
+  function rulesRound() {
+    const start = pick([500, 800, 1000, 1200]);
+    const lossPct = pick([0, 0.03, 0.06, 0.08, 0.09, 0.11, 0.12]);
+    const loss = Math.round(start * lossPct);
+    const now = start - loss;
+    const limit = start * 0.10;
+    const room = limit - loss;
+    const edge = pick([0.06, 0.08, 0.15]);
+    const stopped = room <= 0;
+    const correct = stopped ? 0 : Math.floor(Math.min(now * 0.05, room));
+    // La correcta y "nada" siempre están; el resto son errores típicos (5 % del inicio, 20 %, todo el límite)
+    const opts = shuffle([...new Set([correct, 0, Math.floor(start * 0.05), Math.floor(now * 0.2), Math.floor(limit)])].slice(0, 4));
+    return {
+      type: "rules", start, loss, now, limit, room, edge, stopped, correct,
+      answer: String(correct),
+      options: opts.map((x) => ({ id: String(x), title: x === 0 ? "Nada: hoy no apuesto" : usd(x, 0), sub: x === 0 ? "" : "en esta apuesta" })),
+    };
+  }
+
+  function arbRound() {
+    const btc = btcNow();
+    const k1 = Math.round((btc - pick([500, 1000])) / 500) * 500;
+    const k2 = k1 + pick([1000, 2000]);
+    const broken = Math.random() < 0.6;
+    let a, b;
+    if (broken) { a = round2(rnd(0.3, 0.5)); b = round2(a + rnd(0.06, 0.15)); }
+    else { a = round2(rnd(0.55, 0.8)); b = round2(a - rnd(0.15, 0.35)); }
+    return {
+      type: "arb", btc, k1, k2, a, b, broken,
+      answer: broken ? "arb" : "none",
+      options: [
+        { id: "arb", title: "Hay error", sub: "compro SÍ en " + usd(k1, 0) + " y NO en " + usd(k2, 0) },
+        { id: "rev", title: "Hay error", sub: "compro NO en " + usd(k1, 0) + " y SÍ en " + usd(k2, 0) },
+        { id: "none", title: "Todo normal", sub: "no hago nada" },
+      ],
+    };
+  }
+
+  const PATTERNS = [
+    { t: "«Mi patrón secreto acierta el 90 % de las veces. Curso a 299 €.»", a: "humo", why: "Si acertara tanto, lo usaría en silencio en vez de venderlo. Y acertar mucho no es ganar dinero: importa el precio que pagas." },
+    { t: "«Ha bajado 3 días seguidos, así que mañana seguro que sube.»", a: "humo", why: "Es la falacia del jugador. El mercado no tiene memoria ni le debe nada a nadie. Y «seguro» siempre es mala señal." },
+    { t: "«Ayer Bitcoin se movió muchísimo, así que hoy probablemente también se moverá bastante.»", a: "fiable", why: "La calma y la tormenta van en rachas. Predice cuánto se moverá, no hacia dónde. El bot lo usa para calcular precios justos." },
+    { t: "«Si “encima de 100k” cuesta menos que “encima de 105k”, hay un error seguro.»", a: "fiable", why: "Si acaba encima de 105k también está encima de 100k. La primera siempre debe valer igual o más. Es un arbitraje." },
+    { t: "«Este gráfico dibuja un hombro-cabeza-hombro: va a caer seguro.»", a: "humo", why: "Los patrones de dibujo se ven en todas partes y fallan muchísimo. Solo te enseñan los que salieron bien." },
+    { t: "«Una estrategia buena puede perder 5 veces seguidas.»", a: "fiable", why: "A corto plazo manda la suerte. Por eso se apuesta poco en cada operación: para sobrevivir a las rachas malas." },
+    { t: "«Voy perdiendo, así que apuesto el doble para recuperar rápido.»", a: "humo", why: "Así se arruina la gente. Perder el 50 % exige ganar el 100 % para volver. Las reglas de oro existen para este momento." },
+    { t: "«Una estrategia que gana en papel puede perder cuando pagas comisiones.»", a: "fiable", why: "Muchas ventajas son de pocos céntimos. Las comisiones y el hueco entre compra y venta se las comen." },
+  ];
+  let patternBag = [];
+  function patternRound() {
+    if (!patternBag.length) patternBag = shuffle(PATTERNS);
+    const p = patternBag.pop();
+    return {
+      type: "pattern", p, answer: p.a,
+      options: [
+        { id: "fiable", title: "Fiable", sub: "tiene base real" },
+        { id: "humo", title: "Humo", sub: "suena bien, no funciona" },
+      ],
+    };
+  }
+
+  function buildGame() {
+    const plan = shuffle(["value", "value", "value", "value", "value", "rules", "rules", "arb", "arb", "pattern"]);
+    return plan.map((t) => ({ value: valueRound, rules: rulesRound, arb: arbRound, pattern: patternRound })[t]());
+  }
+
+  // ---------- estado ----------
+  let S;
+  function fresh() {
+    return { rounds: buildGame(), i: 0, points: 0, streak: 0, bestStreak: 0, money: START_MONEY,
+             expected: 0, actual: 0, results: [], answered: null };
+  }
+
+  function loadBest() { try { return Number(localStorage.getItem("compras-o-no-best")) || 0; } catch (e) { return 0; } }
+  function saveBest(x) { try { localStorage.setItem("compras-o-no-best", String(x)); } catch (e) { /* sin almacenamiento */ } }
+
+  // ---------- pintado ----------
+  const $ = (id) => document.getElementById(id);
+  function hud() {
+    $("hudRound").textContent = Math.min(S.i + 1, ROUNDS) + "/" + ROUNDS;
+    $("hudPoints").textContent = S.points;
+    $("hudStreak").textContent = S.streak + (S.streak >= 3 ? " 🔥" : "");
+    $("hudMoney").textContent = usd(S.money, 0);
+    $("progress").innerHTML = Array.from({ length: ROUNDS }, (_, k) => {
+      const r = S.results[k];
+      return '<span class="' + (r === true ? "ok" : r === false ? "ko" : k === S.i ? "now" : "") + '"></span>';
+    }).join("");
+  }
+
+  function scale(price, worth, labelP, labelW) {
+    const lo = Math.min(price, worth), hi = Math.max(price, worth);
+    const good = worth > price;
+    const color = Math.abs(worth - price) < 0.04 ? "var(--hold)" : good ? "var(--gain)" : "var(--loss)";
+    return '<div class="scale" aria-hidden="true">' +
+      '<div class="bar"></div>' +
+      '<div class="gap" style="left:' + lo * 100 + '%;width:' + (hi - lo) * 100 + '%;background:' + color + '"></div>' +
+      '<div class="pin" style="left:' + price * 100 + '%"><span>' + labelP + '</span><i style="background:var(--ink)"></i></div>' +
+      '<div class="pin low" style="left:' + worth * 100 + '%"><i style="background:' + color + '"></i><span>' + labelW + '</span></div>' +
+      '<div class="ends num"><span>0 $</span><span>1 $</span></div></div>';
+  }
+
+  function ticket(r) {
+    if (r.type === "value") {
+      return '<section class="ticket">' +
+        '<span class="kind">¿Está barata?</span>' +
+        '<div class="question">¿Estará Bitcoin por encima de <span class="num">' + usd(r.strike, 0) + '</span> dentro de ' + r.horizon + '?</div>' +
+        '<div class="facts">' +
+          fact("Bitcoin ahora", usd(r.btc, 0)) +
+          fact("Cuesta el SÍ", usd(r.p)) +
+          fact("Cuesta el NO", usd(1 - r.p)) +
+          fact("El bot calcula que el SÍ vale", usd(r.q)) +
+        '</div>' +
+        '<p class="note">Si el SÍ vale ' + usd(r.q) + ', el NO vale ' + usd(1 - r.q) + '. Recuerda: el bot solo compra con ventaja de 0,04 $ o más.</p>' +
+      '</section>';
+    }
+    if (r.type === "rules") {
+      return '<section class="ticket">' +
+        '<span class="kind">Reglas de oro</span>' +
+        '<div class="question">Aparece una apuesta con ventaja <span class="num">+' + fmt(r.edge) + '</span>. ¿Cuánto apuestas?</div>' +
+        '<div class="facts">' +
+          fact("Empezaste el día con", usd(r.start, 0)) +
+          fact("Pérdida de hoy", usd(r.loss, 0)) +
+          fact("Tienes ahora", usd(r.now, 0)) +
+        '</div>' +
+        '<p class="note">Regla 1: nunca más del 5 % de lo que tienes. Regla 2: si hoy pierdes el 10 % de lo que tenías al empezar el día, paras hasta mañana.</p>' +
+      '</section>';
+    }
+    if (r.type === "arb") {
+      return '<section class="ticket">' +
+        '<span class="kind">Precios imposibles</span>' +
+        '<div class="question">Dos apuestas con la misma hora de cierre. ¿Ves algún error?</div>' +
+        '<div class="markets">' +
+          '<div class="market"><span>¿Bitcoin encima de <b class="num">' + usd(r.k1, 0) + '</b>?</span><span class="num">SÍ a ' + usd(r.a) + '</span></div>' +
+          '<div class="market"><span>¿Bitcoin encima de <b class="num">' + usd(r.k2, 0) + '</b>?</span><span class="num">SÍ a ' + usd(r.b) + '</span></div>' +
+        '</div>' +
+        '<p class="note">Bitcoin está ahora en <span class="num">' + usd(r.btc, 0) + '</span>. Pista: si acaba encima de ' + usd(r.k2, 0) + ', ¿también está encima de ' + usd(r.k1, 0) + '?</p>' +
+      '</section>';
+    }
+    return '<section class="ticket">' +
+      '<span class="kind">¿Fiable o humo?</span>' +
+      '<div class="question">' + esc(r.p.t) + '</div>' +
+    '</section>';
+  }
+
+  function fact(label, value) {
+    return '<div class="fact"><span class="label">' + label + '</span><span class="num">' + value + '</span></div>';
+  }
+
+  function render() {
+    hud();
+    const stage = $("stage");
+    if (S.i >= ROUNDS) { stage.innerHTML = summary(); bindSummary(); return; }
+    const r = S.rounds[S.i];
+    const cols = r.options.length <= 3 ? " cols" : "";
+    let html = ticket(r);
+    html += '<div class="choices' + cols + '" role="group" aria-label="Tu decisión">' +
+      r.options.map((o) => {
+        let c = "";
+        if (S.answered) {
+          if (o.id === S.answered.choice) c = "picked " + (S.answered.right ? "right" : "wrong");
+          else if (o.id === r.answer) c = "answer";
+        }
+        return '<button id="opt-' + o.id + '" data-id="' + o.id + '" class="' + c + '"' + (S.answered ? " disabled" : "") + '>' +
+          esc(o.title) + (o.sub ? "<small>" + esc(o.sub) + "</small>" : "") + "</button>";
+      }).join("") + "</div>";
+    if (S.answered) html += S.answered.html + '<button class="primary" id="next">' + (S.i + 1 >= ROUNDS ? "Ver resultado" : "Siguiente situación") + "</button>";
+    stage.innerHTML = html;
+    stage.querySelectorAll(".choices button").forEach((b) => b.addEventListener("click", () => answer(b.dataset.id)));
+    const next = $("next");
+    if (next) { next.addEventListener("click", advance); next.focus({ preventScroll: true }); }
+  }
+
+  // ---------- corrección ----------
+  function answer(choice) {
+    const r = S.rounds[S.i];
+    const right = choice === r.answer;
+    S.points += right ? 10 + (S.streak >= 2 ? 5 : 0) : 0;
+    S.streak = right ? S.streak + 1 : 0;
+    S.bestStreak = Math.max(S.bestStreak, S.streak);
+    S.results[S.i] = right;
+    S.answered = { choice, right, html: explain(r, choice, right) };
+    render();
+  }
+
+  function advance() {
+    S.i += 1;
+    S.answered = null;
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function verdict(right, title) {
+    return "<h2>" + (right ? "✅ Bien: " : "❌ No: ") + title + "</h2>";
+  }
+
+  function explain(r, choice, right) {
+    let body = "";
+    if (r.type === "value") {
+      const yesEdge = r.q - r.p, noEdge = (1 - r.q) - (1 - r.p);
+      const best = r.answer === "yes" ? "comprar el SÍ" : r.answer === "no" ? "comprar el NO" : "no hacer nada";
+      body += verdict(right, "lo correcto era " + best + ".");
+      body += scale(r.p, r.q, "cuesta " + fmt(r.p), "vale " + fmt(r.q));
+      body += "<p>Valor esperado del SÍ: " + fmt(r.q) + " − " + fmt(r.p) + " = <span class='" + cls(yesEdge) + " num'>" + (yesEdge >= 0 ? "+" : "−") + fmt(Math.abs(yesEdge)) + "</span>. " +
+              "Del NO: " + fmt(1 - r.q) + " − " + fmt(1 - r.p) + " = <span class='" + cls(noEdge) + " num'>" + (noEdge >= 0 ? "+" : "−") + fmt(Math.abs(noEdge)) + "</span>.</p>";
+      if (r.answer === "none") body += "<p>La ventaja es menor de 0,04 $. Es tan pequeña que un error mínimo del cálculo la vuelve negativa.</p>";
+      body += playOut(r, choice);
+    } else if (r.type === "rules") {
+      const pct5 = r.now * 0.05;
+      if (r.stopped) {
+        body += verdict(right, "hoy ya no se apuesta.");
+        body += "<p>El límite del día es el 10 % de " + usd(r.start, 0) + " = " + usd(r.limit, 0) + ". Ya has perdido " + usd(r.loss, 0) + ". Da igual que la ventaja sea +" + fmt(r.edge) + ": mañana habrá otras. Tu dinero no se regenera.</p>";
+      } else {
+        body += verdict(right, "lo máximo era " + usd(r.correct, 0) + ".");
+        body += "<p>El 5 % de lo que tienes: " + usd(r.now, 0) + " ÷ 20 = " + usd(pct5) + ". " +
+                "Lo que queda hasta el límite del día: " + usd(r.limit, 0) + " − " + usd(r.loss, 0) + " = " + usd(r.room) + ". " +
+                "Se apuesta lo menor de los dos.</p>";
+      }
+    } else if (r.type === "arb") {
+      if (r.broken) {
+        const cost = r.a + (1 - r.b);
+        body += verdict(right, "había un precio imposible.");
+        body += "<p>«Encima de " + usd(r.k1, 0) + "» cuesta menos que «encima de " + usd(r.k2, 0) + "», y tendría que costar igual o más. Compras SÍ a " + usd(r.a) + " y NO a " + usd(1 - r.b) + ": pagas " + usd(cost) + ".</p>";
+        body += "<div class='tablewrap'><table><thead><tr><th>Bitcoin acaba</th><th>SÍ " + fmt(r.k1 / 1000, 1) + "k</th><th>NO " + fmt(r.k2 / 1000, 1) + "k</th><th>Cobras</th><th>Ganas</th></tr></thead><tbody>" +
+          [["debajo de " + usd(r.k1, 0), 0, 1], ["entre las dos", 1, 1], ["encima de " + usd(r.k2, 0), 1, 0]].map((row) =>
+            "<tr><td>" + row[0] + "</td><td class='num'>" + row[1] + "</td><td class='num'>" + row[2] + "</td><td class='num'>" + usd(row[1] + row[2]) + "</td><td class='num pos'>" + signed(row[1] + row[2] - cost) + "</td></tr>").join("") +
+          "</tbody></table></div><p>Ganas pase lo que pase.</p>";
+        if (choice === "rev") body += "<p>Ojo: al revés pierdes. Se compra la barata que debería ser cara.</p>";
+      } else {
+        body += verdict(right, "los precios eran coherentes.");
+        body += "<p>«Encima de " + usd(r.k1, 0) + "» (" + usd(r.a) + ") vale más que «encima de " + usd(r.k2, 0) + "» (" + usd(r.b) + "). Es lo lógico: es más fácil superar un precio más bajo. Aquí no hay nada que hacer.</p>";
+      }
+    } else {
+      body += verdict(right, "era " + r.p.a + ".");
+      body += "<p>" + esc(r.p.why) + "</p>";
+    }
+    return '<section class="feedback ' + (right ? "right" : "wrong") + '" aria-live="polite">' + body + "</section>";
+  }
+
+  // Juega la apuesta: el resultado depende de la probabilidad real, no de si decidiste bien
+  function playOut(r, choice) {
+    if (choice === "none") {
+      return "<div class='outcome'><span class='holdc'>No has apostado: tu dinero sigue igual.</span></div>";
+    }
+    const price = choice === "yes" ? r.p : 1 - r.p;
+    const worth = choice === "yes" ? r.q : 1 - r.q;
+    const stake = Math.max(1, Math.floor(S.money * 0.05));
+    const shares = stake / price;
+    const yesWins = Math.random() < r.q;
+    const won = choice === "yes" ? yesWins : !yesWins;
+    const pnl = (won ? shares : 0) - stake;
+    const ev = shares * worth - stake;
+    S.money += pnl;
+    S.expected += ev;
+    S.actual += pnl;
+    const luck = pnl - ev;
+    return "<div class='outcome'>" +
+      "<span>Apuestas " + usd(stake, 0) + " (el 5 %) → " + fmt(shares, 1) + " acciones a " + usd(price) + ".</span>" +
+      "<span>Resultado: " + (yesWins ? "Bitcoin acabó por encima: gana el SÍ." : "Bitcoin no llegó: gana el NO.") + " " +
+      "<b class='" + cls(pnl) + "'>" + (won ? "Ganas " : "Pierdes ") + signed(pnl) + "</b></span>" +
+      "<span>Lo que tocaba a la larga: <b class='" + cls(ev) + "'>" + signed(ev) + "</b>. " +
+      (Math.abs(luck) < 1 ? "La suerte no ha pintado nada." : luck > 0 ? "La suerte te ha ayudado esta vez." : "La suerte ha ido en contra esta vez.") + "</span>" +
+      "</div>";
+  }
+
+  function summary() {
+    const ok = S.results.filter(Boolean).length;
+    const best = loadBest();
+    const record = S.points > best;
+    if (record) saveBest(S.points);
+    const grade = ok >= 9 ? "Piensas como un bot. Así da gusto." : ok >= 7 ? "Muy buen criterio. Repasa las que fallaste." : ok >= 5 ? "Vas por buen camino. Otra partida te sentará bien." : "Toca repasar las lecciones y volver a intentarlo.";
+    const lessons = [];
+    S.rounds.forEach((r, k) => {
+      if (S.results[k]) return;
+      if (r.type === "value") lessons.push("Compra solo si lo que vale menos lo que cuesta da +0,04 o más. Mira también el NO.");
+      if (r.type === "rules") lessons.push("5 % de lo que tienes como máximo, y nunca más de lo que te queda hasta perder el 10 % del día.");
+      if (r.type === "arb") lessons.push("«Encima de un precio bajo» siempre vale igual o más que «encima de un precio alto».");
+      if (r.type === "pattern") lessons.push("Desconfía de «seguro» y de los patrones que dicen hacia dónde irá el precio.");
+    });
+    const uniq = [...new Set(lessons)];
+    return '<section class="summary">' +
+      '<span class="label">Resultado de la partida</span>' +
+      '<div class="big num">' + ok + '/' + ROUNDS + '</div>' +
+      '<h2>' + grade + '</h2>' +
+      '<p class="note">' + S.points + ' puntos · mejor racha ' + S.bestStreak + (record ? ' · 🏆 ¡nuevo récord!' : best ? ' · récord ' + best : '') + '</p>' +
+      '<div class="luck">' +
+        '<div><span class="label">Dinero ganado de verdad</span><span class="num ' + cls(S.actual) + '">' + signed(S.actual) + '</span></div>' +
+        '<div><span class="label">Lo que tocaba a la larga</span><span class="num ' + cls(S.expected) + '">' + signed(S.expected) + '</span></div>' +
+      '</div>' +
+      '<p class="note">La diferencia entre las dos cifras es suerte. Con pocas apuestas manda la suerte; con cientos, manda el valor esperado.</p>' +
+      (uniq.length ? '<div class="feedback wrong"><h2>Para la próxima</h2><ul class="lessons">' + uniq.map((l) => "<li>" + l + "</li>").join("") + "</ul></div>" : "") +
+      '<button class="primary" id="again">Jugar otra partida</button>' +
+    "</section>";
+  }
+
+  function bindSummary() { $("again").addEventListener("click", () => { S = fresh(); render(); window.scrollTo({ top: 0, behavior: "smooth" }); }); }
+
+  function start(saved) {
+    S = saved && saved.rounds ? saved : fresh();
+    render();
+  }
+  const hot = window.claude && window.claude.hot;
+  if (hot && hot.snapshot) hot.snapshot(() => S);
+  if (hot && hot.ready) hot.ready(start); else start(hot && hot.data);
+})();
+</script>

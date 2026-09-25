@@ -34,6 +34,12 @@ python -m pytest                    # tests
 Sale con `Ctrl+C`. La cartera de papel se guarda en `paper_book.json` y continúa en la siguiente
 ejecución (`--reset` para empezar de cero).
 
+## Juego de práctica
+
+`juego.html` es un juego de 10 rondas para entrenar el criterio antes de mirar el bot: decidir si una
+apuesta está barata, cuánto apostar según las reglas de oro, detectar precios imposibles y distinguir
+patrones fiables del humo. Se abre directamente en el navegador (también desde el móvil).
+
 ## Órdenes del bot y reglas de oro
 
 Cada vez que el bot opera, lo explica en lenguaje sencillo en la línea `▶`:
