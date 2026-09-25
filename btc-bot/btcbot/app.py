@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 
 from .feed import BinanceFeed, PriceState
 from .markets import UPDOWN, Market, fetch_polymarket_btc
+from .orders import arbitrage_order, euros, no_trade_reason, signal_order
 from .paper import PaperBook
 from .scanner import ScanConfig, scan
 from .sim import SimClock, SimWorld
@@ -48,6 +49,8 @@ class Bot:
         self.last_scan_ms = 0.0
         self.scans = 0
         self.prev_spot: Optional[float] = None
+        self.last_order = ""
+        self.last_order_at: Optional[datetime] = None
         self.book = self._load_book()
         self.demo = args.demo
         if self.demo:
@@ -70,7 +73,8 @@ class Bot:
             except Exception:
                 pass
         return PaperBook(cash=self.args.bankroll, start_cash=self.args.bankroll,
-                         kelly=self.args.kelly, max_stake=self.args.max_stake)
+                         kelly=self.args.kelly, max_stake=self.args.max_stake,
+                         max_pct=self.args.max_pct, daily_stop=self.args.daily_stop)
 
     def note(self, text: str) -> None:
         self.log.appendleft(f"{DIM}{self.now():%H:%M:%S}{RESET} {text}")
@@ -135,20 +139,32 @@ class Bot:
 
         for t in self.book.mark(spot, now, self.prev_spot):
             icon = "✅" if t.pnl > 0 else "❌"
-            self.note(f"{icon} Cierre {t.side} {t.question[:48]} → {money(t.pnl)}")
+            lado = "SÍ" if t.side == "YES" else "NO"
+            color = GREEN if t.pnl > 0 else RED
+            self.note(f"{icon} Cierre {lado} {t.question[:48]} → {color}{'+' if t.pnl > 0 else ''}{euros(t.pnl)} ${RESET}")
         self.prev_spot = spot
 
+        by_id = {m.id: m for m in self.markets}
+        self.book.start_day(now, self.book.equity(by_id))
         if self.args.trade:
             for arb in arbs:
-                if self.book.on_arbitrage(arb, now):
-                    self.note(f"{CYAN}⚡ Arbitraje{RESET} {arb.reason} (+{arb.profit:.3f}/acción asegurado)")
+                before = self.book.cash
+                if self.book.on_arbitrage(arb, now, self.book.equity(by_id)):
+                    stake = before - self.book.cash
+                    self.order(f"{CYAN}⚡ ORDEN DEL BOT:{RESET} " + arbitrage_order(arb, stake), now,
+                               f"{CYAN}⚡ Arbitraje{RESET} {arb.reason} · {euros(stake)} $")
             for sig in signals:
-                pos = self.book.on_signal(sig, now, self.refs.get(sig.market.id))
+                pos = self.book.on_signal(sig, now, self.refs.get(sig.market.id), self.book.equity(by_id))
                 if pos:
-                    self.note(f"{GREEN}▲ Compra {sig.side}{RESET} {sig.market.question[:46]} "
-                              f"a {sig.price:.3f} (justo {sig.fair:.3f}, {pos.cost:.0f}$)")
+                    lado = "SÍ" if sig.side == "YES" else "NO"
+                    self.order(f"{GREEN}🟢 ORDEN DEL BOT:{RESET} " + signal_order(sig, pos), now,
+                               f"{GREEN}▲ Compra {lado}{RESET} {sig.market.question[:50]} · {euros(pos.cost)} $")
         if self.args.book and self.scans % 10 == 0:
             self.book.save(self.args.book)
+
+    def order(self, text: str, now: datetime, short: str) -> None:
+        self.last_order, self.last_order_at = text, now
+        self.note(short)
 
     # ---------- panel ----------
     def render(self) -> str:
@@ -187,13 +203,26 @@ class Bot:
         b = self.book
         by_id = {m.id: m for m in self.markets}
         unreal = b.unrealized(by_id)
-        equity = b.cash + sum(p.cost for p in b.positions.values()) + unreal
+        equity = b.equity(by_id)
         wr = f"{b.win_rate:.0%}" if b.win_rate is not None else "—"
+        stopped = b.stopped(equity)
         lines += ["",
                   f"{BOLD}Cartera de papel{RESET}  capital {equity:,.2f} $ ({money(equity - b.start_cash)}) · "
                   f"realizado {money(b.realized)} · abierto {money(unreal)} · "
-                  f"{len(b.positions)} posiciones · {len(b.trades)} cerradas · aciertos {wr}",
-                  ""]
+                  f"{len(b.positions)} posiciones · {len(b.trades)} cerradas · aciertos {wr}"]
+        if b.day:
+            limit = b.day_start * b.daily_stop
+            state = f"{RED}🛑 PARADO POR HOY{RESET}" if stopped else f"{GREEN}✔ operando{RESET}"
+            lines.append(f"Reglas de oro: máx. {b.max_pct:.0%} por apuesta ({euros(b.max_pct * equity)} $) · "
+                         f"pérdida hoy {euros(b.loss_today(equity))} $ de {euros(limit)} $ permitidos · {state}")
+        lines.append("")
+        if self.args.trade:
+            recent = self.last_order and self.last_order_at and (now - self.last_order_at).total_seconds() < 60
+            if recent:
+                lines.append(f"{BOLD}▶ {self.last_order}{RESET}")
+            else:
+                lines.append(f"{BOLD}▶ {no_trade_reason(stopped, bool(getattr(self, 'signals', [])))}{RESET}")
+            lines.append("")
         lines += list(self.log)
         return "\n".join(lines)
 
@@ -245,7 +274,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--top", type=int, default=12, help="oportunidades a mostrar")
     p.add_argument("--bankroll", type=float, default=1000)
     p.add_argument("--kelly", type=float, default=0.25, help="fracción de Kelly para dimensionar")
-    p.add_argument("--max-stake", type=float, default=50)
+    p.add_argument("--max-stake", type=float, default=50, help="máximo absoluto por operación ($)")
+    p.add_argument("--max-pct", type=float, default=0.05, help="máximo por operación, en %% del capital")
+    p.add_argument("--daily-stop", type=float, default=0.10, help="pérdida del día que para el bot hasta mañana")
     p.add_argument("--book", default="paper_book.json", help="archivo de la cartera ('' para no guardar)")
     p.add_argument("--reset", action="store_true", help="empieza la cartera de cero")
     return p

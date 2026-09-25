@@ -49,6 +49,10 @@ class PaperBook:
     kelly: float = 0.25          # fracción de Kelly (1 = Kelly completo, muy agresivo)
     max_stake: float = 50.0      # máximo por operación
     arb_stake: float = 100.0     # tamaño de cada arbitraje
+    max_pct: float = 0.05        # regla de oro 1: nunca más del 5 % del capital por operación
+    daily_stop: float = 0.10     # regla de oro 2: si hoy se pierde el 10 %, se para hasta mañana
+    day: str = ""
+    day_start: float = 0.0       # capital al empezar el día
     positions: Dict[str, Position] = field(default_factory=dict)
     trades: List[Trade] = field(default_factory=list)
 
@@ -59,13 +63,37 @@ class PaperBook:
     def holds(self, market_id: str) -> bool:
         return any(p.market_id == market_id for p in self.positions.values())
 
-    def stake_for(self, sig: Signal) -> float:
+    def stake_for(self, sig: Signal, equity: Optional[float] = None) -> float:
         # Kelly para una apuesta binaria comprada a precio p con probabilidad q: (q - p) / (1 - p)
         f = max(0.0, (sig.fair - sig.price) / (1 - sig.price)) if sig.price < 1 else 0.0
-        return min(self.max_stake, self.cash, self.kelly * f * self.equity_estimate())
+        equity = self.equity_estimate() if equity is None else equity
+        return min(self.max_stake, self.cash, self.kelly * f * equity,
+                   self.max_pct * equity, self.daily_room(equity))
 
     def equity_estimate(self) -> float:
         return self.cash + sum(p.cost for p in self.positions.values())
+
+    def equity(self, prices: Dict[str, Market]) -> float:
+        """Capital a precio de mercado: efectivo + lo que valen hoy las posiciones abiertas."""
+        return self.equity_estimate() + self.unrealized(prices)
+
+    # ---------- reglas de oro ----------
+    def start_day(self, now: datetime, equity: float) -> None:
+        today = now.date().isoformat()
+        if today != self.day:
+            self.day, self.day_start = today, equity
+
+    def loss_today(self, equity: float) -> float:
+        return max(0.0, self.day_start - equity) if self.day else 0.0
+
+    def daily_room(self, equity: float) -> float:
+        """Cuánto se puede arriesgar aún hoy antes de tocar el límite de pérdida diaria."""
+        if not self.day:
+            return float("inf")
+        return max(0.0, self.day_start * self.daily_stop - self.loss_today(equity))
+
+    def stopped(self, equity: float) -> bool:
+        return self.daily_room(equity) <= 0
 
     def _open(self, m: Market, side: str, price: float, fair: float, stake: float,
               now: datetime, ref: Optional[float], tag: str) -> Optional[Position]:
@@ -78,16 +106,23 @@ class PaperBook:
         self.positions[self._key(m.id, side)] = pos
         return pos
 
-    def on_signal(self, sig: Signal, now: datetime, ref: Optional[float] = None) -> Optional[Position]:
+    def on_signal(self, sig: Signal, now: datetime, ref: Optional[float] = None,
+                  equity: Optional[float] = None) -> Optional[Position]:
         if self.holds(sig.market.id):
             return None
-        return self._open(sig.market, sig.side, sig.price, sig.fair, self.stake_for(sig), now, ref, "modelo")
+        equity = self.equity_estimate() if equity is None else equity
+        if self.stopped(equity):
+            return None
+        return self._open(sig.market, sig.side, sig.price, sig.fair, self.stake_for(sig, equity), now, ref, "modelo")
 
-    def on_arbitrage(self, arb: Arbitrage, now: datetime) -> bool:
+    def on_arbitrage(self, arb: Arbitrage, now: datetime, equity: Optional[float] = None) -> bool:
         if self.holds(arb.buy_yes.id) or self.holds(arb.buy_no.id):
             return False
+        equity = self.equity_estimate() if equity is None else equity
+        if self.stopped(equity):
+            return False  # "sin excepciones": parado es parado, aunque sea un arbitraje
         yes_price, no_price = arb.buy_yes.yes_ask, 1 - arb.buy_no.yes_bid
-        shares = min(self.arb_stake, self.cash) / (yes_price + no_price)
+        shares = min(self.arb_stake, self.cash, self.max_pct * equity) / (yes_price + no_price)
         yes_stake, no_stake = shares * yes_price, shares * no_price
         # Las dos patas o ninguna: una sola pata ya no es un arbitraje, es una apuesta
         if min(yes_stake, no_stake) < 1 or yes_stake + no_stake > self.cash + 1e-9:

@@ -34,6 +34,26 @@ python -m pytest                    # tests
 Sale con `Ctrl+C`. La cartera de papel se guarda en `paper_book.json` y continúa en la siguiente
 ejecución (`--reset` para empezar de cero).
 
+## Órdenes del bot y reglas de oro
+
+Cada vez que el bot opera, lo explica en lenguaje sencillo en la línea `▶`:
+
+```
+▶ 🟢 ORDEN DEL BOT: COMPRA SÍ en «Will Bitcoin reach $99,900 by 03:36 UTC?» a 0,34 $ · apuesta 50,00 $ ·
+  motivo: vale 0,40, está 0,06 más barata de lo que debería
+▶ NO HAGAS NADA: ninguna apuesta está lo bastante mal de precio. No operar también es decidir.
+▶ 🛑 PARADO POR HOY: se ha perdido el 10 % del día. Mañana más (regla de oro 2).
+```
+
+Y aplica solo las reglas de gestión del dinero:
+
+1. **Nunca más del 5 % del capital por operación** (`--max-pct 0.05`), ni más de `--max-stake` dólares.
+2. **Si en el día se pierde el 10 %, para hasta el día siguiente** (`--daily-stop 0.10`), aunque
+   aparezca una oportunidad buenísima. Antes de llegar al límite, cada apuesta se recorta a lo que
+   queda hasta él.
+
+La línea "Reglas de oro" del panel muestra cuánto se ha perdido hoy y cuánto queda.
+
 ## Cómo decide
 
 Cada segundo:
@@ -72,7 +92,8 @@ Opciones útiles: `--min-edge 0.06`, `--fee 0.01`, `--no-trade` (solo mirar), `-
 | `btcbot/pricing.py` | Probabilidades justas |
 | `btcbot/volatility.py` | Volatilidad realizada móvil |
 | `btcbot/scanner.py` | Señales y arbitrajes entre mercados |
-| `btcbot/paper.py` | Cartera simulada, Kelly, liquidación, guardado |
+| `btcbot/paper.py` | Cartera simulada, Kelly, reglas de oro, liquidación, guardado |
+| `btcbot/orders.py` | Órdenes en lenguaje sencillo |
 | `btcbot/sim.py` | Mundo simulado para `--demo` |
 | `btcbot/app.py` | Bucle de 1 segundo y panel de terminal |
 
