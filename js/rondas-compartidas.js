@@ -71,9 +71,14 @@
       renderRecentRounds();
     } catch(e){ alert('No se pudo comprobar la clave. Revisa la conexión.'); }
   }
+  (function setupAdminButton(){
+    const btn = document.getElementById('adminModeBtn');
+    if(btn) btn.addEventListener('click', promptAdminKey);
+  })();
   (function setupAdminTaps(){
     const el = document.getElementById('recentRoundsTitle');
     if(!el) return;
+    el.style.cursor = 'pointer'; el.style.touchAction = 'manipulation';
     let taps = 0, timer = null;
     el.addEventListener('click', ()=>{
       taps++; clearTimeout(timer);
