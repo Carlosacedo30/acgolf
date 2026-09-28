@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=17">
+<link rel="stylesheet" href="styles.css?v=18">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -272,6 +272,16 @@
             <div class="hole-meta-item"><div class="k">Par</div><div class="v" id="hvPar">4</div></div>
             <div class="hole-meta-item"><div class="k">Hcp</div><div class="v" id="hvHcp">10</div></div>
           </div>
+          <div id="holeMapCard" class="hole-map-card" style="display:none;">
+            <button type="button" class="hole-map-thumb" id="holeMapThumb" aria-label="Ver el dibujo del hoyo en grande"><img id="holeMapImg" alt=""></button>
+            <div class="hole-map-info">
+              <div class="k">Distancia al green</div>
+              <div class="dist" id="holeGreenDist">—</div>
+              <div class="hint" id="holeGpsHint">Activa el GPS para ver la distancia</div>
+              <button type="button" class="gps-btn" id="holeGpsBtn">Activar GPS</button>
+              <button type="button" class="gps-admin-btn" id="holeSetGreenBtn" hidden>Guardar green aquí</button>
+            </div>
+          </div>
           <div id="hvPlayers"></div>
         </section>
         <section>
@@ -388,18 +398,23 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
-<script src="js/data.js?v=17"></script>
-<script src="js/players.js?v=17"></script>
-<script src="js/rondas-compartidas.js?v=17"></script>
-<script src="js/historial-jugadores.js?v=17"></script>
-<script src="js/scorecard.js?v=17"></script>
-<script src="js/navigation.js?v=17"></script>
-<script src="js/diagnostico.js?v=17"></script>
-<script src="js/interactions.js?v=17"></script>
-<script src="js/resultados.js?v=17"></script>
-<script src="js/vista-hoyo.js?v=17"></script>
-<script src="js/consejos.js?v=17"></script>
-<script src="js/liga.js?v=17"></script>
+<script src="js/data.js?v=18"></script>
+<script src="js/players.js?v=18"></script>
+<script src="js/rondas-compartidas.js?v=18"></script>
+<script src="js/historial-jugadores.js?v=18"></script>
+<script src="js/scorecard.js?v=18"></script>
+<script src="js/navigation.js?v=18"></script>
+<script src="js/diagnostico.js?v=18"></script>
+<script src="js/interactions.js?v=18"></script>
+<script src="js/resultados.js?v=18"></script>
+<script src="js/vista-hoyo.js?v=18"></script>
+<script src="js/consejos.js?v=18"></script>
+<script src="js/liga.js?v=18"></script>
+<script src="js/gps-hoyo.js?v=1"></script>
 
+<div id="holeMapOverlay" class="hole-map-overlay" hidden>
+  <img id="holeMapBig" alt="">
+  <button type="button" id="holeMapClose" class="hole-map-close">Cerrar</button>
+</div>
 </body>
 </html>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 600" role="img" aria-label="Hoyo 1 Hato Verde, par 5">
+  <defs>
+    <pattern id="stripes" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+      <rect width="16" height="16" fill="#8DC07A"/><rect width="8" height="16" fill="#97C984"/>
+    </pattern>
+    <radialGradient id="water" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#4F8FD9"/><stop offset="1" stop-color="#2D66B4"/></radialGradient>
+    <g id="tree"><circle r="7" fill="#2F6149"/><circle r="4" cx="-2" cy="-2" fill="#3D7A5C"/></g>
+    <g id="treeY"><circle r="6" fill="#B9A33A"/><circle r="3.5" cx="-2" cy="-2" fill="#D9C24E"/></g>
+  </defs>
+  <rect width="300" height="600" fill="#24372C"/>
+  <!-- rough -->
+  <path d="M70 0 L230 0 C 250 120 250 260 240 380 C 232 470 226 540 222 600 L 80 600 C 70 520 60 420 58 300 C 56 180 60 80 70 0 Z" fill="#4E7A3E"/>
+  <!-- calle -->
+  <path d="M112 70 C 128 60 150 70 156 96 C 160 130 146 170 150 210 C 156 250 186 270 190 320 C 194 370 160 400 158 440 C 156 480 176 500 172 540 L 132 548 C 128 500 110 470 114 420 C 118 370 146 350 140 300 C 134 250 104 220 104 170 C 104 130 100 90 112 70 Z" fill="url(#stripes)"/>
+  <!-- green -->
+  <ellipse cx="96" cy="58" rx="28" ry="20" fill="#A8D98F"/>
+  <ellipse cx="96" cy="58" rx="28" ry="20" fill="none" stroke="#7FB36A" stroke-width="2"/>
+  <!-- bunkers -->
+  <path d="M60 128 c-8 4 -6 16 4 16 c8 0 12 -10 6 -15 c-3 -3 -6 -2 -10 -1z" fill="#EDE3C4"/>
+  <path d="M206 190 c-8 2 -10 16 -2 20 c8 4 14 -4 12 -12 c-1 -6 -5 -9 -10 -8z" fill="#EDE3C4"/>
+  <path d="M190 330 c-6 4 -6 22 2 26 c6 3 10 -6 8 -14 c-1 -8 -5 -14 -10 -12z" fill="#EDE3C4"/>
+  <path d="M232 420 c-10 2 -18 10 -10 16 c8 5 20 0 22 -8 c1 -6 -5 -9 -12 -8z" fill="#EDE3C4" opacity="0.7"/>
+  <!-- lagos -->
+  <path d="M168 122 C 150 124 150 150 144 168 C 138 188 142 210 160 214 C 180 218 196 206 196 184 C 196 160 196 140 190 128 C 184 120 176 120 168 122 Z" fill="url(#water)"/>
+  <path d="M166 214 C 162 240 172 260 170 280 C 168 296 176 300 178 290" fill="none" stroke="#4F8FD9" stroke-width="2"/>
+  <path d="M170 322 C 154 326 152 350 150 374 C 146 400 148 426 166 440 C 180 450 200 440 212 428 C 224 416 222 400 208 392 C 196 386 196 370 190 352 C 186 336 182 320 170 322 Z" fill="url(#water)"/>
+  <!-- salidas -->
+  <rect x="118" y="470" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="122" y="492" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="130" y="514" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="140" y="540" width="10" height="6" rx="1.5" fill="#F3EBD3"/>
+  <!-- árboles -->
+  <g>
+    <use href="#tree" x="80" y="100"/><use href="#treeY" x="70" y="160"/><use href="#tree" x="82" y="190"/><use href="#tree" x="76" y="240"/>
+    <use href="#treeY" x="92" y="270"/><use href="#tree" x="84" y="310"/><use href="#treeY" x="96" y="340"/><use href="#tree" x="88" y="380"/>
+    <use href="#tree" x="96" y="430"/><use href="#treeY" x="104" y="470"/><use href="#tree" x="100" y="520"/><use href="#tree" x="110" y="560"/>
+    <use href="#treeY" x="128" y="34"/><use href="#tree" x="140" y="20"/><use href="#treeY" x="186" y="100"/><use href="#tree" x="214" y="140"/>
+    <use href="#tree" x="208" y="250"/><use href="#treeY" x="218" y="290"/><use href="#tree" x="224" y="350"/><use href="#treeY" x="196" y="460"/>
+    <use href="#tree" x="210" y="500"/><use href="#tree" x="200" y="560"/><use href="#treeY" x="176" y="304"/>
+  </g>
+  <!-- bandera -->
+  <line x1="96" y1="58" x2="96" y2="36" stroke="#F3EBD3" stroke-width="2"/>
+  <path d="M96 36 L110 41 L96 46 Z" fill="#D64550"/>
+  <circle cx="96" cy="58" r="2" fill="#1B3B6F"/>
+  <!-- línea de juego -->
+  <path d="M145 540 C 140 470 118 420 124 340 C 128 280 116 200 120 150 C 122 110 108 80 96 58" fill="none" stroke="#F3EBD3" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.8"/>
+</svg>

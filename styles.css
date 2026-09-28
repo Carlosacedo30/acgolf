@@ -454,3 +454,19 @@
   .leaderboard-row.p1 .leaderboard-score{ font-size:20px; color:var(--forest); }
   .leader-tag{ display:inline-block; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-ink); margin-bottom:2px; width:100%; }
   .leaderboard-holes{ font-size:11.5px; font-weight:500; color:#7A8A99; margin-top:2px; }
+
+  /* Dibujo del hoyo + GPS */
+  .hole-map-card{ display:flex; gap:14px; align-items:stretch; margin-top:16px; background:#F6F8FC; border-radius:var(--r-lg); padding:10px; }
+  .hole-map-thumb{ flex:none; width:104px; height:208px; border:none; padding:0; border-radius:var(--r-md); overflow:hidden; background:#24372C; cursor:zoom-in; box-shadow:0 6px 14px rgba(15,27,46,0.18); }
+  .hole-map-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .hole-map-info{ flex:1; display:flex; flex-direction:column; justify-content:center; gap:4px; min-width:0; }
+  .hole-map-info .k{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#7A8A99; }
+  .hole-map-info .dist{ font-family:'IBM Plex Mono', monospace; font-size:40px; font-weight:600; color:var(--forest); line-height:1.05; }
+  .hole-map-info .hint{ font-size:12px; color:#5B6B7A; margin-bottom:6px; }
+  .gps-btn, .gps-admin-btn{ align-self:flex-start; font:600 13px 'Inter', sans-serif; border-radius:999px; padding:9px 16px; cursor:pointer; touch-action:manipulation; }
+  .gps-btn{ background:var(--forest); color:var(--cream); border:none; box-shadow:0 4px 10px rgba(27,59,111,0.25); }
+  .gps-admin-btn{ background:transparent; color:var(--gold-ink); border:1.5px dashed var(--gold); margin-top:4px; }
+  .hole-map-overlay{ position:fixed; inset:0; z-index:95; background:rgba(15,27,46,0.88); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 16px); }
+  .hole-map-overlay[hidden]{ display:none; }
+  .hole-map-overlay img{ max-width:100%; max-height:82vh; border-radius:20px; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+  .hole-map-close{ font:600 15px 'Inter', sans-serif; background:var(--cream); color:var(--forest); border:none; border-radius:999px; padding:12px 28px; cursor:pointer; }

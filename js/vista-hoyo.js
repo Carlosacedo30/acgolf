@@ -173,6 +173,7 @@
     }
 
     renderHoleStrip();
+    if(typeof renderHoleMap === 'function') renderHoleMap();
 
     const leaderboardSection = document.getElementById('leaderboardSection');
     if(leaderboardSection){
