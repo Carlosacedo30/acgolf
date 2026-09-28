@@ -163,7 +163,6 @@
     const diff = total - currentCoursePar;
 
     const backEl = document.getElementById('s4Back');
-    if(backEl) backEl.textContent = selectedCourse ? ('‹ ' + selectedCourse.name) : '‹ Campo';
     const metaEl = document.getElementById('s4Meta');
     const multiGroup = matchGroups.filter(g => g.players.length).length > 1;
     if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name + (multiGroup ? ' · Grupo ' + (activeGroup + 1) : '');

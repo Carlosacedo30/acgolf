@@ -556,3 +556,5 @@
   .diag-stat.total-split .n{ display:block; font-family:'IBM Plex Mono', monospace; font-size:17px; font-weight:600; color:#5B6B7A; }
   .diag-stat.total-split .split .k{ display:block; margin-top:1px; }
   .diag-stat.total-split .plus{ font-size:15px; font-weight:600; color:#9AA6B5; }
+  .back-btn{ background:none; border:none; padding:6px 0; margin:-6px 0 4px; font:500 13.5px 'Inter', sans-serif; color:#D9CFB4; cursor:pointer; text-align:left; touch-action:manipulation; }
+  .back-btn:active{ opacity:0.6; }

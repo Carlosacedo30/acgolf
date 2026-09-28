@@ -131,6 +131,28 @@
       : 'Conectando…';
   }
 
+  // Salir de la partida: deja de seguirla en vivo y vuelve al inicio. La partida queda guardada
+  // y se puede retomar desde "Últimas partidas".
+  function leaveCurrentRound(){
+    const client = initSupabase();
+    if(realtimeChannel && client){ try { client.removeChannel(realtimeChannel); } catch(e){} }
+    realtimeChannel = null;
+    currentRoundId = null;
+    currentRoundCode = null;
+    roundMarkedFinished = false;
+    const rc = document.getElementById('roundCodeSection'); if(rc) rc.style.display = 'none';
+    goTo(0);
+  }
+  (function setupBackButtons(){
+    const s3 = document.getElementById('s3Back');
+    if(s3) s3.addEventListener('click', ()=>{
+      if(currentRoundId && !confirm('¿Salir de esta partida?\nQueda guardada y la puedes retomar desde "Últimas partidas".')) return;
+      leaveCurrentRound();
+    });
+    const s4 = document.getElementById('s4Back');
+    if(s4) s4.addEventListener('click', ()=> goTo(3));
+    document.querySelectorAll('.back-home').forEach(b => b.addEventListener('click', ()=> goTo(0)));
+  })();
   let roundMarkedFinished = false; // true solo tras pulsar "Finalizar ronda": entonces se puede compartir el resultado
   function showRoundCode(code){
     currentRoundCode = code;

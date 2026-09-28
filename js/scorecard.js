@@ -72,8 +72,6 @@
     const s3Back = document.getElementById('s3Back');
     const s4Back = document.getElementById('s4Back');
     if(s1Meta) s1Meta.textContent = course.name;
-    if(s3Back) s3Back.textContent = '‹ ' + course.name;
-    if(s4Back) s4Back.textContent = '‹ ' + course.name;
     applyCourseToScoreGrids(course);
   }
 
