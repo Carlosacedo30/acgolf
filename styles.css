@@ -502,3 +502,6 @@
   .lg.under{ background:var(--green); } .lg.par{ background:var(--gold); border-radius:50%; } .lg.over{ background:var(--clay); }
   .diag-worst{ gap:10px; }
   .diag-thumb{ flex:none; width:34px; height:68px; object-fit:cover; border-radius:8px; box-shadow:0 3px 8px rgba(15,27,46,0.18); }
+  .hole-row.diag-worst{ display:flex; align-items:center; flex-wrap:nowrap; }
+  .diag-worst .hole-par{ flex:1; }
+  .diag-worst .hole-strokes{ margin-left:auto; }
