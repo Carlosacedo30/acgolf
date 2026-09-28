@@ -22,6 +22,7 @@
   function refreshAdminUI(){
     const btn = document.getElementById('leaguePlayersBtn');
     if(btn) btn.hidden = !getAdminKey();
+    if(typeof renderConvHome === 'function') renderConvHome();
   }
 
   function fmtHcp(v){ return (v === null || v === undefined || v === '') ? '—' : String(v).replace('.', ','); }

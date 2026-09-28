@@ -1,0 +1,344 @@
+  // --- Convocatoria de salida: cada jugador se apunta a la hora que quiera (8:40 / 8:50) desde el
+  // enlace que se manda por WhatsApp, y con un toque se crea la partida en la app con esos jugadores.
+  // Se guarda como una fila más de "rounds" sin campo (course_id vacío): así no hace falta tocar la
+  // base de datos y no aparece en "Últimas partidas" ni en la liga (ambas filtran por campo).
+  const CONV_TAG = 'Convocatoria';
+  const CONV_SLOTS = 4; // jugadores por partida
+  const CONV_DEFAULT_TIMES = ['08:40', '08:50'];
+  const APP_URL = 'https://carlosacedo30.github.io/acgolf/';
+  let conv = null;            // { id, code, updatedAt, times:[], groups:[[names]], date, courseId, roundCode }
+  let convChannel = null;
+  let convOpenPlayer = null;  // jugador con el selector de hora abierto
+  let convFilter = '';
+
+  const convEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const convTime = t => String(t || '').replace(/^0/, '');
+  function convMe(){ try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } }
+  function convSetMe(n){ try { localStorage.setItem('golfAppConvMe', n); } catch(e){} }
+  function convCourse(id){ return COURSES.find(c => c.id === id) || COURSES.find(c => c.id === 'hato-verde'); }
+  function convIsoToday(){ const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function convNextSunday(){
+    const d = new Date(); d.setDate(d.getDate() + ((7 - d.getDay()) % 7 || 7));
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  function convLongDate(iso){
+    if(!iso) return '';
+    const d = new Date(iso + 'T12:00:00');
+    const s = d.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+
+  // Fila de la base de datos -> convocatoria
+  function convFromRow(row){
+    const mg = Array.isArray(row.match_groups) ? row.match_groups : [];
+    const slots = mg.filter(g => g && g.time);
+    const meta = (mg.find(g => g && g.meta) || {}).meta || {};
+    return {
+      id: row.id, code: row.code, updatedAt: row.updated_at,
+      times: slots.map(g => g.time),
+      groups: slots.map(g => Array.isArray(g.players) ? g.players.slice() : []),
+      date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null,
+    };
+  }
+  function convToGroups(c){
+    return c.times.map((t, i) => ({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }))
+      .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode } }]);
+  }
+
+  async function convFetch(code){
+    const client = initSupabase(); if(!client) return null;
+    let q = client.from('rounds').select('id, code, match_groups, updated_at, created_at').is('course_id', null).eq('round_name', CONV_TAG);
+    q = code ? q.eq('code', code) : q.order('created_at', { ascending: false }).limit(1);
+    const { data, error } = await q;
+    if(error || !data || !data.length) return null;
+    return convFromRow(data[0]);
+  }
+
+  // Cambia la convocatoria sin pisar lo que haya hecho otro a la vez: se relee, se aplica el cambio y
+  // se guarda solo si nadie la ha tocado entretanto (si no, se repite con la versión nueva).
+  async function convMutate(fn){
+    const client = initSupabase(); if(!client || !conv) return false;
+    for(let attempt = 0; attempt < 4; attempt++){
+      const fresh = await convFetch(conv.code);
+      if(!fresh) return false;
+      const msg = fn(fresh);
+      if(msg){ conv = fresh; renderConv(); alert(msg); return false; }
+      const now = new Date().toISOString();
+      const { data, error } = await client.from('rounds')
+        .update({ match_groups: convToGroups(fresh), updated_at: now })
+        .eq('id', fresh.id).eq('updated_at', fresh.updatedAt).select('id');
+      if(error){ console.error(error); break; }
+      if(data && data.length){ fresh.updatedAt = now; conv = fresh; renderConv(); renderConvHome(); return true; }
+    }
+    alert('No se pudo guardar. Revisa la conexión e inténtalo otra vez.');
+    return false;
+  }
+
+  function convSlotOf(c, name){ return c.groups.findIndex(g => g.includes(name)); }
+
+  async function convSignUp(name, slot){ // slot = -1 -> no juega
+    convSetMe(name);
+    convOpenPlayer = null;
+    await convMutate(c => {
+      c.groups = c.groups.map(g => g.filter(n => n !== name));
+      if(slot >= 0){
+        if(c.groups[slot].length >= CONV_SLOTS) return 'La partida de las ' + convTime(c.times[slot]) + ' ya está completa.';
+        c.groups[slot].push(name);
+      }
+      return null;
+    });
+  }
+
+  // ---------- Pintar ----------
+  function renderConvHome(){
+    const box = document.getElementById('convHome'); if(!box) return;
+    const isAdmin = !!getAdminKey();
+    const active = conv && conv.date >= convIsoToday();
+    if(!active){
+      box.innerHTML = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">📣 Convocar salida por WhatsApp</button>' : '';
+      const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
+      return;
+    }
+    const total = conv.groups.reduce((a, g) => a + g.length, 0);
+    const me = convMe(), mySlot = me ? convSlotOf(conv, me) : -1;
+    box.innerHTML = '<div class="conv-home-card" role="button" tabindex="0" id="convHomeCard">'
+      + '<div class="conv-home-top"><span class="conv-home-eyebrow">Próxima salida</span><span class="conv-home-count">' + total + '/' + (conv.times.length * CONV_SLOTS) + '</span></div>'
+      + '<div class="conv-home-date">' + convEsc(convLongDate(conv.date)) + '</div>'
+      + '<div class="conv-home-sub">' + convEsc(convCourse(conv.courseId).name) + ' · ' + conv.times.map(convTime).join(' y ') + '</div>'
+      + '<div class="conv-home-cta">' + (mySlot >= 0 ? 'Estás en la de las ' + convTime(conv.times[mySlot]) + ' ›' : 'Apuntarme ›') + '</div>'
+      + '</div>';
+    const card = document.getElementById('convHomeCard');
+    card.addEventListener('click', ()=> openConv(false));
+  }
+
+  function renderConv(){
+    const body = document.getElementById('convBody'); if(!body) return;
+    const isAdmin = !!getAdminKey();
+    if(!conv){ body.innerHTML = '<div class="empty-hint">No hay ninguna salida convocada.</div>'; return; }
+    const me = convMe();
+    const course = convCourse(conv.courseId);
+    let h = '<div class="conv-when">' + convEsc(convLongDate(conv.date)) + '</div>'
+      + '<div class="conv-where">' + convEsc(course.name) + '</div>';
+
+    // Partidas por hora
+    h += '<div class="conv-tees">' + conv.times.map((t, i) => {
+      const g = conv.groups[i] || [];
+      const seats = Array.from({ length: CONV_SLOTS }, (_, k) => g[k]
+        ? '<div class="conv-seat filled' + (g[k] === me ? ' me' : '') + '">' + convEsc(g[k]) + '</div>'
+        : '<div class="conv-seat">Libre</div>').join('');
+      return '<div class="conv-tee"><div class="conv-tee-h"><span class="conv-tee-time">' + convTime(t) + '</span><span class="conv-tee-n">' + g.length + '/' + CONV_SLOTS + '</span></div>' + seats + '</div>';
+    }).join('') + '</div>';
+
+    if(conv.roundCode){
+      h += '<div class="conv-created">✅ Partida creada · código <b>' + convEsc(conv.roundCode) + '</b>'
+        + '<button type="button" class="conv-btn primary" id="convOpenRound">Abrir partida para apuntar</button></div>';
+    }
+
+    // Buscador de jugadores
+    const names = (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []);
+    conv.groups.flat().forEach(n => { if(!names.includes(n)) names.push(n); }); // invitados ya apuntados
+    if(convOpenPlayer && !names.includes(convOpenPlayer)) names.unshift(convOpenPlayer); // invitado que se está apuntando
+    const f = convFilter.trim().toLowerCase();
+    const shown = names.filter(n => !f || n.toLowerCase().includes(f))
+      .sort((a, b) => (a === me ? -1 : b === me ? 1 : 0));
+    h += '<div class="conv-eyebrow">¿Quién eres? Toca tu nombre</div>'
+      + '<div class="search-box conv-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+      + '<input type="text" id="convFilterInput" placeholder="Busca tu nombre" autocomplete="off" value="' + convEsc(convFilter) + '"></div>'
+      + '<div class="conv-list">';
+    h += shown.map(n => {
+      const s = convSlotOf(conv, n);
+      const open = convOpenPlayer === n;
+      let row = '<div class="conv-row' + (n === me ? ' me' : '') + (open ? ' open' : '') + '" data-name="' + convEsc(n) + '">'
+        + '<span class="conv-row-name">' + convEsc(n) + '</span>'
+        + '<span class="conv-row-tag' + (s >= 0 ? ' in' : '') + '">' + (s >= 0 ? convTime(conv.times[s]) : '—') + '</span></div>';
+      if(open){
+        row += '<div class="conv-pick">' + conv.times.map((t, i) => {
+          const full = (conv.groups[i] || []).length >= CONV_SLOTS && s !== i;
+          return '<button type="button" class="conv-pick-btn' + (s === i ? ' sel' : '') + '" data-slot="' + i + '"' + (full ? ' disabled' : '') + '>' + convTime(t) + (full ? ' · llena' : '') + '</button>';
+        }).join('') + '<button type="button" class="conv-pick-btn no" data-slot="-1">No voy</button></div>';
+      }
+      return row;
+    }).join('');
+    if(f && !names.some(n => n.toLowerCase() === f)){
+      h += '<div class="conv-row guest" data-guest="1"><span class="conv-row-name">＋ Apuntar a «' + convEsc(convFilter.trim()) + '» como invitado</span></div>';
+    }
+    if(!shown.length && !f) h += '<div class="empty-hint">Cargando jugadores…</div>';
+    h += '</div>';
+
+    // Acciones
+    h += '<div class="conv-actions">'
+      + '<button type="button" class="conv-btn wa" id="convShareWa">Enviar al grupo de WhatsApp</button>'
+      + '<button type="button" class="conv-btn ghost" id="convCopy">Copiar lista (para golfdirecto)</button>';
+    if(isAdmin){
+      if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+      h += '<button type="button" class="conv-link" id="convNewBtn">Convocar otra salida</button>';
+    }
+    h += '</div>';
+    body.innerHTML = h;
+    bindConv(body);
+  }
+
+  function bindConv(body){
+    const inp = document.getElementById('convFilterInput');
+    if(inp) inp.addEventListener('input', ()=>{
+      convFilter = inp.value; const pos = inp.selectionStart;
+      renderConv();
+      const again = document.getElementById('convFilterInput');
+      if(again){ again.focus(); try { again.setSelectionRange(pos, pos); } catch(e){} }
+    });
+    body.querySelectorAll('.conv-row[data-name]').forEach(r => r.addEventListener('click', ()=>{
+      convOpenPlayer = convOpenPlayer === r.dataset.name ? null : r.dataset.name; renderConv();
+    }));
+    const guest = body.querySelector('.conv-row[data-guest]');
+    if(guest) guest.addEventListener('click', ()=>{
+      const n = convFilter.trim().replace(/\s+/g, ' ');
+      if(!n) return;
+      convFilter = ''; convOpenPlayer = n; renderConv();
+    });
+    body.querySelectorAll('.conv-pick-btn').forEach(b => b.addEventListener('click', ev=>{
+      ev.stopPropagation();
+      if(b.disabled || !convOpenPlayer) return;
+      convFilter = '';
+      convSignUp(convOpenPlayer, parseInt(b.dataset.slot, 10));
+    }));
+    const wa = document.getElementById('convShareWa'); if(wa) wa.addEventListener('click', convShareWhatsApp);
+    const cp = document.getElementById('convCopy'); if(cp) cp.addEventListener('click', ()=> convCopyList(cp));
+    const cr = document.getElementById('convCreateRound'); if(cr) cr.addEventListener('click', ()=> convCreateRound(cr));
+    const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
+    const nb = document.getElementById('convNewBtn'); if(nb) nb.addEventListener('click', renderConvNewForm);
+  }
+
+  // ---------- Compartir ----------
+  function convSummaryText(){
+    return conv.times.map((t, i) => {
+      const g = conv.groups[i] || [];
+      return '⛳ ' + convTime(t) + (g.length ? ': ' + g.join(', ') : ': (libre)') + (g.length < CONV_SLOTS ? ' — quedan ' + (CONV_SLOTS - g.length) : ' — completa');
+    }).join('\n');
+  }
+  function convShareWhatsApp(){
+    const link = APP_URL + '?conv=' + conv.code;
+    const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + '\n\n'
+      + convSummaryText() + '\n\n👉 Apúntate tocando tu nombre: ' + link;
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
+  async function convCopyList(btn){
+    const text = convLongDate(conv.date) + ' · ' + convCourse(conv.courseId).name + '\n' + conv.times.map((t, i) =>
+      convTime(t) + '\n' + (conv.groups[i] || []).map(n => {
+        const hcp = (typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) ? ' (hcp ' + String(FAVORITE_HANDICAPS[n]).replace('.', ',') + ')' : '';
+        return '  ' + n + hcp;
+      }).join('\n')).join('\n');
+    try { await navigator.clipboard.writeText(text); btn.textContent = 'Lista copiada ✓'; }
+    catch(e){ prompt('Copia la lista:', text); }
+    setTimeout(()=>{ btn.textContent = 'Copiar lista (para golfdirecto)'; }, 2000);
+  }
+
+  // ---------- Crear la partida en la app ----------
+  async function convCreateRound(btn){
+    const client = initSupabase(); if(!client) return;
+    const fresh = await convFetch(conv.code); if(fresh) conv = fresh;
+    if(conv.roundCode){ renderConv(); return; }
+    const withPlayers = conv.times.map((t, i) => ({ t, names: conv.groups[i] || [] })).filter(x => x.names.length);
+    if(!withPlayers.length){ alert('Todavía no se ha apuntado nadie.'); return; }
+    if(!confirm('¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
+    const course = convCourse(conv.courseId);
+    const groups = normalizeMatchGroups(withPlayers.map(x => ({
+      players: x.names.slice(0, 4),
+      handicaps: x.names.slice(0, 4).map(n => (typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) ? Number(FAVORITE_HANDICAPS[n]) : 0),
+      scores: {},
+    })));
+    const d = new Date(conv.date + 'T12:00:00');
+    const name = 'Liga · ' + d.toLocaleDateString('es-ES', { weekday:'short', day:'numeric', month:'short' }).replace(',', '');
+    btn.textContent = 'Creando…';
+    try {
+      const { data, error } = await client.from('rounds').insert({
+        code: genRoundCode(), course_id: course.id, course_name: course.name, course_par: course.par,
+        course_hcp: course.hcp || null, scoring_type: 'stableford', match_groups: groups, round_name: name,
+      }).select('code').single();
+      if(error) throw error;
+      await convMutate(c => { c.roundCode = data.code; return null; });
+    } catch(e){
+      console.error(e); alert('No se pudo crear la partida. Revisa la conexión.');
+      btn.textContent = 'Crear la partida con los apuntados';
+    }
+  }
+  async function convOpenRound(){
+    const res = await joinSharedRound(conv.roundCode);
+    if(res.ok){ closeConv(); goTo(3); } else alert(res.msg);
+  }
+
+  // ---------- Convocar una salida nueva (solo administrador) ----------
+  function renderConvNewForm(){
+    const body = document.getElementById('convBody'); if(!body) return;
+    body.innerHTML = '<div class="conv-eyebrow">Nueva salida</div>'
+      + '<div class="field"><label>Día</label><input type="date" id="convNewDate" value="' + convNextSunday() + '"></div>'
+      + '<div class="field"><label>Campo</label><select id="convNewCourse"><option value="hato-verde">Club Hato Verde</option><option value="zaudin">Club Zaudín Golf</option></select></div>'
+      + '<div class="field-row"><div class="field"><label>1ª partida</label><input type="time" id="convNewT1" value="' + CONV_DEFAULT_TIMES[0] + '"></div>'
+      + '<div class="field"><label>2ª partida</label><input type="time" id="convNewT2" value="' + CONV_DEFAULT_TIMES[1] + '"></div></div>'
+      + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="convNewCreate">Crear convocatoria</button>'
+      + (conv ? '<button type="button" class="conv-link" id="convNewCancel">Cancelar</button>' : '') + '</div>';
+    document.getElementById('convNewCreate').addEventListener('click', convCreate);
+    const c = document.getElementById('convNewCancel'); if(c) c.addEventListener('click', renderConv);
+  }
+  async function convCreate(){
+    const client = initSupabase(); if(!client) return;
+    const date = document.getElementById('convNewDate').value;
+    const courseId = document.getElementById('convNewCourse').value;
+    const times = [document.getElementById('convNewT1').value, document.getElementById('convNewT2').value].filter(Boolean);
+    if(!date || !times.length){ alert('Pon el día y al menos una hora.'); return; }
+    const fresh = { date, courseId, times, groups: times.map(() => []), roundCode: null };
+    const btn = document.getElementById('convNewCreate'); btn.textContent = 'Creando…';
+    try {
+      const { data, error } = await client.from('rounds').insert({
+        code: genRoundCode(), course_id: null, course_name: convCourse(courseId).name,
+        round_name: CONV_TAG, scoring_type: 'stableford', match_groups: convToGroups(fresh),
+      }).select('id, code, match_groups, updated_at').single();
+      if(error) throw error;
+      conv = convFromRow(data);
+      convWatch();
+      renderConv(); renderConvHome();
+      history.replaceState(null, '', location.pathname + '?conv=' + conv.code);
+    } catch(e){ console.error(e); alert('No se pudo crear la convocatoria. Revisa la conexión.'); btn.textContent = 'Crear convocatoria'; }
+  }
+
+  // ---------- Abrir / cerrar / tiempo real ----------
+  function openConv(newOne){
+    const ov = document.getElementById('convOverlay'); if(!ov) return;
+    ov.hidden = false; convOpenPlayer = null; convFilter = '';
+    if(newOne || !conv) renderConvNewForm(); else renderConv();
+  }
+  function closeConv(){
+    const ov = document.getElementById('convOverlay'); if(ov) ov.hidden = true;
+    if(/[?&]conv=/.test(location.search)) history.replaceState(null, '', location.pathname);
+  }
+  function convWatch(){
+    const client = initSupabase(); if(!client || !conv) return;
+    if(convChannel){ try { client.removeChannel(convChannel); } catch(e){} }
+    convChannel = client.channel('conv-' + conv.id)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rounds', filter: 'id=eq.' + conv.id }, payload => {
+        if(!payload.new) return;
+        conv = convFromRow(payload.new);
+        const ov = document.getElementById('convOverlay');
+        if(ov && !ov.hidden && !document.getElementById('convNewDate')){
+          const inp = document.getElementById('convFilterInput');
+          if(!(inp && document.activeElement === inp)) renderConv();
+        }
+        renderConvHome();
+      }).subscribe();
+  }
+
+  (async function setupConvocatoria(){
+    const close = document.getElementById('convClose'); if(close) close.addEventListener('click', closeConv);
+    const code = (new URLSearchParams(location.search).get('conv') || '').trim().toUpperCase();
+    try { conv = await convFetch(code || null); } catch(e){ conv = null; }
+    if(conv) convWatch();
+    renderConvHome();
+    if(code) openConv(false);
+    // al volver a la app (desde WhatsApp) se refresca
+    document.addEventListener('visibilitychange', async ()=>{
+      if(document.hidden) return;
+      const fresh = await convFetch(conv ? conv.code : null).catch(()=> null);
+      if(fresh){ conv = fresh; renderConvHome(); const ov = document.getElementById('convOverlay'); if(ov && !ov.hidden && !document.getElementById('convNewDate')) renderConv(); }
+    });
+    // la lista de jugadores de la liga llega un poco después: repintar cuando esté
+    setTimeout(()=>{ const ov = document.getElementById('convOverlay'); if(ov && !ov.hidden && conv && !document.getElementById('convNewDate')) renderConv(); renderConvHome(); }, 1500);
+  })();
