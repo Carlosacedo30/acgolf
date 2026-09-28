@@ -58,9 +58,9 @@
       markStartChoice(startChoiceCodigo);
       const block = document.getElementById('configPartidaBlock');
       if(block) block.style.display = 'none';
-      if(joinGameSection) joinGameSection.style.display = '';
+      if(joinGameSection){ joinGameSection.style.display = ''; setTimeout(() => joinGameSection.scrollIntoView({ behavior:'smooth', block:'center' }), 50); }
       const input = document.getElementById('joinCodeInput');
-      if(input) input.focus();
+      if(input) input.focus({ preventScroll:true });
     });
   }
 
