@@ -505,3 +505,14 @@
   .hole-row.diag-worst{ display:flex; align-items:center; flex-wrap:nowrap; }
   .diag-worst .hole-par{ flex:1; }
   .diag-worst .hole-strokes{ margin-left:auto; }
+
+  /* Liga mensual */
+  .liga-month{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; }
+  .liga-month .hole-nav-btn:disabled{ opacity:0.3; cursor:default; }
+  .liga-month-txt{ text-align:center; }
+  .liga-month-label{ font-family:'Playfair Display', serif; font-size:21px; font-weight:700; color:var(--forest); }
+  .liga-month-sub{ font-size:11.5px; color:#7A8A99; margin-top:2px; }
+  .champ-row{ display:flex; align-items:center; gap:10px; padding:11px 4px; border-top:1px solid var(--line-soft); }
+  .champ-row:first-child{ border-top:none; }
+  .champ-month{ width:110px; font-size:12px; font-weight:700; color:var(--gold-ink); text-transform:uppercase; letter-spacing:.04em; }
+  .champ-name{ flex:1; font-weight:600; font-size:14px; }

@@ -49,4 +49,4 @@
     }
     if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0; }
     else if(n === 0){ showConfigBlock(false); document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.remove('active')); }
-    current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6) renderLigaStandings(); }
+    current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6){ ligaRoundsCache = null; renderLigaStandings(); } }
