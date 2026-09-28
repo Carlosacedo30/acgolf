@@ -49,6 +49,39 @@
     try { localStorage.setItem('golfAppAdminKey', m[1]); } catch(e){}
     history.replaceState(null, '', location.pathname + location.search);
   })();
+  // Activar este móvil desde dentro de la app: tocar 5 veces seguidas el título "Últimas partidas"
+  async function promptAdminKey(){
+    if(getAdminKey()){
+      if(confirm('Este móvil ya puede borrar partidas.\n¿Quitarle el permiso?')){
+        try { localStorage.removeItem('golfAppAdminKey'); } catch(e){}
+        renderRecentRounds();
+      }
+      return;
+    }
+    const key = (prompt('Clave de administrador para borrar partidas:') || '').trim();
+    if(!key) return;
+    const client = initSupabase();
+    if(!client){ alert('Sin conexión. Inténtalo de nuevo.'); return; }
+    try {
+      const { data, error } = await client.rpc('is_admin', { p_key: key });
+      if(error) throw error;
+      if(!data){ alert('Clave incorrecta.'); return; }
+      try { localStorage.setItem('golfAppAdminKey', key); } catch(e){}
+      alert('Listo: este móvil ya puede borrar partidas sin terminar.');
+      renderRecentRounds();
+    } catch(e){ alert('No se pudo comprobar la clave. Revisa la conexión.'); }
+  }
+  (function setupAdminTaps(){
+    const el = document.getElementById('recentRoundsTitle');
+    if(!el) return;
+    let taps = 0, timer = null;
+    el.addEventListener('click', ()=>{
+      taps++; clearTimeout(timer);
+      timer = setTimeout(()=>{ taps = 0; }, 1500);
+      if(taps >= 5){ taps = 0; promptAdminKey(); }
+    });
+  })();
+
   function getAdminKey(){
     try { return localStorage.getItem('golfAppAdminKey') || ''; } catch(e){ return ''; }
   }
