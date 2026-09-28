@@ -100,7 +100,7 @@
   const incompleteRoundCancel = document.getElementById('incompleteRoundCancel');
   const incompleteRoundContinue = document.getElementById('incompleteRoundContinue');
   if(incompleteRoundCancel) incompleteRoundCancel.addEventListener('click', ()=>{ incompleteRoundOverlay.style.display = 'none'; });
-  if(incompleteRoundContinue) incompleteRoundContinue.addEventListener('click', ()=>{ incompleteRoundOverlay.style.display = 'none'; goTo(4); });
+  if(incompleteRoundContinue) incompleteRoundContinue.addEventListener('click', ()=>{ incompleteRoundOverlay.style.display = 'none'; roundMarkedFinished = true; goTo(4); });
   const finalizarRondaBtn = document.getElementById('finalizarRondaBtn');
   if(finalizarRondaBtn) finalizarRondaBtn.addEventListener('click', ()=>{
     const missing = getPlayerHolesFilled().filter(s => s.filled < 18);
@@ -110,6 +110,7 @@
       incompleteRoundOverlay.style.display = '';
       return;
     }
+    roundMarkedFinished = true;
     goTo(4);
   });
 
@@ -183,6 +184,7 @@
   // "Empezar tu partida": aquí sí arranca la ronda de verdad (único botón que dice "Empezar partida")
   // Arranca la ronda de verdad (crea la partida compartida y pasa a anotar)
   function startNewRoundNow(){
+    roundMarkedFinished = false;
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
     leagueHandicapUpdateScheduled = false; // ronda nueva: permitir recalcular la liga cuando esta también termine
     const rcSection = document.getElementById('roundCodeSection');

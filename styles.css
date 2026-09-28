@@ -533,3 +533,5 @@
   .lp-save, .lp-del{ flex:none; font:600 11.5px 'Inter', sans-serif; border-radius:999px; padding:7px 9px; cursor:pointer; background:transparent; }
   .lp-save{ color:var(--forest); border:1px solid var(--forest); }
   .lp-del{ color:var(--clay); border:1px solid var(--clay); }
+
+  .share-wa{ display:block; text-align:center; text-decoration:none; background:#1F8F5A !important; border-color:#1F8F5A !important; color:#fff !important; box-shadow:0 6px 16px rgba(31,143,90,0.28) !important; }

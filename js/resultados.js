@@ -148,16 +148,20 @@
           leagueHandicapUpdateScheduled = true;
           setTimeout(()=> runLeagueHandicapUpdate(players.slice()), 1200);
         }
-        const shareResultLink = document.getElementById('shareResultWhatsapp');
-        if(shareResultLink){
-          const lines = players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')');
-          const text = '⛳ Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
-            + lines.join('\n') + '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE;
-          shareResultLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);
-        }
       } else {
         winnerSection.style.display = 'none';
       }
+    }
+    // Texto para compartir por WhatsApp (el botón solo aparece cuando la partida se ha dado por terminada)
+    const shareResultLink = document.getElementById('shareResultWhatsapp');
+    if(shareResultLink && players.length){
+      const nets = summaries.map(s => s.net);
+      const minNet = Math.min(...nets);
+      const winners = players.filter((name, i) => summaries[i].holesFilled > 0 && summaries[i].net === minNet);
+      const lines = players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')' + (summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : ''));
+      const text = '⛳ ' + (roundName ? roundName + ' · ' : '') + 'Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
+        + lines.join('\n') + (winners.length ? '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE : '');
+      shareResultLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);
     }
     renderHoleView();
     saveRoundState();

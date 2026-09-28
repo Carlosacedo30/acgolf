@@ -131,18 +131,13 @@
       : 'Conectando…';
   }
 
+  let roundMarkedFinished = false; // true solo tras pulsar "Finalizar ronda": entonces se puede compartir el resultado
   function showRoundCode(code){
     currentRoundCode = code;
     const section = document.getElementById('roundCodeSection');
     const value = document.getElementById('roundCodeValue');
     if(section) section.style.display = '';
     if(value) value.textContent = code;
-    const shareLink = document.getElementById('shareCodeWhatsapp');
-    if(shareLink){
-      const courseName = selectedCourse ? selectedCourse.name : 'el campo';
-      const text = '⛳ Partida en ' + courseName + ' — únete con el código ' + code + ' en ' + location.href;
-      shareLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);
-    }
   }
 
   async function createSharedRound(){
@@ -176,6 +171,7 @@
   }
 
   async function joinSharedRound(codeRaw){
+    roundMarkedFinished = false;
     const client = initSupabase();
     if(!client) return { ok: false, msg: 'Sin conexión a la base de datos.' };
     const code = (codeRaw || '').trim().toUpperCase();

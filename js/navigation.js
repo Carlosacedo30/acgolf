@@ -47,6 +47,14 @@
       if(typeof toastQueue !== 'undefined') toastQueue.length = 0;
       const t = document.getElementById('messageToast'); if(t) t.classList.remove('show');
     }
-    if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0; }
+    if(n === 1){
+      // sin campo elegido (p. ej. pulsando "Siguiente" en el inicio): Hato Verde, el campo de la liga
+      if(!selectedCourse){
+        const hv = COURSES.find(c => c.id === 'hato-verde');
+        if(hv) selectCourse(hv);
+        document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.toggle('active', o.dataset.courseId === 'hato-verde'));
+      }
+      updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0;
+    }
     else if(n === 0){ showConfigBlock(false); document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.remove('active')); }
     current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6){ ligaRoundsCache = null; renderLigaStandings(); } }

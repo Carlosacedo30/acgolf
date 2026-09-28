@@ -147,6 +147,8 @@
   }
 
   function renderDiagnostico(){
+    const shareSec = document.getElementById('s4ShareSection');
+    if(shareSec) shareSec.style.display = roundMarkedFinished ? '' : 'none';
     if(diagActivePlayer >= players.length) diagActivePlayer = 0;
     renderDiagPlayerTabs();
     const pIndex = diagActivePlayer;

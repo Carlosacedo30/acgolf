@@ -81,11 +81,12 @@
           });
         });
       });
+      const computed = {}; // solo los que salen de rondas reales (no los hándicaps iniciales)
       Object.keys(byPlayer).forEach(name => {
         const index = computeHandicapIndex(byPlayer[name]);
-        if(index !== null) FAVORITE_HANDICAPS[name] = index;
+        if(index !== null){ FAVORITE_HANDICAPS[name] = index; computed[name] = index; }
       });
-      await saveLeagueHandicaps(FAVORITE_HANDICAPS);
+      await saveLeagueHandicaps(computed);
     } catch(e){
       console.error('No se pudo actualizar el hándicap de la liga', e);
     }
