@@ -516,3 +516,20 @@
   .champ-row:first-child{ border-top:none; }
   .champ-month{ width:110px; font-size:12px; font-weight:700; color:var(--gold-ink); text-transform:uppercase; letter-spacing:.04em; }
   .champ-name{ flex:1; font-weight:600; font-size:14px; }
+
+  /* Jugadores de la liga (administrador) */
+  .lp-open-btn{ display:block; margin:6px auto 0; font:600 13px 'Inter', sans-serif; color:var(--gold-ink); background:var(--gold-soft); border:1.5px solid var(--gold); border-radius:999px; padding:9px 18px; cursor:pointer; }
+  .lp-open-btn[hidden]{ display:none; }
+  .modal-overlay[hidden]{ display:none; }
+  .lp-card{ max-height:88vh; overflow-y:auto; max-width:420px; }
+  .lp-add{ display:flex; gap:8px; margin-top:12px; }
+  .lp-lbl{ display:block; font-size:11px; font-weight:600; color:var(--forest-soft); margin-bottom:4px; }
+  .lp-add input{ width:100%; box-sizing:border-box; border-radius:var(--r-sm); background:#F6F8FC; border:1px solid var(--line-soft); padding:11px 12px; font:14.5px 'Inter', sans-serif; }
+  .lp-list{ margin-top:14px; }
+  .lp-row{ display:flex; align-items:center; gap:6px; padding:9px 0; border-top:1px solid var(--line-soft); }
+  .lp-name{ flex:1; min-width:0; font-size:13.5px; font-weight:600; }
+  .lp-name small{ display:block; font-size:11px; font-weight:500; color:#7A8A99; margin-top:1px; }
+  .lp-hcp{ width:58px; flex:none; box-sizing:border-box; border-radius:8px; border:1px solid var(--line-soft); background:#F6F8FC; padding:7px 6px; font:600 13px 'IBM Plex Mono', monospace; text-align:center; }
+  .lp-save, .lp-del{ flex:none; font:600 11.5px 'Inter', sans-serif; border-radius:999px; padding:7px 9px; cursor:pointer; background:transparent; }
+  .lp-save{ color:var(--forest); border:1px solid var(--forest); }
+  .lp-del{ color:var(--clay); border:1px solid var(--clay); }

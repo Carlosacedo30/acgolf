@@ -1,0 +1,102 @@
+  // --- Jugadores de la liga: lista compartida en Supabase, gestionada solo desde el móvil administrador ---
+  let leaguePlayers = []; // [{ name, hcp }]
+
+  async function loadLeaguePlayers(){
+    const client = initSupabase();
+    if(!client) return;
+    try {
+      const { data, error } = await client.from('league_players').select('name, hcp').eq('active', true).order('created_at', { ascending: true });
+      if(error || !data || !data.length) return; // sin conexión: se queda la lista de siempre
+      leaguePlayers = data;
+      FAVORITE_PLAYERS.length = 0;
+      data.forEach(p => {
+        FAVORITE_PLAYERS.push(p.name);
+        if(p.hcp !== null && p.hcp !== undefined) FAVORITE_HANDICAPS[p.name] = Number(p.hcp);
+      });
+      // el hándicap calculado con sus rondas manda sobre el inicial
+      if(typeof loadLeagueHandicaps === 'function') await loadLeagueHandicaps();
+      renderLeaguePlayersList();
+    } catch(e){ console.error('No se pudo cargar la lista de jugadores', e); }
+  }
+
+  function refreshAdminUI(){
+    const btn = document.getElementById('leaguePlayersBtn');
+    if(btn) btn.hidden = !getAdminKey();
+  }
+
+  function fmtHcp(v){ return (v === null || v === undefined || v === '') ? '—' : String(v).replace('.', ','); }
+
+  function renderLeaguePlayersList(){
+    const box = document.getElementById('leaguePlayersList');
+    if(!box) return;
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    if(!leaguePlayers.length){ box.innerHTML = '<div class="empty-hint">No hay jugadores todavía</div>'; return; }
+    box.innerHTML = leaguePlayers.map((p, i) => {
+      const actual = FAVORITE_HANDICAPS[p.name];
+      return '<div class="lp-row">'
+        + '<div class="lp-name">' + esc(p.name) + '<small>Hcp actual ' + esc(fmtHcp(actual !== undefined ? actual : p.hcp)) + '</small></div>'
+        + '<input class="lp-hcp" type="number" step="0.1" min="0" max="54" inputmode="decimal" value="' + esc(p.hcp == null ? '' : p.hcp) + '" aria-label="Hándicap inicial de ' + esc(p.name) + '" data-i="' + i + '">'
+        + '<button type="button" class="lp-save" data-i="' + i + '">Guardar</button>'
+        + '<button type="button" class="lp-del" data-i="' + i + '" aria-label="Quitar a ' + esc(p.name) + '">Quitar</button>'
+        + '</div>';
+    }).join('');
+    box.querySelectorAll('.lp-save').forEach(b => b.addEventListener('click', async ()=>{
+      const p = leaguePlayers[+b.dataset.i];
+      const inp = box.querySelector('.lp-hcp[data-i="' + b.dataset.i + '"]');
+      await savePlayer(p.name, inp ? inp.value : p.hcp, b);
+    }));
+    box.querySelectorAll('.lp-del').forEach(b => b.addEventListener('click', async ()=>{
+      const p = leaguePlayers[+b.dataset.i];
+      if(!confirm('¿Quitar a ' + p.name + ' de la liga?\nSus rondas y su hándicap se conservan; solo deja de salir en la lista.')) return;
+      try {
+        const { data, error } = await initSupabase().rpc('remove_player', { p_key: getAdminKey(), p_name: p.name });
+        if(error) throw error;
+        if(!data){ alert('No tienes permiso para quitar jugadores.'); return; }
+        await loadLeaguePlayersFresh();
+      } catch(e){ alert('No se pudo quitar. Revisa la conexión.'); }
+    }));
+  }
+
+  async function loadLeaguePlayersFresh(){
+    const client = initSupabase();
+    const { data } = await client.from('league_players').select('name, hcp').eq('active', true).order('created_at', { ascending: true });
+    leaguePlayers = data || [];
+    FAVORITE_PLAYERS.length = 0;
+    leaguePlayers.forEach(p => { FAVORITE_PLAYERS.push(p.name); if(p.hcp != null) FAVORITE_HANDICAPS[p.name] = Number(p.hcp); });
+    if(typeof loadLeagueHandicaps === 'function') await loadLeagueHandicaps();
+    renderLeaguePlayersList();
+  }
+
+  async function savePlayer(name, hcpRaw, btn){
+    const nm = String(name || '').trim().replace(/\s+/g, ' ');
+    if(!nm){ alert('Escribe el nombre del jugador.'); return false; }
+    const h = String(hcpRaw == null ? '' : hcpRaw).replace(',', '.').trim();
+    const hcp = h === '' ? null : Number(h);
+    if(hcp !== null && (isNaN(hcp) || hcp < 0 || hcp > 54)){ alert('El hándicap debe estar entre 0 y 54.'); return false; }
+    const old = btn ? btn.textContent : '';
+    if(btn) btn.textContent = 'Guardando…';
+    try {
+      const { data, error } = await initSupabase().rpc('upsert_player', { p_key: getAdminKey(), p_name: nm, p_hcp: hcp });
+      if(error) throw error;
+      if(!data){ alert('No tienes permiso para gestionar jugadores.'); return false; }
+      await loadLeaguePlayersFresh();
+      return true;
+    } catch(e){ alert('No se pudo guardar. Revisa la conexión.'); return false; }
+    finally { if(btn) btn.textContent = old; }
+  }
+
+  (function setupLeaguePlayers(){
+    const btn = document.getElementById('leaguePlayersBtn');
+    const overlay = document.getElementById('leaguePlayersOverlay');
+    if(btn && overlay) btn.addEventListener('click', ()=>{ overlay.hidden = false; renderLeaguePlayersList(); loadLeaguePlayersFresh(); });
+    const close = document.getElementById('leaguePlayersClose');
+    if(close && overlay) close.addEventListener('click', ()=>{ overlay.hidden = true; });
+    const addBtn = document.getElementById('lpAddBtn');
+    if(addBtn) addBtn.addEventListener('click', async ()=>{
+      const n = document.getElementById('lpNewName'), h = document.getElementById('lpNewHcp');
+      const ok = await savePlayer(n ? n.value : '', h ? h.value : '', addBtn);
+      if(ok){ if(n) n.value = ''; if(h) h.value = ''; }
+    });
+    refreshAdminUI();
+    loadLeaguePlayers();
+  })();

@@ -357,6 +357,7 @@
   }
 
   async function renderRecentRounds(){
+    if(typeof refreshAdminUI === 'function') refreshAdminUI();
     const list = document.getElementById('recentRoundsList');
     const empty = document.getElementById('recentRoundsEmpty');
     if(!list) return;
