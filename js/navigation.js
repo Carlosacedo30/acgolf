@@ -1,4 +1,4 @@
-  const labels = ["1. Jugar","2. Configurar partida","3. Empezar partida","4. Introducir resultados","5. Diagnóstico post-ronda","6. Consejos de Golf","7. Liga"];
+  const labels = ["1. Jugar","1. Jugar","2. Empezar partida","3. Introducir resultados","4. Diagnóstico post-ronda","5. Consejos de Golf","6. Liga"];
   let current = 0;
   const screens = document.querySelectorAll('.screen');
   const dots = document.querySelectorAll('.dot');
@@ -33,4 +33,18 @@
       timeInput.value = pad(now.getHours()) + ':' + pad(now.getMinutes());
     }
   }
-  function goTo(n){ current = n; render(); if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); } if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6) renderLigaStandings(); }
+  // "Configurar partida" ya no es una pantalla aparte: vive dentro de "Jugar" y se despliega al elegir campo
+  function showConfigBlock(show){
+    const block = document.getElementById('configPartidaBlock');
+    if(!block) return;
+    block.style.display = show ? '' : 'none';
+    if(show){
+      const create = document.getElementById('createGameSection');
+      if(create) create.style.display = '';
+      setTimeout(() => block.scrollIntoView({ behavior:'smooth', block:'start' }), 50);
+    }
+  }
+  function goTo(n){
+    if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0; }
+    else if(n === 0){ showConfigBlock(false); }
+    current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6) renderLigaStandings(); }

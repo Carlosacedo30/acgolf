@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -46,7 +46,7 @@
 
   <div class="dots">
     <button class="dot active" data-goto="0"></button>
-    <button class="dot" data-goto="1"></button>
+    <button class="dot" data-goto="1" hidden></button>
     <button class="dot" data-goto="2"></button>
     <button class="dot" data-goto="3"></button>
     <button class="dot" data-goto="4"></button>
@@ -86,38 +86,11 @@
           </div>
           <div class="dropdown" id="screen0-dropdown"></div>
         </section>
-        <section id="joinGameSection" style="display:none;">
-          <div class="eyebrow">Unirse a una partida</div>
-          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
-          <div class="field-row" style="margin-top:8px;">
-            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'IBM Plex Mono', monospace;"></div>
-            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
-          </div>
-          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay); margin-top:6px;"></div>
+        <div id="configPartidaBlock" style="display:none;">
+        <section style="background:var(--gold-soft);">
+          <div class="eyebrow">Configurar partida</div>
+          <div style="font-family:'Playfair Display', serif; font-size:19px; font-weight:600; color:var(--forest);" id="s1CourseMeta">Club de Golf Hato Verde</div>
         </section>
-        <section>
-          <div class="answer-row" id="ligaLinkBtn" style="cursor:pointer;">
-            <div class="answer-main">🏆 Liga en Hato Verde</div>
-            <div class="answer-sub">Clasificación por resultado neto, ajustada al hándicap de cada uno</div>
-          </div>
-        </section>
-        <section>
-          <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
-          <div id="recentRoundsList"></div>
-          <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
-          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:12px; color:#7A8A99; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
-        </section>
-      </div>
-    </div>
-
-    <!-- SCREEN 1: Configurar partida -->
-    <div class="screen" data-screen="1">
-      <div class="screen-content">
-        <div class="app-bar">
-          <div class="back">‹ Jugar</div>
-          <h1>Configurar partida</h1>
-          <div class="meta" id="s1CourseMeta">Club de Golf Hato Verde</div>
-        </div>
         <section>
           <div class="eyebrow">Detalles</div>
           <div class="field">
@@ -202,9 +175,35 @@
             <div class="tee-opt"><div class="tee-swatch roja"></div><div class="lbl">Rojas</div></div>
           </div>
         </section>
+        <section style="border-bottom:none;"><div class="actions" style="padding:0;"><div class="btn primary full" id="empezarPartidaBtn">Siguiente ›</div></div></section>
+        </div>
+        <section id="joinGameSection" style="display:none;">
+          <div class="eyebrow">Unirse a una partida</div>
+          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
+          <div class="field-row" style="margin-top:8px;">
+            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'IBM Plex Mono', monospace;"></div>
+            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
+          </div>
+          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay); margin-top:6px;"></div>
+        </section>
+        <section>
+          <div class="answer-row" id="ligaLinkBtn" style="cursor:pointer;">
+            <div class="answer-main">🏆 Liga en Hato Verde</div>
+            <div class="answer-sub">Clasificación por resultado neto, ajustada al hándicap de cada uno</div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
+          <div id="recentRoundsList"></div>
+          <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
+          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:12px; color:#7A8A99; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
+        </section>
       </div>
-      <div class="actions"><div class="btn primary full" id="empezarPartidaBtn">Siguiente ›</div></div>
     </div>
+
+    <!-- SCREEN 1: Configurar partida -->
+    <!-- SCREEN 1: fusionada con Jugar (el contenido vive ahora en #configPartidaBlock) -->
+    <div class="screen" data-screen="1"></div>
 
     <!-- SCREEN 2: Empezar partida (confirmación del campo ya elegido) -->
     <div class="screen" data-screen="2">
@@ -370,18 +369,18 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
-<script src="js/data.js?v=9"></script>
-<script src="js/players.js?v=9"></script>
-<script src="js/rondas-compartidas.js?v=9"></script>
-<script src="js/historial-jugadores.js?v=9"></script>
-<script src="js/scorecard.js?v=9"></script>
-<script src="js/navigation.js?v=9"></script>
-<script src="js/diagnostico.js?v=9"></script>
-<script src="js/interactions.js?v=9"></script>
-<script src="js/resultados.js?v=9"></script>
-<script src="js/vista-hoyo.js?v=9"></script>
-<script src="js/consejos.js?v=9"></script>
-<script src="js/liga.js?v=9"></script>
+<script src="js/data.js?v=11"></script>
+<script src="js/players.js?v=11"></script>
+<script src="js/rondas-compartidas.js?v=11"></script>
+<script src="js/historial-jugadores.js?v=11"></script>
+<script src="js/scorecard.js?v=11"></script>
+<script src="js/navigation.js?v=11"></script>
+<script src="js/diagnostico.js?v=11"></script>
+<script src="js/interactions.js?v=11"></script>
+<script src="js/resultados.js?v=11"></script>
+<script src="js/vista-hoyo.js?v=11"></script>
+<script src="js/consejos.js?v=11"></script>
+<script src="js/liga.js?v=11"></script>
 
 </body>
 </html>
