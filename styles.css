@@ -337,3 +337,84 @@
   /* Inicio: elegir campo directamente (Hato Verde / Zaudín) + unirse con código */
   .start-choice-code{ display:flex; align-items:baseline; justify-content:center; gap:6px; margin-top:12px; padding:13px 12px; }
   .start-choice-code .lbl{ margin:0; }
+
+  /* ===== Diseño moderno: tarjetas redondeadas sobre fondo suave ===== */
+  :root{ --bg:#EEF2F8; --card:#FFFFFF; --r-lg:20px; --r-md:14px; --r-sm:10px;
+         --shadow:0 1px 2px rgba(23,33,46,0.04), 0 6px 18px rgba(27,59,111,0.07); }
+  body, .frame, .screen-content{ background:var(--bg); }
+  body{ font-variant-numeric:tabular-nums; }
+
+  /* Cabeceras: azul con esquinas inferiores redondeadas */
+  .dots{ padding-bottom:10px; }
+  .app-bar, .portada{ border-bottom:none; border-radius:0 0 28px 28px; box-shadow:inset 0 -3px 0 var(--gold); position:relative; }
+  .app-bar{ padding:18px 22px 22px; margin-bottom:6px; }
+  .app-bar h1{ font-weight:600; font-size:24px; }
+  .portada{ padding-bottom:26px; margin-bottom:6px; }
+
+  /* Cada bloque es una tarjeta */
+  section{ background:var(--card); margin:12px 14px; padding:18px; border:none; border-radius:var(--r-lg); box-shadow:var(--shadow); }
+  section:last-child{ margin-bottom:22px; }
+  section + section{ border-top:none; }
+  .eyebrow{ font-size:10.5px; margin-bottom:12px; }
+
+  /* Controles redondeados */
+  .field input, .field select, .field textarea, .search-box{ border-radius:var(--r-sm); background:#F6F8FC; border:1px solid var(--line-soft); padding:12px 14px; }
+  .field input:focus, .search-box:focus-within{ outline:none; border-color:var(--forest); background:#fff; box-shadow:0 0 0 3px rgba(27,59,111,0.10); }
+  .pill-opt, .gender-toggle .tab{ border-radius:999px; background:#F6F8FC; border-color:var(--line-soft); }
+  .pill-opt.selected, .gender-toggle .tab.active{ background:var(--forest); border-color:var(--forest); box-shadow:0 4px 10px rgba(27,59,111,0.22); }
+  .modality-opt{ border-radius:var(--r-md); background:#F6F8FC; border-color:var(--line-soft); padding:13px 14px; }
+  .modality-opt.selected{ background:var(--gold-soft); border-color:var(--gold); }
+  .tee-opt{ border-radius:var(--r-md); padding:10px 4px; }
+  .tee-opt.selected{ border-color:var(--gold); }
+
+  /* Elegir campo: tarjetas grandes */
+  .start-choice{ gap:12px; }
+  .start-choice-opt{ border:none; border-radius:var(--r-lg); background:linear-gradient(160deg, #F7F9FC 0%, #EAF0F8 100%); padding:20px 12px 18px; box-shadow:inset 0 0 0 1px var(--line-soft); transition:transform .15s ease, box-shadow .15s ease; }
+  .start-choice-opt:active{ transform:scale(0.98); }
+  .start-choice-opt.active{ background:var(--forest); box-shadow:0 8px 20px rgba(27,59,111,0.28); }
+  .start-choice-opt.active .lbl{ color:var(--cream); }
+  .start-choice-opt.active .sub{ color:#D9CFB4; }
+  .start-choice-opt.active svg{ stroke:var(--cream); }
+  .start-choice-opt .lbl{ font-size:15.5px; }
+  .start-choice-code{ margin-top:0; }
+
+  /* Botones */
+  .btn{ border-radius:var(--r-md); padding:15px 0; font-size:15px; }
+  .btn.primary{ box-shadow:0 6px 16px rgba(27,59,111,0.25), inset 0 -3px 0 var(--gold); }
+  .actions{ background:transparent; border-top:none; padding:12px 14px 16px; }
+  .play-btn, .delete-btn{ border-radius:999px; padding:7px 15px; }
+  .play-btn{ background:var(--forest); color:var(--cream); border-color:var(--forest); }
+  .clasif-btn{ border-radius:999px; }
+
+  /* Barra de navegación inferior flotante */
+  .flow-nav{ background:transparent; padding:8px 12px calc(env(safe-area-inset-bottom, 0px) + 10px); }
+  .flow-nav::before{ content:""; position:absolute; inset:0 10px calc(env(safe-area-inset-bottom, 0px) + 4px) 10px; background:var(--forest); border-radius:22px; box-shadow:0 8px 24px rgba(15,27,46,0.28); z-index:-1; }
+  .flow-nav{ isolation:isolate; }
+  .nav-btn{ border-radius:999px; }
+
+  /* Listas: filas limpias dentro de la tarjeta */
+  .recent-row{ padding:12px 4px; border-top:1px solid var(--line-soft); }
+  .recent-row .club{ font-weight:600; }
+  .leaderboard-row{ padding:12px 4px; }
+  .leaderboard-pos{ width:30px; height:30px; }
+
+  /* Recuadros informativos */
+  .pattern, .note-box, .round-code-banner, .not-found, .toast{ border:none; border-radius:var(--r-md); }
+  .round-code-banner .code{ font-size:30px; }
+
+  /* Datos: tarjetas de cifras */
+  .stat-cell, .hcp-hero{ border-radius:var(--r-md); }
+  .card-grid{ border-radius:var(--r-md); overflow:hidden; }
+  .grid-cell{ border-radius:0; }
+
+  /* Ronda hoyo a hoyo */
+  .hole-badge-big{ box-shadow:0 0 0 4px var(--gold-soft), 0 10px 22px rgba(27,59,111,0.28); }
+  .hole-nav-btn{ background:#fff; box-shadow:var(--shadow); border-color:var(--line-soft); }
+  .hole-meta-item .v{ font-size:22px; }
+  .player-hole-card{ border:none; border-radius:var(--r-lg); background:#F6F8FC; padding:14px; }
+  .stroke-box, .result-box{ border-radius:var(--r-md); }
+  .extra-stroke-note{ border-radius:var(--r-sm); }
+
+  /* Ventanas y avisos */
+  .modal-card{ border-radius:24px; }
+  .message-toast{ border-radius:999px; }

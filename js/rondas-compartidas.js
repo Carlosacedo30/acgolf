@@ -374,7 +374,7 @@
       const unfinished = r.finished === false;
       const title = escapeHtml(r.roundName || r.courseName || 'Partida');
       const who = r.players.length ? escapeHtml(r.players.map(n => n.split(' ')[0]).join(', ')) + ' · ' : '';
-      return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft); margin:0 -20px; padding:12px 20px; border-top:none;"' : '') + '>'
+      return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft); margin:4px -8px; padding:12px; border-top:none; border-radius:14px;"' : '') + '>'
         + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + who + escapeHtml(r.courseName || 'Campo') + ' · Código ' + escapeHtml(r.code) + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
         + '<div style="display:flex; gap:8px; align-items:center; flex:none;">'
         + (unfinished && isAdmin ? '<div class="delete-btn" data-delete-code="' + escapeHtml(r.code) + '" data-title="' + title + '" title="Borrar partida" aria-label="Borrar partida">Borrar</div>' : '')
