@@ -1,7 +1,7 @@
   // --- Dibujo del hoyo + distancia al green por GPS ---
   // Dibujos de cada hoyo (se irán añadiendo campo a campo)
   const HOLE_MAPS = {
-    'hato-verde': Object.fromEntries(Array.from({ length: 14 }, (_, i) => [i + 1, 'hoyos/hato-verde-' + (i + 1) + '.svg?v=1'])),
+    'hato-verde': Object.fromEntries(Array.from({ length: 18 }, (_, i) => [i + 1, 'hoyos/hato-verde-' + (i + 1) + '.svg?v=1'])),
   };
 
   let holeGreens = {};          // 'campo|hoyo' -> { lat, lng }
