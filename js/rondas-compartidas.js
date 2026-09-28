@@ -40,6 +40,36 @@
       return raw ? JSON.parse(raw) : [];
     } catch(e){ return []; }
   }
+  // --- Borrar partidas: solo desde el móvil que tenga la clave de administrador ---
+  // La clave se guarda una vez abriendo la app con el enlace #admin=CLAVE (el enlace se limpia solo).
+  // Supabase comprueba la clave en la función delete_round antes de borrar.
+  (function captureAdminKey(){
+    const m = location.hash.match(/admin=([A-Za-z0-9_-]+)/);
+    if(!m) return;
+    try { localStorage.setItem('golfAppAdminKey', m[1]); } catch(e){}
+    history.replaceState(null, '', location.pathname + location.search);
+  })();
+  function getAdminKey(){
+    try { return localStorage.getItem('golfAppAdminKey') || ''; } catch(e){ return ''; }
+  }
+  async function deleteSharedRound(code){
+    const client = initSupabase();
+    if(!client) return { ok:false, msg:'Sin conexión' };
+    try {
+      const { data, error } = await client.rpc('delete_round', { p_code: code, p_key: getAdminKey() });
+      if(error) throw error;
+      if(!data) return { ok:false, msg:'No tienes permiso para borrar partidas' };
+      try {
+        localStorage.setItem('golfAppRoundHistory', JSON.stringify(getLocalRoundHistory().filter(r => r.code !== code)));
+        if(currentRoundCode === code){ clearLocalBackup(); }
+      } catch(e){}
+      return { ok:true };
+    } catch(e){
+      console.error('No se pudo borrar la partida', e);
+      return { ok:false, msg:'No se pudo borrar la partida. Revisa la conexión.' };
+    }
+  }
+
   function rememberRoundCode(code, courseName, roundNameVal){
     try {
       const history = getLocalRoundHistory().filter(r => r.code !== code);
@@ -300,6 +330,7 @@
     }
     if(empty) empty.style.display = 'none';
     // Las que están sin terminar, arriba
+    const isAdmin = !!getAdminKey();
     const sorted = recent.slice().sort((a, b) => (a.finished === false ? 0 : 1) - (b.finished === false ? 0 : 1));
     list.innerHTML = sorted.map(r => {
       const unfinished = r.finished === false;
@@ -307,8 +338,21 @@
       const who = r.players.length ? escapeHtml(r.players.map(n => n.split(' ')[0]).join(', ')) + ' · ' : '';
       return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft); margin:0 -20px; padding:12px 20px; border-top:none;"' : '') + '>'
         + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + who + escapeHtml(r.courseName || 'Campo') + ' · Código ' + escapeHtml(r.code) + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
-        + '<div class="play-btn" data-code="' + escapeHtml(r.code) + '" style="cursor:pointer;">' + (unfinished ? 'Continuar' : 'Ver') + '</div></div>';
+        + '<div style="display:flex; gap:8px; align-items:center; flex:none;">'
+        + (unfinished && isAdmin ? '<div class="delete-btn" data-delete-code="' + escapeHtml(r.code) + '" data-title="' + title + '" title="Borrar partida" aria-label="Borrar partida">Borrar</div>' : '')
+        + '<div class="play-btn" data-code="' + escapeHtml(r.code) + '" style="cursor:pointer;">' + (unfinished ? 'Continuar' : 'Ver') + '</div>'
+        + '</div></div>';
     }).join('');
+    list.querySelectorAll('.delete-btn[data-delete-code]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(btn.dataset.busy) return;
+        if(!confirm('¿Borrar la partida "' + btn.dataset.title + '" (código ' + btn.dataset.deleteCode + ')?\nSe borrará para todos los jugadores y no se puede deshacer.')) return;
+        btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
+        const res = await deleteSharedRound(btn.dataset.deleteCode);
+        if(res.ok){ renderRecentRounds(); }
+        else { alert(res.msg); delete btn.dataset.busy; btn.textContent = 'Borrar'; }
+      });
+    });
     list.querySelectorAll('.play-btn[data-code]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         const res = await joinSharedRound(btn.dataset.code);
