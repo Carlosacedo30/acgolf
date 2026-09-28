@@ -549,3 +549,10 @@
   .sum-tile .k{ font-size:10.5px; font-weight:600; color:#7A8A99; margin-top:2px; }
   .sum-tile.main{ background:var(--forest); } .sum-tile.main .v{ color:var(--cream); } .sum-tile.main .k{ color:#D9CFB4; }
   .sum-tile.over .v{ color:var(--clay); } .sum-tile.under .v{ color:var(--green); } .sum-tile.par .v{ color:var(--gold-ink); }
+  .diag-stat.total-split{ align-items:center; }
+  .diag-stat.total-split .v.big{ font-size:34px; color:var(--forest); }
+  .diag-stat.total-split .split{ display:flex; align-items:center; gap:10px; }
+  .diag-stat.total-split .split > div{ text-align:center; }
+  .diag-stat.total-split .n{ display:block; font-family:'IBM Plex Mono', monospace; font-size:17px; font-weight:600; color:#5B6B7A; }
+  .diag-stat.total-split .split .k{ display:block; margin-top:1px; }
+  .diag-stat.total-split .plus{ font-size:15px; font-weight:600; color:#9AA6B5; }

@@ -115,7 +115,12 @@
       + tile(pars, 'Pares', 'par')
       + tile(bogeys, 'Bogeys', '')
       + tile(dobles, 'Dobles o peor', 'over')
-      + tile((idaN ? ida : '—') + ' / ' + (vueltaN ? vuelta : '—'), 'Ida / Vuelta', 'wide');
+      + '<div class="diag-stat wide total-split">'
+      +   '<div><div class="v big">' + (ida + vuelta) + '</div><div class="k">Total golpes</div></div>'
+      +   '<div class="split"><div><span class="n">' + (idaN ? ida : '—') + '</span><span class="k">Ida</span></div>'
+      +   '<div class="plus" aria-hidden="true">+</div>'
+      +   '<div><span class="n">' + (vueltaN ? vuelta : '—') + '</span><span class="k">Vuelta</span></div></div>'
+      + '</div>';
   }
 
   // Gráfico hoyo a hoyo: barra hacia arriba si te pasas del par, hacia abajo si lo mejoras
