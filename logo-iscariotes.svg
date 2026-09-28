@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Los Iscariotes Golf Club">
+  <defs>
+    <path id="arcTop" d="M 70 200 A 130 130 0 0 1 330 200"/>
+    <path id="arcBot" d="M 62 200 A 138 138 0 0 0 338 200"/>
+    <clipPath id="inner"><circle cx="200" cy="200" r="116"/></clipPath>
+  </defs>
+  <circle cx="200" cy="200" r="194" fill="#1B3B6F"/>
+  <circle cx="200" cy="200" r="184" fill="none" stroke="#D4AF37" stroke-width="5"/>
+  <circle cx="200" cy="200" r="118" fill="#24487A" stroke="#D4AF37" stroke-width="3"/>
+  <text font-family="'Playfair Display', Georgia, serif" font-weight="700" font-size="34" letter-spacing="3" fill="#F3EBD3" text-anchor="middle"><textPath href="#arcTop" startOffset="50%">LOS ISCARIOTES</textPath></text>
+  <text font-family="'Inter', Arial, sans-serif" font-weight="700" font-size="17" letter-spacing="5" fill="#D4AF37" text-anchor="middle" dominant-baseline="hanging"><textPath href="#arcBot" startOffset="50%">GOLF CLUB · HATO VERDE</textPath></text>
+  <circle cx="70" cy="200" r="5" fill="#D4AF37"/>
+  <circle cx="330" cy="200" r="5" fill="#D4AF37"/>
+  <g clip-path="url(#inner)">
+    <circle cx="258" cy="128" r="22" fill="#F3EBD3" opacity="0.18"/>
+    <path d="M 70 262 Q 200 222 330 262 L 330 330 L 70 330 Z" fill="#3D7A5C"/>
+    <path d="M 70 280 Q 200 250 330 282 L 330 330 L 70 330 Z" fill="#2F6149"/>
+    <line x1="272" y1="176" x2="272" y2="252" stroke="#F3EBD3" stroke-width="3"/>
+    <path d="M 274 177 L 302 187 L 274 197 Z" fill="#D64550"/>
+    <ellipse cx="272" cy="253" rx="9" ry="3" fill="#1B3B6F"/>
+    <!-- figura con túnica -->
+    <!-- palo en el backswing, por detrás de la cabeza -->
+    <line x1="222" y1="150" x2="140" y2="96" stroke="#D4AF37" stroke-width="4" stroke-linecap="round"/>
+    <path d="M 140 96 L 125 93 L 131 104 Z" fill="#D4AF37"/>
+    <!-- túnica -->
+    <path d="M 184 166 C 172 184 162 220 148 262 L 230 262 C 224 224 216 190 208 166 C 200 172 191 172 184 166 Z" fill="#F3EBD3"/>
+    <!-- capucha puntiaguda -->
+    <path d="M 178 162 C 170 146 176 126 192 116 C 196 112 206 108 214 104 C 210 114 214 126 214 140 C 216 154 206 168 194 168 C 186 168 181 166 178 162 Z" fill="#F3EBD3"/>
+    <path d="M 184 152 C 183 140 193 132 203 137 C 209 141 209 152 204 158 C 199 163 188 162 184 152 Z" fill="#12294D"/>
+    <!-- mangas: los dos brazos suben hasta las manos -->
+    <path d="M 190 180 C 200 176 210 166 218 150 L 228 154 C 220 174 208 188 194 194 Z" fill="#F3EBD3"/>
+    <path d="M 202 172 C 210 166 216 158 222 148 L 230 152 C 224 166 216 176 206 182 Z" fill="#E4D9BC"/>
+    <circle cx="224" cy="149" r="5.5" fill="#F3EBD3" stroke="#24487A" stroke-width="1"/>
+    <!-- cordón y pliegues -->
+    <path d="M 172 208 C 184 213 206 213 220 206" stroke="#D4AF37" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M 196 214 L 192 240" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 176 262 L 182 222 M 204 262 L 202 222" stroke="#24487A" stroke-width="2" fill="none" opacity="0.45"/>
+    <circle cx="244" cy="258" r="6" fill="#FFFFFF"/>
+  </g>
+</svg>

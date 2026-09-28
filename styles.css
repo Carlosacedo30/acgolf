@@ -316,3 +316,7 @@
   .leaderboard-name{ flex:1; font-size:14px; font-weight:600; }
   .leaderboard-score{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; color:var(--forest); }
   .toggle-grid-lbl{ cursor:pointer; }
+
+  /* Portada del inicio: logo de Los Iscariotes */
+  .portada{ background:var(--forest); display:flex; justify-content:center; padding:calc(env(safe-area-inset-top, 0px) + 18px) 20px 22px; }
+  .portada img{ width:200px; height:200px; max-width:60vw; max-height:60vw; display:block; }
