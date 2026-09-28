@@ -418,3 +418,29 @@
     });
   }
 
+
+  // --- "Últimas partidas" se refresca sola: al instante cuando alguien crea o apunta en una partida,
+  // cada 20 s mientras estás en el inicio (por si falla el tiempo real) y al volver a la app ---
+  (function setupLiveRecentRounds(){
+    let homeTimer = null, pending = false;
+    const refresh = ()=>{
+      if(typeof current === 'undefined' || current !== 0) return;
+      if(document.hidden) return;
+      if(pending) return;
+      pending = true;
+      setTimeout(async ()=>{ pending = false; try { await renderRecentRounds(); } catch(e){} }, 800); // agrupa varios cambios seguidos
+    };
+    const client = initSupabase();
+    if(client){
+      try {
+        client.channel('rounds-home')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'rounds' }, refresh)
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rounds' }, refresh)
+          .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'rounds' }, refresh)
+          .subscribe();
+      } catch(e){ /* sin tiempo real: queda el refresco periódico */ }
+    }
+    homeTimer = setInterval(refresh, 20000);
+    document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) refresh(); });
+    window.addEventListener('focus', refresh);
+  })();
