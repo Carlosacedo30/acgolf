@@ -1,6 +1,8 @@
   // --- Liga en Club Hato Verde: hándicap real (WHS) y clasificación acumulada ---
   const LEAGUE_COURSE_ID = 'hato-verde';
   const LEAGUE_TEE = 'amarillas'; // barra de salida habitual del grupo
+  // Campos cuyas rondas cuentan para el hándicap (cada uno con su propio Course Rating / Slope)
+  const HANDICAP_COURSE_IDS = ['hato-verde', 'zaudin'];
   // Evita recalcular (con su consulta a la base de datos) en cada pulsación una vez la ronda ya está completa;
   // se reinicia al empezar una ronda nueva
   let leagueHandicapUpdateScheduled = false;
@@ -46,17 +48,18 @@
   async function updateLeagueHandicaps(){
     const client = initSupabase();
     if(!client) return;
-    const tee = COURSES.find(c => c.id === LEAGUE_COURSE_ID).tees[LEAGUE_TEE];
+    const teeFor = id => { const c = COURSES.find(x => x.id === id); return c && c.tees ? c.tees[LEAGUE_TEE] : null; };
     try {
       const { data, error } = await client.from('rounds')
-        .select('match_groups, course_par, course_hcp, created_at')
-        .eq('course_id', LEAGUE_COURSE_ID)
+        .select('course_id, match_groups, course_par, course_hcp, created_at')
+        .in('course_id', HANDICAP_COURSE_IDS)
         .order('created_at', { ascending: false });
       if(error || !data) return;
       const byPlayer = {}; // nombre -> [diferenciales, más reciente primero]
       data.forEach(round => {
         const par = round.course_par, strokeIndex = round.course_hcp;
-        if(!par || !strokeIndex) return;
+        const tee = teeFor(round.course_id);
+        if(!par || !strokeIndex || !tee) return;
         (round.match_groups || []).forEach(group => {
           (group.players || []).forEach((name, pIndex) => {
             if(!name) return;

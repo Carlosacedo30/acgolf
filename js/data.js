@@ -52,7 +52,14 @@
       hcp:[3,5,13,12,10,15,2,11,9] },
     { id:'zaudin', name:'Club Zaudín Golf', location:'Tomares, Sevilla',
       par:[4,4,3,5,4,4,4,5,3, 4,3,5,4,4,4,3,4,4],
-      hcp:[16,6,2,14,4,10,12,18,8, 5,7,15,9,11,13,17,1,3] },
+      hcp:[16,6,2,14,4,10,12,18,8, 5,7,15,9,11,13,17,1,3],
+      // Course Rating / Slope oficiales por barra de salida (masculino), fuente: Real Federación Andaluza de Golf
+      tees:{
+        blancas:  { rating:73.8, slope:135 },
+        amarillas:{ rating:70.5, slope:133 },
+        azules:   { rating:68.0, slope:128 },
+        rojas:    { rating:65.8, slope:120 },
+      } },
   ];
 
   let selectedCourse = null;

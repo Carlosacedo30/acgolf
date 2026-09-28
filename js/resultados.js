@@ -143,7 +143,7 @@
         }
         // Ronda completa en Hato Verde: recalcular el hándicap real de la liga con este resultado ya guardado
         // (solo una vez por ronda, no en cada pulsación mientras siga completa) y enseñarlo en pantalla
-        if(selectedCourse && selectedCourse.id === LEAGUE_COURSE_ID && !leagueHandicapUpdateScheduled){
+        if(selectedCourse && HANDICAP_COURSE_IDS.includes(selectedCourse.id) && !leagueHandicapUpdateScheduled){
           leagueHandicapUpdateScheduled = true;
           setTimeout(()=> runLeagueHandicapUpdate(players.slice()), 1200);
         }
