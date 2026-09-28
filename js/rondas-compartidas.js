@@ -184,11 +184,31 @@
 
   // Guarda en Supabase el estado actual de la partida (con un pequeño retraso para no saturar)
   let restoringScores = false; // true mientras se reconstruye la tarjeta antes de repoblarla (evita guardar una tarjeta vacía a medio camino)
+  // Copia de seguridad local: no depende de la conexión ni de que exista partida en vivo
+  function saveLocalBackup(){
+    try {
+      localStorage.setItem('golfAppLocalBackup', JSON.stringify({
+        matchGroups, scoringType, currentHole, activeGroup, players, playerHandicaps,
+        courseId: selectedCourse ? selectedCourse.id : null,
+        roundCode: currentRoundCode || null,
+        savedAt: new Date().toISOString(),
+      }));
+    } catch(e){}
+  }
+  function loadLocalBackup(){
+    try { const raw = localStorage.getItem('golfAppLocalBackup'); return raw ? JSON.parse(raw) : null; } catch(e){ return null; }
+  }
+  function clearLocalBackup(){
+    try { localStorage.removeItem('golfAppLocalBackup'); } catch(e){}
+  }
+
   function saveRoundState(){
-    if(!currentRoundId || restoringScores) return;
+    if(restoringScores) return;
+    matchGroups[activeGroup].scores = collectGroupScores();
+    saveLocalBackup(); // siempre, haya o no conexión
+    if(!currentRoundId) return;
     const client = initSupabase();
     if(!client) return;
-    matchGroups[activeGroup].scores = collectGroupScores();
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async ()=>{
       suppressRemoteEcho = true;

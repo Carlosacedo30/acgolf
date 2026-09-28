@@ -82,6 +82,7 @@
         const index = computeHandicapIndex(byPlayer[name]);
         if(index !== null) FAVORITE_HANDICAPS[name] = index;
       });
+      await saveLeagueHandicaps(FAVORITE_HANDICAPS);
     } catch(e){
       console.error('No se pudo actualizar el hándicap de la liga', e);
     }
@@ -177,3 +178,27 @@
   if(ligaLinkBtn) ligaLinkBtn.addEventListener('click', ()=> goTo(6));
   const ligaVolverBtn = document.getElementById('ligaVolverBtn');
   if(ligaVolverBtn) ligaVolverBtn.addEventListener('click', ()=> goTo(0));
+
+  // Guarda en Supabase (tabla player_handicaps) los hándicaps calculados, iguales en todos los móviles
+  async function saveLeagueHandicaps(handicaps){
+    const client = initSupabase();
+    if(!client) return;
+    const rows = Object.keys(handicaps).map(name => ({ player_name: name, handicap_index: handicaps[name], updated_at: new Date().toISOString() }));
+    if(!rows.length) return;
+    try {
+      const { error } = await client.from('player_handicaps').upsert(rows, { onConflict: 'player_name' });
+      if(error) throw error;
+    } catch(e){ console.error('No se pudo guardar el hándicap de la liga', e); }
+  }
+
+  // Al abrir la app, trae el último hándicap guardado de cada jugador
+  async function loadLeagueHandicaps(){
+    const client = initSupabase();
+    if(!client) return;
+    try {
+      const { data, error } = await client.from('player_handicaps').select('player_name, handicap_index');
+      if(error || !data) return;
+      data.forEach(row => { if(row.player_name && row.handicap_index !== null) FAVORITE_HANDICAPS[row.player_name] = row.handicap_index; });
+    } catch(e){ console.error('No se pudo cargar el hándicap de la liga', e); }
+  }
+  loadLeagueHandicaps();

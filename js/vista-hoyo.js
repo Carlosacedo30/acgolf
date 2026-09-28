@@ -116,6 +116,14 @@
 
     const wrap = document.getElementById('hvPlayers');
     if(wrap){
+      // Guardar foco y cursor antes de repintar (si no, se pierde la 2ª cifra al escribir un 10)
+      const activeEl = document.activeElement;
+      let focusedPIndex = null, selStart = null, selEnd = null;
+      if(activeEl && activeEl.classList && activeEl.classList.contains('stroke-box') && wrap.contains(activeEl)){
+        focusedPIndex = activeEl.dataset.holeInputFor;
+        selStart = activeEl.selectionStart;
+        selEnd = activeEl.selectionEnd;
+      }
       wrap.innerHTML = players.map((name, pIndex)=>{
         const input = document.querySelector('.golpes-input[data-hole="' + currentHole + '"][data-player-index="' + pIndex + '"]');
         const val = input ? input.value : '';
@@ -154,6 +162,14 @@
           }
         });
       });
+      // Devolver foco y cursor al campo que se estaba usando
+      if(focusedPIndex !== null){
+        const toRefocus = wrap.querySelector('.stroke-box[data-hole-input-for="' + focusedPIndex + '"]');
+        if(toRefocus){
+          toRefocus.focus();
+          try { toRefocus.setSelectionRange(selStart, selEnd); } catch(e){}
+        }
+      }
     }
 
     const leaderboardSection = document.getElementById('leaderboardSection');
