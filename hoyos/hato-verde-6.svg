@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 600" role="img" aria-label="Hoyo 6 Hato Verde, par 3">
+  <defs>
+    <pattern id="stripes" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="16" height="16" fill="#8DC07A"/><rect width="8" height="16" fill="#97C984"/></pattern>
+    <radialGradient id="water" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#4F8FD9"/><stop offset="1" stop-color="#2D66B4"/></radialGradient>
+    <g id="tree"><circle r="7" fill="#2F6149"/><circle r="4" cx="-2" cy="-2" fill="#3D7A5C"/></g>
+    <g id="treeY"><circle r="6" fill="#B9A33A"/><circle r="3.5" cx="-2" cy="-2" fill="#D9C24E"/></g>
+  </defs>
+  <rect width="300" height="600" fill="#24372C"/>
+  <path d="M67.5 76.5 C90.4 48.0 175.5 40.5 198.0 76.5 C220.5 112.5 203.2 234.0 202.5 292.5 C201.8 351.0 204.8 398.2 193.5 427.5 C182.2 456.8 156.0 471.8 135.0 468.0 C114.0 464.2 79.9 441.8 67.5 405.0 C55.1 368.2 60.8 302.2 60.8 247.5 C60.8 192.8 44.6 105.0 67.5 76.5 Z" fill="#4E7A3E"/>
+  <path d="M117.0 202.5 C122.6 187.5 144.0 177.0 148.5 184.5 C153.0 192.0 146.2 217.5 144.0 247.5 C141.8 277.5 139.5 346.5 135.0 364.5 C130.5 382.5 120.4 370.5 117.0 355.5 C113.6 340.5 114.8 300.0 114.8 274.5 C114.8 249.0 111.4 217.5 117.0 202.5 Z" fill="url(#stripes)"/>
+  <ellipse cx="135.0" cy="123.8" rx="12.6" ry="10.8" fill="#A8D98F" stroke="#7FB36A" stroke-width="2"/>
+  <path d="M108.0 130.5 C112.1 125.6 124.5 122.2 128.2 128.2 C132.0 134.2 131.2 155.6 130.5 166.5 C129.8 177.4 127.9 189.4 123.8 193.5 C119.6 197.6 109.1 197.2 105.8 191.2 C102.4 185.2 103.1 167.6 103.5 157.5 C103.9 147.4 103.9 135.4 108.0 130.5 Z" fill="url(#water)"/>
+  <rect x="125.6" y="382.2" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="127.8" y="400.2" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="134.6" y="413.8" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="130.1" y="429.5" width="8" height="5" rx="1.5" fill="#F3EBD3"/>
+  <use href="#tree" x="150.8" y="81.0"/>
+  <use href="#treeY" x="153.0" y="108.0"/>
+  <use href="#tree" x="152.1" y="135.0"/>
+  <use href="#tree" x="153.0" y="162.0"/>
+  <use href="#treeY" x="153.9" y="189.0"/>
+  <use href="#tree" x="152.1" y="216.0"/>
+  <use href="#tree" x="153.0" y="243.0"/>
+  <use href="#treeY" x="153.9" y="270.0"/>
+  <use href="#tree" x="152.1" y="297.0"/>
+  <use href="#tree" x="153.9" y="324.0"/>
+  <use href="#treeY" x="153.0" y="351.0"/>
+  <use href="#tree" x="153.9" y="378.0"/>
+  <use href="#tree" x="155.2" y="405.0"/>
+  <use href="#treeY" x="156.6" y="432.0"/>
+  <line x1="135.0" y1="123.8" x2="135.0" y2="101.8" stroke="#F3EBD3" stroke-width="2"/>
+  <path d="M135.0 101.8 L149.0 106.8 L135.0 111.8 Z" fill="#D64550"/>
+  <circle cx="135.0" cy="123.8" r="2" fill="#1B3B6F"/>
+  <path d="M134.1 432.0 Q134.6 277.9 135.0 123.8" fill="none" stroke="#F3EBD3" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.8"/>
+</svg>

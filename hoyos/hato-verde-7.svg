@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 600" role="img" aria-label="Hoyo 7 Hato Verde, par 3">
+  <defs>
+    <pattern id="stripes" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="16" height="16" fill="#8DC07A"/><rect width="8" height="16" fill="#97C984"/></pattern>
+    <radialGradient id="water" cx="40%" cy="35%" r="75%"><stop offset="0" stop-color="#4F8FD9"/><stop offset="1" stop-color="#2D66B4"/></radialGradient>
+    <g id="tree"><circle r="7" fill="#2F6149"/><circle r="4" cx="-2" cy="-2" fill="#3D7A5C"/></g>
+    <g id="treeY"><circle r="6" fill="#B9A33A"/><circle r="3.5" cx="-2" cy="-2" fill="#D9C24E"/></g>
+  </defs>
+  <rect width="300" height="600" fill="#24372C"/>
+  <path d="M31.5 130.5 C65.2 105.8 202.5 88.5 238.5 108.0 C274.5 127.5 256.5 195.8 247.5 247.5 C238.5 299.2 206.2 389.2 184.5 418.5 C162.8 447.8 141.8 450.0 117.0 423.0 C92.2 396.0 50.2 305.2 36.0 256.5 C21.8 207.8 -2.2 155.2 31.5 130.5 Z" fill="#4E7A3E"/>
+  <path d="M117.0 184.5 C121.5 177.8 143.2 178.5 148.5 184.5 C153.8 190.5 153.0 213.8 148.5 220.5 C144.0 227.2 126.8 231.0 121.5 225.0 C116.2 219.0 112.5 191.2 117.0 184.5 Z" fill="url(#stripes)"/>
+  <ellipse cx="138.6" cy="184.5" rx="18.0" ry="18.9" fill="#A8D98F" stroke="#7FB36A" stroke-width="2"/>
+  <ellipse cx="119.2" cy="171.0" rx="6.3" ry="8.1" fill="#EDE3C4"/>
+  <rect x="168.3" y="311.6" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="168.3" y="326.0" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="157.1" y="352.1" width="8" height="5" rx="1.5" fill="#E8DFC4"/>
+  <rect x="142.2" y="379.1" width="8" height="5" rx="1.5" fill="#F3EBD3"/>
+  <use href="#tree" x="72.0" y="175.5"/>
+  <use href="#treeY" x="99.0" y="157.5"/>
+  <use href="#tree" x="130.5" y="139.5"/>
+  <use href="#tree" x="157.5" y="144.0"/>
+  <use href="#treeY" x="171.0" y="150.8"/>
+  <use href="#tree" x="103.5" y="204.8"/>
+  <use href="#tree" x="108.0" y="216.0"/>
+  <use href="#treeY" x="171.0" y="198.0"/>
+  <use href="#tree" x="171.0" y="222.8"/>
+  <use href="#tree" x="117.0" y="252.0"/>
+  <use href="#treeY" x="121.5" y="270.0"/>
+  <use href="#tree" x="207.0" y="130.5"/>
+  <use href="#tree" x="108.0" y="144.0"/>
+  <use href="#treeY" x="85.5" y="166.5"/>
+  <line x1="138.6" y1="184.5" x2="138.6" y2="162.5" stroke="#F3EBD3" stroke-width="2"/>
+  <path d="M138.6 162.5 L152.6 167.5 L138.6 172.5 Z" fill="#D64550"/>
+  <circle cx="138.6" cy="184.5" r="2" fill="#1B3B6F"/>
+  <path d="M146.2 381.6 Q142.4 283.1 138.6 184.5" fill="none" stroke="#F3EBD3" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.8"/>
+</svg>
