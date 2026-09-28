@@ -93,9 +93,41 @@
     return s.scoreDiff >= 0 ? '+' + s.scoreDiff : String(s.scoreDiff); // stroke play
   }
 
+  // Pase automático al siguiente hoyo cuando todos los jugadores tienen su golpe apuntado.
+  // Solo si el hoyo estaba sin completar al llegar (si vuelves atrás a corregir uno, no te saca de él).
+  let autoAdvanceTimer = null, arrivedHole = null, arrivedComplete = false;
+  function isHoleComplete(h){
+    const named = players.map((n, i) => ({ n, i })).filter(p => p.n);
+    if(!named.length) return false;
+    return named.every(p => {
+      const inp = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + p.i + '"]');
+      return inp && inp.value !== '';
+    });
+  }
+  function scheduleAutoAdvance(){
+    clearTimeout(autoAdvanceTimer);
+    if(arrivedComplete || currentHole >= 18) return;
+    const h = currentHole;
+    autoAdvanceTimer = setTimeout(()=>{
+      if(currentHole !== h || !isHoleComplete(h)) return;
+      if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      currentHole = h + 1;
+      renderHoleView();
+      const card = document.getElementById('holeViewSection');
+      if(card){ card.classList.remove('hole-advanced'); void card.offsetWidth; card.classList.add('hole-advanced'); }
+    }, 1500); // margen para escribir resultados de 2 cifras (un 10) sin que salte antes de tiempo
+  }
+
   function renderHoleView(){
     const holeNumEl = document.getElementById('hvHoleNum');
     if(!holeNumEl) return; // la pantalla 3 todavía no está en el DOM montado
+    if(currentHole < 1) currentHole = 1;
+    if(currentHole > 18) currentHole = 18;
+    if(arrivedHole !== currentHole){
+      arrivedHole = currentHole;
+      arrivedComplete = isHoleComplete(currentHole);
+      clearTimeout(autoAdvanceTimer);
+    }
     const scoringMetaEl = document.getElementById('s3ScoringMeta');
     if(scoringMetaEl) scoringMetaEl.textContent = 'Hoy · ' + (scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play');
     if(currentHole < 1) currentHole = 1;
@@ -160,6 +192,7 @@
             realInput.value = box.value;
             realInput.dispatchEvent(new Event('input', { bubbles: true }));
           }
+          scheduleAutoAdvance();
         });
       });
       // Devolver foco y cursor al campo que se estaba usando
