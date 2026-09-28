@@ -418,3 +418,19 @@
   /* Ventanas y avisos */
   .modal-card{ border-radius:24px; }
   .message-toast{ border-radius:999px; }
+
+  /* Resumen de la partida */
+  .resumen-big{ font-family:'Playfair Display', serif; font-size:26px; font-weight:700; color:var(--forest); line-height:1.15; margin-bottom:4px; }
+  .resumen-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .resumen-tile{ background:#F6F8FC; border-radius:var(--r-md); padding:12px 14px; min-width:0; }
+  .resumen-tile-wide{ grid-column:1 / -1; }
+  .resumen-tile .k{ font-size:10.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#7A8A99; }
+  .resumen-tile .v{ font-size:16px; font-weight:600; color:var(--ink); margin-top:4px; overflow-wrap:anywhere; }
+  .resumen-group-lbl{ font-size:11.5px; font-weight:700; color:var(--forest-soft); margin:10px 0 2px; }
+  .resumen-group-lbl:first-child{ margin-top:0; }
+  .resumen-player{ display:flex; align-items:center; gap:12px; padding:10px 0; border-top:1px solid var(--line-soft); }
+  .resumen-group-lbl + .resumen-player, #resumenJugadores > .resumen-player:first-child{ border-top:none; }
+  .resumen-avatar{ width:36px; height:36px; border-radius:50%; background:var(--forest); color:var(--cream); display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex:none; }
+  .resumen-player .nm{ flex:1; font-size:15px; font-weight:600; min-width:0; }
+  .resumen-hcp{ font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; background:var(--gold-soft); color:var(--gold-ink); padding:5px 11px; border-radius:999px; white-space:nowrap; }
+  .btn-hero{ padding:19px 0; font-size:18px; letter-spacing:.01em; }

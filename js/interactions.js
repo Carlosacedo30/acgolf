@@ -142,8 +142,43 @@
     const scoringPill = document.querySelector('#scoringTypeRow .pill-opt.selected');
     scoringType = scoringPill ? scoringPill.dataset.scoring : 'stableford';
     if(selectedCourse) renderCampoKnown(selectedCourse);
+    renderResumenPartida();
     goTo(2);
   });
+
+  // Pantalla "Resumen": campo, nombre, puntuación, modalidad y participantes con su hándicap
+  function renderResumenPartida(){
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+    set('resumenNombre', roundName || '—');
+    set('resumenPuntuacion', scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play');
+    const mod = document.querySelector('.modality-opt.selected');
+    set('resumenModalidad', mod ? mod.textContent.trim() : 'Individual');
+    const d = document.getElementById('roundDateInput'), t = document.getElementById('roundTimeInput');
+    let fecha = 'Hoy';
+    if(d && d.value){
+      const dt = new Date(d.value + 'T12:00:00');
+      fecha = dt.toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+      fecha = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+    }
+    if(t && t.value) fecha += ' · ' + t.value;
+    set('resumenFecha', fecha);
+    const box = document.getElementById('resumenJugadores');
+    if(!box) return;
+    const groups = matchGroups.map((g, gi) => ({ gi, rows: (g.players || []).map((n, i) => ({ n: (n || '').trim(), h: (g.handicaps || [])[i] })).filter(r => r.n) }))
+      .filter(g => g.rows.length);
+    const multi = groups.length > 1;
+    box.innerHTML = groups.length ? groups.map(g =>
+      (multi ? '<div class="resumen-group-lbl">Grupo ' + (g.gi + 1) + '</div>' : '') +
+      g.rows.map(r => {
+        const ini = r.n.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+        const h = (r.h === '' || r.h == null || isNaN(parseFloat(r.h))) ? '—' : String(r.h).replace('.', ',');
+        return '<div class="resumen-player"><div class="resumen-avatar">' + esc(ini) + '</div><div class="nm">' + esc(r.n) + '</div><div class="resumen-hcp">Hcp ' + esc(h) + '</div></div>';
+      }).join('')
+    ).join('') : '<div class="empty-hint">Sin jugadores — vuelve atrás para añadirlos</div>';
+  }
+  const resumenBack = document.getElementById('resumenBack');
+  if(resumenBack) resumenBack.addEventListener('click', ()=> goTo(1));
 
   // "Empezar tu partida": aquí sí arranca la ronda de verdad (único botón que dice "Empezar partida")
   // Arranca la ronda de verdad (crea la partida compartida y pasa a anotar)

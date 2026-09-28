@@ -1,4 +1,4 @@
-  const labels = ["1. Jugar","1. Jugar","2. Empezar partida","3. Introducir resultados","4. Diagnóstico post-ronda","5. Consejos de Golf","6. Liga"];
+  const labels = ["1. Jugar","1. Jugar","2. Resumen","3. Introducir resultados","4. Diagnóstico post-ronda","5. Consejos de Golf","6. Liga"];
   let current = 0;
   const screens = document.querySelectorAll('.screen');
   const dots = document.querySelectorAll('.dot');

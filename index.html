@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=15">
+<link rel="stylesheet" href="styles.css?v=16">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -210,23 +210,32 @@
     <!-- SCREEN 1: fusionada con Jugar (el contenido vive ahora en #configPartidaBlock) -->
     <div class="screen" data-screen="1"></div>
 
-    <!-- SCREEN 2: Empezar partida (confirmación del campo ya elegido) -->
+    <!-- SCREEN 2: Resumen de la partida antes de comenzar -->
     <div class="screen" data-screen="2">
       <div class="screen-content">
         <div class="app-bar">
-          <div class="back">‹ Configurar partida</div>
-          <h1>Empezar tu partida</h1>
+          <div class="back" id="resumenBack" style="cursor:pointer;">‹ Configurar partida</div>
+          <h1>Resumen de la partida</h1>
+          <div class="meta" id="resumenFecha">Hoy</div>
         </div>
-        <section id="campoKnownSection">
-          <div class="eyebrow">Hoy juegas en este campo</div>
-          <h2 id="campoKnownName">Club Hato Verde</h2>
-          <div class="section-sub" id="campoKnownMeta">Las Pajanosas-Guillena, Sevilla · Par 70</div>
-          <div class="tab-toggle" id="campoKnownTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
-          <div class="card-grid nine-block compact" data-nine="ida" id="campoKnownGridIda"></div>
-          <div class="card-grid nine-block compact" data-nine="vuelta" id="campoKnownGridVuelta" style="display:none;"></div>
+        <section class="resumen-campo">
+          <div class="eyebrow">Dónde se juega</div>
+          <div class="resumen-big" id="campoKnownName">Club Hato Verde</div>
+          <div class="section-sub" id="campoKnownMeta" style="margin-bottom:0;">Las Pajanosas-Guillena, Sevilla · Par 70</div>
+        </section>
+        <section>
+          <div class="resumen-grid">
+            <div class="resumen-tile resumen-tile-wide"><div class="k">Nombre de la partida</div><div class="v" id="resumenNombre">—</div></div>
+            <div class="resumen-tile"><div class="k">Puntuación</div><div class="v" id="resumenPuntuacion">—</div></div>
+            <div class="resumen-tile"><div class="k">Modalidad</div><div class="v" id="resumenModalidad">—</div></div>
+          </div>
+        </section>
+        <section>
+          <div class="eyebrow">Participantes</div>
+          <div id="resumenJugadores"></div>
         </section>
       </div>
-      <div class="actions"><div class="btn primary full" id="empezarPartidaDesdeCampoBtn">▶ Empezar partida</div></div>
+      <div class="actions"><div class="btn primary full btn-hero" id="empezarPartidaDesdeCampoBtn">Comenzar partida</div></div>
     </div>
 
     <!-- SCREEN 3: Introducir resultados -->
@@ -374,18 +383,18 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
-<script src="js/data.js?v=15"></script>
-<script src="js/players.js?v=15"></script>
-<script src="js/rondas-compartidas.js?v=15"></script>
-<script src="js/historial-jugadores.js?v=15"></script>
-<script src="js/scorecard.js?v=15"></script>
-<script src="js/navigation.js?v=15"></script>
-<script src="js/diagnostico.js?v=15"></script>
-<script src="js/interactions.js?v=15"></script>
-<script src="js/resultados.js?v=15"></script>
-<script src="js/vista-hoyo.js?v=15"></script>
-<script src="js/consejos.js?v=15"></script>
-<script src="js/liga.js?v=15"></script>
+<script src="js/data.js?v=16"></script>
+<script src="js/players.js?v=16"></script>
+<script src="js/rondas-compartidas.js?v=16"></script>
+<script src="js/historial-jugadores.js?v=16"></script>
+<script src="js/scorecard.js?v=16"></script>
+<script src="js/navigation.js?v=16"></script>
+<script src="js/diagnostico.js?v=16"></script>
+<script src="js/interactions.js?v=16"></script>
+<script src="js/resultados.js?v=16"></script>
+<script src="js/vista-hoyo.js?v=16"></script>
+<script src="js/consejos.js?v=16"></script>
+<script src="js/liga.js?v=16"></script>
 
 </body>
 </html>
