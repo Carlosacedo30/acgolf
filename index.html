@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=16">
+<link rel="stylesheet" href="styles.css?v=17">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -259,6 +259,9 @@
           <div class="eyebrow">Grupo</div>
           <div class="tab-toggle" id="groupSwitchToggle"></div>
         </section>
+        <section id="holeStripSection" class="hole-strip-section">
+          <div class="hole-strip" id="holeStrip" role="tablist" aria-label="Hoyos"></div>
+        </section>
         <section id="holeViewSection">
           <div class="hole-card-header">
             <div class="hole-nav-btn" id="holePrevBtn">‹</div>
@@ -270,8 +273,10 @@
             <div class="hole-meta-item"><div class="k">Hcp</div><div class="v" id="hvHcp">10</div></div>
           </div>
           <div id="hvPlayers"></div>
-          <div class="clasif-btn" id="clasificacionBtn">🏆 Clasificación</div>
-          <div id="leaderboardSection" style="display:none;"></div>
+        </section>
+        <section>
+          <div class="eyebrow">Clasificación</div>
+          <div id="leaderboardSection"></div>
         </section>
         <section>
           <div class="eyebrow toggle-grid-lbl" id="toggleGridLbl">Ver tabla completa ▾</div>
@@ -383,18 +388,18 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
-<script src="js/data.js?v=16"></script>
-<script src="js/players.js?v=16"></script>
-<script src="js/rondas-compartidas.js?v=16"></script>
-<script src="js/historial-jugadores.js?v=16"></script>
-<script src="js/scorecard.js?v=16"></script>
-<script src="js/navigation.js?v=16"></script>
-<script src="js/diagnostico.js?v=16"></script>
-<script src="js/interactions.js?v=16"></script>
-<script src="js/resultados.js?v=16"></script>
-<script src="js/vista-hoyo.js?v=16"></script>
-<script src="js/consejos.js?v=16"></script>
-<script src="js/liga.js?v=16"></script>
+<script src="js/data.js?v=17"></script>
+<script src="js/players.js?v=17"></script>
+<script src="js/rondas-compartidas.js?v=17"></script>
+<script src="js/historial-jugadores.js?v=17"></script>
+<script src="js/scorecard.js?v=17"></script>
+<script src="js/navigation.js?v=17"></script>
+<script src="js/diagnostico.js?v=17"></script>
+<script src="js/interactions.js?v=17"></script>
+<script src="js/resultados.js?v=17"></script>
+<script src="js/vista-hoyo.js?v=17"></script>
+<script src="js/consejos.js?v=17"></script>
+<script src="js/liga.js?v=17"></script>
 
 </body>
 </html>

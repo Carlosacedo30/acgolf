@@ -172,14 +172,45 @@
       }
     }
 
+    renderHoleStrip();
+
     const leaderboardSection = document.getElementById('leaderboardSection');
-    if(leaderboardSection && leaderboardSection.style.display !== 'none'){
+    if(leaderboardSection){
       const modeLbl = scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play';
       const showGroupTag = matchGroups.filter(g => g.players && g.players.length).length > 1;
       leaderboardSection.innerHTML = '<div class="section-sub" style="margin-bottom:8px;">Modalidad: ' + modeLbl + (showGroupTag ? ' · todos los grupos' : '') + '</div>'
-        + standings.map((s, i)=>
-            '<div class="leaderboard-row' + (i === 0 && s.holesFilled > 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i + 1) + '</div><div class="leaderboard-name">' + s.name + (showGroupTag ? ' <span style="color:#7A8A99; font-weight:400;">· G' + (s.group + 1) + '</span>' : '') + '</div><div class="leaderboard-score">' + formatStandingScore(s) + '</div></div>'
-          ).join('');
+        + standings.map((s, i)=>{
+            const isLeader = i === 0 && s.holesFilled > 0;
+            const done = s.holesFilled >= 18;
+            const tag = isLeader ? '<div class="leader-tag">' + (done ? 'Campeón' : 'Líder') + '</div>' : '';
+            const holes = s.holesFilled > 0 ? '<div class="leaderboard-holes">' + (s.holesFilled >= 18 ? '18 hoyos' : 'Hoyo ' + s.holesFilled + ' de 18') + '</div>' : '';
+            return '<div class="leaderboard-row' + (isLeader ? ' p1' : '') + '">'
+              + '<div class="leaderboard-pos">' + (isLeader ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path></svg>' : (i + 1)) + '</div>'
+              + '<div class="leaderboard-name">' + tag + s.name + (showGroupTag ? ' <span style="color:#7A8A99; font-weight:400;">· G' + (s.group + 1) + '</span>' : '') + holes + '</div>'
+              + '<div class="leaderboard-score">' + formatStandingScore(s) + '</div></div>';
+          }).join('');
+    }
+  }
+
+  // Fila de hoyos: cuáles están completos, a medias o sin jugar, y cuál es el actual (toca para saltar)
+  function renderHoleStrip(){
+    const strip = document.getElementById('holeStrip');
+    if(!strip) return;
+    const nPlayers = players.filter(Boolean).length || players.length;
+    let html = '';
+    for(let h = 1; h <= 18; h++){
+      const inputs = [...document.querySelectorAll('.golpes-input[data-hole="' + h + '"]')];
+      const filled = inputs.filter(i => i.value !== '').length;
+      const state = filled === 0 ? '' : (filled >= Math.min(nPlayers, inputs.length) ? ' done' : ' partial');
+      html += '<button type="button" class="hole-chip' + state + (h === currentHole ? ' current' : '') + '" data-hole="' + h + '" aria-label="Hoyo ' + h + '">' + h + '</button>';
+      if(h === 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';
+    }
+    strip.innerHTML = html;
+    strip.querySelectorAll('.hole-chip').forEach(chip => chip.addEventListener('click', ()=>{ currentHole = +chip.dataset.hole; renderHoleView(); }));
+    const cur = strip.querySelector('.hole-chip.current');
+    if(cur){
+      const left = cur.offsetLeft - strip.clientWidth / 2 + cur.offsetWidth / 2;
+      try { strip.scrollTo({ left, behavior:'smooth' }); } catch(e){ strip.scrollLeft = left; }
     }
   }
 
