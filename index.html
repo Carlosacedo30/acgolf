@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -63,18 +63,21 @@
           <img src="logo-iscariotes.svg?v=6" alt="Los Iscariotes · Golf Club Hato Verde" width="200" height="200">
         </div>
         <section>
-          <div class="eyebrow">¿Qué quieres hacer?</div>
+          <div class="eyebrow">¿Dónde jugamos hoy?</div>
           <div class="start-choice">
-            <div class="start-choice-opt" id="startChoiceCrear">
-              <div class="ic">🏌️</div>
-              <div class="lbl">Crear partida</div>
-              <div class="sub">Elige campo y empieza</div>
+            <div class="start-choice-opt course-choice" data-course-id="hato-verde" role="button" tabindex="0">
+              <div class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="21" x2="7" y2="3"></line><path d="M7 3l10 4-10 4" fill="var(--gold)"></path><ellipse cx="11" cy="21" rx="7" ry="1.5"></ellipse></svg></div>
+              <div class="lbl">Hato Verde</div>
+              <div class="sub">Guillena · campo de la liga</div>
             </div>
-            <div class="start-choice-opt" id="startChoiceCodigo">
-              <div class="ic">🔑</div>
-              <div class="lbl">Tengo un código</div>
-              <div class="sub">Únete a una ya empezada</div>
+            <div class="start-choice-opt course-choice" data-course-id="zaudin" role="button" tabindex="0">
+              <div class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="21" x2="7" y2="3"></line><path d="M7 3l10 4-10 4" fill="var(--green)"></path><ellipse cx="11" cy="21" rx="7" ry="1.5"></ellipse></svg></div>
+              <div class="lbl">Zaudín</div>
+              <div class="sub">Tomares</div>
             </div>
+          </div>
+          <div class="start-choice-opt start-choice-code" id="startChoiceCodigo" role="button" tabindex="0">
+            <span class="lbl">Tengo un código</span><span class="sub">· únete a una partida ya empezada</span>
           </div>
         </section>
         <section id="createGameSection" style="display:none;">
@@ -369,18 +372,18 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
-<script src="js/data.js?v=11"></script>
-<script src="js/players.js?v=11"></script>
-<script src="js/rondas-compartidas.js?v=11"></script>
-<script src="js/historial-jugadores.js?v=11"></script>
-<script src="js/scorecard.js?v=11"></script>
-<script src="js/navigation.js?v=11"></script>
-<script src="js/diagnostico.js?v=11"></script>
-<script src="js/interactions.js?v=11"></script>
-<script src="js/resultados.js?v=11"></script>
-<script src="js/vista-hoyo.js?v=11"></script>
-<script src="js/consejos.js?v=11"></script>
-<script src="js/liga.js?v=11"></script>
+<script src="js/data.js?v=12"></script>
+<script src="js/players.js?v=12"></script>
+<script src="js/rondas-compartidas.js?v=12"></script>
+<script src="js/historial-jugadores.js?v=12"></script>
+<script src="js/scorecard.js?v=12"></script>
+<script src="js/navigation.js?v=12"></script>
+<script src="js/diagnostico.js?v=12"></script>
+<script src="js/interactions.js?v=12"></script>
+<script src="js/resultados.js?v=12"></script>
+<script src="js/vista-hoyo.js?v=12"></script>
+<script src="js/consejos.js?v=12"></script>
+<script src="js/liga.js?v=12"></script>
 
 </body>
 </html>

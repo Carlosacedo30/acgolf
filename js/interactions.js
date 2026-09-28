@@ -32,25 +32,33 @@
     });
   });
 
-  // Pantalla "Jugar": elegir entre crear partida (buscar campo) o unirse con código
-  const startChoiceCrear = document.getElementById('startChoiceCrear');
+  // Pantalla "Jugar": elegir campo directamente (Hato Verde o Zaudín) o unirse con código
   const startChoiceCodigo = document.getElementById('startChoiceCodigo');
-  const createGameSection = document.getElementById('createGameSection');
   const joinGameSection = document.getElementById('joinGameSection');
-  if(startChoiceCrear && startChoiceCodigo){
-    startChoiceCrear.addEventListener('click', ()=>{
-      startChoiceCrear.classList.add('active');
-      startChoiceCodigo.classList.remove('active');
-      createGameSection.style.display = '';
-      joinGameSection.style.display = 'none';
-      const input = document.getElementById('screen0-search');
-      if(input) input.focus();
-    });
+  const courseChoices = document.querySelectorAll('.course-choice[data-course-id]');
+  function markStartChoice(el){
+    document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.toggle('active', o === el));
+  }
+  courseChoices.forEach(card=>{
+    const start = ()=>{
+      const course = COURSES.find(c => c.id === card.dataset.courseId);
+      if(!course) return;
+      markStartChoice(card);
+      if(joinGameSection) joinGameSection.style.display = 'none';
+      selectCourse(course);
+      // Partida nueva de verdad: no arrastrar el nombre/fecha/hora de una anterior
+      ['roundNameInput','roundDateInput','roundTimeInput'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      goTo(1); // despliega "Configurar partida" dentro de Jugar
+    };
+    card.addEventListener('click', start);
+    card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); start(); } });
+  });
+  if(startChoiceCodigo){
     startChoiceCodigo.addEventListener('click', ()=>{
-      startChoiceCodigo.classList.add('active');
-      startChoiceCrear.classList.remove('active');
-      joinGameSection.style.display = '';
-      createGameSection.style.display = 'none';
+      markStartChoice(startChoiceCodigo);
+      const block = document.getElementById('configPartidaBlock');
+      if(block) block.style.display = 'none';
+      if(joinGameSection) joinGameSection.style.display = '';
       const input = document.getElementById('joinCodeInput');
       if(input) input.focus();
     });

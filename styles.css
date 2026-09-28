@@ -333,3 +333,7 @@
   .play-btn{ border-color:var(--forest); }
   .nav-btn:not(:disabled){ border-color:var(--gold); }
   .grid-cell.result-under{ background:var(--green-soft); color:var(--green); }
+
+  /* Inicio: elegir campo directamente (Hato Verde / Zaudín) + unirse con código */
+  .start-choice-code{ display:flex; align-items:baseline; justify-content:center; gap:6px; margin-top:12px; padding:13px 12px; }
+  .start-choice-code .lbl{ margin:0; }
