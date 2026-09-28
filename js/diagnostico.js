@@ -34,7 +34,7 @@
       const golpes = parseInt(input.value, 10);
       const par = parseInt(input.dataset.par, 10);
       if(!isNaN(golpes) && golpes > 0){
-        holes.push({ hole: parseInt(input.dataset.hole, 10), par: par, strokes: golpes, diff: golpes - par });
+        holes.push({ hole: parseInt(input.dataset.hole, 10), par: par, strokes: golpes, diff: golpes - par, si: parseInt(input.dataset.strokeIndex, 10) });
       }
     });
     return holes.sort((a, b) => a.hole - b.hole);
@@ -94,6 +94,58 @@
     ).join('');
   }
 
+  // Resumen en cifras: puntos Stableford, pares, birdies, bogeys, dobles e ida/vuelta
+  function renderDiagStats(pIndex, holes){
+    const section = document.getElementById('s4StatsSection');
+    const box = document.getElementById('s4Stats');
+    if(!section || !box) return;
+    if(!holes.length){ section.style.display = 'none'; return; }
+    section.style.display = '';
+    const hcp = playerHandicaps[pIndex] || 0;
+    let pts = 0, birdies = 0, pars = 0, bogeys = 0, dobles = 0, ida = 0, vuelta = 0, idaN = 0, vueltaN = 0;
+    holes.forEach(h => {
+      const rec = isNaN(h.si) ? 0 : strokesForHole(hcp, h.si);
+      pts += Math.max(0, 2 + h.par + rec - h.strokes);
+      if(h.diff <= -1) birdies++; else if(h.diff === 0) pars++; else if(h.diff === 1) bogeys++; else dobles++;
+      if(h.hole <= 9){ ida += h.strokes; idaN++; } else { vuelta += h.strokes; vueltaN++; }
+    });
+    const tile = (v, k, cls) => '<div class="diag-stat' + (cls ? ' ' + cls : '') + '"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>';
+    box.innerHTML = tile(pts, 'Puntos Stableford', 'hero')
+      + tile(birdies, 'Birdies o mejor', 'under')
+      + tile(pars, 'Pares', 'par')
+      + tile(bogeys, 'Bogeys', '')
+      + tile(dobles, 'Dobles o peor', 'over')
+      + tile((idaN ? ida : '—') + ' / ' + (vueltaN ? vuelta : '—'), 'Ida / Vuelta', 'wide');
+  }
+
+  // Gráfico hoyo a hoyo: barra hacia arriba si te pasas del par, hacia abajo si lo mejoras
+  function renderDiagChart(holes){
+    const section = document.getElementById('s4ChartSection');
+    const box = document.getElementById('s4Chart');
+    if(!section || !box) return;
+    if(!holes.length){ section.style.display = 'none'; return; }
+    section.style.display = '';
+    const byHole = {}; holes.forEach(h => { byHole[h.hole] = h; });
+    const UNIT = 16; // px por golpe de diferencia
+    let html = '';
+    for(let n = 1; n <= 18; n++){
+      const h = byHole[n];
+      let bar = '', cls = 'none', label = '';
+      if(h){
+        const d = Math.max(-2, Math.min(4, h.diff));
+        cls = h.diff > 0 ? 'over' : h.diff < 0 ? 'under' : 'par';
+        bar = h.diff === 0 ? '<div class="bar par"></div>' : '<div class="bar ' + cls + '" style="height:' + (Math.abs(d) * UNIT) + 'px;"></div>';
+        label = '<div class="val ' + cls + '">' + h.strokes + '</div>';
+      }
+      html += '<div class="col ' + cls + '" title="Hoyo ' + n + (h ? ': ' + h.strokes + ' golpes, par ' + h.par : ': sin datos') + '">'
+        + '<div class="up">' + (h && h.diff > 0 ? label + bar : (h && h.diff === 0 ? label + bar : '')) + '</div>'
+        + '<div class="down">' + (h && h.diff < 0 ? bar + label : '') + '</div>'
+        + '<div class="num">' + n + '</div></div>';
+      if(n === 9) html += '<div class="sep" aria-hidden="true"></div>';
+    }
+    box.innerHTML = html;
+  }
+
   function renderDiagnostico(){
     if(diagActivePlayer >= players.length) diagActivePlayer = 0;
     renderDiagPlayerTabs();
@@ -115,6 +167,8 @@
         : '<span class="total">—</span><span class="vs">golpes</span><span class="diff">Sin datos</span>';
     }
 
+    renderDiagStats(pIndex, holes);
+    renderDiagChart(holes);
     const worst = holes.filter(h => h.diff > 0).sort((a, b) => (b.diff - a.diff) || (a.hole - b.hole)).slice(0, 3);
     const heading = document.getElementById('s4WorstHeading');
     const worstHolesEl = document.getElementById('s4WorstHoles');
@@ -131,8 +185,11 @@
       questionsSection.style.display = 'none';
     } else {
       heading.textContent = worst.length + ' hoyo' + (worst.length > 1 ? 's' : '') + ' con mayor pérdida';
+      const maps = (typeof HOLE_MAPS !== 'undefined' && selectedCourse && HOLE_MAPS[selectedCourse.id]) || {};
       worstHolesEl.innerHTML = worst.map(h =>
-        '<div class="hole-row"><div class="hole-badge">' + h.hole + '</div><div class="hole-par">Par ' + h.par + '</div><div class="hole-strokes">' + h.strokes + '</div><div class="hole-diff">+' + h.diff + '</div></div>'
+        '<div class="hole-row diag-worst">'
+        + (maps[h.hole] ? '<img class="diag-thumb" src="' + maps[h.hole] + '" alt="Dibujo del hoyo ' + h.hole + '">' : '')
+        + '<div class="hole-badge">' + h.hole + '</div><div class="hole-par">Par ' + h.par + '</div><div class="hole-strokes">' + h.strokes + '</div><div class="hole-diff">+' + h.diff + '</div></div>'
       ).join('');
       questionsSection.style.display = '';
       questionsEl.innerHTML = worst.map(h => renderDiagQuestionCard(pIndex, h)).join('');

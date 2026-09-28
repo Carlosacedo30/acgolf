@@ -474,3 +474,31 @@
   /* Aviso visual al pasar solo al siguiente hoyo */
   @keyframes holeAdvance{ from{ transform:translateX(24px); opacity:0.4; } to{ transform:none; opacity:1; } }
   #holeViewSection.hole-advanced{ animation:holeAdvance .35s ease-out; }
+
+  /* Diagnóstico: cifras, gráfico hoyo a hoyo y miniaturas */
+  .diag-stats{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; }
+  .diag-stat{ background:#F6F8FC; border-radius:var(--r-md); padding:12px 10px; min-width:0; }
+  .diag-stat .v{ font-family:'IBM Plex Mono', monospace; font-size:24px; font-weight:600; color:var(--ink); line-height:1.1; }
+  .diag-stat .k{ font-size:10.5px; font-weight:600; color:#7A8A99; margin-top:4px; line-height:1.25; }
+  .diag-stat.hero{ background:var(--forest); grid-row:span 2; display:flex; flex-direction:column; justify-content:center; }
+  .diag-stat.hero .v{ font-size:40px; color:var(--cream); }
+  .diag-stat.hero .k{ color:#D9CFB4; }
+  .diag-stat.under .v{ color:var(--green); } .diag-stat.par .v{ color:var(--gold-ink); } .diag-stat.over .v{ color:var(--clay); }
+  .diag-stat.wide{ grid-column:span 2; } .diag-stat.wide .v{ font-size:20px; }
+  .diag-chart{ display:flex; align-items:stretch; gap:3px; height:150px; margin-top:4px; }
+  .diag-chart .col{ flex:1; min-width:0; display:grid; grid-template-rows:1fr 44px 18px; }
+  .diag-chart .up{ display:flex; flex-direction:column; justify-content:flex-end; align-items:center; border-bottom:1.5px solid var(--line); }
+  .diag-chart .down{ display:flex; flex-direction:column; justify-content:flex-start; align-items:center; }
+  .diag-chart .bar{ width:100%; max-width:14px; border-radius:6px 6px 0 0; }
+  .diag-chart .down .bar{ border-radius:0 0 6px 6px; }
+  .diag-chart .bar.over{ background:var(--clay); } .diag-chart .bar.under{ background:var(--green); }
+  .diag-chart .bar.par{ width:10px; height:10px; border-radius:50%; background:var(--gold); margin-bottom:-5px; position:relative; }
+  .diag-chart .val{ font-family:'IBM Plex Mono', monospace; font-size:10px; font-weight:600; margin:2px 0; }
+  .diag-chart .val.over{ color:var(--clay); } .diag-chart .val.under{ color:var(--green); } .diag-chart .val.par{ color:var(--gold-ink); margin-bottom:7px; }
+  .diag-chart .num{ font-size:10px; font-weight:600; color:#7A8A99; text-align:center; align-self:end; }
+  .diag-chart .sep{ flex:none; width:1px; background:var(--line); margin:10px 1px 18px; }
+  .diag-legend{ display:flex; gap:14px; justify-content:center; font-size:11px; color:#5B6B7A; margin-top:8px; }
+  .diag-legend .lg{ display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:5px; vertical-align:-1px; }
+  .lg.under{ background:var(--green); } .lg.par{ background:var(--gold); border-radius:50%; } .lg.over{ background:var(--clay); }
+  .diag-worst{ gap:10px; }
+  .diag-thumb{ flex:none; width:34px; height:68px; object-fit:cover; border-radius:8px; box-shadow:0 3px 8px rgba(15,27,46,0.18); }

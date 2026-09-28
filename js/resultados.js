@@ -26,6 +26,7 @@
     processToastQueue();
   }
   function processToastQueue(){
+    if(typeof current !== 'undefined' && current !== 3){ toastQueue = []; return; } // solo en la pantalla de anotar
     if(toastShowing || !toastQueue.length) return;
     const m = toastQueue.shift();
     const el = document.getElementById('messageToast');

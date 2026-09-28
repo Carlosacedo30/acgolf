@@ -43,6 +43,10 @@
     }
   }
   function goTo(n){
+    if(n !== 3){ // al salir de la ronda, fuera los avisos de "¡Qué bueno eres!" y similares
+      if(typeof toastQueue !== 'undefined') toastQueue.length = 0;
+      const t = document.getElementById('messageToast'); if(t) t.classList.remove('show');
+    }
     if(n === 1){ updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0; }
     else if(n === 0){ showConfigBlock(false); document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.remove('active')); }
     current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6) renderLigaStandings(); }
