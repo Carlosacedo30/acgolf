@@ -1,6 +1,23 @@
   // --- Liga en Club Hato Verde: hándicap real (WHS) y clasificación acumulada ---
   const LEAGUE_COURSE_ID = 'hato-verde';
   const LEAGUE_TEE = 'amarillas'; // barra de salida habitual del grupo
+  // Fecha de reinicio de estadísticas (la fija el administrador): lo anterior no cuenta ni para hándicap ni para la liga
+  let statsSince = null;
+  let statsSinceLoaded = null;
+  function loadStatsSince(){
+    if(statsSinceLoaded) return statsSinceLoaded;
+    statsSinceLoaded = (async ()=>{
+      const client = initSupabase();
+      if(!client) return null;
+      try {
+        const { data } = await client.from('app_settings').select('value').eq('key', 'stats_since');
+        statsSince = data && data[0] && data[0].value ? data[0].value : null;
+      } catch(e){ statsSince = null; }
+      return statsSince;
+    })();
+    return statsSinceLoaded;
+  }
+  const isoMax = (a, b) => (!a ? b : !b ? a : (new Date(a) > new Date(b) ? a : b));
   // Campos cuyas rondas cuentan para el hándicap (cada uno con su propio Course Rating / Slope)
   const HANDICAP_COURSE_IDS = ['hato-verde', 'zaudin'];
   // Evita recalcular (con su consulta a la base de datos) en cada pulsación una vez la ronda ya está completa;
@@ -49,11 +66,13 @@
     const client = initSupabase();
     if(!client) return;
     const teeFor = id => { const c = COURSES.find(x => x.id === id); return c && c.tees ? c.tees[LEAGUE_TEE] : null; };
+    await loadStatsSince();
     try {
-      const { data, error } = await client.from('rounds')
+      let q = client.from('rounds')
         .select('course_id, match_groups, course_par, course_hcp, created_at')
-        .in('course_id', HANDICAP_COURSE_IDS)
-        .order('created_at', { ascending: false });
+        .in('course_id', HANDICAP_COURSE_IDS);
+      if(statsSince) q = q.gte('created_at', statsSince);
+      const { data, error } = await q.order('created_at', { ascending: false });
       if(error || !data) return;
       const byPlayer = {}; // nombre -> [diferenciales, más reciente primero]
       data.forEach(round => {
@@ -131,10 +150,11 @@
     const client = initSupabase();
     if(!client) return [];
     try {
+      await loadStatsSince();
       const { data, error } = await client.from('rounds')
         .select('match_groups, course_par, created_at')
         .eq('course_id', LEAGUE_COURSE_ID)
-        .gte('created_at', LEAGUE_STANDINGS_START_DATE);
+        .gte('created_at', isoMax(LEAGUE_STANDINGS_START_DATE, statsSince));
       if(error || !data) return [];
       return data;
     } catch(e){ console.error('No se pudo cargar la liga', e); return []; }
@@ -249,7 +269,10 @@
     const client = initSupabase();
     if(!client) return;
     try {
-      const { data, error } = await client.from('player_handicaps').select('player_name, handicap_index');
+      await loadStatsSince();
+      let q = client.from('player_handicaps').select('player_name, handicap_index, updated_at');
+      if(statsSince) q = q.gte('updated_at', statsSince); // los calculados antes del reinicio ya no valen
+      const { data, error } = await q;
       if(error || !data) return;
       data.forEach(row => { if(row.player_name && row.handicap_index !== null) FAVORITE_HANDICAPS[row.player_name] = row.handicap_index; });
     } catch(e){ console.error('No se pudo cargar el hándicap de la liga', e); }

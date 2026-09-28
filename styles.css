@@ -535,3 +535,17 @@
   .lp-del{ color:var(--clay); border:1px solid var(--clay); }
 
   .share-wa{ display:block; text-align:center; text-decoration:none; background:#1F8F5A !important; border-color:#1F8F5A !important; color:#fff !important; box-shadow:0 6px 16px rgba(31,143,90,0.28) !important; }
+  .lp-reset{ margin-top:16px; padding:14px; border-radius:var(--r-md); background:var(--clay-soft); }
+  .lp-reset-btn{ display:block; width:100%; font:600 14px 'Inter', sans-serif; color:#fff; background:var(--clay); border:none; border-radius:var(--r-md); padding:12px; cursor:pointer; }
+
+  /* Resumen de la ronda: golpes, neto y diferencia por jugador */
+  .sum-player{ padding:12px 0; border-top:1px solid var(--line-soft); }
+  .sum-player:first-child{ border-top:none; padding-top:4px; }
+  .sum-head .club{ font-size:14.5px; font-weight:600; }
+  .sum-head .date{ font-size:11.5px; color:#7A8A99; margin-top:1px; }
+  .sum-tiles{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:8px; }
+  .sum-tile{ background:#F6F8FC; border-radius:var(--r-sm); padding:9px 10px; text-align:center; }
+  .sum-tile .v{ font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; color:var(--ink); }
+  .sum-tile .k{ font-size:10.5px; font-weight:600; color:#7A8A99; margin-top:2px; }
+  .sum-tile.main{ background:var(--forest); } .sum-tile.main .v{ color:var(--cream); } .sum-tile.main .k{ color:#D9CFB4; }
+  .sum-tile.over .v{ color:var(--clay); } .sum-tile.under .v{ color:var(--green); } .sum-tile.par .v{ color:var(--gold-ink); }

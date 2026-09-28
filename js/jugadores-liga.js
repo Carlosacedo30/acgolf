@@ -85,7 +85,24 @@
     finally { if(btn) btn.textContent = old; }
   }
 
+  async function resetStats(btn){
+    if(!confirm('¿Reiniciar hándicaps y liga?\n\n• Las partidas jugadas hasta ahora dejan de contar para el hándicap y la clasificación.\n• Cada jugador vuelve a su hándicap inicial de esta lista.\n• No se borra ninguna partida.')) return;
+    const old = btn.textContent; btn.textContent = 'Reiniciando…';
+    try {
+      const { data, error } = await initSupabase().rpc('reset_stats', { p_key: getAdminKey() });
+      if(error) throw error;
+      if(!data){ alert('No tienes permiso para reiniciar.'); return; }
+      statsSinceLoaded = null; await loadStatsSince();
+      await loadLeaguePlayersFresh(); // vuelve a los hándicaps iniciales (y descarta los calculados antiguos)
+      if(typeof ligaRoundsCache !== 'undefined') ligaRoundsCache = null;
+      alert('Listo: hándicaps y liga reiniciados. Desde ahora solo cuentan las partidas nuevas.');
+    } catch(e){ alert('No se pudo reiniciar. Revisa la conexión.'); }
+    finally { btn.textContent = old; }
+  }
+
   (function setupLeaguePlayers(){
+    const resetBtn = document.getElementById('lpResetBtn');
+    if(resetBtn) resetBtn.addEventListener('click', ()=> resetStats(resetBtn));
     const btn = document.getElementById('leaguePlayersBtn');
     const overlay = document.getElementById('leaguePlayersOverlay');
     if(btn && overlay) btn.addEventListener('click', ()=>{ overlay.hidden = false; renderLeaguePlayersList(); loadLeaguePlayersFresh(); });

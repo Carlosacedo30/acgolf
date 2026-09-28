@@ -105,7 +105,13 @@
         const netDiff = s.net - currentCoursePar;
         const netDiffStr = s.total > 0 ? (netDiff >= 0 ? '+' + netDiff : netDiff) : '—';
         const hcp = playerHandicaps[pIndex] || 0;
-        return '<div class="round-row"><div><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Hcp ' + hcp + '</div></div><div class="score">' + s.total + '<small>neto ' + (s.total > 0 ? s.net : '—') + ' (' + netDiffStr + ')</small></div></div>';
+        const cls = s.total > 0 ? (netDiff > 0 ? 'over' : netDiff < 0 ? 'under' : 'par') : '';
+        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Hcp ' + hcp + '</div></div>'
+          + '<div class="sum-tiles">'
+          + '<div class="sum-tile main"><div class="v">' + (s.total > 0 ? s.total : '—') + '</div><div class="k">Golpes</div></div>'
+          + '<div class="sum-tile"><div class="v">' + (s.total > 0 ? s.net : '—') + '</div><div class="k">Neto</div></div>'
+          + '<div class="sum-tile ' + cls + '"><div class="v">' + netDiffStr + '</div><div class="k">Neto vs par</div></div>'
+          + '</div></div>';
       }).join('');
     }
 
