@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   // ---- Interacciones dentro de cada pantalla ----
 
   // Grupos de selección simple: solo uno activo dentro del mismo contenedor padre inmediato

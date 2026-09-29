@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   // Base de datos de campos de golf reales (par y hándicap por hoyo).
   // Fuentes: tarjetas oficiales de cada club y RFEG (Real Federación Española de Golf).
   const COURSES = [

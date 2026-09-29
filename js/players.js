@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   let playerHandicaps = [0];
   // Golpes de regalo que le tocan a un hándicap en un hoyo de un índice de dificultad dado (1-18)
   function strokesForHole(handicap, strokeIndex){

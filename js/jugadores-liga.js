@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   // --- Jugadores de la liga: lista compartida en Supabase, gestionada solo desde el móvil administrador ---
   let leaguePlayers = []; // [{ name, hcp }]
 

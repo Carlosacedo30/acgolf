@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   // Cuántos hoyos lleva realmente rellenados cada jugador del grupo activo (para avisar antes de
   // "Finalizar ronda" si a alguien le falta alguno, en vez de dejar que pase sin más)
   function getPlayerHolesFilled(){

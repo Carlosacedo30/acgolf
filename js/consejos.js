@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   // Pantalla "Consejos de Golf": el manual de referencia del usuario, generado desde CONSEJOS_GOLF
   function renderConsejos(){
     const el = document.getElementById('consejosContent');

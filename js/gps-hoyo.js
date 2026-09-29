@@ -1,3 +1,4 @@
+/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
   // --- Dibujo del hoyo + distancia al green por GPS ---
   // Dibujos de cada hoyo (se irán añadiendo campo a campo)
   const HOLE_MAPS = {
