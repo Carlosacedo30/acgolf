@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Liga en Club Hato Verde: hándicap real (WHS) y clasificación acumulada ---
   const LEAGUE_COURSE_ID = 'hato-verde';
   const LEAGUE_TEE = 'amarillas'; // barra de salida habitual del grupo

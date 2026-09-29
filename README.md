@@ -1,6 +1,6 @@
 # App de Golf
 
-© 2026 Carlos Acedo Espinal. Todos los derechos reservados. Este proyecto no es de código abierto: consulta el archivo `LICENSE`.
+© 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Este proyecto no es de código abierto: consulta el archivo `LICENSE`.
 
 Prototipo interactivo de una app de golf, pensado para desplegarse en Netlify como página estática.
 

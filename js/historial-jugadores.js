@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // Jugadores guardados en este navegador (los que se han escrito en partidas anteriores)
   function getStoredPlayerHistory(){
     try {

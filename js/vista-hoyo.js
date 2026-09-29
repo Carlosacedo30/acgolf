@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Vista "un hoyo a la vez" (estilo golfdirecto): navegación, resultado grande y clasificación ---
   let currentHole = 1;
   let scoringType = 'stableford'; // 'stableford' | 'strokeplay' | 'matchplay' — se elige en "Configurar partida"

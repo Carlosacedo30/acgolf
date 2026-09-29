@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
   const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
   // Consejos de "Consejos de Golf" del usuario, uno por categoría de fallo

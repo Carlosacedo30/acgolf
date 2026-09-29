@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Convocatoria de salida: cada jugador se apunta a la hora que quiera (8:40 / 8:50) desde el
   // enlace que se manda por WhatsApp, y con un toque se crea la partida en la app con esos jugadores.
   // Se guarda como una fila más de "rounds" sin campo (course_id vacío): así no hace falta tocar la

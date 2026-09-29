@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // Crea, dentro de una tarjeta de 9 hoyos, una fila de golpes por cada jugador
   function buildPlayerRows(grid, pars, startHole, hcps){
     grid.querySelectorAll('.golpes-row').forEach(row => row.remove());

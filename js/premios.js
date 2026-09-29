@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Premios de la semana (lunes a domingo), calculados en Supabase con premios_semana() ---
   // Se muestran en Inicio y se pueden enviar al grupo de WhatsApp con un toque.
   const MESES_CORTOS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];

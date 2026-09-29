@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Partidas compartidas en vivo (Supabase): código, guardado y tiempo real ---
   const SUPABASE_URL = 'https://qjtsjcfalettgvrlwwnr.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_HnUJlKmYnPGw8z-CAv87nA_EyN0l-cJ';

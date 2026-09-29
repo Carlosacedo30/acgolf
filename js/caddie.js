@@ -1,4 +1,4 @@
-/* © 2026 Carlos Acedo Espinal. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Caddie personal: en cada hoyo, cómo lo juega CADA jugador según su historial (golfdirecto + app) ---
   // Datos: vista "caddie_hoyo" en Supabase (media, mejor, % par, % desastre y media de sus 8 últimas veces por hoyo)
   const caddieCache = {};      // { 'hato-verde': { 'CARLOS ACEDO DOMINGUEZ': { 1:{...}, 2:{...} } } }
