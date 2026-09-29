@@ -121,6 +121,7 @@
   function renderHoleView(){
     const holeNumEl = document.getElementById('hvHoleNum');
     if(!holeNumEl) return; // la pantalla 3 todavía no está en el DOM montado
+    if(typeof ensureCaddieLoaded === 'function') ensureCaddieLoaded();
     if(currentHole < 1) currentHole = 1;
     if(currentHole > 18) currentHole = 18;
     if(arrivedHole !== currentHole){
@@ -178,6 +179,7 @@
           + '<div class="php-name">' + name + '</div>'
           + '<div class="player-hole-badges">' + posBadge + scoreBadge + hcpBadge + '</div>'
           + extraStrokeNote
+          + (typeof caddieHtml === 'function' ? caddieHtml(name, currentHole) : '')
           + '<div class="php-controls">'
           + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="numeric" placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '">'
           + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
