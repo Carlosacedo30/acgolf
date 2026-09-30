@@ -107,6 +107,7 @@
         if(index !== null){ FAVORITE_HANDICAPS[name] = index; computed[name] = index; }
       });
       await saveLeagueHandicaps(computed);
+      await syncOpenRoundsHandicaps(); // las partidas pendientes cogen el hándicap nuevo
     } catch(e){
       console.error('No se pudo actualizar el hándicap de la liga', e);
     }
@@ -278,4 +279,93 @@
       data.forEach(row => { if(row.player_name && row.handicap_index !== null) FAVORITE_HANDICAPS[row.player_name] = row.handicap_index; });
     } catch(e){ console.error('No se pudo cargar el hándicap de la liga', e); }
   }
+
+  // --- Hándicaps de las partidas al día ---
+  // Una partida guarda el hándicap de cada jugador al crearla. Si luego cambia (ronda nueva, reinicio,
+  // o el administrador lo corrige), las partidas en las que ese jugador todavía NO ha apuntado ningún golpe
+  // se ponen al día solas. En cuanto apunta el primer golpe, su hándicap queda fijo para esa partida.
+
+  // Hándicap vigente de cada jugador, leído siempre de Supabase (no de lo que tenga este móvil en memoria):
+  // el inicial de la lista de la liga y, encima, el calculado con rondas desde el último reinicio
+  async function fetchCurrentHandicaps(){
+    const client = initSupabase();
+    if(!client) return null;
+    try {
+      await loadStatsSince();
+      const map = {};
+      const lp = await client.from('league_players').select('name, hcp').eq('active', true);
+      if(lp.error) return null;
+      (lp.data || []).forEach(p => { if(p.hcp !== null && p.hcp !== undefined) map[p.name] = Number(p.hcp); });
+      let q = client.from('player_handicaps').select('player_name, handicap_index, updated_at');
+      if(statsSince) q = q.gte('updated_at', statsSince);
+      const ph = await q;
+      if(ph.error) return null;
+      (ph.data || []).forEach(r => { if(r.player_name && r.handicap_index !== null) map[r.player_name] = Number(r.handicap_index); });
+      return map;
+    } catch(e){ return null; }
+  }
+
+  function playerHasStarted(group, pIndex){
+    const sc = group && group.scores && group.scores[pIndex];
+    return !!sc && Object.keys(sc).some(h => sc[h] !== '' && sc[h] != null);
+  }
+
+  // Pone el hándicap vigente a los jugadores sin golpes apuntados. Devuelve true si ha cambiado algo.
+  function refreshGroupHandicaps(groups, hcpMap){
+    if(!hcpMap) return false;
+    let changed = false;
+    (groups || []).forEach(g => {
+      if(!g || !Array.isArray(g.players)) return;
+      g.players.forEach((name, i) => {
+        if(!name || hcpMap[name] === undefined || isNaN(hcpMap[name])) return;
+        if(playerHasStarted(g, i)) return;
+        if(!Array.isArray(g.handicaps)) g.handicaps = [];
+        while(g.handicaps.length < i) g.handicaps.push(0);
+        if(Number(g.handicaps[i]) !== hcpMap[name]){ g.handicaps[i] = hcpMap[name]; changed = true; }
+      });
+    });
+    return changed;
+  }
+
+  // Aplica el cambio a la partida abierta en este móvil (tarjeta, neto y guardado en vivo)
+  function applyHandicapsToOpenRound(hcpMap){
+    if(!refreshGroupHandicaps(matchGroups, hcpMap)) return false;
+    const g = matchGroups[activeGroup] || matchGroups[0];
+    playerHandicaps = g.handicaps.length ? g.handicaps : [0];
+    if(selectedCourse && typeof recalcResultados === 'function') recalcResultados(); // recalcula netos y guarda
+    else if(typeof saveRoundState === 'function') saveRoundState();
+    return true;
+  }
+
+  // Pone al día todas las partidas sin terminar de los últimos 30 días
+  let syncingRoundHandicaps = false;
+  async function syncOpenRoundsHandicaps(){
+    if(syncingRoundHandicaps) return;
+    const client = initSupabase();
+    if(!client) return;
+    syncingRoundHandicaps = true;
+    try {
+      const hcpMap = await fetchCurrentHandicaps();
+      if(!hcpMap) return;
+      const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
+      const { data, error } = await client.from('rounds')
+        .select('id, match_groups')
+        .not('course_id', 'is', null) // las convocatorias no llevan tarjeta
+        .gte('updated_at', since);
+      if(error || !data) return;
+      for(const r of data){
+        if(r.id === currentRoundId){ applyHandicapsToOpenRound(hcpMap); continue; }
+        const groups = Array.isArray(r.match_groups) ? r.match_groups : [];
+        if(isRoundFinished(groups)) continue;
+        if(!refreshGroupHandicaps(groups, hcpMap)) continue;
+        await client.from('rounds').update({ match_groups: groups }).eq('id', r.id); // sin tocar updated_at: no cambia el orden de "Últimas partidas"
+      }
+    } catch(e){
+      console.error('No se pudieron poner al día los hándicaps de las partidas', e);
+    } finally {
+      syncingRoundHandicaps = false;
+    }
+  }
+
   loadLeagueHandicaps();
+  syncOpenRoundsHandicaps(); // al abrir la app, por si algún hándicap cambió desde otro móvil

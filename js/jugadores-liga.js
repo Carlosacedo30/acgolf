@@ -82,6 +82,7 @@
       if(error) throw error;
       if(!data){ alert('No tienes permiso para gestionar jugadores.'); return false; }
       await loadLeaguePlayersFresh();
+      if(typeof syncOpenRoundsHandicaps === 'function') syncOpenRoundsHandicaps(); // partidas pendientes al día
       return true;
     } catch(e){ alert('No se pudo guardar. Revisa la conexión.'); return false; }
     finally { if(btn) btn.textContent = old; }
@@ -96,6 +97,7 @@
       if(!data){ alert('No tienes permiso para reiniciar.'); return; }
       statsSinceLoaded = null; await loadStatsSince();
       await loadLeaguePlayersFresh(); // vuelve a los hándicaps iniciales (y descarta los calculados antiguos)
+      if(typeof syncOpenRoundsHandicaps === 'function') syncOpenRoundsHandicaps(); // partidas pendientes al día
       if(typeof ligaRoundsCache !== 'undefined') ligaRoundsCache = null;
       alert('Listo: hándicaps y liga reiniciados. Desde ahora solo cuentan las partidas nuevas.');
     } catch(e){ alert('No se pudo reiniciar. Revisa la conexión.'); }

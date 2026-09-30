@@ -234,6 +234,10 @@
       showRoundCode(data.code);
       subscribeToRound(data.id);
       setSyncStatus('live');
+      // Jugadores que aún no han apuntado golpes: con el hándicap vigente, no con el de cuando se creó la partida
+      if(typeof fetchCurrentHandicaps === 'function'){
+        fetchCurrentHandicaps().then(map => { if(map && currentRoundId === data.id) applyHandicapsToOpenRound(map); });
+      }
       return { ok: true };
     } catch(e){
       console.error('No se pudo unir a la partida', e);
