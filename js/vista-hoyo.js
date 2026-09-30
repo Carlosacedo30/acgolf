@@ -94,29 +94,66 @@
     return s.scoreDiff >= 0 ? '+' + s.scoreDiff : String(s.scoreDiff); // stroke play
   }
 
-  // Pase automático al siguiente hoyo cuando todos los jugadores tienen su golpe apuntado.
-  // Solo si el hoyo estaba sin completar al llegar (si vuelves atrás a corregir uno, no te saca de él).
+  // Pase automático al siguiente hoyo, pensado para que cada móvil vaya a su ritmo:
+  // - Cada móvil recuerda a qué jugadores apunta él ("mis jugadores").
+  //   · Si solo apuntas tu golpe, en cuanto lo pones pasa al siguiente hoyo.
+  //   · Si apuntas a todo el grupo, espera a que estén todos los que tú apuntas.
+  // - El primer hoyo en que apuntas a alguien nuevo da algo más de margen (4 s), por si vas a apuntar a otro.
+  // - Solo si el hoyo estaba sin completar al llegar (si vuelves atrás a corregir uno, no te saca de él).
   let autoAdvanceTimer = null, arrivedHole = null, arrivedComplete = false;
-  function isHoleComplete(h){
-    const named = players.map((n, i) => ({ n, i })).filter(p => p.n);
-    if(!named.length) return false;
-    return named.every(p => {
-      const inp = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + p.i + '"]');
+  let myPlayersKey = null, myPlayers = new Set(), learnedOnHole = null;
+
+  function myPlayersStorageKey(){
+    const code = (typeof currentRoundCode !== 'undefined' && currentRoundCode) ? currentRoundCode : 'local';
+    return 'acgolfMisJugadores:' + code + ':' + (typeof activeGroup !== 'undefined' ? activeGroup : 0);
+  }
+  function syncMyPlayers(){
+    const key = myPlayersStorageKey();
+    if(key === myPlayersKey) return;
+    myPlayersKey = key; myPlayers = new Set(); learnedOnHole = null;
+    try { const raw = localStorage.getItem(key); if(raw) JSON.parse(raw).forEach(n => myPlayers.add(n)); } catch(e){}
+  }
+  function rememberMyPlayer(name){
+    syncMyPlayers();
+    if(!name || myPlayers.has(name)) return;
+    myPlayers.add(name);
+    learnedOnHole = currentHole;
+    try { localStorage.setItem(myPlayersKey, JSON.stringify([...myPlayers])); } catch(e){}
+  }
+
+  function holeFilledFor(h, pIndexes){
+    return pIndexes.length > 0 && pIndexes.every(i => {
+      const inp = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + i + '"]');
       return inp && inp.value !== '';
     });
   }
+  function namedIndexes(){
+    return players.map((n, i) => ({ n, i })).filter(p => p.n).map(p => p.i);
+  }
+  function isHoleComplete(h){ // todos los jugadores del grupo
+    return holeFilledFor(h, namedIndexes());
+  }
+  function isHoleCompleteForMe(h){ // solo los jugadores que apunta este móvil
+    syncMyPlayers();
+    const mine = players.map((n, i) => ({ n, i })).filter(p => p.n && myPlayers.has(p.n)).map(p => p.i);
+    return mine.length ? holeFilledFor(h, mine) : isHoleComplete(h);
+  }
+
   function scheduleAutoAdvance(){
     clearTimeout(autoAdvanceTimer);
     if(arrivedComplete || currentHole >= 18) return;
     const h = currentHole;
+    if(!isHoleCompleteForMe(h)) return;
+    // Si todavía hay huecos vacíos y acabas de "estrenar" jugador en este hoyo, más margen por si apuntas a otro
+    const delay = (!isHoleComplete(h) && learnedOnHole === h) ? 4000 : 1500; // 1,5 s: margen para escribir un 10
     autoAdvanceTimer = setTimeout(()=>{
-      if(currentHole !== h || !isHoleComplete(h)) return;
+      if(currentHole !== h || !isHoleCompleteForMe(h)) return;
       if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
       currentHole = h + 1;
       renderHoleView();
       const card = document.getElementById('holeViewSection');
       if(card){ card.classList.remove('hole-advanced'); void card.offsetWidth; card.classList.add('hole-advanced'); }
-    }, 1500); // margen para escribir resultados de 2 cifras (un 10) sin que salte antes de tiempo
+    }, delay);
   }
 
   function renderHoleView(){
@@ -127,7 +164,7 @@
     if(currentHole > 18) currentHole = 18;
     if(arrivedHole !== currentHole){
       arrivedHole = currentHole;
-      arrivedComplete = isHoleComplete(currentHole);
+      arrivedComplete = isHoleCompleteForMe(currentHole);
       clearTimeout(autoAdvanceTimer);
     }
     const scoringMetaEl = document.getElementById('s3ScoringMeta');
@@ -195,6 +232,7 @@
             realInput.value = box.value;
             realInput.dispatchEvent(new Event('input', { bubbles: true }));
           }
+          if(box.value !== '') rememberMyPlayer(players[pIndex]);
           scheduleAutoAdvance();
         });
       });
