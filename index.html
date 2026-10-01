@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=36">
+<link rel="stylesheet" href="styles.css?v=37">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -68,6 +68,7 @@
         <div id="convHome"></div>
         <section id="premiosHome" class="premios-card" style="display:none;"></section>
         <section id="sponsorHome" class="sponsor-card"></section>
+        <section id="normasHome" class="normas-card"></section>
         <section>
           <div class="eyebrow">¿Dónde jugamos hoy?</div>
           <div class="start-choice">
@@ -426,6 +427,13 @@
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
   </div>
 
+<div id="normasOverlay" class="modal-overlay" hidden>
+  <div class="modal-card normas-modal" role="dialog" aria-labelledby="normasTitulo">
+    <h2 id="normasTitulo" style="font-size:20px; margin-bottom:4px;">Normas de la liga</h2>
+    <div id="normasBody"></div>
+    <button type="button" class="btn ghost full" id="normasCerrar" style="margin-top:12px; display:block; width:100%; background:transparent;">Cerrar</button>
+  </div>
+</div>
 <div id="leaguePlayersOverlay" class="modal-overlay" hidden>
   <div class="modal-card lp-card" role="dialog" aria-labelledby="lpTitle">
     <h2 id="lpTitle" style="font-size:20px; margin-bottom:4px;">Jugadores de la liga</h2>
@@ -470,6 +478,7 @@
 <script src="js/liga.js?v=30"></script>
 <script src="js/gps-hoyo.js?v=3"></script>
 <script src="js/jugadores-liga.js?v=4"></script>
+<script src="js/normas.js?v=1"></script>
 <script src="js/convocatoria.js?v=2"></script>
 
 </body>

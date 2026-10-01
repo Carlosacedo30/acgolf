@@ -663,3 +663,17 @@
   .sponsor-foto{ margin:8px 0 2px; width:100%; }
   .sponsor-foto img{ display:block; width:100%; height:auto; aspect-ratio:4/3; object-fit:cover; border-radius:var(--r-md, 14px); }
   .sponsor-foto figcaption{ margin-top:8px; font-size:14px; font-weight:700; color:var(--forest, #1B3B6F); }
+
+  /* Normas de la liga */
+  .normas-card{ background:#fff; }
+  .normas-aviso{ display:flex; flex-direction:column; gap:8px; }
+  .normas-aviso-t{ font-weight:700; font-size:16px; color:var(--forest, #1B3B6F); }
+  .normas-aviso-d{ font-size:13px; color:#44546A; }
+  .normas-link{ width:100%; min-height:44px; background:none; border:none; font:inherit; font-weight:700; font-size:15px; color:var(--forest, #1B3B6F); text-align:left; cursor:pointer; padding:0; }
+  .normas-link span{ font-weight:500; color:var(--green, #3D7A5C); }
+  .normas-modal{ max-width:520px; max-height:86vh; overflow-y:auto; }
+  .normas-h{ font-size:15px; margin:16px 0 6px; color:var(--forest, #1B3B6F); }
+  .normas-ul{ margin:0; padding-left:18px; display:flex; flex-direction:column; gap:5px; font-size:13.5px; line-height:1.4; color:var(--ink, #17212E); }
+  .normas-firma{ margin-top:18px; padding-top:14px; border-top:1px solid var(--line, #E2E8F0); display:flex; flex-direction:column; gap:10px; }
+  .normas-firma select{ min-height:44px; border-radius:12px; border:1px solid #C9D3E4; padding:0 12px; font:inherit; background:#fff; }
+  .normas-ok{ font-weight:700; color:var(--green, #3D7A5C); }
