@@ -659,3 +659,7 @@
   /* Hándicap oficial bloqueado */
   input.hcp-locked{ background:var(--paper-dim, #EEF2F8); color:var(--forest, #1B3B6F); font-weight:700; cursor:not-allowed; }
   .lp-hcp-fixed{ min-width:52px; text-align:center; font-family:'IBM Plex Mono', monospace; font-weight:700; color:var(--forest, #1B3B6F); }
+
+  .sponsor-foto{ margin:8px 0 2px; width:100%; }
+  .sponsor-foto img{ display:block; width:100%; height:auto; aspect-ratio:4/3; object-fit:cover; border-radius:var(--r-md, 14px); }
+  .sponsor-foto figcaption{ margin-top:8px; font-size:14px; font-weight:700; color:var(--forest, #1B3B6F); }
