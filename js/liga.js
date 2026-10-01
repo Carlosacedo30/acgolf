@@ -63,54 +63,14 @@
 
   // Recalcula, a partir del historial real guardado en Supabase, el hándicap de cada jugador
   // que haya jugado alguna vez en Hato Verde, y actualiza FAVORITE_HANDICAPS con el resultado
+  // El hándicap de cada jugador de la liga lo guarda y lo actualiza SOLO la base de datos (nadie lo puede tocar
+  // desde un móvil). Aquí solo se lee el vigente y se ponen al día las partidas que aún no han empezado.
   async function updateLeagueHandicaps(){
-    const client = initSupabase();
-    if(!client) return;
-    const teeFor = id => { const c = COURSES.find(x => x.id === id); return c && c.tees ? c.tees[LEAGUE_TEE] : null; };
-    await loadStatsSince();
-    try {
-      let q = client.from('rounds')
-        .select('course_id, match_groups, course_par, course_hcp, created_at')
-        .in('course_id', HANDICAP_COURSE_IDS);
-      if(statsSince) q = q.gte('created_at', statsSince);
-      const { data, error } = await q.order('created_at', { ascending: false });
-      if(error || !data) return;
-      const byPlayer = {}; // nombre -> [diferenciales, más reciente primero]
-      data.forEach(round => {
-        const par = round.course_par, strokeIndex = round.course_hcp;
-        const tee = teeFor(round.course_id);
-        if(!par || !strokeIndex || !tee) return;
-        (round.match_groups || []).forEach(group => {
-          (group.players || []).forEach((name, pIndex) => {
-            if(!name) return;
-            const scores = group.scores && group.scores[pIndex];
-            if(!scores) return;
-            const playerHcp = (group.handicaps && group.handicaps[pIndex]) || 0;
-            let cappedSum = 0, holesFilled = 0;
-            for(let h = 1; h <= 18; h++){
-              const strokes = parseInt(scores[h], 10);
-              if(isNaN(strokes) || strokes <= 0) continue;
-              const received = strokesForHole(playerHcp, strokeIndex[h - 1]);
-              cappedSum += Math.min(strokes, netDoubleBogeyCap(par[h - 1], received));
-              holesFilled++;
-            }
-            if(holesFilled < 18) return; // solo cuentan rondas completas de 18 hoyos
-            const diff = scoreDifferential(cappedSum, tee.rating, tee.slope);
-            byPlayer[name] = byPlayer[name] || [];
-            byPlayer[name].push(diff);
-          });
-        });
-      });
-      const computed = {}; // solo los que salen de rondas reales (no los hándicaps iniciales)
-      Object.keys(byPlayer).forEach(name => {
-        const index = computeHandicapIndex(byPlayer[name]);
-        if(index !== null){ FAVORITE_HANDICAPS[name] = index; computed[name] = index; }
-      });
-      await saveLeagueHandicaps(computed);
-      await syncOpenRoundsHandicaps(); // las partidas pendientes cogen el hándicap nuevo
-    } catch(e){
-      console.error('No se pudo actualizar el hándicap de la liga', e);
-    }
+    const map = await fetchCurrentHandicaps();
+    if(!map) return;
+    Object.keys(map).forEach(name => { FAVORITE_HANDICAPS[name] = map[name]; });
+    if(typeof lockLeagueHcpInputs === 'function') lockLeagueHcpInputs();
+    await syncOpenRoundsHandicaps(); // las partidas pendientes cogen el hándicap vigente
   }
 
   // Recalcula el hándicap de la liga y, si cambia para alguno de estos jugadores, lo enseña en pantalla
@@ -136,13 +96,13 @@
 
   // La clasificación arranca de cero: solo cuentan rondas jugadas (anotadas por última vez) a partir de esta fecha.
   // Se mira updated_at y no created_at porque una partida puede crearse la víspera y jugarse al día siguiente
-  const LEAGUE_STANDINGS_START_DATE = '2026-09-23T00:00:00+02:00';
+  const LEAGUE_STANDINGS_START_DATE = '2026-10-03T00:00:00+02:00'; // arranque oficial de la liga
 
   // Clasificación de la liga POR MES: cada mes empieza de cero el día 1 y tiene su campeón.
   // Las rondas antiguas no se borran (el hándicap las sigue necesitando); solo se agrupan por mes.
   // Resultado de cada ronda de 18 hoyos completa = (golpes − hándicap de ese momento) − par. Gana el más bajo.
   const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-  const LIGA_FIRST_MONTH = { y: 2026, m: 8 }; // septiembre 2026 (mes 0 = enero)
+  const LIGA_FIRST_MONTH = { y: 2026, m: 9 }; // octubre 2026 (mes 0 = enero)
   let ligaMonth = (()=>{ const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })();
   let ligaRoundsCache = null;
   const monthKey = (y, m) => y * 12 + m;
@@ -256,6 +216,7 @@
 
   // Guarda en Supabase (tabla player_handicaps) los hándicaps calculados, iguales en todos los móviles
   async function saveLeagueHandicaps(handicaps){
+    return; // desactivado: los móviles ya no escriben hándicaps (lo hace la base de datos)
     const client = initSupabase();
     if(!client) return;
     const rows = Object.keys(handicaps).map(name => ({ player_name: name, handicap_index: handicaps[name], updated_at: new Date().toISOString() }));

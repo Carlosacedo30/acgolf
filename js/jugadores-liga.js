@@ -37,16 +37,10 @@
       const actual = FAVORITE_HANDICAPS[p.name];
       return '<div class="lp-row">'
         + '<div class="lp-name">' + esc(p.name) + '<small>Hcp actual ' + esc(fmtHcp(actual !== undefined ? actual : p.hcp)) + '</small></div>'
-        + '<input class="lp-hcp" type="number" step="0.1" min="0" max="54" inputmode="decimal" value="' + esc(p.hcp == null ? '' : p.hcp) + '" aria-label="Hándicap inicial de ' + esc(p.name) + '" data-i="' + i + '">'
-        + '<button type="button" class="lp-save" data-i="' + i + '">Guardar</button>'
+        + '<div class="lp-hcp-fixed" aria-label="Hándicap de ' + esc(p.name) + '">' + esc(fmtHcp(p.hcp)) + '</div>'
         + '<button type="button" class="lp-del" data-i="' + i + '" aria-label="Quitar a ' + esc(p.name) + '">Quitar</button>'
         + '</div>';
     }).join('');
-    box.querySelectorAll('.lp-save').forEach(b => b.addEventListener('click', async ()=>{
-      const p = leaguePlayers[+b.dataset.i];
-      const inp = box.querySelector('.lp-hcp[data-i="' + b.dataset.i + '"]');
-      await savePlayer(p.name, inp ? inp.value : p.hcp, b);
-    }));
     box.querySelectorAll('.lp-del').forEach(b => b.addEventListener('click', async ()=>{
       const p = leaguePlayers[+b.dataset.i];
       if(!confirm('¿Quitar a ' + p.name + ' de la liga?\nSus rondas y su hándicap se conservan; solo deja de salir en la lista.')) return;
@@ -65,6 +59,7 @@
     leaguePlayers = data || [];
     FAVORITE_PLAYERS.length = 0;
     leaguePlayers.forEach(p => { FAVORITE_PLAYERS.push(p.name); if(p.hcp != null) FAVORITE_HANDICAPS[p.name] = Number(p.hcp); });
+    if(typeof lockLeagueHcpInputs === 'function') lockLeagueHcpInputs();
     if(typeof loadLeagueHandicaps === 'function') await loadLeagueHandicaps();
     renderLeaguePlayersList();
   }
@@ -105,8 +100,6 @@
   }
 
   (function setupLeaguePlayers(){
-    const resetBtn = document.getElementById('lpResetBtn');
-    if(resetBtn) resetBtn.addEventListener('click', ()=> resetStats(resetBtn));
     const btn = document.getElementById('leaguePlayersBtn');
     const overlay = document.getElementById('leaguePlayersOverlay');
     if(btn && overlay) btn.addEventListener('click', ()=>{ overlay.hidden = false; renderLeaguePlayersList(); loadLeaguePlayersFresh(); });
@@ -120,4 +113,32 @@
     });
     refreshAdminUI();
     loadLeaguePlayers();
+  })();
+
+  // --- Casillas "Hcp" al configurar la partida ---
+  // Jugador de la liga: su hándicap sale de la base de datos y la casilla queda bloqueada.
+  // Invitado (nombre que no está en la liga): se puede escribir su hándicap.
+  function isLeaguePlayerName(name){
+    return !!name && leaguePlayers.some(p => p.name === name);
+  }
+  function lockLeagueHcpInputs(){
+    for(let i = 1; i <= 4; i++){
+      const nameEl = document.getElementById('player' + i + 'Input');
+      const hcpEl = document.getElementById('player' + i + 'Hcp');
+      if(!nameEl || !hcpEl) continue;
+      const name = nameEl.value.trim();
+      const locked = isLeaguePlayerName(name);
+      hcpEl.readOnly = locked;
+      hcpEl.classList.toggle('hcp-locked', locked);
+      hcpEl.title = locked ? 'Hándicap oficial de la liga: no se puede cambiar' : '';
+      if(locked && FAVORITE_HANDICAPS[name] !== undefined) hcpEl.value = FAVORITE_HANDICAPS[name];
+    }
+  }
+  (function bindHcpLocks(){
+    for(let i = 1; i <= 4; i++){
+      const nameEl = document.getElementById('player' + i + 'Input');
+      if(!nameEl) continue;
+      ['input', 'change', 'blur'].forEach(ev => nameEl.addEventListener(ev, ()=> setTimeout(lockLeagueHcpInputs, 0)));
+    }
+    document.addEventListener('click', ()=> setTimeout(lockLeagueHcpInputs, 0)); // tras elegir de la lista
   })();

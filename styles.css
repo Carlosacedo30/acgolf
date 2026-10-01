@@ -655,3 +655,7 @@
   .premios-sponsor span{ font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#7A8A99; }
   .premios-sponsor img{ display:block; width:96px; height:auto; background:#fff; border-radius:8px; padding:4px 6px; }
   .premio-regalo{ margin-top:4px; font-size:12px; font-weight:700; color:#4E7A1E; }
+
+  /* Hándicap oficial bloqueado */
+  input.hcp-locked{ background:var(--paper-dim, #EEF2F8); color:var(--forest, #1B3B6F); font-weight:700; cursor:not-allowed; }
+  .lp-hcp-fixed{ min-width:52px; text-align:center; font-family:'IBM Plex Mono', monospace; font-weight:700; color:var(--forest, #1B3B6F); }

@@ -35,6 +35,7 @@
       if(nameInput) nameInput.value = g.players[i] || '';
       if(hcpInput) hcpInput.value = g.handicaps[i] ? g.handicaps[i] : '';
     }
+    if(typeof lockLeagueHcpInputs === 'function') lockLeagueHcpInputs();
   }
   function saveConfigGroupFields(){
     const data = readConfigFields();

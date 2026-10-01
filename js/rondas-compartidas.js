@@ -53,13 +53,13 @@
   // Activar este móvil desde dentro de la app: tocar 5 veces seguidas el título "Últimas partidas"
   async function promptAdminKey(){
     if(getAdminKey()){
-      if(confirm('Este móvil ya puede borrar partidas.\n¿Quitarle el permiso?')){
+      if(confirm('Este móvil es administrador (añadir jugadores a la liga).\n¿Quitarle el permiso?')){
         try { localStorage.removeItem('golfAppAdminKey'); } catch(e){}
         renderRecentRounds();
       }
       return;
     }
-    const key = (prompt('Clave de administrador para borrar partidas:') || '').trim();
+    const key = (prompt('Clave de administrador:') || '').trim();
     if(!key) return;
     const client = initSupabase();
     if(!client){ alert('Sin conexión. Inténtalo de nuevo.'); return; }
@@ -68,7 +68,7 @@
       if(error) throw error;
       if(!data){ alert('Clave incorrecta.'); return; }
       try { localStorage.setItem('golfAppAdminKey', key); } catch(e){}
-      alert('Listo: este móvil ya puede borrar partidas sin terminar.');
+      alert('Listo: este móvil ya es administrador (puede añadir jugadores a la liga).');
       renderRecentRounds();
     } catch(e){ alert('No se pudo comprobar la clave. Revisa la conexión.'); }
   }
@@ -392,7 +392,7 @@
     }
     if(empty) empty.style.display = 'none';
     // Las que están sin terminar, arriba
-    const isAdmin = !!getAdminKey();
+    const isAdmin = false; // las partidas de la liga ya no se pueden borrar
     const sorted = recent.slice().sort((a, b) => (a.finished === false ? 0 : 1) - (b.finished === false ? 0 : 1));
     list.innerHTML = sorted.map(r => {
       const unfinished = r.finished === false;
