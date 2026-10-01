@@ -2,6 +2,7 @@
   // --- Normas de la liga: reglamento + aceptación de cada jugador (también cubre el uso de sus datos) ---
   // Si se cambian las normas, sube NORMAS_VERSION para que todos las vuelvan a aceptar.
   const NORMAS_VERSION = '2026-10-03';
+  const NORMAS_ACTIVAS = false; // de momento ocultas; poner a true para enseñarlas en Inicio
   const NORMAS = [
     { t:'1. Quién juega', d:[
       'Juegan la liga los jugadores de la lista de la liga. Los invitados pueden jugar con nosotros, pero no puntúan.' ]},
@@ -64,6 +65,8 @@
   function renderNormasHome(){
     const el = document.getElementById('normasHome');
     if(!el) return;
+    if(!NORMAS_ACTIVAS){ el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.style.display = '';
     const yo = normasYo();
     const ok = yo && normasAceptadas && normasAceptadas.has(yo);
     el.innerHTML = ok
@@ -126,5 +129,5 @@
     const ov = document.getElementById('normasOverlay');
     if(close && ov) close.addEventListener('click', ()=>{ ov.hidden = true; });
     renderNormasHome();
-    cargarNormasAceptadas();
+    if(NORMAS_ACTIVAS) cargarNormasAceptadas();
   })();
