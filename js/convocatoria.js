@@ -253,7 +253,7 @@
     try {
       const { data, error } = await client.from('rounds').insert({
         code: genRoundCode(), course_id: course.id, course_name: course.name, course_par: course.par,
-        course_hcp: course.hcp || null, scoring_type: 'stableford', match_groups: groups, round_name: name,
+        course_hcp: course.hcp || null, scoring_type: 'strokeplay', match_groups: groups, round_name: name,
       }).select('code').single();
       if(error) throw error;
       await convMutate(c => { c.roundCode = data.code; return null; });
