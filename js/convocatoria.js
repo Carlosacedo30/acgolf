@@ -286,6 +286,8 @@
       const { data, error } = await client.from('rounds').insert({
         code: genRoundCode(), course_id: course.id, course_name: course.name, course_par: course.par,
         course_hcp: course.hcp || null, scoring_type: 'strokeplay', match_groups: groups, round_name: name,
+        // la partida lleva la fecha y hora de la convocatoria aunque se cree antes (así cuenta en su semana)
+        created_at: new Date(conv.date + 'T' + (withPlayers[0].t || '08:40') + ':00').toISOString(),
       }).select('code').single();
       if(error) throw error;
       await convMutate(c => { c.roundCode = data.code; return null; });
