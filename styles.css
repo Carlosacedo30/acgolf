@@ -677,3 +677,22 @@
   .normas-firma{ margin-top:18px; padding-top:14px; border-top:1px solid var(--line, #E2E8F0); display:flex; flex-direction:column; gap:10px; }
   .normas-firma select{ min-height:44px; border-radius:12px; border:1px solid #C9D3E4; padding:0 12px; font:inherit; background:#fff; }
   .normas-ok{ font-weight:700; color:var(--green, #3D7A5C); }
+
+  /* Listado de hándicaps tras la partida */
+  .hcpl-card{ background:#fff; }
+  .hcpl + .hcpl{ margin-top:18px; padding-top:16px; border-top:1px solid var(--line, #E2E8F0); }
+  .hcpl-sub{ font-size:12.5px; color:#7A8A99; margin-top:2px; text-transform:capitalize; }
+  .hcpl-tabla{ margin-top:10px; display:flex; flex-direction:column; }
+  .hcpl-fila{ display:grid; grid-template-columns:1fr 46px 40px 112px; gap:6px; align-items:center; padding:8px 0; border-bottom:1px solid #EEF2F8; font-size:13.5px; font-variant-numeric:tabular-nums; }
+  .hcpl-fila span:nth-child(2), .hcpl-fila span:nth-child(3){ text-align:center; }
+  .hcpl-cab{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#7A8A99; padding-top:0; }
+  .hcpl-nom{ font-weight:600; color:var(--forest, #1B3B6F); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .hcpl-h{ text-align:right; font-weight:700; font-family:'IBM Plex Mono', monospace; font-size:12.5px; }
+  .hcpl-h i{ font-style:normal; }
+  .hcpl-h.baja{ color:#2F6B4A; }
+  .hcpl-h.sube{ color:#A83E36; }
+  .hcpl-h.igual{ color:#7A8A99; }
+  .hcpl-h.inv{ color:#9AA6B5; font-family:inherit; font-weight:500; }
+
+  .hcpl-cab span:last-child{ text-align:right; }
+  .hcpl-nom{ white-space:normal; line-height:1.2; }
