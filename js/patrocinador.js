@@ -7,7 +7,7 @@
     web: 'https://bolarecuperada.com',
     premio: '12 bolas cada semana para los premios de la liga',
     premioIscariote: '🎁 Se lleva las bolas de Bolarecuperada.com',
-    foto: 'premio-semana.jpg?v=1',          // foto del premio de la semana (cámbiala cuando cambie el premio)
+    foto: 'premio-semana.jpg?v=2',          // foto del premio de la semana (cámbiala cuando cambie el premio)
     fotoTexto: 'El premio de esta semana: 12 bolas Srixon AD333',
   };
 
@@ -19,7 +19,7 @@
       + '<a class="sponsor-logo" href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored">'
       + '<img src="' + PATROCINADOR.logo + '" alt="' + PATROCINADOR.nombre + '" width="240" height="98"></a>'
       + '<div class="sponsor-premio">' + PATROCINADOR.premio + '</div>'
-      + (PATROCINADOR.foto ? '<figure class="sponsor-foto"><img src="' + PATROCINADOR.foto + '" alt="' + (PATROCINADOR.fotoTexto || 'Premio de la semana') + '" width="800" height="600" loading="lazy"><figcaption>🏆 ' + (PATROCINADOR.fotoTexto || '') + '</figcaption></figure>' : '')
+      + (PATROCINADOR.foto ? '<figure class="sponsor-foto"><img src="' + PATROCINADOR.foto + '" alt="' + (PATROCINADOR.fotoTexto || 'Premio de la semana') + '" width="800" height="600" loading="lazy"></figure>' : '')
       + '<a class="sponsor-btn" href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored">Ver sus bolas</a>';
   }
   renderPatrocinadorHome();
