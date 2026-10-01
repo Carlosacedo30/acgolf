@@ -8,6 +8,7 @@
   const CONV_DEFAULT_TIMES = ['08:40', '08:50'];
   const APP_URL = 'https://carlosacedo30.github.io/acgolf/';
   let conv = null;            // { id, code, updatedAt, times:[], groups:[[names]], date, courseId, roundCode }
+  let convActivas = [];       // todas las convocatorias de hoy en adelante, de la más próxima a la más lejana
   let convChannel = null;
   let convOpenPlayer = null;  // jugador con el selector de hora abierto
   let convFilter = '';
@@ -55,6 +56,26 @@
     return convFromRow(data[0]);
   }
 
+  // Todas las convocatorias que aún no han pasado (hoy o después), ordenadas por fecha
+  async function convFetchActivas(){
+    const client = initSupabase(); if(!client) return [];
+    const since = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
+    const { data, error } = await client.from('rounds').select('id, code, match_groups, updated_at, created_at')
+      .is('course_id', null).eq('round_name', CONV_TAG).gte('created_at', since);
+    if(error || !data) return [];
+    const hoy = convIsoToday();
+    return data.map(convFromRow).filter(c => c.date && c.date >= hoy).sort((a, b) => a.date.localeCompare(b.date));
+  }
+  // Mantiene la lista al día con la convocatoria abierta (tras apuntarse, crear la partida, etc.)
+  function convSyncActiva(c){
+    if(!c) return;
+    const i = convActivas.findIndex(x => x.code === c.code);
+    const activa = c.date && c.date >= convIsoToday();
+    if(i >= 0){ if(activa) convActivas[i] = c; else convActivas.splice(i, 1); }
+    else if(activa){ convActivas.push(c); }
+    convActivas.sort((a, b) => a.date.localeCompare(b.date));
+  }
+
   // Cambia la convocatoria sin pisar lo que haya hecho otro a la vez: se relee, se aplica el cambio y
   // se guarda solo si nadie la ha tocado entretanto (si no, se repite con la versión nueva).
   async function convMutate(fn){
@@ -94,22 +115,33 @@
   function renderConvHome(){
     const box = document.getElementById('convHome'); if(!box) return;
     const isAdmin = !!getAdminKey();
-    const active = conv && conv.date >= convIsoToday();
-    if(!active){
-      box.innerHTML = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">📣 Convocar salida por WhatsApp</button>' : '';
+    convSyncActiva(conv);
+    const lista = convActivas;
+    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">📣 Convocar salida por WhatsApp</button>' : '';
+    if(!lista.length){
+      box.innerHTML = nuevoBtn;
       const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
       return;
     }
-    const total = conv.groups.reduce((a, g) => a + g.length, 0);
-    const me = convMe(), mySlot = me ? convSlotOf(conv, me) : -1;
-    box.innerHTML = '<div class="conv-home-card" role="button" tabindex="0" id="convHomeCard">'
-      + '<div class="conv-home-top"><span class="conv-home-eyebrow">Próxima salida</span><span class="conv-home-count">' + total + '/' + (conv.times.length * CONV_SLOTS) + '</span></div>'
-      + '<div class="conv-home-date">' + convEsc(convLongDate(conv.date)) + '</div>'
-      + '<div class="conv-home-sub">' + convEsc(convCourse(conv.courseId).name) + ' · ' + conv.times.map(convTime).join(' y ') + '</div>'
-      + '<div class="conv-home-cta">' + (mySlot >= 0 ? 'Estás en la de las ' + convTime(conv.times[mySlot]) + ' ›' : 'Apuntarme ›') + '</div>'
-      + '</div>';
-    const card = document.getElementById('convHomeCard');
-    card.addEventListener('click', ()=> openConv(false));
+    const me = convMe();
+    box.innerHTML = lista.map((c, i) => {
+      const total = c.groups.reduce((a, g) => a + g.length, 0);
+      const mySlot = me ? convSlotOf(c, me) : -1;
+      const cta = c.roundCode ? 'Partida creada · abrir ›' : (mySlot >= 0 ? 'Estás en la de las ' + convTime(c.times[mySlot]) + ' ›' : 'Apuntarme ›');
+      return '<div class="conv-home-card" role="button" tabindex="0" data-conv-code="' + convEsc(c.code) + '"' + (i ? ' style="margin-top:10px;"' : '') + '>'
+        + '<div class="conv-home-top"><span class="conv-home-eyebrow">' + (i === 0 ? 'Próxima salida' : 'Siguiente salida') + '</span><span class="conv-home-count">' + total + '/' + (c.times.length * CONV_SLOTS) + '</span></div>'
+        + '<div class="conv-home-date">' + convEsc(convLongDate(c.date)) + '</div>'
+        + '<div class="conv-home-sub">' + convEsc(convCourse(c.courseId).name) + ' · ' + c.times.map(convTime).join(' y ') + '</div>'
+        + '<div class="conv-home-cta">' + cta + '</div>'
+        + '</div>';
+    }).join('') + (nuevoBtn ? '<div style="margin-top:10px;">' + nuevoBtn + '</div>' : '');
+    box.querySelectorAll('[data-conv-code]').forEach(card => card.addEventListener('click', ()=>{
+      const c = convActivas.find(x => x.code === card.dataset.convCode);
+      if(!c) return;
+      if(!conv || conv.code !== c.code){ conv = c; convWatch(); }
+      openConv(false);
+    }));
+    const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
   }
 
   function renderConv(){
@@ -330,13 +362,15 @@
   (async function setupConvocatoria(){
     const close = document.getElementById('convClose'); if(close) close.addEventListener('click', closeConv);
     const code = (new URLSearchParams(location.search).get('conv') || '').trim().toUpperCase();
-    try { conv = await convFetch(code || null); } catch(e){ conv = null; }
+    try { convActivas = await convFetchActivas(); } catch(e){ convActivas = []; }
+    try { conv = code ? await convFetch(code) : (convActivas[0] || await convFetch(null)); } catch(e){ conv = null; }
     if(conv) convWatch();
     renderConvHome();
     if(code) openConv(false);
     // al volver a la app (desde WhatsApp) se refresca
     document.addEventListener('visibilitychange', async ()=>{
       if(document.hidden) return;
+      try { convActivas = await convFetchActivas(); } catch(e){}
       const fresh = await convFetch(conv ? conv.code : null).catch(()=> null);
       if(fresh){ conv = fresh; renderConvHome(); const ov = document.getElementById('convOverlay'); if(ov && !ov.hidden && !document.getElementById('convNewDate')) renderConv(); }
     });
