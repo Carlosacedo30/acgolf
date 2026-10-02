@@ -696,3 +696,21 @@
 
   .hcpl-cab span:last-child{ text-align:right; }
   .hcpl-nom{ white-space:normal; line-height:1.2; }
+
+  /* ===== Cabecera v2 (estilo de los logos Iscariotes × Bolarecuperada) ===== */
+  .portada.portada-v2{ position:relative; overflow:hidden; background:#0E1F3D; justify-content:flex-start; align-items:center; gap:16px;
+    padding:calc(env(safe-area-inset-top, 0px) + 22px) 20px 26px; min-height:150px; }
+  .pv2-franjas{ position:absolute; inset:0; pointer-events:none; z-index:0; }
+  .pv2-franjas i{ position:absolute; top:-60%; height:220%; transform:rotate(24deg); }
+  .pv2-franjas i:nth-child(1){ right:-70px; width:110px; background:#1B3B6F; }
+  .pv2-franjas i:nth-child(2){ right:44px; width:22px; background:#D4AF37; }
+  .pv2-franjas i:nth-child(3){ right:76px; width:6px; background:#D4AF37; opacity:.45; }
+  .portada-v2 .pv2-escudo{ position:relative; z-index:1; width:118px; height:118px; max-width:32vw; max-height:32vw; flex:none; filter:drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+  .pv2-txt{ position:relative; z-index:1; display:flex; flex-direction:column; gap:4px; min-width:0; }
+  .pv2-eyebrow{ font-family:'Barlow', sans-serif; font-weight:800; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:#D4AF37; }
+  .pv2-titulo{ margin:0; font-family:'Anton', sans-serif; font-weight:400; font-size:42px; text-shadow:0 2px 10px rgba(14,31,61,.6); line-height:.92; letter-spacing:.01em; text-transform:uppercase; color:#fff; }
+  .pv2-titulo span{ color:#D4AF37; }
+  .pv2-patro{ margin-top:8px; align-self:flex-start; display:inline-flex; align-items:center; gap:8px; background:#fff; border-radius:999px; padding:5px 12px 5px 12px; min-height:44px; box-sizing:border-box; text-decoration:none; box-shadow:0 4px 12px rgba(0,0,0,.3); }
+  .pv2-patro span{ font-family:'Barlow', sans-serif; font-weight:800; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:#0E1F3D; }
+  .pv2-patro img{ display:block; height:32px; width:auto; }
+  @media (max-width:370px){ .pv2-eyebrow{ font-size:10px; letter-spacing:.16em; } .pv2-titulo{ font-size:38px; } .portada-v2 .pv2-escudo{ width:100px; height:100px; } .portada.portada-v2{ gap:12px; padding-left:16px; padding-right:16px; } }

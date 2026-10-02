@@ -14,8 +14,8 @@
 <meta name="theme-color" content="#1B3B6F">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=38">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=39">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -62,8 +62,16 @@
     <!-- SCREEN 0: Jugar -->
     <div class="screen active" data-screen="0">
       <div class="screen-content">
-        <div class="portada">
-          <img src="logo-iscariotes.svg?v=6" alt="Los Iscariotes · Golf Club Hato Verde" width="200" height="200">
+        <div class="portada portada-v2">
+          <div class="pv2-franjas" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img class="pv2-escudo" src="logo-iscariotes.svg?v=6" alt="Los Iscariotes · Golf Club Hato Verde" width="132" height="132">
+          <div class="pv2-txt">
+            <div class="pv2-eyebrow">Hato Verde · Liga 2026</div>
+            <h1 class="pv2-titulo">Los<br><span>Iscariotes</span></h1>
+            <a class="pv2-patro" href="https://bolarecuperada.com" target="_blank" rel="noopener sponsored">
+              <span>Patrocina</span><img src="logo-bolarecuperada-h.png?v=1" alt="Bolarecuperada.com" width="104" height="38">
+            </a>
+          </div>
         </div>
         <div id="convHome"></div>
         <section id="hcpListHome" class="hcpl-card" style="display:none;"></section>
