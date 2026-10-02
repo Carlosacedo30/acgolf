@@ -774,3 +774,19 @@
   .cad-trend.up{ color:var(--green); }
   .cad-trend.down{ color:var(--clay); }
   .cad-n{ padding:4px 10px 8px; font-size:10.5px; color:#9AA7B5; }
+
+  /* El caddie que habla: cara + bocadillo debajo de las casillas */
+  .ch{ display:flex; gap:8px; align-items:flex-start; margin-top:14px; }
+  .ch-quien{ flex:none; display:flex; flex-direction:column; align-items:center; gap:2px; width:72px; }
+  .ch-quien span{ font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--forest-soft); text-align:center; }
+  .ch-cara{ display:block; filter:drop-shadow(0 2px 3px rgba(23,33,46,.18)); }
+  .ch-bocadillo{ position:relative; flex:1; min-width:0; background:#fff; border:1.5px solid var(--line); border-radius:16px; padding:10px 12px; font-size:13.5px; line-height:1.4; color:var(--ink); }
+  .ch-bocadillo::before{ content:''; position:absolute; left:-8px; top:22px; width:14px; height:14px; background:#fff; border-left:1.5px solid var(--line); border-bottom:1.5px solid var(--line); transform:rotate(45deg); }
+  .ch-contento .ch-bocadillo, .ch-contento .ch-bocadillo::before{ border-color:#A9D3B6; }
+  .ch-serio .ch-bocadillo, .ch-serio .ch-bocadillo::before{ border-color:#E7B7B0; }
+  .ch-cab{ font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); margin-bottom:4px; }
+  .ch-bocadillo p{ margin:0 0 6px; }
+  .ch-bocadillo p:last-child{ margin-bottom:0; }
+  .ch-campo{ color:#33475E; }
+  .ch-campo strong{ color:var(--forest); }
+  .ch-pique{ padding-top:6px; border-top:1px dashed var(--line); font-size:12.5px; color:#5B6B7D; }

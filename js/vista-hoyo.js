@@ -227,12 +227,11 @@
           + '<div class="hv-pos">' + (posTxt || '&nbsp;') + '</div>'
           + '</div>';
       }).join('');
-      const notes = players.map((name, pIndex)=>{
-        const cad = (typeof caddieHtml === 'function') ? caddieHtml(name, currentHole) : '';
-        return cad ? '<div class="hv-note"><div class="hv-note-n">' + shortNames[pIndex] + '</div>' + cad + '</div>' : '';
-      }).join('');
-      wrap.innerHTML = '<div class="hv-scores" style="--n:' + players.length + '">' + cells + '</div>'
-        + (notes ? '<div class="hv-notes">' + notes + '</div>' : '');
+      // Debajo de las casillas, el caddie comenta el hoyo y habla con cada jugador
+      const habla = (typeof caddieHablaHtml === 'function')
+        ? caddieHablaHtml(currentHole, players.map((name, pIndex) => ({ nombre: name, recibidos: strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0 })))
+        : '';
+      wrap.innerHTML = '<div class="hv-scores" style="--n:' + players.length + '">' + cells + '</div>' + habla;
       wrap.querySelectorAll('.stroke-box').forEach(box=>{
         box.addEventListener('input', ()=>{
           const pIndex = box.dataset.holeInputFor;
