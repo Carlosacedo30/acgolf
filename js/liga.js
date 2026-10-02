@@ -100,7 +100,8 @@
 
   // Clasificación de la liga POR MES: cada mes empieza de cero el día 1 y tiene su campeón.
   // Las rondas antiguas no se borran (el hándicap las sigue necesitando); solo se agrupan por mes.
-  // Resultado de cada ronda de 18 hoyos completa = (golpes − hándicap de ese momento) − par. Gana el más bajo.
+  // Cada semana (lunes a domingo) puntúa el mejor neto de cada jugador: 10-8-6-5-4-3-2 y 1 al resto.
+  // La semana cuenta para el mes en que cae su jueves. Campeón del mes: más puntos; empate, mejor neto.
   const MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const LIGA_FIRST_MONTH = { y: 2026, m: 9 }; // octubre 2026 (mes 0 = enero)
   let ligaMonth = (()=>{ const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; })();
@@ -108,83 +109,86 @@
   const monthKey = (y, m) => y * 12 + m;
   const capitalize = t => t.charAt(0).toUpperCase() + t.slice(1);
 
-  async function fetchLeagueRounds(){
+  // Datos de la liga por mes, calculados en Supabase con liga_mes(): semanas con su clasificación y puntos del mes.
+  // ligaRoundsCache guarda { 'aaaa-m': datos } y se vacía al entrar en la pantalla para traer lo último.
+  async function fetchLigaMes(y, m){
+    const key = y + '-' + m;
+    if(!ligaRoundsCache) ligaRoundsCache = {};
+    if(ligaRoundsCache[key]) return ligaRoundsCache[key];
     const client = initSupabase();
-    if(!client) return [];
+    if(!client) return null;
     try {
-      await loadStatsSince();
-      const { data, error } = await client.from('rounds')
-        .select('match_groups, course_par, created_at')
-        .eq('course_id', LEAGUE_COURSE_ID)
-        .gte('created_at', isoMax(LEAGUE_STANDINGS_START_DATE, statsSince));
-      if(error || !data) return [];
+      const { data, error } = await client.rpc('liga_mes', { p_anio: y, p_mes: m + 1 });
+      if(error) throw error;
+      ligaRoundsCache[key] = data;
       return data;
-    } catch(e){ console.error('No se pudo cargar la liga', e); return []; }
+    } catch(e){ console.error('No se pudo cargar la liga', e); return null; }
   }
 
-  function standingsForMonth(rounds, y, m){
-    const byPlayer = {};
-    rounds.forEach(round => {
-      const d = new Date(round.created_at);
-      if(d.getFullYear() !== y || d.getMonth() !== m) return;
-      const par = round.course_par;
-      if(!par) return;
-      const parTotal = par.reduce((a, b) => a + b, 0);
-      (round.match_groups || []).forEach(group => {
-        (group.players || []).forEach((name, pIndex) => {
-          if(!name) return;
-          const scores = group.scores && group.scores[pIndex];
-          if(!scores) return;
-          let total = 0, holesFilled = 0;
-          for(let h = 1; h <= 18; h++){
-            const strokes = parseInt(scores[h], 10);
-            if(isNaN(strokes) || strokes <= 0) continue;
-            total += strokes; holesFilled++;
-          }
-          if(holesFilled < 18) return; // solo cuentan rondas completas
-          const hcp = Math.round((group.handicaps && group.handicaps[pIndex]) || 0);
-          const toPar = (total - hcp) - parTotal;
-          byPlayer[name] = byPlayer[name] || { name, rounds: 0, toPar: 0 };
-          byPlayer[name].rounds++;
-          byPlayer[name].toPar += toPar;
-        });
-      });
-    });
-    return Object.values(byPlayer).sort((a, b) => a.toPar - b.toPar);
+  const LIGA_PUNTOS_TXT = '10 · 8 · 6 · 5 · 4 · 3 · 2 · resto 1';
+  function ligaNombreCorto(n){
+    const w = String(n || '').trim().split(/\s+/);
+    return w.length > 2 ? w.slice(0, -1).join(' ') : w.join(' ');
+  }
+  function ligaFechaCorta(iso){
+    const [y, m, d] = String(iso).split('-').map(Number);
+    return d + ' ' + MESES_ES[m - 1].slice(0, 3);
   }
 
   async function renderLigaStandings(){
     const wrap = document.getElementById('ligaStandings');
     const empty = document.getElementById('ligaEmpty');
+    const semWrap = document.getElementById('ligaSemanas');
     if(!wrap) return;
     const now = new Date();
     const curKey = monthKey(now.getFullYear(), now.getMonth());
     const firstKey = monthKey(LIGA_FIRST_MONTH.y, LIGA_FIRST_MONTH.m);
-    let k = Math.min(Math.max(monthKey(ligaMonth.y, ligaMonth.m), firstKey), curKey);
+    const lastKey = Math.max(curKey, firstKey);
+    let k = Math.min(Math.max(monthKey(ligaMonth.y, ligaMonth.m), firstKey), lastKey);
     ligaMonth = { y: Math.floor(k / 12), m: k % 12 };
-    const isCurrent = k === curKey;
+    const isCurrent = k >= curKey;
     const label = capitalize(MESES_ES[ligaMonth.m]) + ' ' + ligaMonth.y;
     const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
     set('ligaMonthLabel', label);
-    set('ligaMonthSub', isCurrent ? 'Mes en curso · el día 1 empieza de cero' : 'Mes cerrado');
+    set('ligaMonthSub', isCurrent ? 'Mes en curso · campeón por puntos' : 'Mes cerrado');
     const prev = document.getElementById('ligaPrevMonth'), next = document.getElementById('ligaNextMonth');
     if(prev) prev.disabled = k <= firstKey;
-    if(next) next.disabled = k >= curKey;
+    if(next) next.disabled = k >= lastKey;
 
-    if(!ligaRoundsCache) ligaRoundsCache = await fetchLeagueRounds();
-    const standings = standingsForMonth(ligaRoundsCache, ligaMonth.y, ligaMonth.m);
+    const data = await fetchLigaMes(ligaMonth.y, ligaMonth.m);
+    const standings = (data && data.clasificacion) || [];
+    const semanas = (data && data.semanas) || [];
+    const trophy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path></svg>';
+
+    // Clasificación del mes por puntos
     if(!standings.length){
       wrap.innerHTML = '';
-      if(empty){ empty.style.display = ''; empty.textContent = isCurrent ? 'Todavía no hay rondas completas este mes en Hato Verde.' : 'No hubo rondas completas en ' + MESES_ES[ligaMonth.m] + '.'; }
+      if(empty){ empty.style.display = ''; empty.textContent = isCurrent ? 'Todavía no hay tarjetas este mes. Los puntos empiezan a contar con la primera partida.' : 'No hubo tarjetas en ' + MESES_ES[ligaMonth.m] + '.'; }
     } else {
       if(empty) empty.style.display = 'none';
-      const trophy = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path></svg>';
       wrap.innerHTML = standings.map((s, i) =>
         '<div class="leaderboard-row' + (i === 0 ? ' p1' : '') + '"><div class="leaderboard-pos">' + (i === 0 ? trophy : (i + 1)) + '</div>'
         + '<div class="leaderboard-name">' + (i === 0 ? '<div class="leader-tag">' + (isCurrent ? 'Líder del mes' : 'Campeón de ' + MESES_ES[ligaMonth.m]) + '</div>' : '')
-        + escapeHtml(s.name) + '<div class="leaderboard-holes">' + s.rounds + (s.rounds === 1 ? ' ronda' : ' rondas') + '</div></div>'
-        + '<div class="leaderboard-score">' + (s.toPar > 0 ? '+' + s.toPar : s.toPar) + '</div></div>'
+        + escapeHtml(ligaNombreCorto(s.jugador)) + '<div class="leaderboard-holes">' + s.semanas + (s.semanas === 1 ? ' semana' : ' semanas') + ' · mejor neto ' + s.mejor_neto + '</div></div>'
+        + '<div class="leaderboard-score">' + s.puntos + '<span class="liga-pts"> pts</span></div></div>'
       ).join('');
+    }
+
+    // Semanas del mes: la más reciente primero
+    if(semWrap){
+      semWrap.innerHTML = semanas.map(sem =>
+        '<div class="liga-sem">'
+        + '<div class="liga-sem-head">Semana ' + ligaFechaCorta(sem.desde) + ' – ' + ligaFechaCorta(sem.hasta) + '</div>'
+        + (sem.clasificacion[0] ? '<div class="liga-sem-win">👑 Iscariote: <strong>' + escapeHtml(ligaNombreCorto(sem.clasificacion[0].jugador)) + '</strong> · ' + sem.clasificacion[0].neto + ' netos</div>' : '')
+        + '<div class="liga-sem-fila liga-sem-cab"><span>#</span><span>Jugador</span><span>Golpes</span><span>Neto</span><span>Pts</span></div>'
+        + sem.clasificacion.map(c =>
+            '<div class="liga-sem-fila"><span>' + c.pos + '</span><span class="liga-sem-nom">' + escapeHtml(ligaNombreCorto(c.jugador)) + '</span>'
+            + '<span>' + c.bruto + '</span><span>' + c.neto + '</span><span class="liga-sem-pts">+' + c.puntos + '</span></div>'
+          ).join('')
+        + '</div>'
+      ).join('');
+      const semSec = document.getElementById('ligaSemanasSection');
+      if(semSec) semSec.style.display = semanas.length ? '' : 'none';
     }
 
     // Palmarés: campeón de cada mes ya cerrado
@@ -194,8 +198,9 @@
       const rows = [];
       for(let kk = curKey - 1; kk >= firstKey; kk--){
         const y = Math.floor(kk / 12), m = kk % 12;
-        const st = standingsForMonth(ligaRoundsCache, y, m);
-        if(st.length) rows.push('<div class="champ-row"><div class="champ-month">' + capitalize(MESES_ES[m]) + ' ' + y + '</div><div class="champ-name">' + escapeHtml(st[0].name) + '</div><div class="leaderboard-score">' + (st[0].toPar > 0 ? '+' + st[0].toPar : st[0].toPar) + '</div></div>');
+        const d = await fetchLigaMes(y, m);
+        const st = (d && d.clasificacion) || [];
+        if(st.length) rows.push('<div class="champ-row"><div class="champ-month">' + capitalize(MESES_ES[m]) + ' ' + y + '</div><div class="champ-name">' + escapeHtml(ligaNombreCorto(st[0].jugador)) + '</div><div class="leaderboard-score">' + st[0].puntos + ' pts</div></div>');
       }
       hist.innerHTML = rows.join('');
       if(histSection) histSection.style.display = rows.length ? '' : 'none';

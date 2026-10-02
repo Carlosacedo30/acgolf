@@ -714,3 +714,15 @@
   .pv2-patro span{ font-family:'Barlow', sans-serif; font-weight:800; font-size:9.5px; letter-spacing:.12em; text-transform:uppercase; color:#0E1F3D; }
   .pv2-patro img{ display:block; height:32px; width:auto; }
   @media (max-width:370px){ .pv2-eyebrow{ font-size:10px; letter-spacing:.16em; } .pv2-titulo{ font-size:38px; } .portada-v2 .pv2-escudo{ width:100px; height:100px; } .portada.portada-v2{ gap:12px; padding-left:16px; padding-right:16px; } }
+
+  /* Liga por puntos: semanas del mes */
+  .liga-pts{ font-size:11px; font-weight:600; color:#7A8A99; }
+  .liga-sem{ background:#fff; border:1px solid var(--line-soft); border-radius:var(--r-md); padding:12px; margin-bottom:12px; }
+  .liga-sem-head{ font-size:12px; font-weight:700; color:var(--gold-ink); text-transform:uppercase; letter-spacing:.04em; }
+  .liga-sem-win{ font-size:14px; margin:6px 0 8px; color:var(--forest); }
+  .liga-sem-fila{ display:grid; grid-template-columns:20px minmax(0,1fr) 46px 40px 34px; gap:6px; align-items:center; font-size:13.5px; padding:6px 0; border-top:1px solid var(--line-soft); }
+  .liga-sem-fila span:nth-child(n+3){ text-align:right; font-family:'IBM Plex Mono', monospace; }
+  .liga-sem-cab{ font-size:11px; color:#7A8A99; border-top:none; font-weight:600; }
+  .liga-sem-cab span{ font-family:inherit !important; }
+  .liga-sem-nom{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .liga-sem-pts{ font-weight:700; color:var(--forest); }
