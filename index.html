@@ -11,11 +11,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="App Golf">
-<meta name="theme-color" content="#1B3B6F">
+<meta name="theme-color" content="#0E1F3D">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=43">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=44">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -103,16 +103,16 @@
           <div class="dropdown" id="screen0-dropdown"></div>
         </section>
         <div id="configPartidaBlock" style="display:none;">
-        <section style="background:var(--gold-soft);">
+        <section style="background:var(--gold-soft-bg);">
           <div class="eyebrow">Configurar partida</div>
-          <div style="font-family:'Playfair Display', serif; font-size:19px; font-weight:600; color:var(--forest);" id="s1CourseMeta">Club de Golf Hato Verde</div>
+          <div style="font-family:'Anton', Impact, sans-serif; font-weight:400 !important; text-transform:uppercase; letter-spacing:.02em; font-size:19px; font-weight:600; color:var(--forest-fg);" id="s1CourseMeta">Club de Golf Hato Verde</div>
         </section>
         <section>
           <div class="eyebrow">Detalles</div>
           <div class="field">
             <label>Nombre de la partida *</label>
             <input type="text" id="roundNameInput" placeholder="Ponle un nombre a tu partida">
-            <div class="section-sub" id="roundNameError" style="display:none; color:var(--clay); margin-top:6px;">Ponle un nombre a la partida para continuar</div>
+            <div class="section-sub" id="roundNameError" style="display:none; color:var(--clay-fg); margin-top:6px;">Ponle un nombre a la partida para continuar</div>
           </div>
           <div class="field-row">
             <div class="field"><label>Día de comienzo</label><input type="date" id="roundDateInput"></div>
@@ -203,7 +203,7 @@
           <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
-          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:12px; color:#7A8A99; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
+          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:12px; color:#9FACC2; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
         </section>
         <section>
@@ -215,10 +215,10 @@
           <div class="eyebrow">Unirse a una partida</div>
           <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
           <div class="field-row" style="margin-top:8px;">
-            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'IBM Plex Mono', monospace;"></div>
+            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'Barlow', sans-serif;"></div>
             <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
           </div>
-          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay); margin-top:6px;"></div>
+          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay-fg); margin-top:6px;"></div>
         </section>
         <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
       </div>

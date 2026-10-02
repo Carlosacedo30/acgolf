@@ -110,7 +110,7 @@
     if(!dropdown) return;
     dropdown.innerHTML = matches.length ? matches.map(c =>
       '<div class="dropdown-item" data-course-id="' + c.id + '"><span class="pin">📍</span><div><div class="name">' + c.name + '</div><div class="loc">' + c.location + '</div></div></div>'
-    ).join('') : '<div class="dropdown-item" style="color:#7A8A99;">Ningún campo de nuestra base de datos coincide</div>';
+    ).join('') : '<div class="dropdown-item" style="color:#9FACC2;">Ningún campo de nuestra base de datos coincide</div>';
     dropdown.querySelectorAll('.dropdown-item[data-course-id]').forEach(item=>{
       item.addEventListener('click', ()=>{
         const course = COURSES.find(c => c.id === item.dataset.courseId);

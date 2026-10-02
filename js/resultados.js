@@ -144,7 +144,7 @@
         const minNet = Math.min(...summaries.map(s => s.net));
         const winners = players.filter((name, i) => summaries[i].net === minNet);
         winnerSection.style.display = '';
-        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #5B6B62); font-weight:400;">(ganan en neto, ' + minNet + ')</span>.</p>';
+        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #B9C4D7); font-weight:400;">(ganan en neto, ' + minNet + ')</span>.</p>';
         const mentalNote = document.getElementById('roundMentalNote');
         if(mentalNote){
           mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad.cuandoSiSalga : CONSEJOS_GOLF.mentalidad.cuandoNadaSalga;

@@ -269,7 +269,7 @@
             const holes = s.holesFilled > 0 ? '<div class="leaderboard-holes">' + (s.holesFilled >= 18 ? '18 hoyos' : 'Hoyo ' + s.holesFilled + ' de 18') + '</div>' : '';
             return '<div class="leaderboard-row' + (isLeader ? ' p1' : '') + '">'
               + '<div class="leaderboard-pos">' + (isLeader ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path></svg>' : (i + 1)) + '</div>'
-              + '<div class="leaderboard-name">' + tag + s.name + (showGroupTag ? ' <span style="color:#7A8A99; font-weight:400;">· G' + (s.group + 1) + '</span>' : '') + holes + '</div>'
+              + '<div class="leaderboard-name">' + tag + s.name + (showGroupTag ? ' <span style="color:#9FACC2; font-weight:400;">· G' + (s.group + 1) + '</span>' : '') + holes + '</div>'
               + '<div class="leaderboard-score">' + formatStandingScore(s) + '</div></div>';
           }).join('');
     }

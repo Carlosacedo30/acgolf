@@ -63,7 +63,7 @@
     const pills = DIAG_CATEGORIES.map(c =>
       '<div class="pill-opt' + (chosen === c ? ' selected' : '') + '" data-hole="' + h.hole + '" data-value="' + c + '">' + c + '</div>'
     ).join('');
-    return '<div style="padding:12px 0; border-top:1px solid var(--line-soft);">'
+    return '<div style="padding:12px 0; border-top:1px solid var(--line-soft-bd);">'
       + '<div class="hole-tag">HOYO ' + h.hole + ' · +' + h.diff + ' sobre par</div>'
       + '<div class="section-sub" style="margin:6px 0 8px;">¿Dónde falló?</div>'
       + '<div class="pill-row">' + pills + '</div>'
