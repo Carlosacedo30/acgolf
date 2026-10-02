@@ -4,7 +4,7 @@ Estas notas son las que usará el caddie para hablar del campo. Solo se apuntan 
 
 | Hoyo | Par | Notas confirmadas |
 | --- | --- | --- |
-| 1 | 5 | Un lago a la derecha y un riachuelo que va por el lateral del hoyo, sin cruzar la calle. |
+| 1 | 5 | Un lago a la derecha y un riachuelo por el lateral derecho del hoyo, sin cruzar la calle. Todo el peligro está a la derecha. |
 | 2 | 4 | Agua delante y a la izquierda del green. Sin búnker. |
 | 3 | 4 | Sin agua. Búnker a la izquierda de la calle; dos búnkeres delante del green. |
 | 4 | 4 | Agua a la izquierda y al fondo. Búnker detrás del green. Sin búnkeres a la izquierda. |
