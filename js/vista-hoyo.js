@@ -16,18 +16,6 @@
     return EXTRA_STROKE_MESSAGES[(hole + pIndex) % EXTRA_STROKE_MESSAGES.length];
   }
 
-  // Bloque de golpes de regalo en la tarjeta de cada jugador: siempre visible, también con 0 o 1 golpe
-  function strokesNoteHtml(par, recibidos){
-    const tuPar = par + recibidos;
-    const n = Math.max(0, recibidos);
-    const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
-    const txt = n === 0 ? 'sin golpe' : n === 1 ? '1 de regalo' : n + ' de regalo';
-    return '<div class="gr' + (n ? '' : ' gr-0') + '">'
-      + '<div class="gr-top"><span class="gr-k">Tu par</span><span class="gr-v">' + tuPar + '</span></div>'
-      + '<div class="gr-bot"><span class="gr-pips" aria-hidden="true">' + pips + '</span><span class="gr-t">' + txt + '</span></div>'
-      + '</div>';
-  }
-
   // Puntos Stableford para un hoyo: 2 - (diferencia del neto sobre par), sin bajar de 0
   // (par=2, bogey=1, birdie=3, doble bogey neto o peor=0 — tabla oficial de Stableford)
   function stablefordPoints(netDiff){
@@ -207,14 +195,20 @@
         selStart = activeEl.selectionStart;
         selEnd = activeEl.selectionEnd;
       }
-      wrap.innerHTML = players.map((name, pIndex)=>{
+      // Fila de marcadores: los 4 jugadores en columnas, con la casilla de golpes SIEMPRE a la misma altura.
+      // Debajo, las notas del caddie de cada uno (pueden tener distinta altura sin mover las casillas).
+      const firstNames = players.map(n => String(n || '').trim().split(/\s+/)[0] || n);
+      const shortNames = players.map((n, i) => {
+        const w = String(n || '').trim().split(/\s+/);
+        const dup = firstNames.filter(f => f === firstNames[i]).length > 1;
+        return dup && w[1] ? w[0] + ' ' + w[1].charAt(0) + '.' : firstNames[i];
+      });
+      const cells = players.map((name, pIndex)=>{
         const input = document.querySelector('.golpes-input[data-hole="' + currentHole + '"][data-player-index="' + pIndex + '"]');
         const val = input ? input.value : '';
         const rank = standings.findIndex(s => s.group === activeGroup && s.pIndex === pIndex);
         const s = standings[rank];
-        const posBadge = (s && s.holesFilled > 0) ? '<span class="medal-badge' + (rank === 0 ? ' gold' : '') + '">🏆 ' + (rank + 1) + '</span>' : '';
-        const scoreBadge = (s && s.holesFilled > 0) ? '<span class="medal-badge">' + formatStandingScore(s) + '</span>' : '';
-        const hcpBadge = playerHandicaps[pIndex] ? '<span class="medal-badge">Hcp ' + playerHandicaps[pIndex] + '</span>' : '';
+        const posTxt = (s && s.holesFilled > 0) ? (rank === 0 ? '🏆 ' : '') + (rank + 1) + 'º · ' + formatStandingScore(s) : '';
         const recibidos = strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0; // golpes de regalo de ESTE jugador en ESTE hoyo
         let resultClass = '', resultText = '—';
         if(val && par != null){
@@ -222,19 +216,23 @@
           resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
           resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
         }
-        // Golpes de regalo: una bola dorada por golpe y "tu par" (el resultado que vale un par neto)
-        const extraStrokeNote = par != null ? strokesNoteHtml(par, recibidos) : '';
-        return '<div class="player-hole-card">'
-          + '<div class="php-name">' + name + '</div>'
-          + '<div class="player-hole-badges">' + posBadge + scoreBadge + hcpBadge + '</div>'
-          + extraStrokeNote
-          + (typeof caddieHtml === 'function' ? caddieHtml(name, currentHole) : '')
-          + '<div class="php-controls">'
-          + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="numeric" placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '">'
+        const n = Math.max(0, recibidos);
+        const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
+        return '<div class="hv-cell' + (rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + '">'
+          + '<div class="hv-n" title="' + name + '">' + shortNames[pIndex] + '</div>'
+          + '<div class="hv-h">Hcp ' + (playerHandicaps[pIndex] || 0) + '</div>'
+          + '<div class="hv-tp' + (n ? '' : ' cero') + '"><span class="gr-pips" aria-hidden="true">' + pips + '</span><span>Tu par <b>' + (par != null ? par + n : '—') + '</b></span></div>'
+          + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="numeric" placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '" aria-label="Golpes de ' + name + '">'
           + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
-          + '</div>'
+          + '<div class="hv-pos">' + (posTxt || '&nbsp;') + '</div>'
           + '</div>';
       }).join('');
+      const notes = players.map((name, pIndex)=>{
+        const cad = (typeof caddieHtml === 'function') ? caddieHtml(name, currentHole) : '';
+        return cad ? '<div class="hv-note"><div class="hv-note-n">' + shortNames[pIndex] + '</div>' + cad + '</div>' : '';
+      }).join('');
+      wrap.innerHTML = '<div class="hv-scores" style="--n:' + players.length + '">' + cells + '</div>'
+        + (notes ? '<div class="hv-notes">' + notes + '</div>' : '');
       wrap.querySelectorAll('.stroke-box').forEach(box=>{
         box.addEventListener('input', ()=>{
           const pIndex = box.dataset.holeInputFor;
