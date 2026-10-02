@@ -726,3 +726,31 @@
   .liga-sem-cab span{ font-family:inherit !important; }
   .liga-sem-nom{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .liga-sem-pts{ font-weight:700; color:var(--forest); }
+
+  /* Caddie v2: tarjeta con veredicto, media frente al par y barra de resultados */
+  .cad{ --c:var(--navy); --c-soft:var(--navy-soft); --c-ink:var(--forest);
+    margin-top:10px; border-radius:14px; background:#fff; border:1.5px solid var(--c-soft); overflow:hidden; font-size:12.5px; color:var(--ink); }
+  .cad.trampa{ --c:var(--clay); --c-soft:var(--clay-soft); --c-ink:#7E2B25; }
+  .cad.fuerte{ --c:var(--green); --c-soft:var(--green-soft); --c-ink:#24543D; }
+  .cad-top{ display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap; padding:7px 10px; background:var(--c-soft); }
+  .cad-who{ font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--c-ink); }
+  .cad-tag{ font-size:11px; font-weight:700; color:#fff; background:var(--c); border-radius:999px; padding:2px 8px; white-space:nowrap; }
+  .cad-tip{ padding:8px 10px 0; font-weight:600; line-height:1.3; font-size:13px; color:var(--c-ink); }
+  .cad-nums{ display:flex; gap:14px; padding:8px 10px 0; align-items:flex-end; }
+  .cad-nums > div{ display:flex; flex-direction:column; }
+  .cad-k{ font-size:10px; color:#7A8A99; text-transform:uppercase; letter-spacing:.06em; font-weight:600; }
+  .cad-v{ font-family:'IBM Plex Mono', monospace; font-size:22px; font-weight:600; line-height:1.1; color:var(--forest); }
+  .cad-s{ font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600; color:var(--c-ink); }
+  .cad-bar{ display:flex; height:7px; margin:9px 10px 0; border-radius:999px; overflow:hidden; background:var(--paper-dim); }
+  .cad-bar i{ display:block; height:100%; }
+  .cad-bar .b-par{ background:var(--green); }
+  .cad-bar .b-med{ background:#E5D9B6; }
+  .cad-bar .b-mal{ background:var(--clay); }
+  .cad-leg{ display:flex; justify-content:space-between; gap:6px; flex-wrap:wrap; padding:3px 10px 0; font-size:10.5px; color:#5B6B7D; }
+  .cad-trend{ padding:5px 10px 9px; font-size:11px; color:#5B6B7D; }
+  .cad-trend b{ font-family:'IBM Plex Mono', monospace; }
+  .cad-leg .l-par{ color:var(--green); font-weight:600; }
+  .cad-leg .l-mal{ color:var(--clay); font-weight:600; }
+  .cad-trend.up{ color:var(--green); }
+  .cad-trend.down{ color:var(--clay); }
+  .cad-n{ padding:4px 10px 8px; font-size:10.5px; color:#9AA7B5; }
