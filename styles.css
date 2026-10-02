@@ -726,3 +726,17 @@
   .liga-sem-cab span{ font-family:inherit !important; }
   .liga-sem-nom{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .liga-sem-pts{ font-weight:700; color:var(--forest); }
+
+  /* Golpes de regalo: "tu par" grande + una bola dorada por golpe */
+  .gr{ margin-top:8px; padding:7px 10px 8px; border-radius:12px; background:var(--gold-soft); border:1px solid #EAD9A4; }
+  .gr-0{ background:var(--paper-dim); border-color:var(--line-soft); }
+  .gr-top{ display:flex; align-items:baseline; justify-content:space-between; gap:6px; }
+  .gr-k{ font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--gold-ink); }
+  .gr-v{ font-family:'IBM Plex Mono', monospace; font-size:24px; font-weight:600; line-height:1; color:var(--gold-ink); }
+  .gr-bot{ display:flex; align-items:center; gap:6px; margin-top:4px; }
+  .gr-pips{ display:flex; gap:3px; flex:none; }
+  .gr-pips i{ width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #F4DE8A 0, #C9A227 55%, #9C7A12 100%); box-shadow:0 1px 2px rgba(122,94,16,.35); display:block; }
+  .gr-pips i.off{ background:none; border:1.5px dashed #B7C3D1; box-shadow:none; width:11px; height:11px; }
+  .gr-t{ font-size:11px; font-weight:600; color:var(--gold-ink); }
+  .gr-0 .gr-k, .gr-0 .gr-v{ color:var(--forest-soft); }
+  .gr-0 .gr-t{ color:#7A8A99; }

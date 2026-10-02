@@ -16,6 +16,18 @@
     return EXTRA_STROKE_MESSAGES[(hole + pIndex) % EXTRA_STROKE_MESSAGES.length];
   }
 
+  // Bloque de golpes de regalo en la tarjeta de cada jugador: siempre visible, también con 0 o 1 golpe
+  function strokesNoteHtml(par, recibidos){
+    const tuPar = par + recibidos;
+    const n = Math.max(0, recibidos);
+    const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
+    const txt = n === 0 ? 'sin golpe' : n === 1 ? '1 de regalo' : n + ' de regalo';
+    return '<div class="gr' + (n ? '' : ' gr-0') + '">'
+      + '<div class="gr-top"><span class="gr-k">Tu par</span><span class="gr-v">' + tuPar + '</span></div>'
+      + '<div class="gr-bot"><span class="gr-pips" aria-hidden="true">' + pips + '</span><span class="gr-t">' + txt + '</span></div>'
+      + '</div>';
+  }
+
   // Puntos Stableford para un hoyo: 2 - (diferencia del neto sobre par), sin bajar de 0
   // (par=2, bogey=1, birdie=3, doble bogey neto o peor=0 — tabla oficial de Stableford)
   function stablefordPoints(netDiff){
@@ -210,9 +222,8 @@
           resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
           resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
         }
-        const extraStrokeNote = recibidos >= 2
-          ? '<div class="extra-stroke-note">' + extraStrokeMessage(currentHole, pIndex) + ' (×' + recibidos + ')</div>'
-          : '';
+        // Golpes de regalo: una bola dorada por golpe y "tu par" (el resultado que vale un par neto)
+        const extraStrokeNote = par != null ? strokesNoteHtml(par, recibidos) : '';
         return '<div class="player-hole-card">'
           + '<div class="php-name">' + name + '</div>'
           + '<div class="player-hole-badges">' + posBadge + scoreBadge + hcpBadge + '</div>'
