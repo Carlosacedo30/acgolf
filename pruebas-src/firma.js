@@ -37,7 +37,10 @@
   }
 
   function pintar(){
-    if(!currentRoundCode || typeof roundMarkedFinished === 'undefined' || !roundMarkedFinished){ sec.style.display = 'none'; return; }
+    // Se ve al pulsar «Finalizar ronda» y también al volver a abrir una partida que ya tiene los 18 hoyos
+    const terminada = (typeof roundMarkedFinished !== 'undefined' && roundMarkedFinished)
+      || (typeof isRoundFinished === 'function' && isRoundFinished(matchGroups));
+    if(!currentRoundCode || !terminada){ sec.style.display = 'none'; return; }
     sec.style.display = '';
     if(estadoCode !== currentRoundCode){ sec.innerHTML = '<div class="eyebrow">Firma de la tarjeta</div><p class="fm-p">Comprobando…</p>'; cargar(); return; }
     const g = (estado || []).find(x => +x.grupo === +activeGroup);
