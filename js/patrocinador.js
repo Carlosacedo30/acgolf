@@ -9,17 +9,18 @@
     premioIscariote: '🎁 Se lleva las bolas de Bolarecuperada.com',
     foto: 'premio-semana.jpg?v=2',          // foto del premio de la semana (cámbiala cuando cambie el premio)
     fotoTexto: 'El premio de esta semana: 12 bolas Srixon AD333',
+    premioCorto: '12 bolas Srixon AD333',  // lo que se lee bajo la foto en Inicio
   };
 
   function renderPatrocinadorHome(){
     const el = document.getElementById('sponsorHome');
     if(!el || !PATROCINADOR) return;
+    // En Inicio: "Premio de la semana" con la foto; el patrocinador se nombra una sola vez, junto al premio
     el.innerHTML =
-      '<div class="sponsor-label">Liga patrocinada por</div>'
-      + '<a class="sponsor-logo" href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored">'
-      + '<img src="' + PATROCINADOR.logo + '" alt="' + PATROCINADOR.nombre + '" width="240" height="98"></a>'
-      + '<div class="sponsor-premio">' + PATROCINADOR.premio + '</div>'
+      '<div class="eyebrow">Premio de la semana</div>'
       + (PATROCINADOR.foto ? '<figure class="sponsor-foto"><img src="' + PATROCINADOR.foto + '" alt="' + (PATROCINADOR.fotoTexto || 'Premio de la semana') + '" width="800" height="600" loading="lazy"></figure>' : '')
-      + '<a class="sponsor-btn" href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored">Ver sus bolas</a>';
+      + '<div class="sponsor-pie"><div class="sponsor-premio">' + (PATROCINADOR.premioCorto ? '<b>' + PATROCINADOR.premioCorto + '</b><br>' : '')
+      + 'cortesía de <a href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored">' + PATROCINADOR.nombre + '</a></div>'
+      + '<a class="sponsor-btn" href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored">Ver sus bolas</a></div>';
   }
   renderPatrocinadorHome();

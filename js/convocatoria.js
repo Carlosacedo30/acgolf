@@ -131,6 +131,10 @@
   // ---------- Pintar ----------
   function renderConvHome(){
     const box = document.getElementById('convHome'); if(!box) return;
+    renderConvHomeCards(box);
+    if(typeof homeAhoraTitulo === 'function') homeAhoraTitulo();
+  }
+  function renderConvHomeCards(box){
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;

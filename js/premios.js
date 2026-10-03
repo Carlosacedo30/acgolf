@@ -51,9 +51,8 @@
     el.style.display = '';
     el.innerHTML =
       '<div class="premios-head">'
-      + '<div><div class="eyebrow" style="margin:0;">🏆 Premios de la semana</div>'
+      + '<div><div class="eyebrow" style="margin:0;">🏆 Ganadores de la semana</div>'
       + '<div class="premios-fechas">' + premiosFecha(p.desde) + ' – ' + premiosFecha(p.hasta) + ' · ' + p.tarjetas + ' tarjetas</div></div>'
-      + ((typeof PATROCINADOR !== 'undefined' && PATROCINADOR) ? '<a class="premios-sponsor" href="' + PATROCINADOR.web + '" target="_blank" rel="noopener sponsored"><span>Patrocina</span><img src="' + PATROCINADOR.logo + '" alt="' + PATROCINADOR.nombre + '" width="110" height="45"></a>' : '')
       + '</div>'
       + '<div class="premios-lista">' + lista.map((x, i) =>
           '<div class="premio' + (i === 0 ? ' top' : '') + '">'

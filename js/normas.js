@@ -66,9 +66,11 @@
     const el = document.getElementById('normasHome');
     if(!el) return;
     if(!NORMAS_ACTIVAS){ el.style.display = 'none'; el.innerHTML = ''; return; }
-    el.style.display = '';
     const yo = normasYo();
     const ok = yo && normasAceptadas && normasAceptadas.has(yo);
+    // Ya aceptadas: no ocupa sitio en Inicio (siguen a mano en el pie: "Normas de la liga")
+    if(ok){ el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.style.display = '';
     el.innerHTML = ok
       ? '<button type="button" class="normas-link" id="normasAbrir">📜 Normas de la liga <span>· aceptadas</span></button>'
       : '<div class="normas-aviso"><div class="normas-aviso-t">📜 Normas de la liga</div>'

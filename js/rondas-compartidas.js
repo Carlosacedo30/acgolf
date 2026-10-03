@@ -385,6 +385,7 @@
     const empty = document.getElementById('recentRoundsEmpty');
     if(!list) return;
     const recent = await fetchRecentRounds();
+    if(typeof renderHomeEnMarcha === 'function') renderHomeEnMarcha(recent);
     if(!recent.length){
       list.innerHTML = '';
       if(empty) empty.style.display = '';
