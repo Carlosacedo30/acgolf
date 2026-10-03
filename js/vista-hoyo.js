@@ -214,7 +214,7 @@
         if(val && par != null){
           const diff = (parseInt(val, 10) - recibidos) - par; // resultado ya ajustado a su hándicap, como en golfdirecto
           resultText = diff === 0 ? 'PAR' : (diff > 0 ? '+' + diff : diff);
-          resultClass = diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under');
+          resultClass = (diff === 0 ? 'par' : (diff > 0 ? 'over' : 'under')) + ' ' + (diff <= -2 ? 'r-eagle' : diff === -1 ? 'r-birdie' : diff === 0 ? 'r-par' : diff === 1 ? 'r-bogey' : 'r-doble');
         }
         const n = Math.max(0, recibidos);
         const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
@@ -263,6 +263,7 @@
 
     renderHoleStrip();
     if(typeof renderHoleMap === 'function') renderHoleMap();
+    if(typeof renderTarjetas === 'function') renderTarjetas();
 
     const leaderboardSection = document.getElementById('leaderboardSection');
     if(leaderboardSection){
@@ -316,13 +317,17 @@
     renderHoleView();
   });
   const toggleGridLbl = document.getElementById('toggleGridLbl');
-  if(toggleGridLbl) toggleGridLbl.addEventListener('click', ()=>{
-    const el = document.getElementById('gridWrap');
-    if(!el) return;
-    const open = el.style.display !== 'none';
-    el.style.display = open ? 'none' : '';
-    toggleGridLbl.textContent = open ? 'Ver tabla completa ▾' : 'Ocultar tabla completa ▴';
-  });
+  // "Ver tarjetas completas": la tarjeta de cada jugador (js/tarjetas.js). La tabla antigua queda oculta: guarda los golpes.
+  if(toggleGridLbl){
+    const toggleTarjetas = ()=>{
+      const el = document.getElementById('tarjetasWrap');
+      if(!el) return;
+      if(typeof renderTarjetas === 'function') renderTarjetas();
+      tarjetasMostrar(el.style.display === 'none');
+    };
+    toggleGridLbl.addEventListener('click', toggleTarjetas);
+    toggleGridLbl.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleTarjetas(); } });
+  }
 
 
   // --- Teclado grande de golpes: botones enormes, sin teclado del móvil, pensado para leer sin gafas ---
