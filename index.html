@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=48">
+<link rel="stylesheet" href="styles.css?v=49">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -323,7 +323,8 @@
           <div id="leaderboardSection"></div>
         </section>
         <section>
-          <div class="eyebrow toggle-grid-lbl" id="toggleGridLbl">Ver tabla completa ▾</div>
+          <div class="eyebrow toggle-grid-lbl" id="toggleGridLbl" role="button" tabindex="0">Ver tarjetas completas ▾</div>
+          <div id="tarjetasWrap" style="display:none;"></div>
           <div id="gridWrap" style="display:none;">
             <div class="section-sub">Cada jugador anota en su propia fila</div>
             <div class="tab-toggle" id="resultTabToggle"><div class="tab active" data-nine="ida">Ida (1–9)</div><div class="tab" data-nine="vuelta">Vuelta (10–18)</div></div>
@@ -500,7 +501,8 @@
 <script src="js/diagnostico.js?v=28"></script>
 <script src="js/interactions.js?v=28"></script>
 <script src="js/resultados.js?v=28"></script>
-<script src="js/vista-hoyo.js?v=34"></script>
+<script src="js/vista-hoyo.js?v=35"></script>
+<script src="js/tarjetas.js?v=1"></script>
 <script src="js/caddie.js?v=3"></script>
 <script src="js/caddie-habla.js?v=1"></script>
 <script src="js/patrocinador.js?v=4"></script>
