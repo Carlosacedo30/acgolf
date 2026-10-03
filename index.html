@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=45">
+<link rel="stylesheet" href="styles.css?v=46">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -28,7 +28,7 @@
   <div class="modal-overlay" id="duplicateRoundOverlay" style="display:none;">
     <div class="modal-card">
       <div class="eyebrow">Ya tienes una partida sin terminar</div>
-      <p id="duplicateRoundText" style="margin:8px 0 16px; font-size:18px; line-height:1.5;"></p>
+      <p id="duplicateRoundText" style="margin:8px 0 16px; font-size:14.5px; line-height:1.5;"></p>
       <div class="actions" style="padding:0;">
         <div class="btn ghost" id="duplicateRoundCreateNew">Crear otra de todas formas</div>
         <div class="btn primary" id="duplicateRoundContinue">Continuar esa</div>
@@ -39,7 +39,7 @@
   <div class="modal-overlay" id="incompleteRoundOverlay" style="display:none;">
     <div class="modal-card">
       <div class="eyebrow">Todavía faltan hoyos</div>
-      <p id="incompleteRoundText" style="margin:8px 0 16px; font-size:18px; line-height:1.5; white-space:pre-line;"></p>
+      <p id="incompleteRoundText" style="margin:8px 0 16px; font-size:14.5px; line-height:1.5; white-space:pre-line;"></p>
       <div class="actions" style="padding:0;">
         <div class="btn ghost" id="incompleteRoundCancel">Seguir anotando</div>
         <div class="btn primary" id="incompleteRoundContinue">Continuar de todas formas</div>
@@ -118,7 +118,7 @@
         <div id="configPartidaBlock" style="display:none;">
         <section style="background:var(--gold-soft-bg);">
           <div class="eyebrow">Configurar partida</div>
-          <div style="font-family:'Anton', Impact, sans-serif; font-weight:400 !important; text-transform:uppercase; letter-spacing:.02em; font-size:20px; font-weight:600; color:var(--forest-fg);" id="s1CourseMeta">Club de Golf Hato Verde</div>
+          <div style="font-family:'Anton', Impact, sans-serif; font-weight:400 !important; text-transform:uppercase; letter-spacing:.02em; font-size:19px; font-weight:600; color:var(--forest-fg);" id="s1CourseMeta">Club de Golf Hato Verde</div>
         </section>
         <section>
           <div class="eyebrow">Detalles</div>
@@ -216,7 +216,7 @@
           <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
-          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:16px; color:#9FACC2; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
+          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:12px; color:#9FACC2; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
         </section>
         <section>
@@ -455,14 +455,14 @@
 
 <div id="normasOverlay" class="modal-overlay" hidden>
   <div class="modal-card normas-modal" role="dialog" aria-labelledby="normasTitulo">
-    <h2 id="normasTitulo" style="font-size:23px; margin-bottom:4px;">Normas de la liga</h2>
+    <h2 id="normasTitulo" style="font-size:20px; margin-bottom:4px;">Normas de la liga</h2>
     <div id="normasBody"></div>
     <button type="button" class="btn ghost full" id="normasCerrar" style="margin-top:12px; display:block; width:100%; background:transparent;">Cerrar</button>
   </div>
 </div>
 <div id="leaguePlayersOverlay" class="modal-overlay" hidden>
   <div class="modal-card lp-card" role="dialog" aria-labelledby="lpTitle">
-    <h2 id="lpTitle" style="font-size:23px; margin-bottom:4px;">Jugadores de la liga</h2>
+    <h2 id="lpTitle" style="font-size:20px; margin-bottom:4px;">Jugadores de la liga</h2>
     <div class="section-sub">Al añadir un jugador nuevo pones su hándicap de partida. Después lo actualiza la app sola tras cada ronda; nadie lo puede cambiar a mano.</div>
     <div class="lp-add">
       <label class="field" style="flex:1; margin:0;"><span class="lp-lbl">Nombre</span><input type="text" id="lpNewName" placeholder="Nombre y apellidos" autocomplete="off"></label>
