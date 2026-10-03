@@ -991,11 +991,3 @@
   .toggle-grid-lbl{ cursor:pointer; }
   /* Pantalla de la partida: fuera "Resumen" y "Mensajes de la ronda" */
   .oculto-siempre{ display:none !important; }
-
-  /* Correo de la liga */
-  .lp-row{ flex-wrap:wrap; }
-  .lp-mail{ flex:1 1 100%; margin-top:6px; font:500 16px 'Barlow', sans-serif; padding:10px 12px; border-radius:var(--r-md); border:1px solid var(--line-soft-bd); background:transparent; color:inherit; }
-  .lp-mail.lp-mail-ok{ border-color:#1F8F55; box-shadow:0 0 0 2px rgba(31,143,85,.35); }
-  .conv-btn.mail{ background:#1E4E8C; border-color:#1E4E8C; color:#F6F1E4; }
-  .share-mail{ margin-top:10px; display:block; width:100%; background:#1E4E8C; color:#F6F1E4; border:none; font-size:17px; }
-  .share-mail[hidden]{ display:none; }
