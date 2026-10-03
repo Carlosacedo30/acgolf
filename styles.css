@@ -947,3 +947,5 @@
   .home-ahora .start-choice-opt svg{ stroke:#F6F1E4; }
   .screen[data-screen="0"] .premio-detalle{ color:#5A6478; }
   .screen[data-screen="0"] .premio-regalo{ color:#2E7D32; }
+  .screen[data-screen="0"] .recent-row .club{ color:#0E1F3D; }
+  .screen[data-screen="0"] .screen-content{ color:#0E1F3D; }
