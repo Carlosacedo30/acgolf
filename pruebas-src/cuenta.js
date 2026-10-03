@@ -25,7 +25,7 @@
     if(/Password should be|at least/i.test(m)) return 'La contraseña tiene que tener al menos 8 caracteres.';
     if(/valid email|invalid format|Unable to validate email/i.test(m)) return 'Ese correo no parece válido.';
     if(/rate limit|too many|security purposes/i.test(m)) return 'Demasiados intentos seguidos. Espera unos minutos y vuelve a probar.';
-    if(/sending|smtp|email/i.test(m) && /error/i.test(m)) return 'No se pudo enviar el correo. Avisa al administrador.';
+    if(/sending|smtp/i.test(m) && /error/i.test(m)) return 'No se pudo enviar el correo. Avisa al administrador.';
     if(/Failed to fetch|NetworkError|network/i.test(m)) return 'Sin conexión. Revisa la cobertura y vuelve a probar.';
     return m || 'Algo ha fallado. Vuelve a probar.';
   }
@@ -188,12 +188,22 @@
       msg('Descargado: mis-datos-golf.json', true);
     });
     $('cgBorrar').onclick = e => ocupado(e.target, async () => {
-      if(!confirm('¿Borrar tu cuenta?\n\nSe borran tu correo y tu contraseña. Las partidas que ya jugaste se quedan en la liga, porque son también de tus compañeros.\n\nNo se puede deshacer.')) return;
-      const { data, error } = await client.rpc('borrar_mi_cuenta');
-      if(error || !data){ msg('Ahora mismo no se puede borrar desde la app. Pídeselo al administrador y lo hará en unos días.'); return; }
+      if(!confirm('¿Borrar tu cuenta?\n\nSe borrarán tu correo y tu contraseña en unos días. Las partidas que ya jugaste se quedan en la liga, porque son también de tus compañeros.\n\nNo se puede deshacer.')) return;
+      const { data, error } = await client.rpc('pedir_baja');
+      if(error || !data){ msg(traducir(error)); return; }
       await client.auth.signOut();
       try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){}
-      location.reload();
+      mostrar(cabecera('Solicitud recibida', 'Tu cuenta se borrará en unos días. Ya has salido de la app en este móvil.')
+        + '<button type="button" class="cg-btn" onclick="location.reload()">De acuerdo</button>');
+    });
+    if(perfil.es_admin) client.rpc('bajas_pendientes').then(({ data }) => {
+      if(!data || !data.length) return;
+      const box = document.createElement('div');
+      box.className = 'cg-bajas';
+      box.innerHTML = '<b>Cuentas para borrar (' + data.length + ')</b>'
+        + data.map(b => '<div>' + esc(b.jugador || 'Sin jugador') + ' · ' + esc(b.email) + '</div>').join('')
+        + '<small>Bórralas en Supabase → Authentication → Users.</small>';
+      const ref = $('cgCerrar'); if(ref) ref.parentNode.insertBefore(box, ref);
     });
   }
 

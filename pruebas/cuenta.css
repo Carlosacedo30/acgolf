@@ -37,3 +37,5 @@ body.cg-open{ overflow:hidden; }
 .cg-legal{ text-align:center; font-size:16px; color:var(--ink-muted, #B9C3D4); line-height:1.5; }
 .cg-mi{ position:fixed; top:calc(env(safe-area-inset-top, 0px) + 8px); right:10px; z-index:900; font:700 16px 'Barlow', sans-serif;
   padding:9px 13px; border-radius:999px; border:1.5px solid #D4AF37; background:rgba(14,31,61,.92); color:#F6F1E4; cursor:pointer; }
+.cg-bajas{ border:2px solid #F29A5B; border-radius:12px; padding:12px 14px; font-size:17px; line-height:1.5; color:#F6F1E4; }
+.cg-bajas small{ display:block; color:#B9C3D4; font-size:15px; margin-top:6px; }
