@@ -142,9 +142,10 @@
       const roundDone = players.length > 0 && summaries.every(s => s.holesFilled >= 18);
       if(roundDone){
         const minNet = Math.min(...summaries.map(s => s.net));
-        const winners = players.filter((name, i) => summaries[i].net === minNet);
+        const empatadosNeto = summaries.filter(s => s.net === minNet).length;
+        const winners = desempateHcp(players.filter((name, i) => summaries[i].net === minNet));
         winnerSection.style.display = '';
-        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #B9C4D7); font-weight:400;">(ganan en neto, ' + minNet + ')</span>.</p>';
+        winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #B9C4D7); font-weight:400;">' + (empatadosNeto > winners.length ? '(empate a ' + minNet + ' netos: gana el hándicap más bajo)' : '(' + (winners.length > 1 ? 'ganan' : 'gana') + ' en neto, ' + minNet + ')') + '</span>.</p>';
         const mentalNote = document.getElementById('roundMentalNote');
         if(mentalNote){
           mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad.cuandoSiSalga : CONSEJOS_GOLF.mentalidad.cuandoNadaSalga;
@@ -164,7 +165,7 @@
     if(shareResultLink && players.length){
       const nets = summaries.map(s => s.net);
       const minNet = Math.min(...nets);
-      const winners = players.filter((name, i) => summaries[i].holesFilled > 0 && summaries[i].net === minNet);
+      const winners = desempateHcp(players.filter((name, i) => summaries[i].holesFilled > 0 && summaries[i].net === minNet));
       const lines = players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')' + (summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : ''));
       const text = '⛳ ' + (roundName ? roundName + ' · ' : '') + 'Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
         + lines.join('\n') + (winners.length ? '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE : '');
@@ -172,4 +173,12 @@
     }
     renderHoleView();
     saveRoundState();
+  }
+
+  // Regla de la liga: si hay empate en neto, gana el de hándicap más bajo
+  function desempateHcp(empatados){
+    if(empatados.length < 2) return empatados;
+    const hcpDe = name => Number(playerHandicaps[players.indexOf(name)]) || 0;
+    const minHcp = Math.min(...empatados.map(hcpDe));
+    return empatados.filter(n => hcpDe(n) === minHcp);
   }
