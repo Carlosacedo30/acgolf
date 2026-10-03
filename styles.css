@@ -957,35 +957,34 @@
   .r-bogey{ background:#2F6DB5 !important; color:#FFFFFF !important; }
   .r-doble{ background:#05070D !important; color:#FFFFFF !important; }
 
-  /* ===== Tarjetas de la partida ===== */
-  #tarjetasWrap{ margin-top:4px; }
-  .tj-card{ background:#0E1F3D; border-radius:16px; padding:14px 10px 12px; margin-bottom:14px; }
-  .tj-head{ text-align:center; margin-bottom:10px; }
-  .tj-nombre{ font-family:'Anton', Impact, sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:22px; line-height:1.1; color:#F6F1E4; }
-  .tj-badge{ display:inline-block; margin-top:6px; padding:4px 12px; border-radius:999px; background:#1B3B6F; color:#E8C45A; font:700 13px 'Barlow', sans-serif; letter-spacing:.03em; text-transform:uppercase; }
-  .tj-tabla{ width:100%; border-collapse:separate; border-spacing:2px; table-layout:fixed; margin-top:6px; font-family:'Barlow', sans-serif; font-variant-numeric:tabular-nums; }
-  .tj-tabla th, .tj-tabla td{ text-align:center; padding:0; height:34px; font-size:16px; font-weight:600; color:#F6F1E4; }
-  .tj-tabla th:first-child{ width:54px; text-align:left; padding-left:4px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#B9C3D4; }
-  .tj-tabla th:last-child{ width:44px; background:#1B3B6F; border-radius:6px; color:#E8C45A; font-size:15px; }
-  .tj-tabla tr.tj-hoyos td, .tj-tabla tr.tj-hoyos th:last-child{ font-weight:800; color:#E8C45A; font-size:15px; }
-  .tj-tabla tr.tj-hoyos th:last-child{ font-size:12px; text-transform:uppercase; }
-  .tj-tabla tr.tj-hcp td{ font-size:14px; font-weight:500; color:#8FA0BC; }
-  .tj-tabla td.tj-bru{ position:relative; background:#15294D; border-radius:6px; font-size:18px; font-weight:800; cursor:pointer; padding-top:6px; }
-  .tj-tabla td.tj-bru:active{ background:#1B3B6F; }
-  .tj-ast{ position:absolute; top:1px; left:0; right:0; font-size:11px; line-height:1; color:#E8C45A; letter-spacing:-1px; }
-  .tj-vacio{ color:#4A6AA3; }
-  .tj-res{ display:inline-flex; align-items:center; justify-content:center; min-width:100%; height:30px; border-radius:6px; font-style:normal; font-size:14px; font-weight:800; }
-  .tj-tabla th .tj-res{ min-width:40px; }
-  .tj-tabla tr.tj-pts td{ color:#7BC47F; font-weight:700; }
-  .tj-total{ display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin-top:10px; }
+  /* ===== Tarjetas de la partida (9 + 9 casillas grandes) ===== */
+  #tarjetasWrap{ margin:4px -12px 0; }
+  .tj-card{ background:#0E1F3D; border-radius:16px; padding:14px 8px 12px; margin-bottom:14px; }
+  .tj-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:0 4px; margin-bottom:10px; }
+  .tj-nombre{ font-family:'Anton', Impact, sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:22px; line-height:1.1; color:#F6F1E4; min-width:0; text-align:left; }
+  .tj-hcp{ flex:none; font:700 15px 'Barlow', sans-serif; color:#E8C45A; }
+  .tj-mitad{ margin-bottom:10px; }
+  .tj-fila{ display:grid; grid-template-columns:repeat(9, minmax(0, 1fr)); gap:4px; }
+  .tj-col{ display:flex; flex-direction:column; align-items:stretch; gap:3px; min-width:0; }
+  .tj-h{ text-align:center; font:800 16px/1.05 'Barlow', sans-serif; color:#E8C45A; }
+  .tj-h small{ display:block; font:600 13px/1.1 'Barlow', sans-serif; color:#8FA0BC; }
+  .tj-g{ position:relative; height:48px; padding:0; border:none; border-radius:8px; font:800 22px 'Barlow', sans-serif; font-variant-numeric:tabular-nums; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .tj-g.tj-sin{ background:transparent; color:#4A6AA3; box-shadow:inset 0 0 0 1.5px #2A4373; font-weight:600; }
+  .tj-g:active{ transform:scale(0.95); }
+  .tj-ast{ position:absolute; top:2px; right:3px; font-style:normal; font-size:12px; line-height:1; letter-spacing:-1px; opacity:.85; }
+  .tj-sub{ display:flex; align-items:center; gap:10px; margin-top:6px; padding:0 4px; font:700 15px 'Barlow', sans-serif; color:#B9C3D4; }
+  .tj-sub span{ text-transform:uppercase; letter-spacing:.06em; font-size:13px; color:#E8C45A; margin-right:auto; }
+  .tj-sub b{ color:#F6F1E4; font-weight:800; }
+  .tj-sub b.tj-res{ display:inline-flex; align-items:center; justify-content:center; min-width:46px; height:28px; padding:0 8px; border-radius:6px; font-size:15px; }
+  .tj-sub b.tj-nada{ color:#8FA0BC; font-weight:600; }
+  .tj-total{ display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-top:4px; }
   .tj-total > div{ background:#15294D; border-radius:10px; padding:8px 4px; text-align:center; }
-  .tj-total span{ display:block; font:700 12px 'Barlow', sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#B9C3D4; }
-  .tj-total b{ display:inline-flex; align-items:center; justify-content:center; min-width:44px; margin-top:2px; padding:0 6px; border-radius:6px; font:800 20px 'Barlow', sans-serif; color:#F6F1E4; }
-  .tj-leyenda{ display:flex; flex-wrap:wrap; gap:8px 14px; justify-content:center; margin-top:4px; font-size:14px; color:#C9D3E4; }
+  .tj-total span{ display:block; font:700 13px 'Barlow', sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#B9C3D4; }
+  .tj-total b{ display:inline-flex; align-items:center; justify-content:center; min-width:48px; margin-top:2px; padding:0 8px; border-radius:6px; font:800 22px 'Barlow', sans-serif; color:#F6F1E4; }
+  .tj-llevan{ margin-top:8px; text-align:center; font:600 14px 'Barlow', sans-serif; color:#8FA0BC; }
+  .tj-res{ font-style:normal; }
+  .tj-leyenda{ display:flex; flex-wrap:wrap; gap:8px 14px; justify-content:center; margin-top:4px; font-size:15px; color:#C9D3E4; }
   .tj-leyenda span{ display:inline-flex; align-items:center; gap:6px; }
-  .tj-leyenda .tj-res{ min-width:38px; height:24px; font-size:12px; }
-  .tj-nota{ margin-top:10px; text-align:center; font-size:14px; color:#B9C3D4; }
+  .tj-leyenda .tj-res{ display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:7px; font:800 16px 'Barlow', sans-serif; }
+  .tj-nota{ margin-top:10px; text-align:center; font-size:14px; line-height:1.4; color:#B9C3D4; }
   .toggle-grid-lbl{ cursor:pointer; }
-  .tj-tabla th:first-child{ width:60px; font-size:12px; padding-left:2px; letter-spacing:0; }
-  .tj-tabla td .tj-res{ font-size:13px; letter-spacing:-.02em; }
-  .tj-tabla td .tj-res.r-par{ font-size:10px; letter-spacing:0; }
