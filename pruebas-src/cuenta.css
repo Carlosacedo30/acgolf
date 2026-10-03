@@ -39,3 +39,15 @@ body.cg-open{ overflow:hidden; }
   padding:9px 13px; border-radius:999px; border:1.5px solid #D4AF37; background:rgba(14,31,61,.92); color:#F6F1E4; cursor:pointer; }
 .cg-bajas{ border:2px solid #F29A5B; border-radius:12px; padding:12px 14px; font-size:17px; line-height:1.5; color:#F6F1E4; }
 .cg-bajas small{ display:block; color:#B9C3D4; font-size:15px; margin-top:6px; }
+/* Firma de la tarjeta */
+.fm{ margin-top:14px; }
+.fm-tabla{ display:flex; flex-direction:column; margin:8px 0 10px; }
+.fm-fila{ display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid #2A4373; font-size:19px; }
+.fm-fila b{ font-variant-numeric:tabular-nums; white-space:nowrap; }
+.fm-p{ font-size:18px; line-height:1.4; color:#C9D3E4; margin:8px 0; }
+.fm-btn{ display:block; width:100%; font:700 20px 'Barlow', sans-serif; padding:17px; border-radius:14px; border:none; background:#D4AF37; color:#0E1F3D; cursor:pointer; }
+.fm-btn:disabled{ opacity:.6; }
+.fm-link{ background:none; border:none; color:#E8C45A; font:600 18px 'Barlow', sans-serif; text-decoration:underline; padding:8px 0; cursor:pointer; }
+.fm-ok{ border:2px solid #7BC47F; border-radius:12px; padding:12px 14px; font-size:19px; line-height:1.4; background:#1D3A31; }
+.fm-ok small{ font-size:15px; color:#C9D3E4; }
+.fm-aviso{ color:#F29A5B; font-weight:600; font-size:17px; }
