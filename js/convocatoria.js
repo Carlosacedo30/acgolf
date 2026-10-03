@@ -222,6 +222,7 @@
     // Acciones
     h += '<div class="conv-actions">'
       + '<button type="button" class="conv-btn wa" id="convShareWa">Enviar al grupo de WhatsApp</button>'
+      + (isAdmin ? '<button type="button" class="conv-btn mail" id="convShareMail">✉️ Enviar por mail a la liga</button>' : '')
       + '<button type="button" class="conv-btn ghost" id="convCopy">Copiar lista (para golfdirecto)</button>';
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
@@ -256,6 +257,7 @@
       convSignUp(convOpenPlayer, parseInt(b.dataset.slot, 10));
     }));
     const wa = document.getElementById('convShareWa'); if(wa) wa.addEventListener('click', convShareWhatsApp);
+    const ml = document.getElementById('convShareMail'); if(ml) ml.addEventListener('click', convShareMail);
     const cp = document.getElementById('convCopy'); if(cp) cp.addEventListener('click', ()=> convCopyList(cp));
     const cr = document.getElementById('convCreateRound'); if(cr) cr.addEventListener('click', ()=> convCreateRound(cr));
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
@@ -274,6 +276,13 @@
     const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + '\n\n'
       + convSummaryText() + '\n\n👉 Apúntate tocando tu nombre: ' + link;
     window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
+  function convShareMail(){
+    const link = APP_URL + '?conv=' + conv.code;
+    const asunto = 'Los Iscariotes · Salida del ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name;
+    const cuerpo = 'Hola,\n\nEstas son las salidas del ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + ':\n\n'
+      + convSummaryText() + '\n\nPara apuntarte, entra aquí y toca tu nombre:\n' + link;
+    enviarMailLiga(asunto, cuerpo);
   }
   async function convCopyList(btn){
     const text = convLongDate(conv.date) + ' · ' + convCourse(conv.courseId).name + '\n' + conv.times.map((t, i) =>

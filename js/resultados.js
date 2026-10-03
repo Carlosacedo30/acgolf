@@ -170,10 +170,22 @@
       const text = '⛳ ' + (roundName ? roundName + ' · ' : '') + 'Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
         + lines.join('\n') + (winners.length ? '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE : '');
       shareResultLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);
+      ultimoResultadoMail = {
+        asunto: 'Los Iscariotes · Resultado' + (roundName ? ' · ' + roundName : '') + ' en ' + (selectedCourse ? selectedCourse.name : 'el campo'),
+        cuerpo: 'Hola,\n\nEste es el resultado de la partida:\n\n' + text + '\n\nMira todos los detalles en la app:\n' + location.origin + location.pathname
+      };
+      const mailBtn = document.getElementById('shareResultMail');
+      if(mailBtn) mailBtn.hidden = !(typeof getAdminKey === 'function' && getAdminKey());
     }
     renderHoleView();
     saveRoundState();
   }
+
+  var ultimoResultadoMail = null;
+  (function(){
+    const b = document.getElementById('shareResultMail');
+    if(b) b.addEventListener('click', ()=>{ if(ultimoResultadoMail) enviarMailLiga(ultimoResultadoMail.asunto, ultimoResultadoMail.cuerpo); });
+  })();
 
   // Regla de la liga: si hay empate en neto, gana el de hándicap más bajo
   function desempateHcp(empatados){

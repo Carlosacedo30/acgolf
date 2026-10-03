@@ -39,8 +39,13 @@
         + '<div class="lp-name">' + esc(p.name) + '<small>Hcp actual ' + esc(fmtHcp(actual !== undefined ? actual : p.hcp)) + '</small></div>'
         + '<div class="lp-hcp-fixed" aria-label="Hándicap de ' + esc(p.name) + '">' + esc(fmtHcp(p.hcp)) + '</div>'
         + '<button type="button" class="lp-del" data-i="' + i + '" aria-label="Quitar a ' + esc(p.name) + '">Quitar</button>'
+        + '<input type="email" class="lp-mail" data-i="' + i + '" inputmode="email" autocomplete="off" autocapitalize="off" placeholder="✉️ Correo (para enviarle las partidas)" value="' + esc((typeof ligaEmails !== 'undefined' && ligaEmails[p.name]) || '') + '" aria-label="Correo de ' + esc(p.name) + '">'
         + '</div>';
     }).join('');
+    box.querySelectorAll('.lp-mail').forEach(inp => inp.addEventListener('change', ()=>{
+      const p = leaguePlayers[+inp.dataset.i];
+      if(p && typeof guardarEmailJugador === 'function') guardarEmailJugador(p.name, inp.value, inp);
+    }));
     box.querySelectorAll('.lp-del').forEach(b => b.addEventListener('click', async ()=>{
       const p = leaguePlayers[+b.dataset.i];
       if(!confirm('¿Quitar a ' + p.name + ' de la liga?\nSus rondas y su hándicap se conservan; solo deja de salir en la lista.')) return;
@@ -102,7 +107,7 @@
   (function setupLeaguePlayers(){
     const btn = document.getElementById('leaguePlayersBtn');
     const overlay = document.getElementById('leaguePlayersOverlay');
-    if(btn && overlay) btn.addEventListener('click', ()=>{ overlay.hidden = false; renderLeaguePlayersList(); loadLeaguePlayersFresh(); });
+    if(btn && overlay) btn.addEventListener('click', async ()=>{ overlay.hidden = false; renderLeaguePlayersList(); if(typeof loadLigaEmails === 'function') await loadLigaEmails(); loadLeaguePlayersFresh(); });
     const close = document.getElementById('leaguePlayersClose');
     if(close && overlay) close.addEventListener('click', ()=>{ overlay.hidden = true; });
     const addBtn = document.getElementById('lpAddBtn');
