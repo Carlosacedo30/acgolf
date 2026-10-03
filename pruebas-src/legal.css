@@ -1,0 +1,10 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+:root{ color-scheme:dark; }
+body{ margin:0; background:#0E1F3D; color:#F6F1E4; font:400 19px/1.55 'Barlow', sans-serif; }
+main{ max-width:640px; margin:0 auto; padding:24px 16px 56px; }
+h1{ font:400 38px/1.1 'Anton', sans-serif; margin:10px 0 14px; }
+h2{ font:700 22px 'Barlow', sans-serif; color:#E8C45A; margin:28px 0 8px; }
+ul{ padding-left:22px; } li{ margin:6px 0; }
+a{ color:#E8C45A; }
+.aviso{ background:#3A2A2A; border:1px solid #F29A5B; color:#F6F1E4; border-radius:10px; padding:10px 12px; font-size:16px; }
+.pie{ margin-top:32px; text-align:center; font-weight:700; }

@@ -1,0 +1,39 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Cuentas de jugador · letra grande y botones cómodos */
+.pr-banda{ position:fixed; top:calc(env(safe-area-inset-top, 0px) + 10px); left:10px; z-index:9998; background:#F29A5B; color:#0E1F3D; border-radius:999px; font:800 13px/1 'Barlow', sans-serif; letter-spacing:.08em; text-transform:uppercase; padding:8px 11px; pointer-events:none; }
+body.cg-open{ overflow:hidden; }
+.cg{ position:fixed; inset:0; z-index:9999; background:var(--surface, #0E1F3D); overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:calc(env(safe-area-inset-top, 0px) + 20px) 16px calc(env(safe-area-inset-bottom, 0px) + 48px); }
+.cg[hidden]{ display:none; }
+.cg-card{ max-width:440px; margin:0 auto; display:flex; flex-direction:column; gap:12px; }
+.cg-head{ text-align:center; margin-bottom:6px; }
+.cg-head img{ display:block; margin:0 auto 8px; }
+.cg-eyebrow{ font:700 14px 'Barlow', sans-serif; letter-spacing:.12em; text-transform:uppercase; color:var(--accent-text, #E8C45A); }
+.cg-title{ font:400 38px/1.05 'Anton', sans-serif; color:var(--ink-c, #F6F1E4); margin:6px 0 4px; letter-spacing:.01em; }
+.cg-sub, .cg-p{ font-size:19px; line-height:1.4; color:var(--ink-muted, #B9C3D4); margin:0; }
+.cg-p{ color:var(--ink-c, #F6F1E4); }
+.cg-lbl{ display:flex; flex-direction:column; gap:6px; font:700 18px 'Barlow', sans-serif; color:var(--ink-c, #F6F1E4); }
+.cg-lbl small{ font-weight:500; font-size:15px; color:var(--ink-muted, #B9C3D4); }
+.cg-lbl input{ font:600 21px 'Barlow', sans-serif; padding:15px 14px; border-radius:12px; border:2px solid #4A6AA3; background:#15294D; color:#F6F1E4; width:100%; }
+.cg-lbl input:focus{ outline:none; border-color:var(--focus, #E8C45A); }
+.cg-ver{ display:flex; align-items:center; gap:10px; font-size:17px; color:var(--ink-muted, #B9C3D4); }
+.cg-ver input, .cg-acepto input{ width:24px; height:24px; flex:none; accent-color:#D4AF37; }
+.cg-btn{ font:700 21px 'Barlow', sans-serif; padding:17px; border-radius:14px; border:none; cursor:pointer; touch-action:manipulation;
+  background:var(--accent, #D4AF37); color:var(--on-accent, #0E1F3D); width:100%; }
+.cg-btn:disabled{ opacity:.6; }
+.cg-btn.ghost{ background:transparent; color:#F6F1E4; border:2px solid #8FA6CF; }
+.cg-btn.danger{ background:transparent; color:#F29A5B; border:2px solid #F29A5B; }
+.cg-link{ background:none; border:none; color:var(--accent-text, #E8C45A); font:600 18px 'Barlow', sans-serif; text-decoration:underline; padding:10px; cursor:pointer; }
+.cg-sep{ text-align:center; color:var(--ink-muted, #B9C3D4); font-size:17px; margin-top:10px; }
+.cg-msg{ min-height:0; font-size:18px; font-weight:600; color:#F29A5B; line-height:1.35; }
+.cg-msg:empty{ display:none; }
+.cg-msg.ok{ color:#7BC47F; }
+.cg-nombres{ display:flex; flex-direction:column; gap:8px; }
+.cg-nombre{ text-align:left; font:600 20px 'Barlow', sans-serif; padding:15px 14px; border-radius:12px; border:2px solid #2A4373; background:#15294D; color:#F6F1E4; cursor:pointer; }
+.cg-nombre.on{ border-color:#D4AF37; background:#1B3B6F; box-shadow:inset 0 0 0 1px #D4AF37; }
+.cg-nombre.on::after{ content:' ✓'; color:#E8C45A; }
+.cg-acepto{ display:flex; gap:12px; align-items:flex-start; font-size:18px; line-height:1.4; color:#F6F1E4; margin-top:6px; }
+.cg-acepto a, .cg-legal a{ color:var(--accent-text, #E8C45A); }
+.cg-legal{ text-align:center; font-size:16px; color:var(--ink-muted, #B9C3D4); line-height:1.5; }
+.cg-mi{ position:fixed; top:calc(env(safe-area-inset-top, 0px) + 8px); right:10px; z-index:900; font:700 16px 'Barlow', sans-serif;
+  padding:9px 13px; border-radius:999px; border:1.5px solid #D4AF37; background:rgba(14,31,61,.92); color:#F6F1E4; cursor:pointer; }
