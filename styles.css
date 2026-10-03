@@ -861,3 +861,89 @@
   .np-key.is-cur{ box-shadow:0 0 0 4px var(--focus); }
   .np-key:focus-visible, .np-close:focus-visible, .np-clear:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; }
   .np-clear{ width:100%; margin-top:12px; height:56px; border-radius:14px; border:2px solid var(--warn); background:transparent; color:var(--warn); font-size:19px; font-weight:700; cursor:pointer; }
+
+  /* ===== Portada (Inicio): cabecera y "Ahora mismo" en azul, el resto en claro ===== */
+  .screen[data-screen="0"] .screen-content{
+    background:#F4F2EC;
+    --card:#FFFFFF; --shadow:0 1px 0 #E6E1D6, 0 2px 8px rgba(14,31,61,0.05);
+    --ink-fg:#0E1F3D; --paper-fg:#0E1F3D; --forest-fg:#0E1F3D; --forest-soft-fg:#5A6478; --cream-fg:#FFFFFF;
+    --gold-fg:#8A6D12; --gold-ink-fg:#8A6D12; --gold-soft-bg:#FBF6E6; --gold-soft-bd:#EFE3BC;
+    --line-bd:#E6E1D6; --line-soft-bd:#EEEAE1; --line-soft-bg:#EEEAE1; --forest-bd:#0E1F3D; --forest-bg:#0E1F3D;
+    --paper-bg:#FFFFFF; --paper-dim-bg:#F4F2EC; --green-fg:#2E7D32; --clay-fg:#B4471A;
+  }
+  /* zonas que siguen en oscuro: cabecera, "Ahora mismo", unirse con código y configurar partida */
+  .screen[data-screen="0"] .home-ahora, .screen[data-screen="0"] .home-oscuro{
+    --card:#15294D; --shadow:0 8px 20px rgba(14,31,61,0.18);
+    --ink-fg:#F6F1E4; --paper-fg:#F6F1E4; --forest-fg:#F6F1E4; --forest-soft-fg:#C9D3E4; --cream-fg:#F6F1E4;
+    --gold-fg:#E8C45A; --gold-ink-fg:#E8C45A; --gold-soft-bg:#1B3B6F; --gold-soft-bd:#D4AF37;
+    --line-bd:#2A4373; --line-soft-bd:#223A66; --line-soft-bg:#223A66; --forest-bd:#8FA6CF; --forest-bg:#1B3B6F;
+    --paper-bg:#15294D; --paper-dim-bg:#0E1F3D; --green-fg:#7BC47F; --clay-fg:#F29A5B;
+    color:#F6F1E4;
+  }
+  .screen[data-screen="0"] .home-oscuro section{ background:#15294D; }
+
+  /* 1. Cabecera compacta */
+  .portada.portada-v2.home-cab{ padding-top:calc(env(safe-area-inset-top, 0px) + 14px); padding-bottom:16px; gap:14px; margin-bottom:0; }
+  .home-cab .pv2-escudo{ width:84px; height:84px; }
+  .home-cab .pv2-titulo{ font-size:34px; }
+  .home-patro{ display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px 0; text-decoration:none; }
+  .home-patro span{ font:700 12px 'Barlow', sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#5A6478; }
+  .home-patro img{ display:block; height:28px; width:auto; }
+
+  /* 2. Ahora mismo */
+  .screen[data-screen="0"] section.home-ahora{ background:#15294D; box-shadow:inset 0 0 0 2px #D4AF37, 0 8px 20px rgba(14,31,61,0.18); }
+  .home-ahora-t{ font-family:'Anton', Impact, sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:26px; line-height:1.05; color:#F6F1E4; margin:2px 0 12px; }
+  .home-ahora-t.secundario{ font-family:'Barlow', sans-serif; text-transform:none; letter-spacing:0; font-size:15px; font-weight:700; color:#C9D3E4; margin:16px 0 10px; }
+  .home-ahora .start-choice-code{ margin-top:12px; }
+  .home-marcha{ margin-bottom:6px; }
+  .home-marcha-t{ font-family:'Anton', Impact, sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:26px; line-height:1.05; color:#F6F1E4; }
+  .home-marcha-sub{ font-size:15px; color:#C9D3E4; margin-top:4px; }
+  .home-marcha-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .home-marcha-chips span{ font:700 14px 'Barlow', sans-serif; background:#1B3B6F; color:#F6F1E4; border-radius:999px; padding:5px 12px; }
+  .home-big-btn{ display:flex; align-items:center; justify-content:center; width:100%; min-height:56px; margin-top:12px; border:none; border-radius:14px; background:#D4AF37; color:#0E1F3D; font:800 17px 'Barlow', sans-serif; letter-spacing:.04em; text-transform:uppercase; cursor:pointer; }
+  .home-ahora #convHome:not(:empty){ margin-bottom:4px; }
+  .home-ahora .conv-home-card{ background:#1B3B6F; box-shadow:none; }
+
+  /* 3. La liga esta semana */
+  .home-rk{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #EEEAE1; }
+  .home-rk-pos{ width:32px; height:32px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; font:800 15px 'Barlow', sans-serif; background:#F1EEE6; color:#0E1F3D; }
+  .home-rk.p1 .home-rk-pos{ background:#0E1F3D; color:#E8C45A; }
+  .home-rk-n{ flex:1; min-width:0; font:700 16px 'Barlow', sans-serif; color:#0E1F3D; }
+  .home-rk-n small{ display:block; font:500 13px 'Barlow', sans-serif; color:#5A6478; margin-top:1px; }
+  .home-rk-v{ font:800 19px 'Barlow', sans-serif; color:#0E1F3D; }
+  .home-tu{ display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding:11px 14px; border-radius:12px; background:#FBF6E6; border:1px solid #EFE3BC; font:700 15px 'Barlow', sans-serif; color:#0E1F3D; }
+  .home-tu b{ color:#8A6D12; font-size:17px; }
+  .home-mes{ margin-top:10px; font-size:14px; color:#5A6478; }
+  .home-mes b{ color:#0E1F3D; }
+  .home-liga-vacia{ font-size:14px; color:#5A6478; padding:4px 0; }
+  .home-link{ display:block; margin-top:12px; padding:6px 0; background:none; border:none; font:700 15px 'Barlow', sans-serif; color:#8A6D12; cursor:pointer; }
+
+  /* 4. Ganadores y premio de la semana en claro */
+  .screen[data-screen="0"] .premios-card{ background:#FFFFFF; }
+  .screen[data-screen="0"] .premios-fechas{ color:#5A6478; }
+  .screen[data-screen="0"] .premio{ background:#F7F5EF; box-shadow:none; }
+  .screen[data-screen="0"] .premio.top{ border-color:#D4AF37; }
+  .screen[data-screen="0"] .sponsor-card{ background:#FFFFFF; align-items:stretch; text-align:left; gap:0; }
+  .screen[data-screen="0"] .sponsor-card .eyebrow{ margin-bottom:8px; }
+  .screen[data-screen="0"] .sponsor-foto{ margin:0; }
+  .sponsor-pie{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+  .screen[data-screen="0"] .sponsor-premio{ font-size:14px; color:#5A6478; line-height:1.35; }
+  .screen[data-screen="0"] .sponsor-premio b{ color:#0E1F3D; }
+  .screen[data-screen="0"] .sponsor-premio a{ color:#0E1F3D; font-weight:700; text-decoration:none; }
+  .screen[data-screen="0"] .sponsor-btn{ margin-top:0; flex:none; }
+
+  /* 5. Últimas partidas y avisos en claro */
+  .screen[data-screen="0"] .recent-row .date, .screen[data-screen="0"] .empty-hint{ color:#5A6478; }
+  .screen[data-screen="0"] .normas-card{ background:#FFFFFF; }
+  .screen[data-screen="0"] .normas-aviso-d{ color:#5A6478; }
+
+  /* 6. Pie */
+  .home-pie{ padding:8px 16px 4px; text-align:center; }
+  .home-pie-links{ display:flex; justify-content:center; flex-wrap:wrap; gap:4px 14px; }
+  .home-pie-btn{ background:none; border:none; font:600 14px 'Barlow', sans-serif; color:#5A6478; padding:10px 6px; cursor:pointer; touch-action:manipulation; }
+  .screen[data-screen="0"] .app-copyright{ color:#7F8796; }
+  .home-ahora #convHome{ padding:0; }
+  .home-ahora .start-choice-opt{ background:#1B3B6F; box-shadow:none; }
+  .home-ahora .start-choice-opt svg{ stroke:#F6F1E4; }
+  .screen[data-screen="0"] .premio-detalle{ color:#5A6478; }
+  .screen[data-screen="0"] .premio-regalo{ color:#2E7D32; }

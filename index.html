@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=46">
+<link rel="stylesheet" href="styles.css?v=47">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -76,23 +76,22 @@
     <!-- SCREEN 0: Jugar -->
     <div class="screen active" data-screen="0">
       <div class="screen-content">
-        <div class="portada portada-v2">
+        <div class="portada portada-v2 home-cab">
           <div class="pv2-franjas" aria-hidden="true"><i></i><i></i><i></i></div>
           <img class="pv2-escudo" src="logo-iscariotes.svg?v=6" alt="Los Iscariotes · Golf Club Hato Verde" width="132" height="132">
           <div class="pv2-txt">
             <div class="pv2-eyebrow">Hato Verde · Liga 2026</div>
             <h1 class="pv2-titulo">Los<br><span>Iscariotes</span></h1>
-            <a class="pv2-patro" href="https://bolarecuperada.com" target="_blank" rel="noopener sponsored">
-              <span>Patrocina</span><img src="logo-bolarecuperada-h.png?v=1" alt="Bolarecuperada.com" width="104" height="38">
-            </a>
           </div>
         </div>
-        <div id="convHome"></div>
-        <section id="premiosHome" class="premios-card" style="display:none;"></section>
-        <section id="sponsorHome" class="sponsor-card"></section>
-        <section id="normasHome" class="normas-card" style="display:none;"></section>
-        <section>
-          <div class="eyebrow">¿Dónde jugamos hoy?</div>
+        <a class="home-patro" href="https://bolarecuperada.com" target="_blank" rel="noopener sponsored">
+          <span>Patrocina</span><img src="logo-bolarecuperada-h.png?v=1" alt="Bolarecuperada.com" width="88" height="32">
+        </a>
+        <section class="home-ahora" id="homeAhora">
+          <div class="eyebrow">Ahora mismo</div>
+          <div id="homeEnMarcha"></div>
+          <div id="convHome"></div>
+          <div class="home-ahora-t" id="homeAhoraT">¿Dónde jugamos hoy?</div>
           <div class="start-choice">
             <div class="start-choice-opt course-choice" data-course-id="hato-verde" role="button" tabindex="0">
               <div class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="21" x2="7" y2="3"></line><path d="M7 3l10 4-10 4" fill="var(--gold)"></path><ellipse cx="11" cy="21" rx="7" ry="1.5"></ellipse></svg></div>
@@ -105,7 +104,20 @@
               <div class="sub">Tomares</div>
             </div>
           </div>
+          <div class="start-choice-opt start-choice-code" id="startChoiceCodigo" role="button" tabindex="0">
+            <span class="lbl">Tengo un código</span><span class="sub">· unirme a una partida</span>
+          </div>
         </section>
+        <section id="joinGameSection" class="home-oscuro" style="display:none;">
+          <div class="eyebrow">Unirse a una partida</div>
+          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
+          <div class="field-row" style="margin-top:8px;">
+            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'Barlow', sans-serif;"></div>
+            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
+          </div>
+          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay-fg); margin-top:6px;"></div>
+        </section>
+        <section id="normasHome" class="normas-card" style="display:none;"></section>
         <section id="createGameSection" style="display:none;">
           <div class="eyebrow">Buscar campo</div>
           <div class="search-box">
@@ -115,7 +127,7 @@
           </div>
           <div class="dropdown" id="screen0-dropdown"></div>
         </section>
-        <div id="configPartidaBlock" style="display:none;">
+        <div id="configPartidaBlock" class="home-oscuro" style="display:none;">
         <section style="background:var(--gold-soft-bg);">
           <div class="eyebrow">Configurar partida</div>
           <div style="font-family:'Anton', Impact, sans-serif; font-weight:400 !important; text-transform:uppercase; letter-spacing:.02em; font-size:19px; font-weight:600; color:var(--forest-fg);" id="s1CourseMeta">Club de Golf Hato Verde</div>
@@ -206,34 +218,26 @@
         </section>
         <section style="border-bottom:none;"><div class="actions" style="padding:0;"><div class="btn primary full" id="empezarPartidaBtn">Siguiente ›</div></div></section>
         </div>
-        <section>
-          <div class="answer-row" id="ligaLinkBtn" style="cursor:pointer;">
-            <div class="answer-main">🏆 Liga de Los Iscariotes</div>
-            <div class="answer-sub">Iscariote de cada semana y campeón del mes por puntos</div>
-          </div>
+        <section class="home-liga" id="homeLigaSemana">
+          <div class="eyebrow">La liga esta semana</div>
+          <div id="homeLigaBody"><div class="empty-hint">Cargando la clasificación…</div></div>
+          <button type="button" class="home-link" id="ligaLinkBtn">Ver la liga completa ›</button>
         </section>
+        <section id="premiosHome" class="premios-card" style="display:none;"></section>
+        <section id="sponsorHome" class="sponsor-card"></section>
         <section>
           <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
-          <button type="button" id="adminModeBtn" style="display:block; margin:14px auto 0; background:none; border:none; font:inherit; font-size:12px; color:#9FACC2; padding:8px 12px; cursor:pointer; touch-action:manipulation;">🔑 Modo administrador</button>
+        </section>
+        <div class="home-pie">
+          <div class="home-pie-links">
+            <button type="button" class="home-pie-btn" id="homeNormasBtn">📜 Normas de la liga</button>
+            <button type="button" class="home-pie-btn" id="adminModeBtn">🔑 Modo administrador</button>
+          </div>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
-        </section>
-        <section>
-          <div class="start-choice-opt start-choice-code" style="margin-top:0;" id="startChoiceCodigo" role="button" tabindex="0">
-            <span class="lbl">Tengo un código</span><span class="sub">· únete a una partida ya empezada</span>
-          </div>
-        </section>
-        <section id="joinGameSection" style="display:none;">
-          <div class="eyebrow">Unirse a una partida</div>
-          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
-          <div class="field-row" style="margin-top:8px;">
-            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'Barlow', sans-serif;"></div>
-            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
-          </div>
-          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay-fg); margin-top:6px;"></div>
-        </section>
-        <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
+          <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
+        </div>
       </div>
     </div>
 
@@ -489,7 +493,7 @@
 </div>
 <script src="js/data.js?v=28"></script>
 <script src="js/players.js?v=29"></script>
-<script src="js/rondas-compartidas.js?v=31"></script>
+<script src="js/rondas-compartidas.js?v=32"></script>
 <script src="js/historial-jugadores.js?v=28"></script>
 <script src="js/scorecard.js?v=28"></script>
 <script src="js/navigation.js?v=28"></script>
@@ -499,14 +503,15 @@
 <script src="js/vista-hoyo.js?v=34"></script>
 <script src="js/caddie.js?v=3"></script>
 <script src="js/caddie-habla.js?v=1"></script>
-<script src="js/patrocinador.js?v=3"></script>
-<script src="js/premios.js?v=2"></script>
+<script src="js/patrocinador.js?v=4"></script>
+<script src="js/premios.js?v=3"></script>
 <script src="js/consejos.js?v=28"></script>
 <script src="js/liga.js?v=31"></script>
 <script src="js/gps-hoyo.js?v=3"></script>
 <script src="js/jugadores-liga.js?v=4"></script>
-<script src="js/normas.js?v=2"></script>
-<script src="js/convocatoria.js?v=5"></script>
+<script src="js/normas.js?v=3"></script>
+<script src="js/convocatoria.js?v=6"></script>
+<script src="js/portada.js?v=1"></script>
 
 </body>
 </html>
