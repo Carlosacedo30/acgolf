@@ -222,7 +222,7 @@
           + '<div class="hv-n" title="' + name + '">' + shortNames[pIndex] + '</div>'
           + '<div class="hv-h">Hcp ' + (playerHandicaps[pIndex] || 0) + '</div>'
           + '<div class="hv-tp' + (n ? '' : ' cero') + '"><span class="gr-pips" aria-hidden="true">' + pips + '</span><span>Tu par <b>' + (par != null ? par + n : '—') + '</b></span></div>'
-          + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="numeric" placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '" aria-label="Golpes de ' + name + '">'
+          + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="none" readonly placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '" aria-label="Golpes de ' + name + ' (toca para anotar)">'
           + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
           + '<div class="hv-pos">' + (posTxt || '&nbsp;') + '</div>'
           + '</div>';
@@ -242,6 +242,13 @@
           }
           if(box.value !== '') rememberMyPlayer(players[pIndex]);
           scheduleAutoAdvance();
+        });
+        // Toca la casilla: se abre el teclado grande de golpes (sin teclado del móvil)
+        box.addEventListener('click', ()=>{
+          const pIndex = +box.dataset.holeInputFor;
+          const recibidos = strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0;
+          openNumPad({ name: players[pIndex], hole: currentHole, par: par, tuPar: par != null ? par + Math.max(0, recibidos) : null, value: box.value,
+            onPick: v => { box.value = v; box.classList.toggle('filled', v !== ''); box.dispatchEvent(new Event('input', { bubbles: true })); } });
         });
       });
       // Devolver foco y cursor al campo que se estaba usando
@@ -316,3 +323,45 @@
     el.style.display = open ? 'none' : '';
     toggleGridLbl.textContent = open ? 'Ver tabla completa ▾' : 'Ocultar tabla completa ▴';
   });
+
+
+  // --- Teclado grande de golpes: botones enormes, sin teclado del móvil, pensado para leer sin gafas ---
+  let numPadPick = null;
+  function openNumPad(o){
+    const ov = document.getElementById('numPadOverlay');
+    const grid = document.getElementById('npGrid');
+    if(!ov || !grid){ return; }
+    numPadPick = o.onPick;
+    document.getElementById('npTitle').textContent = o.name || 'Jugador';
+    document.getElementById('npSub').innerHTML = 'Hoyo ' + o.hole + (o.par != null ? ' · Par ' + o.par : '') + (o.tuPar != null && o.tuPar !== o.par ? ' · <b>Tu par ' + o.tuPar + '</b>' : '');
+    const cur = parseInt(o.value, 10);
+    let html = '';
+    for(let n = 1; n <= 12; n++){
+      const cls = 'np-key' + (n === o.tuPar ? ' is-par' : '') + (n === cur ? ' is-cur' : '');
+      html += '<button type="button" class="' + cls + '" data-v="' + n + '">' + n + (n === o.tuPar ? '<small>tu par</small>' : '') + '</button>';
+    }
+    grid.innerHTML = html;
+    grid.querySelectorAll('.np-key').forEach(k => k.addEventListener('click', ()=> pickNumPad(k.dataset.v)));
+    document.getElementById('npClear').style.display = isNaN(cur) ? 'none' : '';
+    ov.hidden = false;
+    requestAnimationFrame(()=> ov.classList.add('open'));
+  }
+  function closeNumPad(){
+    const ov = document.getElementById('numPadOverlay');
+    if(!ov) return;
+    ov.classList.remove('open');
+    ov.hidden = true;
+    numPadPick = null;
+  }
+  function pickNumPad(v){
+    const fn = numPadPick;
+    closeNumPad();
+    if(fn) fn(v);
+  }
+  (function(){
+    const ov = document.getElementById('numPadOverlay');
+    if(!ov) return;
+    ov.addEventListener('click', e => { if(e.target === ov) closeNumPad(); });
+    const c = document.getElementById('npClose'); if(c) c.addEventListener('click', closeNumPad);
+    const clr = document.getElementById('npClear'); if(clr) clr.addEventListener('click', ()=> pickNumPad(''));
+  })();
