@@ -51,3 +51,32 @@ body.cg-open{ overflow:hidden; }
 .fm-ok{ border:2px solid #7BC47F; border-radius:12px; padding:12px 14px; font-size:19px; line-height:1.4; background:#1D3A31; }
 .fm-ok small{ font-size:15px; color:#C9D3E4; }
 .fm-aviso{ color:#F29A5B; font-weight:600; font-size:17px; }
+/* Marcador y validación cruzada */
+.mk-cols{ display:grid; grid-template-columns:repeat(var(--n, 2), minmax(0, 1fr)); gap:8px; }
+.mk-col{ display:flex; flex-direction:column; gap:6px; padding:10px 8px; border-radius:14px; background:#122546; text-align:center; border:2px solid transparent; }
+.mk-col.ok{ border-color:#2F7A4F; }
+.mk-col.mal{ border-color:#F29A5B; background:#3A2A2A; }
+.mk-n{ font:700 22px 'Barlow', sans-serif; color:#F6F1E4; }
+.mk-sub{ font-size:15px; color:#B9C3D4; }
+.mk-tp{ font-size:15px; color:#E8C45A; background:#1B3B6F; border-radius:8px; padding:4px; }
+.mk-tp b{ font-size:18px; }
+.mk-box{ height:76px; border-radius:12px; border:2px solid #8FA6CF; background:#15294D; color:#F6F1E4; font:700 38px 'Barlow', sans-serif; cursor:pointer; touch-action:manipulation; }
+.mk-box.filled{ background:#1B3B6F; }
+.mk-st{ min-height:26px; font-size:17px; font-weight:700; color:#C9D3E4; }
+.mk-col.ok .mk-st{ color:#7BC47F; }
+.mk-col.mal .mk-st{ color:#F29A5B; }
+.mk-col.mal .mk-st b{ font-size:21px; }
+.hole-chip.mk-mal{ border-color:#F29A5B !important; background:#5A3A30 !important; color:#F6F1E4 !important; }
+.mk-elegir{ display:flex; flex-direction:column; gap:12px; background:#122546; border-radius:14px; padding:14px; }
+.mk-tit{ font:700 21px 'Barlow', sans-serif; color:#F6F1E4; }
+.mk-p{ font-size:17px; line-height:1.4; color:#C9D3E4; margin:0; }
+.mk-fila{ display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid #2A4373; }
+.mk-q{ font-size:18px; color:#F6F1E4; }
+.mk-ops{ display:flex; flex-wrap:wrap; gap:8px; }
+.mk-op{ font:700 19px 'Barlow', sans-serif; padding:12px 16px; border-radius:12px; border:2px solid #4A6AA3; background:#15294D; color:#F6F1E4; cursor:pointer; }
+.mk-op.on{ border-color:#D4AF37; background:#1B3B6F; box-shadow:inset 0 0 0 1px #D4AF37; }
+.mk-op.on::after{ content:' ✓'; color:#E8C45A; }
+.mk-btn{ font:700 21px 'Barlow', sans-serif; padding:17px; border-radius:14px; border:none; background:#D4AF37; color:#0E1F3D; cursor:pointer; }
+.mk-btn:disabled{ opacity:.6; }
+.mk-aviso{ color:#F29A5B; font-weight:700; font-size:17px; margin:0; }
+.mk-solo{ background:#3A2A2A; border:2px solid #F29A5B; border-radius:12px; padding:10px 12px; font-size:17px; color:#F6F1E4; margin-bottom:8px; }
