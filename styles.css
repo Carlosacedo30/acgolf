@@ -958,8 +958,9 @@
   .r-doble{ background:#05070D !important; color:#FFFFFF !important; }
 
   /* ===== Tarjetas de la partida (9 + 9 casillas grandes) ===== */
-  #tarjetasWrap{ margin:4px -12px 0; }
-  .tj-card{ background:#0E1F3D; border-radius:16px; padding:14px 8px 12px; margin-bottom:14px; }
+  #tarjetasWrap{ margin:4px -10px 0; }
+  .tj-card{ background:transparent; border-radius:0; padding:16px 4px 18px; margin-bottom:0; border-top:1px solid #2A4373; }
+  .tj-card:first-child{ border-top:none; padding-top:6px; }
   .tj-head{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; padding:0 4px; margin-bottom:10px; }
   .tj-nombre{ font-family:'Anton', Impact, sans-serif; text-transform:uppercase; letter-spacing:.02em; font-size:22px; line-height:1.1; color:#F6F1E4; min-width:0; text-align:left; }
   .tj-hcp{ flex:none; font:700 15px 'Barlow', sans-serif; color:#E8C45A; }
@@ -978,7 +979,7 @@
   .tj-sub b.tj-res{ display:inline-flex; align-items:center; justify-content:center; min-width:46px; height:28px; padding:0 8px; border-radius:6px; font-size:15px; }
   .tj-sub b.tj-nada{ color:#8FA0BC; font-weight:600; }
   .tj-total{ display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-top:4px; }
-  .tj-total > div{ background:#15294D; border-radius:10px; padding:8px 4px; text-align:center; }
+  .tj-total > div{ background:transparent; border-radius:10px; padding:6px 4px; text-align:center; box-shadow:inset 0 0 0 1px #2A4373; }
   .tj-total span{ display:block; font:700 13px 'Barlow', sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#B9C3D4; }
   .tj-total b{ display:inline-flex; align-items:center; justify-content:center; min-width:48px; margin-top:2px; padding:0 8px; border-radius:6px; font:800 22px 'Barlow', sans-serif; color:#F6F1E4; }
   .tj-llevan{ margin-top:8px; text-align:center; font:600 14px 'Barlow', sans-serif; color:#8FA0BC; }
@@ -988,3 +989,5 @@
   .tj-leyenda .tj-res{ display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:7px; font:800 16px 'Barlow', sans-serif; }
   .tj-nota{ margin-top:10px; text-align:center; font-size:14px; line-height:1.4; color:#B9C3D4; }
   .toggle-grid-lbl{ cursor:pointer; }
+  /* Pantalla de la partida: fuera "Resumen" y "Mensajes de la ronda" */
+  .oculto-siempre{ display:none !important; }

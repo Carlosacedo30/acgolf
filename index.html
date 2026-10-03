@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=50">
+<link rel="stylesheet" href="styles.css?v=51">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -339,12 +339,12 @@
             <div class="helper-note">Cada fila es un jugador. El color de la celda avisa cuando te pasas de par. Todos los campos son editables.</div>
           </div>
         </section>
-        <section>
+        <section class="oculto-siempre">
           <div class="eyebrow">Resumen</div>
           <div class="section-sub" id="parSummaryLbl">Par total del campo: 70</div>
           <div id="playerTotals"></div>
         </section>
-        <section id="roundMessagesSection" style="display:none;">
+        <section id="roundMessagesSection" class="oculto-siempre" style="display:none;">
           <div class="eyebrow">Mensajes de la ronda</div>
           <div id="roundMessages"></div>
         </section>
