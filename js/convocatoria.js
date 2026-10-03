@@ -64,13 +64,30 @@
       .is('course_id', null).eq('round_name', CONV_TAG).gte('created_at', since);
     if(error || !data) return [];
     const hoy = convIsoToday();
-    return data.map(convFromRow).filter(c => c.date && c.date >= hoy).sort((a, b) => a.date.localeCompare(b.date));
+    let lista = data.map(convFromRow).filter(c => c.date && c.date >= hoy && !convYaPasada(c));
+    // Si la partida creada desde la convocatoria ya está terminada, la convocatoria deja de salir en portada
+    const codigos = lista.filter(c => c.roundCode).map(c => c.roundCode);
+    if(codigos.length){
+      const { data: rondas } = await client.from('rounds').select('code, match_groups').in('code', codigos);
+      const terminadas = new Set((rondas || []).filter(r => isRoundFinished(r.match_groups)).map(r => r.code));
+      lista = lista.filter(c => !terminadas.has(c.roundCode));
+    }
+    return lista.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  // Hoy, y ya han pasado más de 6 horas desde la última hora de salida: se da por jugada
+  function convYaPasada(c){
+    if(!c || c.date !== convIsoToday()) return false;
+    const ultima = (c.times || []).slice().sort().pop();
+    if(!ultima) return false;
+    const [h, m] = ultima.split(':').map(Number);
+    const fin = new Date(); fin.setHours(h + 6, m || 0, 0, 0);
+    return Date.now() > fin.getTime();
   }
   // Mantiene la lista al día con la convocatoria abierta (tras apuntarse, crear la partida, etc.)
   function convSyncActiva(c){
     if(!c) return;
     const i = convActivas.findIndex(x => x.code === c.code);
-    const activa = c.date && c.date >= convIsoToday();
+    const activa = c.date && c.date >= convIsoToday() && !convYaPasada(c);
     if(i >= 0){ if(activa) convActivas[i] = c; else convActivas.splice(i, 1); }
     else if(activa){ convActivas.push(c); }
     convActivas.sort((a, b) => a.date.localeCompare(b.date));
