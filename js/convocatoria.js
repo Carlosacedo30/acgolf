@@ -226,6 +226,7 @@
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
       h += '<button type="button" class="conv-link" id="convNewBtn">Convocar otra salida</button>';
+      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">🗑 Borrar esta convocatoria</button>';
     }
     h += '</div>';
     body.innerHTML = h;
@@ -260,6 +261,7 @@
     const cr = document.getElementById('convCreateRound'); if(cr) cr.addEventListener('click', ()=> convCreateRound(cr));
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
     const nb = document.getElementById('convNewBtn'); if(nb) nb.addEventListener('click', renderConvNewForm);
+    const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
   }
 
   // ---------- Compartir ----------
@@ -356,6 +358,22 @@
     } catch(e){ console.error(e); alert('No se pudo crear la convocatoria. Revisa la conexión.'); btn.textContent = 'Crear convocatoria'; }
   }
 
+  // Solo el administrador: borra la convocatoria para todos (la partida creada desde ella, si la hay, no se toca)
+  async function convDelete(btn){
+    if(!conv || btn.dataset.busy) return;
+    if(!confirm('¿Borrar la convocatoria del ' + convLongDate(conv.date) + '?\nDesaparece para todos los jugadores y no se puede deshacer.')) return;
+    btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
+    const res = await deleteSharedRound(conv.code);
+    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar la convocatoria'); delete btn.dataset.busy; btn.textContent = '🗑 Borrar esta convocatoria'; return; }
+    const client = initSupabase();
+    if(convChannel && client){ try { client.removeChannel(convChannel); } catch(e){} convChannel = null; }
+    convActivas = convActivas.filter(c => c.code !== conv.code);
+    conv = convActivas[0] || null;
+    if(conv) convWatch();
+    closeConv();
+    renderConvHome();
+  }
+
   // ---------- Abrir / cerrar / tiempo real ----------
   function openConv(newOne){
     const ov = document.getElementById('convOverlay'); if(!ov) return;
@@ -395,6 +413,8 @@
       if(document.hidden) return;
       try { convActivas = await convFetchActivas(); } catch(e){}
       const fresh = await convFetch(conv ? conv.code : null).catch(()=> null);
+      if(!fresh && conv){ conv = convActivas[0] || null; }
+      renderConvHome();
       if(fresh){ conv = fresh; renderConvHome(); const ov = document.getElementById('convOverlay'); if(ov && !ov.hidden && !document.getElementById('convNewDate')) renderConv(); }
     });
     // la lista de jugadores de la liga llega un poco después: repintar cuando esté
