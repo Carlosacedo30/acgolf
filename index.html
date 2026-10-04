@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="styles.css?v=55">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -91,8 +91,9 @@
           <div class="eyebrow">Ahora mismo</div>
           <div id="homeEnMarcha"></div>
           <div id="convHome"></div>
-          <div class="home-ahora-t" id="homeAhoraT">¿Dónde jugamos hoy?</div>
-          <div class="start-choice">
+          <button type="button" class="pr-abrir" id="prAbrirBtn">⛳ Crear partida</button>
+          <div class="home-ahora-t" id="homeAhoraT" style="display:none;">¿Dónde jugamos hoy?</div>
+          <div class="start-choice" style="display:none;">
             <div class="start-choice-opt course-choice" data-course-id="hato-verde" role="button" tabindex="0">
               <div class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="21" x2="7" y2="3"></line><path d="M7 3l10 4-10 4" fill="var(--gold)"></path><ellipse cx="11" cy="21" rx="7" ry="1.5"></ellipse></svg></div>
               <div class="lbl">Hato Verde</div>
@@ -478,6 +479,13 @@
     <button type="button" class="btn ghost full" id="leaguePlayersClose" style="margin-top:12px; display:block; width:100%; background:transparent;">Cerrar</button>
   </div>
 </div>
+<div id="prOverlay" class="modal-overlay pr-overlay" hidden>
+  <div class="modal-card pr-card" role="dialog" aria-label="Crear partida">
+    <button type="button" class="conv-close" id="prClose" aria-label="Cerrar">✕</button>
+    <div class="pr-titulo">Crear partida</div>
+    <div id="prBody"></div>
+  </div>
+</div>
 <div id="convOverlay" class="modal-overlay conv-overlay" hidden>
   <div class="modal-card conv-card" role="dialog" aria-labelledby="convTitle">
     <button type="button" class="conv-close" id="convClose" aria-label="Cerrar">✕</button>
@@ -514,6 +522,7 @@
 <script src="js/normas.js?v=3"></script>
 <script src="js/convocatoria.js?v=8"></script>
 <script src="js/portada.js?v=2"></script>
+<script src="js/partida-rapida.js?v=1"></script>
 
 </body>
 </html>
