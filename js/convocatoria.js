@@ -221,7 +221,7 @@
 
     // Acciones
     h += '<div class="conv-actions">'
-      + '<button type="button" class="conv-btn wa" id="convShareWa">Enviar al grupo de WhatsApp</button>'
+      + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>'
       + '<button type="button" class="conv-btn ghost" id="convCopy">Copiar lista (para golfdirecto)</button>';
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
@@ -256,7 +256,6 @@
       convFilter = '';
       convSignUp(convOpenPlayer, parseInt(b.dataset.slot, 10));
     }));
-    const wa = document.getElementById('convShareWa'); if(wa) wa.addEventListener('click', convShareWhatsApp);
     const cp = document.getElementById('convCopy'); if(cp) cp.addEventListener('click', ()=> convCopyList(cp));
     const cr = document.getElementById('convCreateRound'); if(cr) cr.addEventListener('click', ()=> convCreateRound(cr));
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
@@ -271,11 +270,12 @@
       return '⛳ ' + convTime(t) + (g.length ? ': ' + g.join(', ') : ': (libre)') + (g.length < CONV_SLOTS ? ' — quedan ' + (CONV_SLOTS - g.length) : ' — completa');
     }).join('\n');
   }
-  function convShareWhatsApp(){
+  // Enlace normal (no window.open): en el móvil con la app instalada, window.open se bloquea a menudo
+  function convWaHref(){
     const link = APP_URL + '?conv=' + conv.code;
     const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + '\n\n'
       + convSummaryText() + '\n\n👉 Apúntate tocando tu nombre: ' + link;
-    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    return 'https://wa.me/?text=' + encodeURIComponent(text);
   }
   async function convCopyList(btn){
     const text = convLongDate(conv.date) + ' · ' + convCourse(conv.courseId).name + '\n' + conv.times.map((t, i) =>
