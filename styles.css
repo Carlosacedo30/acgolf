@@ -1265,3 +1265,4 @@
   .green-arriba .hole-map-info .hint{ font-size:14px; }
   .message-toast{ top:auto; bottom:calc(env(safe-area-inset-bottom, 0px) + 96px); transform:translateX(-50%) translateY(16px); }
   .message-toast.show{ transform:translateX(-50%) translateY(0); }
+  .diag-otro{ width:calc(100% - 28px); margin:8px 14px 4px; min-height:60px; font-size:17px; }

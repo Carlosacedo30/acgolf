@@ -43,14 +43,14 @@
 
   // "Mi última partida": abre el diagnóstico (cifras, hoyo a hoyo, hoyos a revisar y plan) de la última
   // partida terminada en la que jugaste tú (el nombre que este móvil tiene elegido); si no se sabe, la última terminada.
-  async function abrirUltimaPartida(btn){
+  async function abrirUltimaPartida(btn, otro){
     if(btn.dataset.busy) return;
     const client = (typeof initSupabase === 'function') ? initSupabase() : null;
     if(!client){ alert('Sin conexión: no se puede abrir la última partida.'); return; }
     const span = btn.querySelector('span'); const txt = span ? span.textContent : '';
     btn.dataset.busy = '1'; if(span) span.textContent = 'Buscando…';
     try {
-      let yo = ''; try { yo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
+      let yo = otro || ''; if(!yo){ try { yo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){} }
       if(!yo){
         // El móvil aún no sabe quién eres: se pregunta una vez y se recuerda
         delete btn.dataset.busy; if(span) span.textContent = txt;
@@ -65,7 +65,7 @@
       const terminadas = data.filter(r => isRoundFinished(r.match_groups));
       const conmigo = yo ? terminadas.find(r => (r.match_groups || []).some(g => (g.players || []).some(n => clave(n) === clave(yo) || String(n).split(' / ').some(m => clave(m) === clave(yo))))) : null;
       const ronda = conmigo;
-      if(!ronda){ alert('Todavía no tienes ninguna partida terminada con la app, ' + String(yo).split(' ')[0] + '.'); return; }
+      if(!ronda){ alert(otro ? String(yo).split(' ')[0] + ' todavía no tiene ninguna partida terminada con la app.' : 'Todavía no tienes ninguna partida terminada con la app, ' + String(yo).split(' ')[0] + '.'); return; }
       const res = await joinSharedRound(ronda.code);
       if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo abrir la partida.'); return; }
       // Ponerse en el grupo y en la pestaña de este jugador
@@ -85,7 +85,7 @@
   }
 
   // Ventana "¿Quién eres?": lista de jugadores de la liga con botones grandes. Devuelve el nombre elegido (o '' si se cierra).
-  function elegirQuienEres(){
+  function elegirQuienEres(sinGuardar){
     return new Promise(resolve => {
       const nombres = (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []).sort((a, b) => a.localeCompare(b, 'es'));
       const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -93,8 +93,8 @@
       ov.className = 'modal-overlay pr-overlay';
       ov.innerHTML = '<div class="modal-card pr-card" role="dialog" aria-label="¿Quién eres?">'
         + '<button type="button" class="conv-close" aria-label="Cerrar">✕</button>'
-        + '<div class="pr-titulo">¿Quién eres?</div>'
-        + '<div class="pr-ayuda" style="margin-top:8px;">Toca tu nombre. Este móvil lo recordará y no te lo volverá a preguntar.</div>'
+        + '<div class="pr-titulo">' + (sinGuardar ? '¿De quién?' : '¿Quién eres?') + '</div>'
+        + '<div class="pr-ayuda" style="margin-top:8px;">' + (sinGuardar ? 'Toca el nombre del jugador para ver su última partida.' : 'Toca tu nombre. Este móvil lo recordará y no te lo volverá a preguntar.') + '</div>'
         + '<div class="pr-lista">' + nombres.map(n => '<button type="button" class="pr-jug" data-n="' + esc(n) + '"><span class="pr-jn">' + esc(n) + '</span></button>').join('') + '</div>'
         + '</div>';
       document.body.appendChild(ov);
@@ -103,8 +103,17 @@
       ov.addEventListener('click', e => { if(e.target === ov) cerrar(''); });
       ov.querySelectorAll('.pr-jug').forEach(b => b.addEventListener('click', () => {
         const n = b.dataset.n;
-        try { localStorage.setItem('golfAppConvMe', n); } catch(e){}
+        if(!sinGuardar){ try { localStorage.setItem('golfAppConvMe', n); } catch(e){} }
         cerrar(n);
       }));
     });
   }
+
+  // En el diagnóstico: ver la última partida de otro jugador (sin cambiar quién es el dueño del móvil)
+  (function(){
+    const b = document.getElementById('diagOtroBtn');
+    if(b) b.addEventListener('click', async ()=>{
+      const n = await elegirQuienEres(true);
+      if(n) abrirUltimaPartida(b, n);
+    });
+  })();
