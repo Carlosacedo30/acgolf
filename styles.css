@@ -1248,3 +1248,7 @@
   #consejosContent details.cj-ap > summary::after{ content:none !important; }
   #consejosContent details.cj-ap > .cj-body{ margin-top:0; padding:2px 16px 18px; }
   #consejosContent .cj-st small{ text-transform:none; letter-spacing:0; }
+
+  /* Sin barra de "Anterior / Siguiente" ni puntos de pantallas: cada página solo con su información
+     (cada una ya tiene su botón de volver) */
+  .flow-nav, .dots{ display:none !important; }
