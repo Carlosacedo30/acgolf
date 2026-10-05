@@ -232,3 +232,19 @@ html[data-tema="grafito"] details.rg-item.rg-local{ box-shadow:inset 0 0 0 2px #
 .hp-lf span:nth-child(n+2){ text-align:right; } .hp-lf span:nth-child(2){ color:#7D868F; } .hp-lf span:nth-child(3){ font:800 17px 'Archivo', sans-serif; }
 .hp-lcab{ min-height:30px; background:transparent; color:#9AA3AB; font-size:13px; text-transform:uppercase; letter-spacing:.08em; }
 .hp-lcab span:nth-child(3){ font:600 13px 'Barlow', sans-serif; }
+/* ---- Caddie protector: aviso al apuntar y botón de voz ---- */
+.cp-aviso{ position:fixed; left:12px; right:12px; bottom:calc(env(safe-area-inset-bottom, 0px) + 14px); z-index:9000; display:flex; gap:10px; align-items:flex-start;
+  padding:12px 14px 12px 8px; border-radius:20px; background:#1B1E22; box-shadow:0 10px 30px rgba(0,0,0,.55), inset 0 0 0 2px #C6F24E; color:#F2F4F5;
+  transform:translateY(140%); opacity:0; transition:transform .35s ease, opacity .35s ease; max-width:560px; margin:0 auto; }
+.cp-aviso.ver{ transform:translateY(0); opacity:1; }
+.cp-aviso.cp-normal{ box-shadow:0 10px 30px rgba(0,0,0,.55), inset 0 0 0 2px #8FA0B0; }
+.cp-aviso.cp-serio{ box-shadow:0 10px 30px rgba(0,0,0,.55), inset 0 0 0 2px #7FB6E3; }
+.cp-aviso .ch-cara{ flex:0 0 auto; width:52px; height:60px; }
+.cp-txt{ flex:1; min-width:0; font:500 17px/1.4 'Barlow', sans-serif; }
+.cp-txt b{ display:block; font:900 12px 'Archivo', sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#C6F24E; margin-bottom:3px; }
+.cp-txt p{ margin:0 0 6px; } .cp-txt p:last-child{ margin-bottom:0; }
+.cp-txt .cp-sig{ color:#C9D0D6; font-size:16px; border-top:1px solid #33383E; padding-top:6px; }
+.ch-cab{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ch-voz{ flex:0 0 auto; min-height:34px; padding:0 12px; border-radius:999px; border:1.5px solid #4A5058; background:transparent; color:#F2F4F5; font:700 13px 'Barlow', sans-serif; letter-spacing:0; text-transform:none; }
+.ch-voz.on{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
+.cp-cerrar{ display:block; margin-top:6px; color:#7D868F; font-size:13px; }

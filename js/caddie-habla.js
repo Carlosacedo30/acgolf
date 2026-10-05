@@ -38,12 +38,12 @@
     switch(tip.tag){
       case 'Hoyo trampa': f = elige([
         n + ', aquí sueles hacer ' + media + ': el bogey es buen resultado.',
-        n + ', este se te atraganta (media ' + media + '). Juega a salvar el bogey.',
-        n + ', hoyo trampa para ti: ' + media + ' de media. Paciencia.' ], semilla); break;
+        n + ', este hoyo es exigente para ti (media ' + media + '). Un bogey aquí es una victoria.',
+        n + ', aquí sueles hacer ' + media + '. Con paciencia, el bogey llega solo.' ], semilla); break;
       case 'Ojo': f = elige([
-        n + ', aquí se te escapa a menudo: si te lías, saca a calle.',
-        n + ', en este hoyo haces triple ' + Math.round(+r.pct_desastre) + ' de cada 100 veces. Nada de heroicidades.',
-        n + ', ojo aquí: un mal golpe se paga caro. Juega a lo seguro.' ], semilla); break;
+        n + ', si el golpe se complica, sacar a la calle es la jugada inteligente.',
+        n + ', aquí lo que más suma es no arriesgar: palo cómodo y al centro.',
+        n + ', juega a lo seguro y este hoyo será tuyo.' ], semilla); break;
       case 'Ataca': f = elige([
         n + ', es de tus mejores hoyos (media ' + media + '): ¡a por el par!',
         n + ', este se te da bien. Hoy toca atacar.',
@@ -52,8 +52,8 @@
         n + ', últimamente lo juegas mejor (' + rec + ' en las últimas 8). Sigue así.',
         n + ', vas en racha en este hoyo. No cambies nada.' ], semilla); break;
       case 'Prudencia': f = elige([
-        n + ', últimamente te cuesta (' + rec + '). Juega seguro.',
-        n + ', este hoyo te tiene manía estos días. Calle y green, sin inventos.' ], semilla); break;
+        n + ', estos días lo tienes en ' + rec + '. Juega tranquilo, al centro.',
+        n + ', calle y green, sin prisas: así se domina este hoyo.' ], semilla); break;
       case 'Nuevo': f = n + ', aún te conozco poco aquí: juega al centro.'; break;
       default: f = elige([
         n + ', ' + media + ' de media aquí: centro del green y dos putts.',
@@ -127,7 +127,7 @@
     let pique = '';
     if(typeof premiosData !== 'undefined' && premiosData && premiosData.hoyo_maldito
        && premiosData.hoyo_maldito.course_id === courseId && +premiosData.hoyo_maldito.hoyo === hole){
-      pique = '😈 Ojo: fue el hoyo maldito de la semana pasada.';
+      pique = '🧭 Fue el hoyo más difícil de la semana pasada: juega con calma.';
     } else if(netos.length >= 2){
       netos.sort((a, b) => a.neto - b.neto);
       if(netos[1].neto - netos[0].neto >= 0.3){
@@ -140,7 +140,7 @@
     // Si 3 o más comparten el mismo veredicto, una sola frase para todos (no repetir lo mismo 4 veces)
     const GRUPAL = {
       'Hoyo trampa': 'hoyo trampa para vosotros. Aquí el bogey es buen resultado.',
-      'Ojo': 'este hoyo se os escapa. Si os liáis, a calle.',
+      'Ojo': 'aquí lo inteligente es no arriesgar. Palo cómodo y al centro.',
       'Ataca': 'este hoyo se os da bien. ¡A por el par!',
       'Normal': 'hoyo normal para vosotros. Centro del green y dos putts.',
     };
