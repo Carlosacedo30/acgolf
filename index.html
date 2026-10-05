@@ -105,18 +105,6 @@
               <div class="sub">Tomares</div>
             </div>
           </div>
-          <div class="start-choice-opt start-choice-code" id="startChoiceCodigo" role="button" tabindex="0">
-            <span class="lbl">Tengo un código</span><span class="sub">· unirme a una partida</span>
-          </div>
-        </section>
-        <section id="joinGameSection" class="home-oscuro" style="display:none;">
-          <div class="eyebrow">Unirse a una partida</div>
-          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
-          <div class="field-row" style="margin-top:8px;">
-            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'Barlow', sans-serif;"></div>
-            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
-          </div>
-          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay-fg); margin-top:6px;"></div>
         </section>
         <section id="normasHome" class="normas-card" style="display:none;"></section>
         <section id="createGameSection" style="display:none;">
@@ -285,9 +273,7 @@
         </div>
         <section id="roundCodeSection" style="display:none;">
           <div class="round-code-banner">
-            <div class="lbl">Código de esta partida</div>
-            <div class="code" id="roundCodeValue">——————</div>
-            <div class="hint">Compártelo para que otros móviles anoten golpes aquí en vivo</div>
+            <div class="code" id="roundCodeValue" style="display:none;"></div>
             <div class="sync-status" id="syncStatus"><div class="dot3"></div><span>Conectando…</span></div>
           </div>
         </section>
@@ -514,7 +500,7 @@
 <script src="js/scorecard.js?v=28"></script>
 <script src="js/navigation.js?v=28"></script>
 <script src="js/diagnostico.js?v=28"></script>
-<script src="js/interactions.js?v=29"></script>
+<script src="js/interactions.js?v=30"></script>
 <script src="js/resultados.js?v=29"></script>
 <script src="js/vista-hoyo.js?v=35"></script>
 <script src="js/tarjetas.js?v=2"></script>

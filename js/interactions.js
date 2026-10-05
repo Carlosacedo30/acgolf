@@ -33,8 +33,7 @@
     });
   });
 
-  // Pantalla "Jugar": elegir campo directamente (Hato Verde o Zaudín) o unirse con código
-  const startChoiceCodigo = document.getElementById('startChoiceCodigo');
+  // Pantalla "Jugar": elegir campo directamente (Hato Verde o Zaudín) 
   const joinGameSection = document.getElementById('joinGameSection');
   const courseChoices = document.querySelectorAll('.course-choice[data-course-id]');
   function markStartChoice(el){
@@ -54,16 +53,6 @@
     card.addEventListener('click', start);
     card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); start(); } });
   });
-  if(startChoiceCodigo){
-    startChoiceCodigo.addEventListener('click', ()=>{
-      markStartChoice(startChoiceCodigo);
-      const block = document.getElementById('configPartidaBlock');
-      if(block) block.style.display = 'none';
-      if(joinGameSection){ joinGameSection.style.display = ''; setTimeout(() => joinGameSection.scrollIntoView({ behavior:'smooth', block:'center' }), 50); }
-      const input = document.getElementById('joinCodeInput');
-      if(input) input.focus({ preventScroll:true });
-    });
-  }
 
   // Pantalla "Jugar": desplegable de campos (poblado desde COURSES), cerrado hasta que se toque o se escriba
   renderDropdown('');
@@ -243,18 +232,3 @@
   // Buscadores de "Jugador 1..4" con sugerencias de jugadores usados antes
   ['player1', 'player2', 'player3', 'player4'].forEach(id => setupPlayerSearch(id + 'Input', id + 'Dropdown'));
 
-  // Pantalla "Jugar": unirse a una partida ya empezada con su código
-  const joinCodeBtn = document.getElementById('joinCodeBtn');
-  if(joinCodeBtn) joinCodeBtn.addEventListener('click', async ()=>{
-    const input = document.getElementById('joinCodeInput');
-    const errorEl = document.getElementById('joinCodeError');
-    joinCodeBtn.textContent = 'Uniendo…';
-    const res = await joinSharedRound(input ? input.value : '');
-    joinCodeBtn.textContent = 'Unirme';
-    if(!res.ok){
-      if(errorEl){ errorEl.textContent = res.msg; errorEl.style.display = ''; }
-      return;
-    }
-    if(errorEl) errorEl.style.display = 'none';
-    goTo(3);
-  });
