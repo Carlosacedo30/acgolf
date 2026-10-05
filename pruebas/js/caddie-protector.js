@@ -3,12 +3,19 @@
   //  · Al llegar a cada hoyo: cómo jugarlo (notas del campo) y si tienes golpe de regalo.
   //  · Al apuntar golpes: un bocadillo unos segundos con una frase según tu resultado neto
   //    y un consejo para el siguiente hoyo. Se acuerda de la partida (rachas, recuperaciones, mitad).
-  //  · Voz opcional (la del propio móvil, en español). Apagada por defecto.
+  //  · Habla siempre en voz alta (la voz en español del propio móvil).
   // Todo se calcula en el móvil: sin internet y sin coste.
 
-  const CP_VOZ_KEY = 'golfAppCaddieVoz';
-  let cpVoz = false;
-  try { cpVoz = localStorage.getItem(CP_VOZ_KEY) === '1'; } catch(e){}
+  // Habla siempre (lo pidió Carlos). Los móviles solo dejan hablar después del primer toque en la pantalla:
+  // en ese primer toque se "despierta" la voz con una frase vacía.
+  const cpVoz = true;
+  let cpVozLista = false;
+  function cpDespertarVoz(){
+    if(cpVozLista || !('speechSynthesis' in window)) return;
+    cpVozLista = true;
+    try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch(e){}
+  }
+  ['touchend', 'click'].forEach(ev => document.addEventListener(ev, cpDespertarVoz, { capture: true, passive: true }));
   let cpUltimoHoyoHablado = null;
   let cpPendientes = {};          // { pIndex: hoyo } golpes recién apuntados, para comentar todos juntos
   let cpTimer = null, cpOcultar = null;
@@ -28,22 +35,13 @@
     if(!cpVoz || !('speechSynthesis' in window)) return;
     const t = cpTexto(texto); if(!t) return;
     try {
-      speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(t);
       const v = cpVozEs(); if(v) u.voice = v;
       u.lang = (v && v.lang) || 'es-ES'; u.rate = 0.98; u.pitch = 1;
       speechSynthesis.speak(u);
     } catch(e){}
   }
-  function cpCambiarVoz(){
-    cpVoz = !cpVoz;
-    try { localStorage.setItem(CP_VOZ_KEY, cpVoz ? '1' : '0'); } catch(e){}
-    document.querySelectorAll('.ch-voz').forEach(b => { b.classList.toggle('on', cpVoz); b.textContent = cpVoz ? '🔊 Voz' : '🔈 Voz'; });
-    if(cpVoz) cpHablar('Hola, soy tu caddie. Te iré diciendo cómo jugar cada hoyo.');
-    else if('speechSynthesis' in window) try { speechSynthesis.cancel(); } catch(e){}
-  }
   if('speechSynthesis' in window) try { speechSynthesis.onvoiceschanged = () => {}; speechSynthesis.getVoices(); } catch(e){}
-  function cpBotonVoz(){ return '<button type="button" class="ch-voz' + (cpVoz ? ' on' : '') + '" aria-label="Que el caddie hable en voz alta">' + (cpVoz ? '🔊 Voz' : '🔈 Voz') + '</button>'; }
 
   // ---------- Datos del hoyo y del jugador ----------
   function cpHoyo(h){
@@ -96,6 +94,14 @@
     if(conGolpe.length && conGolpe.length === players.filter(Boolean).length) partes.push('Todos tenéis golpe de regalo.');
     else if(conGolpe.length) partes.push((conGolpe.length > 1 ? conGolpe.slice(0, -1).join(', ') + ' y ' + conGolpe[conGolpe.length - 1] + ' tenéis' : conGolpe[0] + ', tienes') + ' golpe de regalo.');
     return partes.join(' ');
+  }
+
+  function cpGolpesRegalo(h){
+    const conGolpe = [];
+    (players || []).forEach((n, p) => { if(n && cpRecibe(p, h) > 0) conGolpe.push(cpPila(n)); });
+    if(!conGolpe.length) return '';
+    if(conGolpe.length === players.filter(Boolean).length) return ' Todos tenéis golpe de regalo.';
+    return ' ' + (conGolpe.length > 1 ? conGolpe.slice(0, -1).join(', ') + ' y ' + conGolpe[conGolpe.length - 1] + ' tenéis' : conGolpe[0] + ', tienes') + ' golpe de regalo.';
   }
 
   // ---------- Al apuntar golpes ----------
@@ -186,7 +192,10 @@
     let extra = '';
     if(completo){
       if(h === 9) extra = cpResumenMitad();
-      if(h < 18) extra = (extra ? extra + ' ' : '') + cpConsejoSiguiente(h, todos);
+      if(h < 18){
+        extra = (extra ? extra + ' ' : '') + cpConsejoSiguiente(h, todos) + cpGolpesRegalo(h + 1);
+        cpUltimoHoyoHablado = h + 1; // el siguiente hoyo ya está contado: al llegar no se repite
+      }
       else extra = '¡Partida terminada! Gracias por dejarme acompañaros.';
     }
     const html = frases.map(f => '<p>' + f + '</p>').join('') + (extra ? '<p class="cp-sig">' + extra + '</p>' : '');
@@ -205,21 +214,13 @@
     cpTimer = setTimeout(cpComentar, 1600); // espera por si se apuntan varios jugadores seguidos
   }, true);
 
-  // Botón de voz dentro del bocadillo del caddie
-  document.addEventListener('click', e => {
-    const b = e.target && e.target.closest && e.target.closest('.ch-voz');
-    if(b){ e.preventDefault(); cpCambiarVoz(); }
-  });
-
-  // Al llegar a un hoyo nuevo: añade el botón de voz al bocadillo y, si la voz está puesta, lo cuenta
+  // Al llegar a un hoyo nuevo, el caddie cuenta cómo jugarlo
   (function(){
     if(typeof renderHoleView !== 'function') return;
     const original = renderHoleView;
     renderHoleView = function(){
       const r = original.apply(this, arguments);
       try {
-        const bocadillo = document.querySelector('.ch .ch-cab');
-        if(bocadillo && !bocadillo.querySelector('.ch-voz')) bocadillo.insertAdjacentHTML('beforeend', cpBotonVoz());
         const vista = document.getElementById('hvHoleNum');
         if(vista && vista.offsetParent !== null && cpUltimoHoyoHablado !== currentHole){
           cpUltimoHoyoHablado = currentHole;
