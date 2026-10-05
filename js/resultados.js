@@ -155,6 +155,8 @@
         if(selectedCourse && HANDICAP_COURSE_IDS.includes(selectedCourse.id) && !leagueHandicapUpdateScheduled){
           leagueHandicapUpdateScheduled = true;
           setTimeout(()=> runLeagueHandicapUpdate(players.slice()), 1200);
+          // y avisar si alguien de la partida ha ganado una medalla nueva (ver js/medallas.js)
+          if(typeof mostrarMedallasRonda === 'function') setTimeout(()=> mostrarMedallasRonda(players.slice()), 2500);
         }
       } else {
         winnerSection.style.display = 'none';

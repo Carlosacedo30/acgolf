@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=55">
+<link rel="stylesheet" href="styles.css?v=56">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -225,6 +225,7 @@
           <button type="button" class="home-link" id="ligaLinkBtn">Ver la liga completa ›</button>
         </section>
         <section id="premiosHome" class="premios-card" style="display:none;"></section>
+        <section id="medallasHome" class="premios-card medallas-card" style="display:none;"></section>
         <section id="sponsorHome" class="sponsor-card"></section>
         <section>
           <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
@@ -354,6 +355,7 @@
           <div class="pattern" id="roundWinner"></div>
           <div class="helper-note" id="roundMentalNote" style="margin-top:12px;"></div>
           <div id="leagueHandicapUpdateNote" style="display:none; margin-top:12px;"></div>
+          <div id="medallasRondaNote" style="display:none; margin-top:12px;"></div>
         </section>
       </div>
       <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
@@ -443,6 +445,11 @@
           <div class="eyebrow">Semana a semana</div>
           <div id="ligaSemanas"></div>
         </section>
+        <section id="ligaMedallasSection" style="display:none;">
+          <div class="eyebrow">🏅 Medallas</div>
+          <div class="section-sub" style="margin:4px 0 10px;">Toca un jugador para ver su vitrina: las medallas que tiene y las que le faltan.</div>
+          <div id="ligaMedallas"></div>
+        </section>
         <section id="ligaChampionsSection" style="display:none;">
           <div class="eyebrow">Palmarés</div>
           <div id="ligaChampions"></div>
@@ -507,8 +514,8 @@
 <script src="js/scorecard.js?v=28"></script>
 <script src="js/navigation.js?v=28"></script>
 <script src="js/diagnostico.js?v=28"></script>
-<script src="js/interactions.js?v=28"></script>
-<script src="js/resultados.js?v=28"></script>
+<script src="js/interactions.js?v=29"></script>
+<script src="js/resultados.js?v=29"></script>
 <script src="js/vista-hoyo.js?v=35"></script>
 <script src="js/tarjetas.js?v=2"></script>
 <script src="js/caddie.js?v=3"></script>
@@ -523,6 +530,7 @@
 <script src="js/convocatoria.js?v=8"></script>
 <script src="js/portada.js?v=2"></script>
 <script src="js/partida-rapida.js?v=1"></script>
+<script src="js/medallas.js?v=1"></script>
 
 </body>
 </html>

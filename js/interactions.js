@@ -192,6 +192,8 @@
     if(rcSection) rcSection.style.display = 'none';
     const leagueNote = document.getElementById('leagueHandicapUpdateNote');
     if(leagueNote) leagueNote.style.display = 'none';
+    const medallasNote = document.getElementById('medallasRondaNote');
+    if(medallasNote) medallasNote.style.display = 'none';
     matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los 4 grupos
     currentHole = 1;
     activeGroup = 0;
