@@ -1,7 +1,7 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Medallas de la liga: logros que cada jugador consigue con sus tarjetas ---
-  // Se calculan en Supabase con medallas_liga() a partir de TODAS las tarjetas de la liga (golfdirecto + app),
-  // así que nadie tiene que apuntar nada. Cada medalla se gana una sola vez y guarda el día en que se consiguió.
+  // Se calculan en Supabase con medallas_liga() SOLO con las partidas de la liga jugadas con la app
+  // (las antiguas de golfdirecto no cuentan), así que nadie tiene que apuntar nada. Cada medalla se gana una sola vez y guarda el día en que se consiguió.
   // Se ven en: Inicio (medallas nuevas de la semana), la Liga (vitrina de cada jugador) y al terminar una partida.
   const MEDALLAS = [
     { id:'rompe100', ico:'🥉', nombre:'Rompe el 100', como:'Acabar una vuelta con menos de 100 golpes' },
@@ -61,13 +61,23 @@
     return out.sort((a, b) => String(a.m.cuando).localeCompare(String(b.m.cuando)));
   }
 
-  // ---- Inicio: medallas nuevas de la semana pasada ----
-  function medallasTextoWhatsApp(lista, d){
+  // ---- Inicio: medallas nuevas de la semana pasada (una fila por jugador) ----
+  function medallasPorJugador(lista){
+    const grupos = [];
+    lista.forEach(x => {
+      let g = grupos.find(y => y.jugador === x.jugador);
+      if(!g){ g = { jugador: x.jugador, meds: [] }; grupos.push(g); }
+      g.meds.push(x.m);
+    });
+    return grupos.sort((a, b) => b.meds.length - a.meds.length);
+  }
+  function medNombreConDato(m){
+    const det = medDetalle(m);
+    return MEDALLA_POR_ID[m.id].nombre + (det ? ' (' + det + ')' : '');
+  }
+  function medallasTextoWhatsApp(grupos, d){
     return '🏅 *MEDALLAS NUEVAS* · ' + medFecha(d.desde).replace(/ \d{4}$/, '') + ' – ' + medFecha(d.hasta).replace(/ \d{4}$/, '') + '\n'
-      + lista.map(x => {
-          const md = MEDALLA_POR_ID[x.m.id], det = medDetalle(x.m);
-          return '\n' + md.ico + ' *' + md.nombre + '* — ' + x.jugador + (det ? ' (' + det + ')' : '');
-        }).join('')
+      + grupos.map(g => '\n*' + g.jugador + '*\n' + g.meds.map(m => MEDALLA_POR_ID[m.id].ico + ' ' + medNombreConDato(m)).join('\n')).join('\n')
       + '\n\n¡Enhorabuena! Mira tu vitrina en la app 👉 ' + location.origin + location.pathname;
   }
 
@@ -76,20 +86,18 @@
     if(!el) return;
     const d = medallasData;
     if(!d || !d.jugadores){ el.style.display = 'none'; return; }
-    const lista = medallasEntre(d.desde, d.hasta);
+    const grupos = medallasPorJugador(medallasEntre(d.desde, d.hasta));
     el.style.display = '';
     el.innerHTML =
       '<div class="premios-head"><div><div class="eyebrow" style="margin:0;">🏅 Medallas nuevas</div>'
       + '<div class="premios-fechas">' + medFecha(d.desde).replace(/ \d{4}$/, '') + ' – ' + medFecha(d.hasta).replace(/ \d{4}$/, '') + '</div></div></div>'
-      + (lista.length
-          ? '<div class="premios-lista">' + lista.map(x => {
-              const md = MEDALLA_POR_ID[x.m.id], det = medDetalle(x.m);
-              return '<div class="premio med-fila" data-jugador="' + medEsc(x.jugador) + '"><div class="premio-ico">' + md.ico + '</div>'
-                + '<div class="premio-txt"><div class="premio-titulo">' + md.nombre + '</div>'
-                + '<div class="premio-quien">' + medEsc(x.jugador) + '</div>'
-                + (det ? '<div class="premio-detalle">' + det + '</div>' : '') + '</div></div>';
-            }).join('') + '</div>'
-            + '<a class="premios-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(medallasTextoWhatsApp(lista, d)) + '">🏅 Enviar al grupo</a>'
+      + (grupos.length
+          ? '<div class="premios-lista">' + grupos.map(g =>
+              '<div class="premio med-fila" data-jugador="' + medEsc(g.jugador) + '"><div class="premio-ico med-fila-icos">' + g.meds.map(m => MEDALLA_POR_ID[m.id].ico).join('') + '</div>'
+              + '<div class="premio-txt"><div class="premio-quien">' + medEsc(g.jugador) + '</div>'
+              + '<div class="premio-detalle">' + g.meds.map(medNombreConDato).join(' · ') + '</div></div></div>'
+            ).join('') + '</div>'
+            + '<a class="premios-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(medallasTextoWhatsApp(grupos, d)) + '">🏅 Enviar al grupo</a>'
           : '<div class="premios-fechas" style="margin-top:10px;">Nadie ganó medallas nuevas esta semana. ¡A por ellas!</div>')
       + '<button type="button" class="home-link" id="medallasVerTodas">Ver las vitrinas de todos ›</button>';
     el.querySelectorAll('.med-fila').forEach(f => f.addEventListener('click', ()=> abrirVitrina(f.dataset.jugador)));
