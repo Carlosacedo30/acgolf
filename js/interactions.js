@@ -132,10 +132,44 @@
     saveConfigGroupFields();
     const scoringPill = document.querySelector('#scoringTypeRow .pill-opt.selected');
     scoringType = scoringPill ? scoringPill.dataset.scoring : 'stableford';
+    if(!validarParejas(modoElegido())) return;
     if(selectedCourse) renderCampoKnown(selectedCourse);
     renderResumenPartida();
     goTo(2);
   });
+
+  // Modalidad elegida en el formulario (Individual / Fourball / Foursome)
+  function modoElegido(){
+    const mod = document.querySelector('.modality-opt.selected');
+    return modoDesdeTexto(mod ? mod.textContent : '');
+  }
+  // En parejas, cada grupo tiene que tener 2 o 4 jugadores (y 4 si es Match Play)
+  function validarParejas(modo){
+    if(modo === 'individual') return true;
+    const usados = matchGroups.filter(g => g.players && g.players.length);
+    const impares = gruposImpares(usados.map((g, i) => g));
+    if(impares.length){
+      alert('Para jugar por parejas cada grupo tiene que tener 2 o 4 jugadores.\nLos jugadores 1 y 2 forman la Pareja A, y los 3 y 4 la Pareja B.');
+      return false;
+    }
+    if(scoringType === 'matchplay' && usados.some(g => g.players.length < 4)){
+      alert('En Match Play por parejas hacen falta 4 jugadores en el grupo: Pareja A contra Pareja B.');
+      return false;
+    }
+    return true;
+  }
+  // Aviso debajo de "Modalidad de juego" explicando cómo se forman las parejas
+  function pintarAvisoModalidad(){
+    const box = document.getElementById('modalidadAviso');
+    if(!box) return;
+    const m = modoElegido();
+    box.style.display = m === 'individual' ? 'none' : '';
+    box.textContent = m === 'fourball'
+      ? 'Cada uno juega su bola y en cada hoyo cuenta la mejor de la pareja. Jugadores 1 y 2 = Pareja A · 3 y 4 = Pareja B. Hándicap al 85 % (90 % en Match Play).'
+      : 'Una bola por pareja, golpes alternos: se anota un solo resultado por pareja. Jugadores 1 y 2 = Pareja A · 3 y 4 = Pareja B. Hándicap: la mitad de la suma de los dos.';
+  }
+  document.querySelectorAll('.modality-opt').forEach(o => o.addEventListener('click', pintarAvisoModalidad));
+  pintarAvisoModalidad();
 
   // Pantalla "Resumen": campo, nombre, puntuación, modalidad y participantes con su hándicap
   function renderResumenPartida(){
@@ -159,12 +193,14 @@
     const groups = matchGroups.map((g, gi) => ({ gi, rows: (g.players || []).map((n, i) => ({ n: (n || '').trim(), h: (g.handicaps || [])[i] })).filter(r => r.n) }))
       .filter(g => g.rows.length);
     const multi = groups.length > 1;
+    const parejas = modoElegido() !== 'individual';
     box.innerHTML = groups.length ? groups.map(g =>
       (multi ? '<div class="resumen-group-lbl">Grupo ' + (g.gi + 1) + '</div>' : '') +
-      g.rows.map(r => {
+      g.rows.map((r, ri) => {
         const ini = r.n.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
         const h = (r.h === '' || r.h == null || isNaN(parseFloat(r.h))) ? '—' : String(r.h).replace('.', ',');
-        return '<div class="resumen-player"><div class="resumen-avatar">' + esc(ini) + '</div><div class="nm">' + esc(r.n) + '</div><div class="resumen-hcp">Hcp ' + esc(h) + '</div></div>';
+        const cab = (parejas && ri % 2 === 0) ? '<div class="resumen-pareja-lbl">Pareja ' + LETRA_PAREJA[ri / 2] + '</div>' : '';
+        return cab + '<div class="resumen-player"><div class="resumen-avatar">' + esc(ini) + '</div><div class="nm">' + esc(r.n) + '</div><div class="resumen-hcp">Hcp ' + esc(h) + '</div></div>';
       }).join('')
     ).join('') : '<div class="empty-hint">Sin jugadores — vuelve atrás para añadirlos</div>';
   }
@@ -187,9 +223,10 @@
     currentHole = 1;
     activeGroup = 0;
     diagAnswers = {};
+    rememberPlayers(matchGroups.reduce((acc, g) => acc.concat(g.players), [])); // nombres de verdad, antes de juntar parejas
+    prepararModalidad(modoElegido()); // Fourball / Foursome: deja cada grupo con su tarjeta de parejas
     const g0 = matchGroups[0];
     setPlayers(g0.players, g0.handicaps);
-    rememberPlayers(matchGroups.reduce((acc, g) => acc.concat(g.players), []));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     renderGroupSwitcher();
     createSharedRound();

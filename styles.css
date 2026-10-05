@@ -1061,3 +1061,38 @@
   .pr-jug.otro{ opacity:.55; }
   .pr-jug.otro .pr-check{ font-size:13px; }
   .pr-r-grupo{ font:700 14px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.06em; color:#E8C45A; margin-top:10px; }
+
+  /* ===== Modalidades por parejas (Fourball y Foursome) ===== */
+  .modalidad-aviso{ margin-top:10px; padding:10px 12px; border-radius:12px; background:var(--gold-soft-bg); color:var(--forest-fg); font-size:13.5px; line-height:1.4; }
+  .resumen-pareja-lbl{ font-size:11.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#B8932A; margin:10px 0 2px; }
+  /* Partida rápida: cuadro de parejas */
+  .pr-pj{ margin:0 0 14px; }
+  .pr-pj-fila{ margin-bottom:10px; border-radius:14px; overflow:hidden; box-shadow:inset 0 0 0 2px #2A4373; }
+  .pr-pj-t{ padding:8px 14px; background:#1B3466; color:#E8C45A; font:800 16px 'Barlow', sans-serif; letter-spacing:.06em; text-transform:uppercase; }
+  .pr-pj-dos{ display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:8px; }
+  .pr-pj-slot{ min-height:52px; display:flex; align-items:center; justify-content:center; padding:6px 8px; border:2px dashed #3A5688; border-radius:12px; color:#F6F1E4; font:700 17px 'Barlow', sans-serif; text-align:center; line-height:1.15; }
+  .pr-pj-slot.on{ border-style:solid; border-color:#D4AF37; background:#15294D; }
+  .pr-pj-hueco{ color:#8FA0BC; font-weight:600; font-size:15px; }
+  .pr-aviso{ margin:12px 0 0; color:#F2B8A0; font-weight:700; }
+  .pr-r-pareja{ font:800 14px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.06em; color:#D4AF37; margin-top:12px; }
+  .pr-r-nota{ margin-top:10px; font-size:15px; color:#C9D3E4; }
+  /* Vista de hoyo en Mejor bola: dos parejas lado a lado */
+  .hv-parejas{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .hv-pareja{ border-radius:16px; padding:6px; box-shadow:inset 0 0 0 1.5px #2A4373; min-width:0; }
+  .hv-pareja.lead{ box-shadow:inset 0 0 0 2px var(--gold-bg); }
+  .hv-pareja-h{ display:flex; flex-direction:column; align-items:center; gap:1px; padding:2px 2px 6px; text-align:center; }
+  .hv-pareja-h span{ font:800 15px 'Barlow', sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#E8C45A; }
+  .hv-pareja-h b{ font:700 14px 'Barlow', sans-serif; color:#F6F1E4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+  .hv-pareja .hv-scores{ gap:5px; }
+  .hv-pareja .hv-cell{ padding:8px 2px; }
+  .hv-cell.cuenta{ box-shadow:inset 0 0 0 2px #D4AF37; }
+  .hv-cell.cuenta .hv-pos{ color:#E8C45A; font-weight:800; }
+  /* Tarjeta de pareja en Mejor bola */
+  .tj-quien{ margin:6px 4px 2px; font:700 13px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.05em; color:#B9C3D4; }
+  .tj-quien-mb{ color:#E8C45A; }
+  .tj-g.tj-g-peq{ height:40px; font-size:19px; }
+  .tj-g.tj-no-cuenta{ opacity:.38; }
+  .tj-mb{ height:34px; display:flex; align-items:center; justify-content:center; border-radius:8px; font:800 14px 'Barlow', sans-serif; }
+  .tj-mb.tj-sin{ box-shadow:inset 0 0 0 1.5px #2A4373; }
+  .tj-card-pareja .tj-total{ grid-template-columns:repeat(2, 1fr); }
+  .tj-card-pareja .tj-head{ flex-direction:column; align-items:flex-start; gap:2px; }

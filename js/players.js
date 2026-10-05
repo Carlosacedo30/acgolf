@@ -13,6 +13,68 @@
     playerHandicaps = players.map((n, i) => (handicaps && !isNaN(handicaps[i])) ? handicaps[i] : 0);
   }
 
+  // --- Modalidad de juego: Individual, Mejor bola (Fourball) o Parejas (Foursome) ---
+  // Se guarda en cada grupo (g.modo). Parejas por posición: jugadores 1 y 2 = Pareja A; 3 y 4 = Pareja B.
+  //  · Fourball: cada uno juega su bola y en cada hoyo cuenta la mejor de la pareja.
+  //    Hándicap de juego: 85 % (Stroke Play y Stableford) o 90 % (Match Play), como recomienda la RFEG.
+  //  · Foursome: una sola bola por pareja (golpes alternos). Se anota un resultado por pareja
+  //    con el 50 % de la suma de los dos hándicaps.
+  const MODOS = { individual:'Individual', fourball:'Mejor bola (Fourball)', foursome:'Parejas (Foursome)' };
+  function modoDesdeTexto(t){
+    t = String(t || '').toLowerCase();
+    return t.includes('fourball') ? 'fourball' : t.includes('foursome') ? 'foursome' : 'individual';
+  }
+  function modoPartida(){
+    const g = (matchGroups || []).find(x => x && x.players && x.players.length);
+    return (g && g.modo) || 'individual';
+  }
+  function esParejas(){ return modoPartida() !== 'individual'; }
+  function factorHcpModo(){
+    if(modoPartida() !== 'fourball') return 1;
+    return (typeof scoringType !== 'undefined' && scoringType === 'matchplay') ? 0.9 : 0.85;
+  }
+  // Hándicap con el que se juega de verdad (ya con el porcentaje de la modalidad)
+  function ajusteHcp(h){
+    const v = Number(h) || 0;
+    const f = factorHcpModo();
+    return f === 1 ? v : Math.round(v * f * 10) / 10;
+  }
+  function hcpJuego(pIndex){ return ajusteHcp(playerHandicaps[pIndex]); }
+  // Parejas de un grupo en Fourball: [[0,1],[2,3]] (solo las posiciones con jugador)
+  function parejasFourball(lista){
+    const n = (lista || []).filter(Boolean).length;
+    const out = [];
+    for(let i = 0; i < n; i += 2) out.push([i, i + 1].filter(k => k < n));
+    return out;
+  }
+  function nombreCorto(n){ return String(n || '').trim().split(/\s+/)[0] || ''; }
+  function nombrePareja(nombres){ return nombres.filter(Boolean).map(nombreCorto).join(' y '); }
+  const LETRA_PAREJA = ['A', 'B'];
+  // Deja los grupos listos para la modalidad elegida (se llama justo al empezar la partida)
+  function prepararModalidad(modo){
+    matchGroups.forEach(g => {
+      if(!g.players || !g.players.length){ delete g.modo; delete g.parejas; return; }
+      if(g.modo === 'foursome' && g.parejas) return; // ya preparado
+      g.modo = modo;
+      delete g.parejas;
+      if(modo !== 'foursome') return;
+      const parejas = [];
+      for(let i = 0; i < g.players.length; i += 2){
+        const nombres = g.players.slice(i, i + 2);
+        const hcps = nombres.map((n, k) => Number(g.handicaps[i + k]) || 0);
+        parejas.push({ nombres, hcps });
+      }
+      g.parejas = parejas;
+      g.players = parejas.map(p => p.nombres.join(' / '));
+      g.handicaps = parejas.map(p => Math.round(p.hcps.reduce((a, b) => a + b, 0) * 0.5 * 10) / 10);
+      g.scores = {};
+    });
+  }
+  // ¿Hay algún grupo con número impar de jugadores? (en parejas tienen que ser 2 o 4)
+  function gruposImpares(grupos){
+    return grupos.map((g, i) => ({ i, n: (g.players || []).filter(Boolean).length })).filter(x => x.n % 2 === 1);
+  }
+
   // Hasta 4 grupos de 4 jugadores jugando la misma ronda, cada uno con su propia tarjeta
   const MAX_GROUPS = 4;
   let matchGroups = Array.from({ length: MAX_GROUPS }, () => ({ players: [], handicaps: [], scores: {} }));
@@ -41,6 +103,7 @@
     const data = readConfigFields();
     matchGroups[configGroup].players = data.players;
     matchGroups[configGroup].handicaps = data.handicaps;
+    delete matchGroups[configGroup].modo; delete matchGroups[configGroup].parejas;
   }
 
   // Recoge/aplica los golpes ya escritos en la tarjeta, por jugador y hoyo (para cambiar de grupo sin perderlos)

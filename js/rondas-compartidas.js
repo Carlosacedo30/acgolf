@@ -28,11 +28,16 @@
     const blank = () => ({ players: [], handicaps: [], scores: {} });
     const arr = Array.isArray(mg) ? mg.slice(0, MAX_GROUPS) : [];
     while(arr.length < MAX_GROUPS) arr.push(blank());
-    return arr.map(g => ({
-      players: Array.isArray(g && g.players) ? g.players : [],
-      handicaps: Array.isArray(g && g.handicaps) ? g.handicaps : [],
-      scores: (g && typeof g.scores === 'object' && g.scores) ? g.scores : {},
-    }));
+    return arr.map(g => {
+      const out = {
+        players: Array.isArray(g && g.players) ? g.players : [],
+        handicaps: Array.isArray(g && g.handicaps) ? g.handicaps : [],
+        scores: (g && typeof g.scores === 'object' && g.scores) ? g.scores : {},
+      };
+      if(g && g.modo && g.modo !== 'individual') out.modo = g.modo; // modalidad por parejas
+      if(g && Array.isArray(g.parejas)) out.parejas = g.parejas;   // foursome: quién forma cada pareja
+      return out;
+    });
   }
 
   function getLocalRoundHistory(){

@@ -12,7 +12,8 @@
       'Partida que no está en la app, no cuenta. Para nadie, tampoco para el organizador.' ]},
     { t:'3. Modalidad', d:[
       'Stroke Play, 18 hoyos, barras amarillas.',
-      'Para la liga cuenta el resultado neto: golpes totales menos hándicap.' ]},
+      'Para la liga cuenta el resultado neto: golpes totales menos hándicap.',
+      'Las partidas por parejas (Mejor bola o Foursome) se pueden jugar en la app, pero no cuentan para la liga ni para el hándicap.' ]},
     { t:'4. Hándicap', d:[
       'Cada uno empieza con su hándicap actual de la liga.',
       'Se recalcula solo después de cada partida con la regla de la Federación: media de las 8 mejores de las últimas 20 tarjetas. Mientras no haya 20, las que faltan cuentan como tu hándicap de salida.',

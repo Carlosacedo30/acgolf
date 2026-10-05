@@ -21,6 +21,25 @@
   const prPuntTxt = v => (PR_PUNT.find(p => p[0] === v) || PR_PUNT[0])[1];
   const prModalTxt = v => (PR_MODAL.find(p => p[0] === v) || PR_MODAL[0])[1];
   const prTodos = () => prGrupos.reduce((a, g) => a.concat(g), []);
+  const prParejas = () => modoDesdeTexto(prModal) !== 'individual';
+  // Cuadro de parejas del grupo (como en la tarjeta): Pareja A = 1º y 2º elegidos, Pareja B = 3º y 4º
+  function prCuadroParejas(lista){
+    const hueco = '<span class="pr-pj-hueco">Toca un nombre</span>';
+    return '<div class="pr-pj">' + [0, 1].map(k =>
+      '<div class="pr-pj-fila"><div class="pr-pj-t">Pareja ' + LETRA_PAREJA[k] + '</div><div class="pr-pj-dos">'
+      + [0, 1].map(j => { const n = lista[k * 2 + j]; return '<div class="pr-pj-slot' + (n ? ' on' : '') + '">' + (n ? prEsc(n) : hueco) + '</div>'; }).join('')
+      + '</div></div>').join('')
+      + (lista.length === 4 ? '<button type="button" class="pr-mas" id="prCambiarParejas">⇄ Cambiar parejas</button>' : '')
+      + '</div>';
+  }
+  // ¿Se puede seguir? En parejas: 2 o 4 por grupo (4 si es Match Play)
+  function prErrorParejas(){
+    if(!prParejas()) return '';
+    const llenos = prGrupos.filter(g => g.length);
+    if(llenos.some(g => g.length % 2)) return 'Por parejas: cada grupo con 2 o 4 jugadores.';
+    if(prPunt === 'matchplay' && llenos.some(g => g.length < 4)) return 'Match Play por parejas: 4 jugadores por grupo.';
+    return '';
+  }
 
   const prEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function prYo(){ try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } }
@@ -81,6 +100,7 @@
         + (prNGrupos > 1 ? '<div class="pr-teclas pr-gtabs">' + prGrupos.map((g, i) =>
             '<button type="button" class="pr-tecla pr-gtab' + (i === prGrupo ? ' on' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + '<small>' + g.length + '/' + PR_MAX + '</small></button>').join('') + '</div>' : '')
         + '<div class="pr-ayuda">' + (prNGrupos > 1 ? 'Grupo ' + (prGrupo + 1) + ': toca' : 'Toca') + ' los nombres. Máximo ' + PR_MAX + '. Llevas <b>' + prElegidos.length + '</b>.</div>'
+        + (prParejas() ? prCuadroParejas(prElegidos) : '')
         + '<div class="pr-lista">' + nombres.map(n => {
             const on = prElegidos.includes(n);
             const og = otroGrupo(n);
@@ -90,8 +110,9 @@
         + '<button type="button" class="pr-mas" id="prInvitado">＋ Añadir un invitado</button>'
         + '<div class="pr-pie">'
         + '<button type="button" class="pr-atras" id="prAtras">‹ Atrás</button>'
-        + '<button type="button" class="pr-sig" id="prSig"' + (prTodos().length ? '' : ' disabled') + '>Siguiente ›</button>'
-        + '</div>';
+        + '<button type="button" class="pr-sig" id="prSig"' + (prTodos().length && !prErrorParejas() ? '' : ' disabled') + '>Siguiente ›</button>'
+        + '</div>'
+        + (prTodos().length && prErrorParejas() ? '<div class="pr-ayuda pr-aviso">' + prErrorParejas() + '</div>' : '');
     }
 
     if(prPaso === 4){
@@ -102,7 +123,10 @@
         + '<div class="pr-r-campo">' + prEsc(campo ? campo.name : '') + '</div>'
         + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · ' + prModalTxt(prModal) + ' · hoy</div>'
         + llenos.map((g, i) => (llenos.length > 1 ? '<div class="pr-r-grupo">Grupo ' + (i + 1) + '</div>' : '')
-            + g.map(n => '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + String(prHcp(n)).replace('.', ',') + '</b></div>').join('')).join('')
+            + g.map((n, k) => (prParejas() && k % 2 === 0 ? '<div class="pr-r-pareja">Pareja ' + LETRA_PAREJA[k / 2] + '</div>' : '')
+              + '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + String(prHcp(n)).replace('.', ',') + '</b></div>').join('')).join('')
+        + (modoDesdeTexto(prModal) === 'fourball' ? '<div class="pr-r-nota">Cuenta la mejor bola de cada pareja · hándicap al ' + (prPunt === 'matchplay' ? '90' : '85') + ' %</div>' : '')
+        + (modoDesdeTexto(prModal) === 'foursome' ? '<div class="pr-r-nota">Una bola por pareja · hándicap de pareja: la mitad de la suma</div>' : '')
         + '</div>'
         + '<button type="button" class="pr-empezar" id="prEmpezar">⛳ Empezar partida</button>'
         + '<button type="button" class="pr-atras solo" id="prAtras">‹ Cambiar algo</button>';
@@ -138,6 +162,14 @@
       if(!prTodos().includes(n)) prElegidos.push(n);
       prPintar();
     });
+    const cp = document.getElementById('prCambiarParejas');
+    if(cp) cp.addEventListener('click', ()=>{
+      // Rota las 3 combinaciones posibles: (1-2)(3-4) → (1-3)(2-4) → (1-4)(2-3) → vuelta a empezar
+      const g = prGrupos[prGrupo]; if(g.length !== 4) return;
+      const nuevo = [g[0], g[2], g[3], g[1]];
+      prGrupos[prGrupo] = prElegidos = nuevo;
+      prPintar();
+    });
     const at = document.getElementById('prAtras'); if(at) at.addEventListener('click', ()=>{ prPaso -= 1; prPintar(); });
     body.querySelectorAll('.pr-tecla[data-k]').forEach(b => b.addEventListener('click', ()=>{
       const k = b.dataset.k, v = b.dataset.v;
@@ -156,7 +188,7 @@
     }));
     body.querySelectorAll('.pr-gtab').forEach(b => b.addEventListener('click', ()=>{ prGrupo = Number(b.dataset.g); prPintar(); }));
     const sg = document.getElementById('prSig'); if(sg) sg.addEventListener('click', ()=>{
-      if(prPaso === 3 && !prTodos().length) return;
+      if(prPaso === 3 && (!prTodos().length || prErrorParejas())) return;
       prPaso += 1; prPintar();
     });
     const mas = document.getElementById('prMas');
@@ -194,6 +226,7 @@
       g.players = nombres.slice();
       g.handicaps = nombres.map(prHcp);
       g.scores = {};
+      delete g.modo; delete g.parejas;
     });
     configGroup = 0;
     if(typeof writeConfigFields === 'function') writeConfigFields(0);
