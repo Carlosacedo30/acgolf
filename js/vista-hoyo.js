@@ -283,7 +283,7 @@
           const rank = rankDe(par[0]);
           const s = standings[rank];
           return '<div class="hv-pareja' + (rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + '">'
-            + '<div class="hv-pareja-h"><span>Pareja ' + LETRA_PAREJA[k] + '</span><b>' + (posDe(rank) || '&nbsp;') + '</b></div>'
+            + '<div class="hv-pareja-h"><span>Pareja ' + LETRA_PAREJA[k] + '</span><b>' + ((scoringType === 'matchplay' && s && s.holesFilled > 0) ? s.holesWon + ' ganados' : (posDe(rank) || '&nbsp;')) + '</b></div>'
             + '<div class="hv-scores" style="--n:' + par.length + '">' + par.map(i => cellHtml(players[i], i)).join('') + '</div>'
             + '</div>';
         }).join('') + '</div>';
@@ -324,6 +324,7 @@
       }
     }
 
+    renderMarcador(standings);
     renderHoleStrip();
     if(typeof renderHoleMap === 'function') renderHoleMap();
     if(typeof renderTarjetas === 'function') renderTarjetas();
@@ -345,6 +346,34 @@
               + '<div class="leaderboard-score">' + formatStandingScore(s) + '</div></div>';
           }).join('');
     }
+  }
+
+  // Marcador siempre a la vista, encima del hoyo (una banda fina: no quita sitio a las casillas de anotar)
+  function renderMarcador(standings){
+    const box = document.getElementById('marcadorVivo');
+    if(!box) return;
+    const lista = standings.filter(s => s.group === activeGroup || matchGroups.filter(g => g.players && g.players.length).length > 1);
+    if(!lista.length){ box.innerHTML = ''; return; }
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const corto = s => {
+      if(s.pIndexes && s.pIndexes.length > 1 && /^Pareja [AB]/.test(s.name)) return s.name.split(' · ')[0];
+      if(String(s.name).includes(' / ')) return nombrePareja(String(s.name).split(' / '));
+      return nombreCorto(s.name);
+    };
+    // Match Play entre dos: "Pareja A 2 arriba" / "Igualados"
+    if(scoringType === 'matchplay' && lista.length === 2){
+      const [a, b] = lista;
+      const dif = a.holesWon - b.holesWon;
+      const txt = a.holesFilled === 0 ? 'Sin empezar' : dif === 0 ? 'Igualados' : corto(dif > 0 ? a : b) + ' ' + Math.abs(dif) + ' arriba';
+      box.innerHTML = '<div class="mv-match"><span class="mv-l">' + esc(corto(a)) + '</span><b class="mv-res">' + esc(txt) + '</b><span class="mv-l">' + esc(corto(b)) + '</span></div>'
+        + '<div class="mv-pie">' + a.holesFilled + ' hoyos jugados</div>';
+      return;
+    }
+    box.innerHTML = '<div class="mv-fila" style="--n:' + Math.min(lista.length, 4) + '">' + lista.slice(0, 8).map((s, i) =>
+      '<div class="mv-item' + (i === 0 && s.holesFilled > 0 ? ' lider' : '') + '">'
+      + '<span class="mv-n">' + (s.holesFilled > 0 ? (i + 1) + 'º ' : '') + esc(corto(s)) + '</span>'
+      + '<b class="mv-v">' + (s.holesFilled === 0 ? '—' : esc(scoringType === 'stableford' ? s.points + ' pts' : formatStandingScore(s))) + '</b>'
+      + '</div>').join('') + '</div>';
   }
 
   // Fila de hoyos: cuáles están completos, a medias o sin jugar, y cuál es el actual (toca para saltar)
