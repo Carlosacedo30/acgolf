@@ -51,14 +51,21 @@
     btn.dataset.busy = '1'; if(span) span.textContent = 'Buscando…';
     try {
       let yo = ''; try { yo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
+      if(!yo){
+        // El móvil aún no sabe quién eres: se pregunta una vez y se recuerda
+        delete btn.dataset.busy; if(span) span.textContent = txt;
+        yo = await elegirQuienEres();
+        if(!yo) return;
+        btn.dataset.busy = '1'; if(span) span.textContent = 'Buscando…';
+      }
       const clave = n => String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toUpperCase();
       const { data, error } = await client.from('rounds').select('code, match_groups, updated_at')
         .not('course_id', 'is', null).order('updated_at', { ascending: false }).limit(40);
       if(error || !data) throw error;
       const terminadas = data.filter(r => isRoundFinished(r.match_groups));
       const conmigo = yo ? terminadas.find(r => (r.match_groups || []).some(g => (g.players || []).some(n => clave(n) === clave(yo) || String(n).split(' / ').some(m => clave(m) === clave(yo))))) : null;
-      const ronda = conmigo || terminadas[0];
-      if(!ronda){ alert('Todavía no hay ninguna partida terminada.'); return; }
+      const ronda = conmigo;
+      if(!ronda){ alert('Todavía no tienes ninguna partida terminada con la app, ' + String(yo).split(' ')[0] + '.'); return; }
       const res = await joinSharedRound(ronda.code);
       if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo abrir la partida.'); return; }
       // Ponerse en el grupo y en la pestaña de este jugador
@@ -75,4 +82,29 @@
     } finally {
       delete btn.dataset.busy; if(span) span.textContent = txt;
     }
+  }
+
+  // Ventana "¿Quién eres?": lista de jugadores de la liga con botones grandes. Devuelve el nombre elegido (o '' si se cierra).
+  function elegirQuienEres(){
+    return new Promise(resolve => {
+      const nombres = (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []).sort((a, b) => a.localeCompare(b, 'es'));
+      const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+      const ov = document.createElement('div');
+      ov.className = 'modal-overlay pr-overlay';
+      ov.innerHTML = '<div class="modal-card pr-card" role="dialog" aria-label="¿Quién eres?">'
+        + '<button type="button" class="conv-close" aria-label="Cerrar">✕</button>'
+        + '<div class="pr-titulo">¿Quién eres?</div>'
+        + '<div class="pr-ayuda" style="margin-top:8px;">Toca tu nombre. Este móvil lo recordará y no te lo volverá a preguntar.</div>'
+        + '<div class="pr-lista">' + nombres.map(n => '<button type="button" class="pr-jug" data-n="' + esc(n) + '"><span class="pr-jn">' + esc(n) + '</span></button>').join('') + '</div>'
+        + '</div>';
+      document.body.appendChild(ov);
+      const cerrar = v => { ov.remove(); resolve(v || ''); };
+      ov.querySelector('.conv-close').addEventListener('click', () => cerrar(''));
+      ov.addEventListener('click', e => { if(e.target === ov) cerrar(''); });
+      ov.querySelectorAll('.pr-jug').forEach(b => b.addEventListener('click', () => {
+        const n = b.dataset.n;
+        try { localStorage.setItem('golfAppConvMe', n); } catch(e){}
+        cerrar(n);
+      }));
+    });
   }
