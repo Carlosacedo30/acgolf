@@ -179,3 +179,11 @@ html[data-tema="grafito"] .home-cab .pv2-escudo{ filter:drop-shadow(0 6px 16px r
 html[data-tema="grafito"] .home-cab .pv2-eyebrow{ color:#E3E7EA !important; text-shadow:0 1px 6px rgba(0,0,0,.6); }
 html[data-tema="grafito"] .home-cab .pv2-titulo{ text-shadow:0 2px 14px rgba(0,0,0,.6); }
 html[data-tema="grafito"] .home-menu-btn span.derbi-insignia.con-escudos{ width:auto !important; flex:0 0 auto !important; }
+/* Reglas de golf en grafito */
+html[data-tema="grafito"] .reglas-cab{ background:linear-gradient(180deg, #24282D 0%, #111316 100%) !important; }
+html[data-tema="grafito"] details.rg-item{ background:#1B1E22 !important; box-shadow:none !important; }
+html[data-tema="grafito"] details.rg-item[open]{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .rg-ico, html[data-tema="grafito"] .rg-ficha-t, html[data-tema="grafito"] .rg-sec-t,
+html[data-tema="grafito"] .reglas-cab .derbi-cab-k, html[data-tema="grafito"] .rg-pasos li::marker{ color:#C6F24E !important; }
+html[data-tema="grafito"] .rg-ficha{ background:#24282D !important; }
+html[data-tema="grafito"] .reglas-cab h2{ font-family:'Archivo', sans-serif !important; font-weight:900 !important; }

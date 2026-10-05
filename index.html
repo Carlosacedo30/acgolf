@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=73">
-<link rel="stylesheet" href="tema-grafito.css?v=5">
+<link rel="stylesheet" href="styles.css?v=74">
+<link rel="stylesheet" href="tema-grafito.css?v=6">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&display=swap">
 
 </head>
@@ -102,6 +102,7 @@
             <button type="button" class="home-menu-btn" id="hmDiagnostico"><i data-ico="sube"></i><span>¿Cómo jugué?</span><i data-ico="flecha" class="hm-flecha"></i></button>
             <button type="button" class="home-menu-btn" data-foco="recientes"><i data-ico="historial"></i><span>Últimas partidas</span><i data-ico="flecha" class="hm-flecha"></i></button>
             <button type="button" class="home-menu-btn hm-derbi" id="hmDerbi"><span class="derbi-insignia" aria-hidden="true"><i class="ds"></i><i class="db"></i></span><span>Especial Sevilla – Betis</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" id="hmReglas"><i data-ico="libro"></i><span>Reglas de golf</span><i data-ico="flecha" class="hm-flecha"></i></button>
             <button type="button" class="home-menu-btn" id="hmConsejos"><i data-ico="diana"></i><span>Consejos de golf</span><i data-ico="flecha" class="hm-flecha"></i></button>
           </div>
           <div class="home-ahora-t" id="homeAhoraT" style="display:none;">¿Dónde jugamos hoy?</div>
@@ -502,6 +503,19 @@
     <div id="convBody"></div>
   </div>
 </div>
+<div id="reglasOverlay" class="modal-overlay derbi-overlay" hidden>
+  <div class="modal-card derbi-card reglas-card" role="dialog" aria-labelledby="reglasTitulo">
+    <div class="reglas-cab">
+      <button type="button" class="conv-close" id="reglasCerrar" aria-label="Cerrar">✕</button>
+      <div class="derbi-cab-k">Explicadas fácil</div>
+      <h2 id="reglasTitulo">Reglas de golf</h2>
+      <p>Lo que hay que saber en el campo: cuándo hay alivio gratis, cuándo cuesta un golpe y cuándo dos.</p>
+    </div>
+    <button type="button" class="home-volver pantalla-volver" id="reglasVolver">‹ Volver al inicio</button>
+    <div id="reglasBody"></div>
+    <button type="button" class="home-volver pantalla-volver" id="reglasVolver2">‹ Volver al inicio</button>
+  </div>
+</div>
 <div id="derbiOverlay" class="modal-overlay derbi-overlay" hidden>
   <div class="modal-card derbi-card" role="dialog" aria-labelledby="derbiTitulo">
     <div class="derbi-cab">
@@ -546,6 +560,7 @@
 <script src="js/portada.js?v=4"></script>
 <script src="js/home-menu.js?v=7"></script>
 <script src="js/partida-rapida.js?v=4"></script>
+<script src="js/reglas.js?v=1"></script>
 <script src="js/derbi.js?v=3"></script>
 <script src="js/medallas.js?v=3"></script>
 

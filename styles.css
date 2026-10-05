@@ -1381,3 +1381,36 @@
   .dbi-sec-t2{ margin:20px 0 0; text-align:center; }
   .dbi-add{ display:block; width:calc(100% - 12px); margin:0 6px 8px; min-height:42px; border-radius:10px; border:1.5px dashed #8FA6CF; background:transparent; color:#C9D3E4; font:700 14px 'Barlow', sans-serif; cursor:pointer; }
   .dbi-col-h .dbi-escudo-svg{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+
+  /* ===== Reglas de golf ===== */
+  .reglas-cab{ position:relative; padding:56px 20px 18px; background:linear-gradient(180deg, #1B3B6F 0%, #0B1830 100%); text-align:left; }
+  .reglas-cab h2{ margin:4px 0 6px; font-family:'Anton', Impact, sans-serif; font-weight:400; font-size:clamp(32px, 10vw, 42px); line-height:1; text-transform:uppercase; color:#FFFFFF; }
+  .reglas-cab p{ margin:0; font:500 16px/1.4 'Barlow', sans-serif; color:#C9D3E4; }
+  #reglasBody{ padding:0 14px; }
+  .rg-leyenda{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:14px 0 4px; }
+  .rg-tag{ display:inline-flex; align-items:center; align-self:flex-start; padding:4px 10px; border-radius:999px; font:800 13px 'Barlow', sans-serif; letter-spacing:.03em; color:#FFFFFF; }
+  .rg-sin{ background:#1E7A45; } .rg-uno{ background:#B26B00; } .rg-dos{ background:#B3261E; } .rg-var{ background:#4A5568; }
+  .rg-sec-t{ margin:18px 4px 8px; font:800 15px 'Barlow', sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#E8C45A; }
+  .rg-lista{ display:flex; flex-direction:column; gap:8px; }
+  details.rg-item{ border-radius:18px; background:#15294D; box-shadow:inset 0 0 0 2px #2A4373; overflow:hidden; }
+  details.rg-item[open]{ box-shadow:inset 0 0 0 2px #D4AF37; }
+  details.rg-item > summary{ display:flex; align-items:center; gap:12px; min-height:72px; padding:12px 14px; list-style:none; cursor:pointer; color:#F6F1E4; }
+  details.rg-item > summary::-webkit-details-marker{ display:none; }
+  .rg-ico{ flex:none; width:30px; height:30px; color:#E8C45A; }
+  .rg-st{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+  .rg-st b{ font:800 19px/1.2 'Barlow', sans-serif; }
+  .rg-st small{ font:500 14.5px/1.3 'Barlow', sans-serif; color:#B9C3D4; }
+  .rg-st .rg-tag{ margin-top:4px; }
+  .rg-mas{ flex:none; width:22px; height:22px; position:relative; }
+  .rg-mas::before, .rg-mas::after{ content:''; position:absolute; left:3px; right:3px; top:10px; height:2.5px; border-radius:2px; background:#8FA6CF; transition:transform .2s; }
+  .rg-mas::after{ transform:rotate(90deg); }
+  details.rg-item[open] .rg-mas::after{ transform:rotate(0deg); }
+  .rg-pasos{ margin:0; padding:2px 16px 16px 40px; display:flex; flex-direction:column; gap:10px; font:500 17px/1.45 'Barlow', sans-serif; color:#F6F1E4; }
+  .rg-pasos li::marker{ color:#E8C45A; font-weight:800; }
+  .rg-pasos b, .rg-ficha-d b{ color:#FFFFFF; font-weight:800; }
+  .rg-fichas{ display:flex; flex-direction:column; gap:8px; padding:0 12px 14px; }
+  .rg-ficha{ padding:11px 14px; border-radius:12px; background:#122546; }
+  .rg-ficha-t{ font:800 17px 'Barlow', sans-serif; color:#E8C45A; }
+  .rg-ficha-d{ margin-top:3px; font:500 16.5px/1.45 'Barlow', sans-serif; color:#F6F1E4; }
+  .rg-pie{ margin:18px 4px 8px; font:500 13.5px/1.45 'Barlow', sans-serif; color:#8FA0BC; text-align:center; }
+  .rg-pasos{ list-style:disc; }
