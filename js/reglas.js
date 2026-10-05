@@ -89,6 +89,17 @@
     ]},
   ];
 
+  // Reglas locales de Los Iscariotes (las que dice el organizador para nuestras partidas)
+  const RG_LOCALES = [
+    { ico: 'mano', t: 'Se puede mover la bola un palo', sub: 'Colocar la bola, sin penalidad', pasos: [
+      'En nuestras partidas puedes <b>mover tu bola hasta 1 palo</b> para mejorar dónde está, <b>sin penalidad</b>.',
+      'Antes de levantarla, <b>márcala</b> con una moneda o un tee.',
+      'Colócala con la mano a <b>1 palo como máximo</b> de donde estaba y <b>nunca más cerca del hoyo</b>.',
+      'Solo se puede hacer <b>una vez</b> por golpe: en cuanto la sueltas, la bola está en juego.',
+      'No vale dentro de los <b>bunkers</b>, del <b>agua</b> ni en el <b>green</b> (en el green ya puedes marcar y limpiar siempre).',
+    ]},
+  ];
+
   // Lo demás que conviene saber, por temas
   const RG_TEMAS = [
     { ico: 'trofeo', t: 'Modalidades de juego', sub: 'Stroke Play, Stableford, Match Play, parejas', html: [
@@ -162,6 +173,12 @@
     const body = document.getElementById('reglasBody'); if(!body) return;
     body.innerHTML =
       '<div class="rg-leyenda">' + ['sin', 'uno', 'dos'].map(rgTag).join('') + '</div>'
+      + '<div class="rg-sec-t">Reglas de Los Iscariotes</div>'
+      + '<div class="rg-lista">' + RG_LOCALES.map(c =>
+          '<details class="rg-item rg-local" name="reglas">'
+          + '<summary>' + rgIco(c.ico) + '<span class="rg-st"><b>' + c.t + '</b><small>' + c.sub + '</small><span class="rg-tag rg-casa">Regla de la liga</span></span><span class="rg-mas" aria-hidden="true"></span></summary>'
+          + '<ul class="rg-pasos">' + c.pasos.map(p => '<li>' + p + '</li>').join('') + '</ul>'
+          + '</details>').join('') + '</div>'
       + '<div class="rg-sec-t">¿Qué hago si…?</div>'
       + '<div class="rg-lista">' + RG_CASOS.map(c =>
           '<details class="rg-item" name="reglas">'

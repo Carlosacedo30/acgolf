@@ -187,3 +187,5 @@ html[data-tema="grafito"] .rg-ico, html[data-tema="grafito"] .rg-ficha-t, html[d
 html[data-tema="grafito"] .reglas-cab .derbi-cab-k, html[data-tema="grafito"] .rg-pasos li::marker{ color:#C6F24E !important; }
 html[data-tema="grafito"] .rg-ficha{ background:#24282D !important; }
 html[data-tema="grafito"] .reglas-cab h2{ font-family:'Archivo', sans-serif !important; font-weight:900 !important; }
+html[data-tema="grafito"] .rg-casa{ background:#C6F24E !important; color:#111316 !important; }
+html[data-tema="grafito"] details.rg-item.rg-local{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
