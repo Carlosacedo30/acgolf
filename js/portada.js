@@ -31,7 +31,7 @@
     if(borrar) borrar.addEventListener('click', async ()=>{
       if(borrar.dataset.busy) return;
       const titulo = r.roundName || r.courseName || 'Partida';
-      if(!confirm('¿Borrar la partida "' + titulo + '" (código ' + r.code + ')?\nSe borrará para todos los jugadores y no se puede deshacer.')) return;
+      if(!confirm('¿Borrar la partida "' + titulo + '"?\nSe borrará para todos los jugadores y no se puede deshacer.')) return;
       borrar.dataset.busy = '1'; borrar.textContent = 'Borrando…';
       const res = await deleteSharedRound(r.code);
       if(res && res.ok){ if(typeof renderRecentRounds === 'function') renderRecentRounds(); }

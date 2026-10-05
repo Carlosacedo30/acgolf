@@ -184,7 +184,7 @@
     }).join('') + '</div>';
 
     if(conv.roundCode){
-      h += '<div class="conv-created">✅ Partida creada · código <b>' + convEsc(conv.roundCode) + '</b>'
+      h += '<div class="conv-created">✅ Partida creada'
         + '<button type="button" class="conv-btn primary" id="convOpenRound">Abrir partida para apuntar</button></div>';
     }
 

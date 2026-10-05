@@ -206,7 +206,7 @@
   }
   function showDuplicateRoundWarning(round){
     if(!duplicateRoundOverlay || !duplicateRoundText) { startNewRoundNow(); return; }
-    duplicateRoundText.textContent = 'Tienes la partida con código ' + round.code + ' sin terminar en este campo. ¿Sigues con esa o creas una nueva?';
+    duplicateRoundText.textContent = 'Tienes una partida sin terminar en este campo. ¿Sigues con esa o creas una nueva?';
     duplicateRoundOverlay.style.display = '';
     duplicateRoundContinue.onclick = async ()=>{
       hideDuplicateRoundWarning();
