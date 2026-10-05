@@ -21,7 +21,7 @@
   function tjAsteriscos(n){ return n <= 0 ? '' : (n <= 3 ? '*'.repeat(n) : n + '*'); }
 
   function tjDatosJugador(pIndex){
-    const hcp = (typeof playerHandicaps !== 'undefined' && playerHandicaps[pIndex]) || 0;
+    const hcp = (typeof playerHandicaps !== 'undefined') ? hcpJuego(pIndex) : 0; // ya con el % de la modalidad
     const hoyos = [];
     for(let h = 1; h <= 18; h++){
       const inp = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + pIndex + '"]');
@@ -66,12 +66,79 @@
       + '</div></div>';
   }
 
+  // Mejor bola (Fourball): en cada hoyo, el mejor resultado neto de la pareja (o más puntos en Stableford)
+  function tjMejorBola(datos, stableford){
+    const out = [];
+    for(let h = 0; h < 18; h++){
+      const vals = datos.map((d, k) => ({ x: d.hoyos[h], k })).filter(v => v.x && v.x.golpes != null);
+      if(!datos[0].hoyos[h]){ out.push(null); continue; }
+      if(!vals.length){ out.push(Object.assign({}, datos[0].hoyos[h], { golpes: null, diff: null, pts: null, de: [] })); continue; }
+      const mejor = vals.reduce((a, b) => (stableford ? (b.x.pts > a.x.pts ? b : a) : (b.x.diff < a.x.diff ? b : a)));
+      const de = vals.filter(v => (stableford ? v.x.pts === mejor.x.pts : v.x.diff === mejor.x.diff)).map(v => v.k);
+      out.push(Object.assign({}, mejor.x, { rec: 0, de }));
+    }
+    return out;
+  }
+  // Media tarjeta de una pareja: una fila por jugador (tocables) y debajo la fila "Mejor bola" que es la que puntúa
+  function tjMitadPareja(par, datos, mejor, desde, etiqueta, stableford){
+    const cab = mejor.slice(desde, desde + 9).map(x => x ? '<div class="tj-h">' + x.h + '<small>' + x.par + '</small></div>' : '<div class="tj-h"></div>').join('');
+    const filaJug = (k) => {
+      const lista = datos[k].hoyos.slice(desde, desde + 9);
+      return '<div class="tj-quien">' + tjEsc(nombreCorto(players[par[k]])) + '</div><div class="tj-fila tj-fila-jug">' + lista.map(x => {
+        if(!x) return '<div class="tj-col"></div>';
+        const cuenta = mejor[x.h - 1] && mejor[x.h - 1].de && mejor[x.h - 1].de.includes(k);
+        const cls = x.golpes != null ? tjClase(x.diff) : 'tj-sin';
+        return '<div class="tj-col"><button type="button" class="tj-g tj-g-peq ' + cls + (x.golpes != null && !cuenta ? ' tj-no-cuenta' : '') + '" data-tj-player="' + par[k] + '" data-tj-hole="' + x.h + '" aria-label="' + tjEsc(players[par[k]]) + ', hoyo ' + x.h + (x.golpes != null ? ', ' + x.golpes + ' golpes' : ', sin anotar') + '">'
+          + (x.rec ? '<i class="tj-ast">' + tjAsteriscos(x.rec) + '</i>' : '') + (x.golpes != null ? x.golpes : '+') + '</button></div>';
+      }).join('') + '</div>';
+    };
+    const tramo = mejor.slice(desde, desde + 9);
+    const jug = tramo.filter(x => x && x.golpes != null);
+    const filaMejor = '<div class="tj-quien tj-quien-mb">Mejor bola</div><div class="tj-fila">' + tramo.map(x => {
+      if(!x) return '<div class="tj-col"></div>';
+      const txt = x.golpes == null ? '' : (stableford ? x.pts : tjTexto(x.diff));
+      return '<div class="tj-col"><div class="tj-mb ' + (x.golpes != null ? tjClase(x.diff) : 'tj-sin') + '">' + txt + '</div></div>';
+    }).join('') + '</div>';
+    const diff = tjSuma(jug, 'diff');
+    return '<div class="tj-mitad">'
+      + '<div class="tj-fila">' + cab + '</div>'
+      + par.map((i, k) => filaJug(k)).join('')
+      + filaMejor
+      + '<div class="tj-sub"><span>' + etiqueta + '</span>'
+      + (jug.length ? (stableford ? '<b>' + tjSuma(jug, 'pts') + ' pts</b>' : '<b class="tj-res ' + tjClaseTotal(diff) + '">' + tjTexto(diff) + '</b>') : '<b class="tj-nada">sin empezar</b>')
+      + '</div></div>';
+  }
+  function tjTarjetaPareja(par, k, stableford){
+    const datos = par.map(i => tjDatosJugador(i));
+    const mejor = tjMejorBola(datos, stableford);
+    const jug = mejor.filter(x => x && x.golpes != null);
+    const diff = tjSuma(jug, 'diff');
+    return '<div class="tj-card tj-card-pareja">'
+      + '<div class="tj-head"><div class="tj-nombre">Pareja ' + LETRA_PAREJA[k] + ' · ' + tjEsc(nombrePareja(par.map(i => players[i]))) + '</div>'
+      + '<div class="tj-hcp">' + par.map(i => tjEsc(nombreCorto(players[i])) + ' ' + tjHcpTxt(hcpJuego(i))).join(' · ') + '</div></div>'
+      + tjMitadPareja(par, datos, mejor, 0, 'Ida', stableford)
+      + tjMitadPareja(par, datos, mejor, 9, 'Vuelta', stableford)
+      + '<div class="tj-total">'
+      + '<div><span>Hoyos</span><b>' + jug.length + '/18</b></div>'
+      + (stableford ? '<div><span>Puntos</span><b>' + (jug.length ? tjSuma(jug, 'pts') : '—') + '</b></div>'
+                    : '<div><span>Neto al par</span><b class="' + (jug.length ? 'tj-res ' + tjClaseTotal(diff) : '') + '">' + (jug.length ? tjTexto(diff) : '—') + '</b></div>')
+      + '</div></div>';
+  }
+
   function renderTarjetas(){
     const wrap = document.getElementById('tarjetasWrap');
     if(!wrap || typeof players === 'undefined') return;
     const stableford = typeof scoringType !== 'undefined' && scoringType === 'stableford';
     let todosCompletos = true, alguno = false;
-    const html = players.map((name, pIndex) => {
+    if(modoPartida() === 'fourball'){
+      players.forEach((n, i) => {
+        const j = tjDatosJugador(i).hoyos.filter(x => x && x.golpes != null).length;
+        if(j < 18) todosCompletos = false; if(j) alguno = true;
+      });
+    }
+    const html = modoPartida() === 'fourball'
+      ? parejasFourball(players).map((par, k) => tjTarjetaPareja(par, k, stableford)).join('')
+      : players.map((name, pIndex) => {
       if(!name) return '';
       const d = tjDatosJugador(pIndex);
       const ida = d.hoyos.slice(0, 9), vuelta = d.hoyos.slice(9, 18);
@@ -83,7 +150,7 @@
       const neto = bruto - tjSuma(jugadosL, 'rec');
       const diff = tjSuma(jugadosL, 'diff');
       return '<div class="tj-card">'
-        + '<div class="tj-head"><div class="tj-nombre">' + tjEsc(name) + '</div><div class="tj-hcp">Hcp ' + tjHcpTxt(d.hcp) + '</div></div>'
+        + '<div class="tj-head"><div class="tj-nombre">' + tjEsc(String(name).replace(' / ', ' y ')) + '</div><div class="tj-hcp">' + 'Recibe ' + Math.round(d.hcp) + ' golpes' + '</div></div>'
         + tjMitad(pIndex, ida, 'Ida', stableford)
         + tjMitad(pIndex, vuelta, 'Vuelta', stableford)
         + '<div class="tj-total">'
@@ -97,7 +164,10 @@
     }).join('');
     wrap.innerHTML = html
       + '<div class="tj-leyenda"><span><i class="tj-res r-eagle">3</i> Eagle</span><span><i class="tj-res r-birdie">4</i> Birdie</span><span><i class="tj-res r-par">5</i> Par</span><span><i class="tj-res r-bogey">6</i> Bogey</span><span><i class="tj-res r-doble">7</i> Doble o más</span></div>'
-      + '<div class="tj-nota">Número pequeño: el par del hoyo · * golpe de hándicap · Toca una casilla para corregirla</div>';
+      + '<div class="tj-nota">Número pequeño: el par del hoyo · * golpe de hándicap · Toca una casilla para corregirla'
+      + (modoPartida() === 'fourball' ? '<br>Mejor bola: en cada hoyo cuenta el mejor neto de la pareja (las casillas apagadas no cuentan) · hándicap al ' + Math.round(factorHcpModo() * 100) + ' %' : '')
+      + (modoPartida() === 'foursome' ? '<br>Foursome: una bola por pareja · hándicap de pareja = mitad de la suma de los dos' : '')
+      + '</div>';
 
     // Corregir golpes desde la tarjeta con el teclado grande
     wrap.querySelectorAll('.tj-g').forEach(btn => btn.addEventListener('click', ()=>{
@@ -105,7 +175,7 @@
       const inp = document.querySelector('.golpes-input[data-hole="' + hole + '"][data-player-index="' + pIndex + '"]');
       if(!inp || typeof openNumPad !== 'function') return;
       const par = parseInt(inp.dataset.par, 10);
-      const rec = Math.max(0, strokesForHole(playerHandicaps[pIndex], parseInt(inp.dataset.strokeIndex, 10)));
+      const rec = Math.max(0, strokesForHole(hcpJuego(pIndex), parseInt(inp.dataset.strokeIndex, 10)));
       openNumPad({ name: players[pIndex], hole: hole, par: par, tuPar: par + rec, value: inp.value,
         onPick: v => { inp.value = v; inp.dispatchEvent(new Event('input', { bubbles: true })); } });
     }));

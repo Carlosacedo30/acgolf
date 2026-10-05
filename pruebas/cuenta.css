@@ -80,3 +80,15 @@ body.cg-open{ overflow:hidden; }
 .mk-btn:disabled{ opacity:.6; }
 .mk-aviso{ color:#F29A5B; font-weight:700; font-size:17px; margin:0; }
 .mk-solo{ background:#3A2A2A; border:2px solid #F29A5B; border-radius:12px; padding:10px 12px; font-size:17px; color:#F6F1E4; margin-bottom:8px; }
+
+/* ---- Diseño Grafito deportivo (el definitivo) en cuentas y marcador ---- */
+html[data-tema="grafito"] .cg{ background:#111316 !important; }
+html[data-tema="grafito"] .cg-lbl input, html[data-tema="grafito"] .cg-nombre, html[data-tema="grafito"] .mk-box, html[data-tema="grafito"] .mk-op{ background:#1B1E22 !important; border-color:#3A4047 !important; color:#F2F4F5 !important; }
+html[data-tema="grafito"] .cg-lbl input:focus{ border-color:#C6F24E !important; }
+html[data-tema="grafito"] .cg-nombre.on, html[data-tema="grafito"] .mk-op.on{ background:#2F3A1C !important; border-color:#C6F24E !important; box-shadow:inset 0 0 0 1px #C6F24E !important; }
+html[data-tema="grafito"] .cg-btn:not(.ghost):not(.danger), html[data-tema="grafito"] .fm-btn, html[data-tema="grafito"] .mk-btn{ background:#C6F24E !important; color:#111316 !important; }
+html[data-tema="grafito"] .cg-btn.ghost{ border-color:#4A5058 !important; }
+html[data-tema="grafito"] .cg-link, html[data-tema="grafito"] .fm-link, html[data-tema="grafito"] .mk-tp{ color:#C6F24E !important; }
+html[data-tema="grafito"] .mk-col, html[data-tema="grafito"] .mk-elegir{ background:#1B1E22 !important; }
+html[data-tema="grafito"] .mk-box.filled, html[data-tema="grafito"] .mk-tp{ background:#24282D !important; }
+html[data-tema="grafito"] .fm-fila, html[data-tema="grafito"] .mk-fila{ border-color:#2C3137 !important; }

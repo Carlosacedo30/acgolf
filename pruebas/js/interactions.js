@@ -33,8 +33,7 @@
     });
   });
 
-  // Pantalla "Jugar": elegir campo directamente (Hato Verde o Zaudín) o unirse con código
-  const startChoiceCodigo = document.getElementById('startChoiceCodigo');
+  // Pantalla "Jugar": elegir campo directamente (Hato Verde o Zaudín) 
   const joinGameSection = document.getElementById('joinGameSection');
   const courseChoices = document.querySelectorAll('.course-choice[data-course-id]');
   function markStartChoice(el){
@@ -54,16 +53,6 @@
     card.addEventListener('click', start);
     card.addEventListener('keydown', e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); start(); } });
   });
-  if(startChoiceCodigo){
-    startChoiceCodigo.addEventListener('click', ()=>{
-      markStartChoice(startChoiceCodigo);
-      const block = document.getElementById('configPartidaBlock');
-      if(block) block.style.display = 'none';
-      if(joinGameSection){ joinGameSection.style.display = ''; setTimeout(() => joinGameSection.scrollIntoView({ behavior:'smooth', block:'center' }), 50); }
-      const input = document.getElementById('joinCodeInput');
-      if(input) input.focus({ preventScroll:true });
-    });
-  }
 
   // Pantalla "Jugar": desplegable de campos (poblado desde COURSES), cerrado hasta que se toque o se escriba
   renderDropdown('');
@@ -143,10 +132,44 @@
     saveConfigGroupFields();
     const scoringPill = document.querySelector('#scoringTypeRow .pill-opt.selected');
     scoringType = scoringPill ? scoringPill.dataset.scoring : 'stableford';
+    if(!validarParejas(modoElegido())) return;
     if(selectedCourse) renderCampoKnown(selectedCourse);
     renderResumenPartida();
     goTo(2);
   });
+
+  // Modalidad elegida en el formulario (Individual / Fourball / Foursome)
+  function modoElegido(){
+    const mod = document.querySelector('.modality-opt.selected');
+    return modoDesdeTexto(mod ? mod.textContent : '');
+  }
+  // En parejas, cada grupo tiene que tener 2 o 4 jugadores (y 4 si es Match Play)
+  function validarParejas(modo){
+    if(modo === 'individual') return true;
+    const usados = matchGroups.filter(g => g.players && g.players.length);
+    const impares = gruposImpares(usados.map((g, i) => g));
+    if(impares.length){
+      alert('Para jugar por parejas cada grupo tiene que tener 2 o 4 jugadores.\nLos jugadores 1 y 2 forman la Pareja A, y los 3 y 4 la Pareja B.');
+      return false;
+    }
+    if(scoringType === 'matchplay' && usados.some(g => g.players.length < 4)){
+      alert('En Match Play por parejas hacen falta 4 jugadores en el grupo: Pareja A contra Pareja B.');
+      return false;
+    }
+    return true;
+  }
+  // Aviso debajo de "Modalidad de juego" explicando cómo se forman las parejas
+  function pintarAvisoModalidad(){
+    const box = document.getElementById('modalidadAviso');
+    if(!box) return;
+    const m = modoElegido();
+    box.style.display = m === 'individual' ? 'none' : '';
+    box.textContent = m === 'fourball'
+      ? 'Cada uno juega su bola y en cada hoyo cuenta la mejor de la pareja. Jugadores 1 y 2 = Pareja A · 3 y 4 = Pareja B. Hándicap al 85 % (90 % en Match Play).'
+      : 'Una bola por pareja, golpes alternos: se anota un solo resultado por pareja. Jugadores 1 y 2 = Pareja A · 3 y 4 = Pareja B. Hándicap: la mitad de la suma de los dos.';
+  }
+  document.querySelectorAll('.modality-opt').forEach(o => o.addEventListener('click', pintarAvisoModalidad));
+  pintarAvisoModalidad();
 
   // Pantalla "Resumen": campo, nombre, puntuación, modalidad y participantes con su hándicap
   function renderResumenPartida(){
@@ -170,12 +193,14 @@
     const groups = matchGroups.map((g, gi) => ({ gi, rows: (g.players || []).map((n, i) => ({ n: (n || '').trim(), h: (g.handicaps || [])[i] })).filter(r => r.n) }))
       .filter(g => g.rows.length);
     const multi = groups.length > 1;
+    const parejas = modoElegido() !== 'individual';
     box.innerHTML = groups.length ? groups.map(g =>
       (multi ? '<div class="resumen-group-lbl">Grupo ' + (g.gi + 1) + '</div>' : '') +
-      g.rows.map(r => {
+      g.rows.map((r, ri) => {
         const ini = r.n.split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
         const h = (r.h === '' || r.h == null || isNaN(parseFloat(r.h))) ? '—' : String(r.h).replace('.', ',');
-        return '<div class="resumen-player"><div class="resumen-avatar">' + esc(ini) + '</div><div class="nm">' + esc(r.n) + '</div><div class="resumen-hcp">Hcp ' + esc(h) + '</div></div>';
+        const cab = (parejas && ri % 2 === 0) ? '<div class="resumen-pareja-lbl">Pareja ' + LETRA_PAREJA[ri / 2] + '</div>' : '';
+        return cab + '<div class="resumen-player"><div class="resumen-avatar">' + esc(ini) + '</div><div class="nm">' + esc(r.n) + '</div><div class="resumen-hcp">Hcp ' + esc(h) + '</div></div>';
       }).join('')
     ).join('') : '<div class="empty-hint">Sin jugadores — vuelve atrás para añadirlos</div>';
   }
@@ -192,13 +217,16 @@
     if(rcSection) rcSection.style.display = 'none';
     const leagueNote = document.getElementById('leagueHandicapUpdateNote');
     if(leagueNote) leagueNote.style.display = 'none';
+    const medallasNote = document.getElementById('medallasRondaNote');
+    if(medallasNote) medallasNote.style.display = 'none';
     matchGroups.forEach(g => { g.scores = {}; }); // ronda nueva: se borran golpes guardados de los 4 grupos
     currentHole = 1;
     activeGroup = 0;
     diagAnswers = {};
+    rememberPlayers(matchGroups.reduce((acc, g) => acc.concat(g.players), [])); // nombres de verdad, antes de juntar parejas
+    prepararModalidad(modoElegido()); // Fourball / Foursome: deja cada grupo con su tarjeta de parejas
     const g0 = matchGroups[0];
     setPlayers(g0.players, g0.handicaps);
-    rememberPlayers(matchGroups.reduce((acc, g) => acc.concat(g.players), []));
     if(selectedCourse) applyCourseToScoreGrids(selectedCourse);
     renderGroupSwitcher();
     createSharedRound();
@@ -215,7 +243,7 @@
   }
   function showDuplicateRoundWarning(round){
     if(!duplicateRoundOverlay || !duplicateRoundText) { startNewRoundNow(); return; }
-    duplicateRoundText.textContent = 'Tienes la partida con código ' + round.code + ' sin terminar en este campo. ¿Sigues con esa o creas una nueva?';
+    duplicateRoundText.textContent = 'Tienes una partida sin terminar en este campo. ¿Sigues con esa o creas una nueva?';
     duplicateRoundOverlay.style.display = '';
     duplicateRoundContinue.onclick = async ()=>{
       hideDuplicateRoundWarning();
@@ -241,18 +269,3 @@
   // Buscadores de "Jugador 1..4" con sugerencias de jugadores usados antes
   ['player1', 'player2', 'player3', 'player4'].forEach(id => setupPlayerSearch(id + 'Input', id + 'Dropdown'));
 
-  // Pantalla "Jugar": unirse a una partida ya empezada con su código
-  const joinCodeBtn = document.getElementById('joinCodeBtn');
-  if(joinCodeBtn) joinCodeBtn.addEventListener('click', async ()=>{
-    const input = document.getElementById('joinCodeInput');
-    const errorEl = document.getElementById('joinCodeError');
-    joinCodeBtn.textContent = 'Uniendo…';
-    const res = await joinSharedRound(input ? input.value : '');
-    joinCodeBtn.textContent = 'Unirme';
-    if(!res.ok){
-      if(errorEl){ errorEl.textContent = res.msg; errorEl.style.display = ''; }
-      return;
-    }
-    if(errorEl) errorEl.style.display = 'none';
-    goTo(3);
-  });

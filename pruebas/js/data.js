@@ -44,7 +44,7 @@
       // Course Rating / Slope oficiales por barra de salida (masculino), fuente: mScorecard
       tees:{
         blancas:  { rating:70.7, slope:121 },
-        amarillas:{ rating:69.5, slope:119 },
+        amarillas:{ rating:68.3, slope:122 }, // medición actual, con el hoyo 6 ya de par 3 (antes 69,5 / 119)
         azules:   { rating:67.5, slope:115 },
         rojas:    { rating:66.0, slope:113 },
       } },

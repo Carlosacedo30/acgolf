@@ -23,32 +23,53 @@
   }
 
   // Clasificación en Stableford (puntos, más alto mejor) y Stroke Play (acumulado neto vs. par jugado, más bajo mejor)
-  // Junta a TODOS los jugadores de los 4 grupos de la partida, no solo el grupo activo
-  function computeStrokeStandings(){
+  // Junta a TODOS los jugadores de los 4 grupos de la partida, no solo el grupo activo.
+  // En Mejor bola (Fourball) compite cada pareja: en cada hoyo cuenta el mejor resultado neto de los dos.
+  // En Foursome cada "jugador" ya es una pareja (una sola bola), así que funciona igual que individual.
+  function netosHoyo(scoresJugador, hcp){
     const par = selectedCourse ? selectedCourse.par : [];
-    const strokeIndexArr = selectedCourse ? selectedCourse.hcp : [];
+    const siArr = selectedCourse ? selectedCourse.hcp : [];
+    const out = [];
+    for(let h = 1; h <= 18; h++){
+      const golpes = parseInt((scoresJugador || {})[h], 10);
+      if(isNaN(golpes) || golpes <= 0){ out.push(null); continue; }
+      const holePar = par[h - 1];
+      const netHole = golpes - strokesForHole(ajusteHcp(hcp), siArr[h - 1]);
+      out.push({ golpes, par: holePar, diff: netHole - holePar, pts: stablefordPoints(netHole - holePar) });
+    }
+    return out;
+  }
+  function computeStrokeStandings(){
     const combined = [];
     matchGroups.forEach((group, gIndex)=>{
       if(!group.players || !group.players.length) return;
       const scores = gIndex === activeGroup ? collectGroupScores() : (group.scores || {});
+      const hoyosDe = pIndex => netosHoyo(scores[pIndex], (group.handicaps && group.handicaps[pIndex]) || 0);
+      if(group.modo === 'fourball'){
+        parejasFourball(group.players).forEach((par, k)=>{
+          const lineas = par.map(hoyosDe);
+          let total = 0, scoreDiff = 0, points = 0, holesFilled = 0;
+          for(let h = 0; h < 18; h++){
+            const vals = lineas.map(l => l[h]).filter(Boolean);
+            if(!vals.length) continue;
+            const mejor = vals.reduce((a, b) => (scoringType === 'stableford' ? (b.pts > a.pts ? b : a) : (b.diff < a.diff ? b : a)));
+            total += mejor.golpes; scoreDiff += mejor.diff; points += mejor.pts; holesFilled++;
+          }
+          combined.push({
+            name: 'Pareja ' + LETRA_PAREJA[k] + ' · ' + nombrePareja(par.map(i => group.players[i])),
+            group: gIndex, pIndex: par[0], pIndexes: par,
+            total, scoreDiff, points, holesFilled,
+          });
+        });
+        return;
+      }
       group.players.forEach((name, pIndex)=>{
         if(!name) return;
-        const playerScores = scores[pIndex] || {};
-        const hcp = (group.handicaps && group.handicaps[pIndex]) || 0;
-        let total = 0, net = 0, parSoFar = 0, points = 0, holesFilled = 0;
-        for(let h = 1; h <= 18; h++){
-          const golpes = parseInt(playerScores[h], 10);
-          if(isNaN(golpes) || golpes <= 0) continue;
-          const holePar = par[h - 1];
-          const si = strokeIndexArr[h - 1];
-          const netHole = golpes - strokesForHole(hcp, si);
-          total += golpes; net += netHole; parSoFar += holePar;
-          points += stablefordPoints(netHole - holePar);
-          holesFilled++;
-        }
+        const l = hoyosDe(pIndex).filter(Boolean);
         combined.push({
           name: name, group: gIndex, pIndex: pIndex,
-          total: total, net: net, scoreDiff: net - parSoFar, points: points, holesFilled: holesFilled,
+          total: l.reduce((a, x) => a + x.golpes, 0), scoreDiff: l.reduce((a, x) => a + x.diff, 0),
+          points: l.reduce((a, x) => a + x.pts, 0), holesFilled: l.length,
         });
       });
     });
@@ -57,18 +78,28 @@
       : combined.sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || a.scoreDiff - b.scoreDiff);
   }
 
-  // Clasificación en Match Play: gana el hoyo quien tenga menos golpes neto (empate = hoyo empatado, sin punto)
+  // Neto de un jugador del grupo activo en un hoyo (null si no está anotado)
+  function netoActivo(hole, pIndex){
+    const input = document.querySelector('.golpes-input[data-hole="' + hole + '"][data-player-index="' + pIndex + '"]');
+    const golpes = input ? parseInt(input.value, 10) : NaN;
+    if(!input || isNaN(golpes) || golpes <= 0) return null;
+    return golpes - strokesForHole(hcpJuego(pIndex), parseInt(input.dataset.strokeIndex, 10));
+  }
+
+  // Clasificación en Match Play: gana el hoyo quien tenga menos golpes neto (empate = hoyo empatado, sin punto).
+  // En Fourball se enfrentan las dos parejas, cada una con su mejor bola del hoyo.
   function computeMatchPlayStandings(){
-    const wins = players.map(()=> 0);
-    const halved = players.map(()=> 0);
+    const fourball = modoPartida() === 'fourball';
+    const bandos = fourball ? parejasFourball(players) : players.map((n, i) => [i]);
+    const wins = bandos.map(()=> 0);
+    const halved = bandos.map(()=> 0);
     let holesTogether = 0;
     for(let hole = 1; hole <= 18; hole++){
-      const netScores = players.map((name, pIndex)=>{
-        const input = document.querySelector('.golpes-input[data-hole="' + hole + '"][data-player-index="' + pIndex + '"]');
-        const golpes = input ? parseInt(input.value, 10) : NaN;
-        if(!input || isNaN(golpes) || golpes <= 0) return null;
-        const si = parseInt(input.dataset.strokeIndex, 10);
-        return golpes - strokesForHole(playerHandicaps[pIndex], si);
+      const netScores = bandos.map(b => {
+        const v = b.map(i => netoActivo(hole, i)).filter(x => x !== null);
+        // en Fourball se espera a que estén anotadas las dos bolas de la pareja (si uno recoge, que apunte lo que lleve)
+        if(fourball) return b.every(i => netoActivo(hole, i) !== null) ? Math.min(...v) : null;
+        return v.length ? v[0] : null;
       });
       if(netScores.some(v => v === null)) continue; // solo cuenta si todos anotaron ese hoyo
       holesTogether++;
@@ -77,8 +108,11 @@
       if(winners.length === 1) wins[winners[0]]++;
       else winners.forEach(i => halved[i]++);
     }
-    return players
-      .map((name, pIndex) => ({ name: name, group: activeGroup, pIndex: pIndex, holesWon: wins[pIndex], holesHalved: halved[pIndex], holesFilled: holesTogether }))
+    return bandos
+      .map((b, k) => ({
+        name: fourball ? 'Pareja ' + LETRA_PAREJA[k] + ' · ' + nombrePareja(b.map(i => players[i])) : players[b[0]],
+        group: activeGroup, pIndex: b[0], pIndexes: b, holesWon: wins[k], holesHalved: halved[k], holesFilled: holesTogether,
+      }))
       .sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || b.holesWon - a.holesWon);
   }
 
@@ -168,7 +202,8 @@
       clearTimeout(autoAdvanceTimer);
     }
     const scoringMetaEl = document.getElementById('s3ScoringMeta');
-    if(scoringMetaEl) scoringMetaEl.textContent = 'Hoy · ' + (scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play');
+    if(scoringMetaEl) scoringMetaEl.textContent = 'Hoy · ' + (scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play')
+      + (modoPartida() === 'fourball' ? ' · Mejor bola' : modoPartida() === 'foursome' ? ' · Foursome' : '');
     if(currentHole < 1) currentHole = 1;
     if(currentHole > 18) currentHole = 18;
     const input0 = document.querySelector('.golpes-input[data-hole="' + currentHole + '"]');
@@ -199,17 +234,31 @@
       // Debajo, las notas del caddie de cada uno (pueden tener distinta altura sin mover las casillas).
       const firstNames = players.map(n => String(n || '').trim().split(/\s+/)[0] || n);
       const shortNames = players.map((n, i) => {
+        if(String(n || '').includes(' / ')) return nombrePareja(String(n).split(' / ')); // Foursome: "Carlos y Pepe"
         const w = String(n || '').trim().split(/\s+/);
         const dup = firstNames.filter(f => f === firstNames[i]).length > 1;
-        return dup && w[1] ? w[0] + ' ' + w[1].charAt(0) + '.' : firstNames[i];
+        // En filas hay sitio: nombre y primer apellido (si se repite el nombre, siempre con apellido)
+        return w[1] ? w[0] + ' ' + w[1] : (dup ? w[0] : firstNames[i]);
       });
-      const cells = players.map((name, pIndex)=>{
+      const fourball = modoPartida() === 'fourball';
+      const rankDe = pIndex => standings.findIndex(s => s.group === activeGroup && (s.pIndexes ? s.pIndexes.includes(pIndex) : s.pIndex === pIndex));
+      const posDe = rank => { const s = standings[rank]; return (s && s.holesFilled > 0) ? (rank === 0 ? '🏆 ' : '') + (rank + 1) + 'º · ' + formatStandingScore(s) : ''; };
+      // Fourball: en cada pareja se marca la bola que cuenta en este hoyo (la de mejor neto)
+      const cuenta = new Set();
+      if(fourball) parejasFourball(players).forEach(par => {
+        const netos = par.map(i => netoActivo(currentHole, i));
+        const vals = netos.filter(v => v !== null);
+        if(!vals.length) return;
+        const mejor = Math.min(...vals);
+        par.forEach((i, k) => { if(netos[k] === mejor) cuenta.add(i); });
+      });
+      const cellHtml = (name, pIndex)=>{
         const input = document.querySelector('.golpes-input[data-hole="' + currentHole + '"][data-player-index="' + pIndex + '"]');
         const val = input ? input.value : '';
-        const rank = standings.findIndex(s => s.group === activeGroup && s.pIndex === pIndex);
+        const rank = rankDe(pIndex);
         const s = standings[rank];
-        const posTxt = (s && s.holesFilled > 0) ? (rank === 0 ? '🏆 ' : '') + (rank + 1) + 'º · ' + formatStandingScore(s) : '';
-        const recibidos = strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0; // golpes de regalo de ESTE jugador en ESTE hoyo
+        const posTxt = fourball ? (cuenta.has(pIndex) ? '✓ Cuenta' : '') : posDe(rank);
+        const recibidos = strokeIndex != null ? strokesForHole(hcpJuego(pIndex), strokeIndex) : 0; // golpes de regalo de ESTE jugador en ESTE hoyo
         let resultClass = '', resultText = '—';
         if(val && par != null){
           const diff = (parseInt(val, 10) - recibidos) - par; // resultado ya ajustado a su hándicap, como en golfdirecto
@@ -218,20 +267,38 @@
         }
         const n = Math.max(0, recibidos);
         const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
-        return '<div class="hv-cell' + (rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + '">'
+        const hcpTxt = 'Recibe ' + Math.round(hcpJuego(pIndex)); // golpes de regalo en este campo (y con el % de la modalidad)
+        return '<div class="hv-cell' + (!fourball && rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + (fourball && cuenta.has(pIndex) ? ' cuenta' : '') + '">'
+          // Una fila por jugador: a la izquierda quién es y su par; a la derecha la casilla grande y el resultado
+          + '<div class="hv-info">'
           + '<div class="hv-n" title="' + name + '">' + shortNames[pIndex] + '</div>'
-          + '<div class="hv-h">Hcp ' + (playerHandicaps[pIndex] || 0) + '</div>'
+          + '<div class="hv-h">' + hcpTxt + '</div>'
           + '<div class="hv-tp' + (n ? '' : ' cero') + '"><span class="gr-pips" aria-hidden="true">' + pips + '</span><span>Tu par <b>' + (par != null ? par + n : '—') + '</b></span></div>'
+          + (posTxt ? '<div class="hv-pos">' + posTxt + '</div>' : '')
+          + '</div>'
           + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="none" readonly placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '" aria-label="Golpes de ' + name + ' (toca para anotar)">'
           + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
-          + '<div class="hv-pos">' + (posTxt || '&nbsp;') + '</div>'
           + '</div>';
-      }).join('');
+      };
+      let cells;
+      if(fourball){
+        // Dos parejas lado a lado, cada una con su cabecera (posición y resultado de la mejor bola)
+        cells = '<div class="hv-parejas">' + parejasFourball(players).map((par, k) => {
+          const rank = rankDe(par[0]);
+          const s = standings[rank];
+          return '<div class="hv-pareja' + (rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + '">'
+            + '<div class="hv-pareja-h"><span>Pareja ' + LETRA_PAREJA[k] + '</span><b>' + ((scoringType === 'matchplay' && s && s.holesFilled > 0) ? s.holesWon + ' ganados' : (posDe(rank) || '&nbsp;')) + '</b></div>'
+            + '<div class="hv-scores" style="--n:' + par.length + '">' + par.map(i => cellHtml(players[i], i)).join('') + '</div>'
+            + '</div>';
+        }).join('') + '</div>';
+      } else {
+        cells = '<div class="hv-scores" style="--n:' + players.length + '">' + players.map(cellHtml).join('') + '</div>';
+      }
       // Debajo de las casillas, el caddie comenta el hoyo y habla con cada jugador
       const habla = (typeof caddieHablaHtml === 'function')
-        ? caddieHablaHtml(currentHole, players.map((name, pIndex) => ({ nombre: name, recibidos: strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0 })))
+        ? caddieHablaHtml(currentHole, players.map((name, pIndex) => ({ nombre: String(name).includes(' / ') ? nombrePareja(String(name).split(' / ')) : name, recibidos: strokeIndex != null ? strokesForHole(hcpJuego(pIndex), strokeIndex) : 0 })))
         : '';
-      wrap.innerHTML = '<div class="hv-scores" style="--n:' + players.length + '">' + cells + '</div>' + habla;
+      wrap.innerHTML = cells + habla;
       wrap.querySelectorAll('.stroke-box').forEach(box=>{
         box.addEventListener('input', ()=>{
           const pIndex = box.dataset.holeInputFor;
@@ -246,7 +313,7 @@
         // Toca la casilla: se abre el teclado grande de golpes (sin teclado del móvil)
         box.addEventListener('click', ()=>{
           const pIndex = +box.dataset.holeInputFor;
-          const recibidos = strokeIndex != null ? strokesForHole(playerHandicaps[pIndex], strokeIndex) : 0;
+          const recibidos = strokeIndex != null ? strokesForHole(hcpJuego(pIndex), strokeIndex) : 0;
           openNumPad({ name: players[pIndex], hole: currentHole, par: par, tuPar: par != null ? par + Math.max(0, recibidos) : null, value: box.value,
             onPick: v => { box.value = v; box.classList.toggle('filled', v !== ''); box.dispatchEvent(new Event('input', { bubbles: true })); } });
         });
@@ -261,6 +328,7 @@
       }
     }
 
+    renderMarcador(standings);
     renderHoleStrip();
     if(typeof renderHoleMap === 'function') renderHoleMap();
     if(typeof renderTarjetas === 'function') renderTarjetas();
@@ -269,7 +337,8 @@
     if(leaderboardSection){
       const modeLbl = scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play';
       const showGroupTag = matchGroups.filter(g => g.players && g.players.length).length > 1;
-      leaderboardSection.innerHTML = '<div class="section-sub" style="margin-bottom:8px;">Modalidad: ' + modeLbl + (showGroupTag ? ' · todos los grupos' : '') + '</div>'
+      const modoTxt = modoPartida() === 'individual' ? '' : ' · ' + MODOS[modoPartida()];
+      leaderboardSection.innerHTML = '<div class="section-sub" style="margin-bottom:8px;">Modalidad: ' + modeLbl + modoTxt + (showGroupTag ? ' · todos los grupos' : '') + '</div>'
         + standings.map((s, i)=>{
             const isLeader = i === 0 && s.holesFilled > 0;
             const done = s.holesFilled >= 18;
@@ -281,6 +350,34 @@
               + '<div class="leaderboard-score">' + formatStandingScore(s) + '</div></div>';
           }).join('');
     }
+  }
+
+  // Marcador siempre a la vista, encima del hoyo (una banda fina: no quita sitio a las casillas de anotar)
+  function renderMarcador(standings){
+    const box = document.getElementById('marcadorVivo');
+    if(!box) return;
+    const lista = standings.filter(s => s.group === activeGroup || matchGroups.filter(g => g.players && g.players.length).length > 1);
+    if(!lista.length){ box.innerHTML = ''; return; }
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const corto = s => {
+      if(s.pIndexes && s.pIndexes.length > 1 && /^Pareja [AB]/.test(s.name)) return s.name.split(' · ')[0];
+      if(String(s.name).includes(' / ')) return nombrePareja(String(s.name).split(' / '));
+      return nombreCorto(s.name);
+    };
+    // Match Play entre dos: "Pareja A 2 arriba" / "Igualados"
+    if(scoringType === 'matchplay' && lista.length === 2){
+      const [a, b] = lista;
+      const dif = a.holesWon - b.holesWon;
+      const txt = a.holesFilled === 0 ? 'Sin empezar' : dif === 0 ? 'Igualados' : corto(dif > 0 ? a : b) + ' ' + Math.abs(dif) + ' arriba';
+      box.innerHTML = '<div class="mv-match"><span class="mv-l">' + esc(corto(a)) + '</span><b class="mv-res">' + esc(txt) + '</b><span class="mv-l">' + esc(corto(b)) + '</span></div>'
+        + '<div class="mv-pie">' + a.holesFilled + ' hoyos jugados</div>';
+      return;
+    }
+    box.innerHTML = '<div class="mv-fila" style="--n:' + Math.min(lista.length, 4) + '">' + lista.slice(0, 8).map((s, i) =>
+      '<div class="mv-item' + (i === 0 && s.holesFilled > 0 ? ' lider' : '') + '">'
+      + '<span class="mv-n">' + (s.holesFilled > 0 ? (i + 1) + 'º ' : '') + esc(corto(s)) + '</span>'
+      + '<b class="mv-v">' + (s.holesFilled === 0 ? '—' : esc(scoringType === 'stableford' ? s.points + ' pts' : formatStandingScore(s))) + '</b>'
+      + '</div>').join('') + '</div>';
   }
 
   // Fila de hoyos: cuáles están completos, a medias o sin jugar, y cuál es el actual (toca para saltar)

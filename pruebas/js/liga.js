@@ -87,7 +87,7 @@
       return '<strong>' + name + '</strong>: ' + b + ' → ' + a;
     }).filter(Boolean);
     if(lines.length){
-      noteEl.innerHTML = '<div class="pattern"><p>🏌️ Hándicap de la liga actualizado<br>' + lines.join('<br>') + '</p></div>';
+      noteEl.innerHTML = '<div class="pattern"><p>' + icono('bandera') + ' Hándicap de la liga actualizado<br>' + lines.join('<br>') + '</p></div>';
       noteEl.style.display = '';
     } else {
       noteEl.style.display = 'none';
@@ -179,7 +179,7 @@
       semWrap.innerHTML = semanas.map(sem =>
         '<div class="liga-sem">'
         + '<div class="liga-sem-head">Semana ' + ligaFechaCorta(sem.desde) + ' – ' + ligaFechaCorta(sem.hasta) + '</div>'
-        + (sem.clasificacion[0] ? '<div class="liga-sem-win">👑 Iscariote: <strong>' + escapeHtml(ligaNombreCorto(sem.clasificacion[0].jugador)) + '</strong> · ' + sem.clasificacion[0].neto + ' netos</div>' : '')
+        + (sem.clasificacion[0] ? '<div class="liga-sem-win">' + icono('corona') + ' Iscariote: <strong>' + escapeHtml(ligaNombreCorto(sem.clasificacion[0].jugador)) + '</strong> · ' + sem.clasificacion[0].neto + ' netos</div>' : '')
         + '<div class="liga-sem-fila liga-sem-cab"><span>#</span><span>Jugador</span><span>Golpes</span><span>Neto</span><span>Pts</span></div>'
         + sem.clasificacion.map(c =>
             '<div class="liga-sem-fila"><span>' + c.pos + '</span><span class="liga-sem-nom">' + escapeHtml(ligaNombreCorto(c.jugador)) + '</span>'

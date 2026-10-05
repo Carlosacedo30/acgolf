@@ -1,5 +1,5 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
-  const labels = ["1. Jugar","1. Jugar","2. Resumen","3. Introducir resultados","4. Diagnóstico post-ronda","5. Consejos de Golf","6. Liga"];
+  const labels = ["1. Jugar","1. Jugar","2. Resumen","3. Introducir resultados","4. Diagnóstico post-ronda","5. Consejos de golf","6. Liga"];
   let current = 0;
   const screens = document.querySelectorAll('.screen');
   const dots = document.querySelectorAll('.dot');
@@ -55,7 +55,10 @@
         if(hv) selectCourse(hv);
         document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.toggle('active', o.dataset.courseId === 'hato-verde'));
       }
-      updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0;
+      // El formulario largo de "Configurar partida" queda escondido: se crea siempre con la partida rápida
+      updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(false);
+      if(typeof prAbrir === 'function') prAbrir();
+      n = 0;
     }
-    else if(n === 0){ showConfigBlock(false); document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.remove('active')); }
+    else if(n === 0){ showConfigBlock(false); if(typeof homeFoco === 'function') homeFoco(null); document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.remove('active')); }
     current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6){ ligaRoundsCache = null; renderLigaStandings(); } }

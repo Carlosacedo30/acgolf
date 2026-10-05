@@ -138,7 +138,7 @@
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;
-    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">📣 Convocar salida por WhatsApp</button>' : '';
+    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Convocar salida por WhatsApp</button>' : '';
     if(!lista.length){
       box.innerHTML = nuevoBtn;
       const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
@@ -184,7 +184,7 @@
     }).join('') + '</div>';
 
     if(conv.roundCode){
-      h += '<div class="conv-created">✅ Partida creada · código <b>' + convEsc(conv.roundCode) + '</b>'
+      h += '<div class="conv-created">' + icono('hecho') + ' Partida creada'
         + '<button type="button" class="conv-btn primary" id="convOpenRound">Abrir partida para apuntar</button></div>';
     }
 
@@ -221,11 +221,12 @@
 
     // Acciones
     h += '<div class="conv-actions">'
-      + '<button type="button" class="conv-btn wa" id="convShareWa">Enviar al grupo de WhatsApp</button>'
+      + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>'
       + '<button type="button" class="conv-btn ghost" id="convCopy">Copiar lista (para golfdirecto)</button>';
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
       h += '<button type="button" class="conv-link" id="convNewBtn">Convocar otra salida</button>';
+      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar esta convocatoria</button>';
     }
     h += '</div>';
     body.innerHTML = h;
@@ -255,11 +256,11 @@
       convFilter = '';
       convSignUp(convOpenPlayer, parseInt(b.dataset.slot, 10));
     }));
-    const wa = document.getElementById('convShareWa'); if(wa) wa.addEventListener('click', convShareWhatsApp);
     const cp = document.getElementById('convCopy'); if(cp) cp.addEventListener('click', ()=> convCopyList(cp));
     const cr = document.getElementById('convCreateRound'); if(cr) cr.addEventListener('click', ()=> convCreateRound(cr));
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
     const nb = document.getElementById('convNewBtn'); if(nb) nb.addEventListener('click', renderConvNewForm);
+    const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
   }
 
   // ---------- Compartir ----------
@@ -269,11 +270,12 @@
       return '⛳ ' + convTime(t) + (g.length ? ': ' + g.join(', ') : ': (libre)') + (g.length < CONV_SLOTS ? ' — quedan ' + (CONV_SLOTS - g.length) : ' — completa');
     }).join('\n');
   }
-  function convShareWhatsApp(){
+  // Enlace normal (no window.open): en el móvil con la app instalada, window.open se bloquea a menudo
+  function convWaHref(){
     const link = APP_URL + '?conv=' + conv.code;
     const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + '\n\n'
       + convSummaryText() + '\n\n👉 Apúntate tocando tu nombre: ' + link;
-    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    return 'https://wa.me/?text=' + encodeURIComponent(text);
   }
   async function convCopyList(btn){
     const text = convLongDate(conv.date) + ' · ' + convCourse(conv.courseId).name + '\n' + conv.times.map((t, i) =>
@@ -356,6 +358,22 @@
     } catch(e){ console.error(e); alert('No se pudo crear la convocatoria. Revisa la conexión.'); btn.textContent = 'Crear convocatoria'; }
   }
 
+  // Solo el administrador: borra la convocatoria para todos (la partida creada desde ella, si la hay, no se toca)
+  async function convDelete(btn){
+    if(!conv || btn.dataset.busy) return;
+    if(!confirm('¿Borrar la convocatoria del ' + convLongDate(conv.date) + '?\nDesaparece para todos los jugadores y no se puede deshacer.')) return;
+    btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
+    const res = await deleteSharedRound(conv.code);
+    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar la convocatoria'); delete btn.dataset.busy; btn.innerHTML = icono('papelera') + ' Borrar esta convocatoria'; return; }
+    const client = initSupabase();
+    if(convChannel && client){ try { client.removeChannel(convChannel); } catch(e){} convChannel = null; }
+    convActivas = convActivas.filter(c => c.code !== conv.code);
+    conv = convActivas[0] || null;
+    if(conv) convWatch();
+    closeConv();
+    renderConvHome();
+  }
+
   // ---------- Abrir / cerrar / tiempo real ----------
   function openConv(newOne){
     const ov = document.getElementById('convOverlay'); if(!ov) return;
@@ -395,6 +413,8 @@
       if(document.hidden) return;
       try { convActivas = await convFetchActivas(); } catch(e){}
       const fresh = await convFetch(conv ? conv.code : null).catch(()=> null);
+      if(!fresh && conv){ conv = convActivas[0] || null; }
+      renderConvHome();
       if(fresh){ conv = fresh; renderConvHome(); const ov = document.getElementById('convOverlay'); if(ov && !ov.hidden && !document.getElementById('convNewDate')) renderConv(); }
     });
     // la lista de jugadores de la liga llega un poco después: repintar cuando esté

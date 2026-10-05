@@ -7,6 +7,7 @@
 
   function homeEsc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
   function homeNombreCorto(n){ return (typeof ligaNombreCorto === 'function') ? ligaNombreCorto(n) : String(n || ''); }
+  function homeEsAdmin(){ return (typeof getAdminKey === 'function') && !!getAdminKey(); }
   function homeYo(){ try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } }
 
   // Partida en marcha (la más reciente sin terminar), con un botón grande para seguir anotando
@@ -24,7 +25,18 @@
       + '<div class="home-marcha-sub">' + homeEsc(r.roundName ? r.roundName + ' · ' : '') + homeEsc(r.courseName || 'Campo') + '</div>'
       + (quien.length ? '<div class="home-marcha-chips">' + quien.map(n => '<span>' + homeEsc(n) + '</span>').join('') + '</div>' : '')
       + '<button type="button" class="home-big-btn" id="homeContinuarBtn">Continuar partida ›</button>'
+      + (homeEsAdmin() ? '<button type="button" class="home-marcha-borrar" id="homeBorrarBtn">' + icono('papelera') + ' Borrar esta partida</button>' : '')
       + '</div>';
+    const borrar = document.getElementById('homeBorrarBtn');
+    if(borrar) borrar.addEventListener('click', async ()=>{
+      if(borrar.dataset.busy) return;
+      const titulo = r.roundName || r.courseName || 'Partida';
+      if(!confirm('¿Borrar la partida "' + titulo + '"?\nSe borrará para todos los jugadores y no se puede deshacer.')) return;
+      borrar.dataset.busy = '1'; borrar.textContent = 'Borrando…';
+      const res = await deleteSharedRound(r.code);
+      if(res && res.ok){ if(typeof renderRecentRounds === 'function') renderRecentRounds(); }
+      else { alert((res && res.msg) || 'No se pudo borrar la partida'); delete borrar.dataset.busy; borrar.innerHTML = icono('papelera') + ' Borrar esta partida'; }
+    });
     const btn = document.getElementById('homeContinuarBtn');
     if(btn) btn.addEventListener('click', async ()=>{
       if(btn.dataset.busy) return;

@@ -23,6 +23,8 @@
   function refreshAdminUI(){
     const btn = document.getElementById('leaguePlayersBtn');
     if(btn) btn.hidden = !getAdminKey();
+    const gm = document.getElementById('greensMapaBtn');
+    if(gm) gm.hidden = !getAdminKey();
     if(typeof renderConvHome === 'function') renderConvHome();
   }
 

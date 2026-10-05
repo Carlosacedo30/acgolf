@@ -65,7 +65,7 @@
             nineGolpes += golpes;
             summaries[pIndex].total += golpes;
             const strokeIndex = parseInt(input.dataset.strokeIndex, 10);
-            const recibidos = strokesForHole(playerHandicaps[pIndex], strokeIndex);
+            const recibidos = strokesForHole(hcpJuego(pIndex), strokeIndex);
             summaries[pIndex].net += golpes - recibidos;
             summaries[pIndex].holesFilled++;
             const diff = golpes - par; // en bruto: para los mensajes de par/birdie "de verdad"
@@ -105,9 +105,9 @@
         const s = summaries[pIndex];
         const netDiff = s.net - currentCoursePar;
         const netDiffStr = s.total > 0 ? (netDiff >= 0 ? '+' + netDiff : netDiff) : '—';
-        const hcp = playerHandicaps[pIndex] || 0;
+        const hcp = Math.round(hcpJuego(pIndex));
         const cls = s.total > 0 ? (netDiff > 0 ? 'over' : netDiff < 0 ? 'under' : 'par') : '';
-        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Hcp ' + hcp + '</div></div>'
+        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Recibe ' + hcp + ' golpes</div></div>'
           + '<div class="sum-tiles">'
           + '<div class="sum-tile main"><div class="v">' + (s.total > 0 ? s.total : '—') + '</div><div class="k">Golpes</div></div>'
           + '<div class="sum-tile"><div class="v">' + (s.total > 0 ? s.net : '—') + '</div><div class="k">Neto</div></div>'
@@ -140,7 +140,15 @@
     const winnerBox = document.getElementById('roundWinner');
     if(winnerSection && winnerBox){
       const roundDone = players.length > 0 && summaries.every(s => s.holesFilled >= 18);
-      if(roundDone){
+      if(roundDone && esParejas()){
+        // Por parejas: gana la pareja que va primera en la clasificación de su modalidad
+        const st = computeStandings().filter(x => x.holesFilled > 0);
+        const top = st[0];
+        const empatan = top ? st.filter(x => formatStandingScore(x) === formatStandingScore(top)) : [];
+        winnerSection.style.display = '';
+        winnerBox.innerHTML = top ? '<div class="pct">🏆</div><p><strong>' + empatan.map(x => x.name.replace(' / ', ' y ')).join(' y ') + '</strong> — ' + WINNER_MESSAGE
+          + ' <span style="color:var(--ink-3, #B9C4D7); font-weight:400;">(' + (empatan.length > 1 ? 'empate, ' : '') + formatStandingScore(top) + ')</span>.</p>' : '';
+      } else if(roundDone){
         const minNet = Math.min(...summaries.map(s => s.net));
         const empatadosNeto = summaries.filter(s => s.net === minNet).length;
         const winners = desempateHcp(players.filter((name, i) => summaries[i].net === minNet));
@@ -155,6 +163,8 @@
         if(selectedCourse && HANDICAP_COURSE_IDS.includes(selectedCourse.id) && !leagueHandicapUpdateScheduled){
           leagueHandicapUpdateScheduled = true;
           setTimeout(()=> runLeagueHandicapUpdate(players.slice()), 1200);
+          // y avisar si alguien de la partida ha ganado una medalla nueva (ver js/medallas.js)
+          if(typeof mostrarMedallasRonda === 'function') setTimeout(()=> mostrarMedallasRonda(players.slice()), 2500);
         }
       } else {
         winnerSection.style.display = 'none';
@@ -165,8 +175,13 @@
     if(shareResultLink && players.length){
       const nets = summaries.map(s => s.net);
       const minNet = Math.min(...nets);
-      const winners = desempateHcp(players.filter((name, i) => summaries[i].holesFilled > 0 && summaries[i].net === minNet));
-      const lines = players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')' + (summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : ''));
+      const stP = esParejas() ? computeStandings().filter(x => x.holesFilled > 0) : [];
+      const winners = esParejas()
+        ? stP.filter(x => formatStandingScore(x) === formatStandingScore(stP[0])).map(x => x.name.replace(' / ', ' y '))
+        : desempateHcp(players.filter((name, i) => summaries[i].holesFilled > 0 && summaries[i].net === minNet));
+      const lines = esParejas()
+        ? computeStandings().map((x, i) => (i + 1) + 'º ' + x.name.replace(' / ', ' y ') + ': ' + formatStandingScore(x))
+        : players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')' + (summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : ''));
       const text = '⛳ ' + (roundName ? roundName + ' · ' : '') + 'Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
         + lines.join('\n') + (winners.length ? '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE : '');
       shareResultLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);

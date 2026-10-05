@@ -28,11 +28,16 @@
     const blank = () => ({ players: [], handicaps: [], scores: {} });
     const arr = Array.isArray(mg) ? mg.slice(0, MAX_GROUPS) : [];
     while(arr.length < MAX_GROUPS) arr.push(blank());
-    return arr.map(g => ({
-      players: Array.isArray(g && g.players) ? g.players : [],
-      handicaps: Array.isArray(g && g.handicaps) ? g.handicaps : [],
-      scores: (g && typeof g.scores === 'object' && g.scores) ? g.scores : {},
-    }));
+    return arr.map(g => {
+      const out = {
+        players: Array.isArray(g && g.players) ? g.players : [],
+        handicaps: Array.isArray(g && g.handicaps) ? g.handicaps : [],
+        scores: (g && typeof g.scores === 'object' && g.scores) ? g.scores : {},
+      };
+      if(g && g.modo && g.modo !== 'individual') out.modo = g.modo; // modalidad por parejas
+      if(g && Array.isArray(g.parejas)) out.parejas = g.parejas;   // foursome: quién forma cada pareja
+      return out;
+    });
   }
 
   function getLocalRoundHistory(){
@@ -68,7 +73,7 @@
       if(error) throw error;
       if(!data){ alert('Clave incorrecta.'); return; }
       try { localStorage.setItem('golfAppAdminKey', key); } catch(e){}
-      alert('Listo: este móvil ya puede borrar partidas sin terminar.');
+      alert('Listo: este móvil ya puede borrar partidas y convocatorias.');
       renderRecentRounds();
     } catch(e){ alert('No se pudo comprobar la clave. Revisa la conexión.'); }
   }
@@ -400,16 +405,17 @@
       const title = escapeHtml(r.roundName || r.courseName || 'Partida');
       const who = r.players.length ? escapeHtml(r.players.map(n => n.split(' ')[0]).join(', ')) + ' · ' : '';
       return '<div class="recent-row"' + (unfinished ? ' style="background:var(--gold-soft-bg); margin:4px -8px; padding:12px; border-top:none; border-radius:14px;"' : '') + '>'
-        + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold-fg)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + who + escapeHtml(r.courseName || 'Campo') + ' · Código ' + escapeHtml(r.code) + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
+        + '<div><div class="club">' + title + (unfinished ? ' · <span style="color:var(--gold-ink, var(--gold-fg)); font-weight:700;">sin terminar</span>' : '') + '</div><div class="date">' + who + escapeHtml(r.courseName || 'Campo') + ' · ' + formatShortDate(r.date.slice(0, 10)) + '</div></div>'
         + '<div style="display:flex; gap:8px; align-items:center; flex:none;">'
-        + (unfinished && isAdmin ? '<div class="delete-btn" data-delete-code="' + escapeHtml(r.code) + '" data-title="' + title + '" title="Borrar partida" aria-label="Borrar partida">Borrar</div>' : '')
+        + (isAdmin ? '<div class="delete-btn" data-delete-code="' + escapeHtml(r.code) + '" data-title="' + title + '" data-terminada="' + (unfinished ? '' : '1') + '" title="Borrar partida" aria-label="Borrar partida">Borrar</div>' : '')
         + '<div class="play-btn" data-code="' + escapeHtml(r.code) + '" style="cursor:pointer;">' + (unfinished ? 'Continuar' : 'Ver') + '</div>'
         + '</div></div>';
     }).join('');
     list.querySelectorAll('.delete-btn[data-delete-code]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         if(btn.dataset.busy) return;
-        if(!confirm('¿Borrar la partida "' + btn.dataset.title + '" (código ' + btn.dataset.deleteCode + ')?\nSe borrará para todos los jugadores y no se puede deshacer.')) return;
+        const aviso = btn.dataset.terminada ? '\nOjo: está terminada. Sus golpes saldrán de la liga y los hándicaps se recalcularán.' : '';
+        if(!confirm('¿Borrar la partida "' + btn.dataset.title + '"?\nSe borrará para todos los jugadores y no se puede deshacer.' + aviso)) return;
         btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
         const res = await deleteSharedRound(btn.dataset.deleteCode);
         if(res.ok){ renderRecentRounds(); }

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. -->
-<html lang="es">
+<html lang="es" data-tema="grafito">
 <head>
 <meta charset="UTF-8">
 <meta name="author" content="Carlos Acedo Domínguez">
@@ -17,8 +17,11 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=51">
-<link rel="stylesheet" href="cuenta.css?v=4">
+<link rel="stylesheet" href="styles.css?v=76">
+<link rel="stylesheet" href="tema-grafito.css?v=9">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&display=swap">
+
+<link rel="stylesheet" href="cuenta.css?v=5">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -64,7 +67,7 @@
       <button type="button" class="np-clear" id="npClear">Borrar golpes</button>
     </div>
   </div>
-  <div class="dots">
+  <div class="dots" hidden style="display:none">
     <button class="dot active" data-goto="0"></button>
     <button class="dot" data-goto="1" hidden></button>
     <button class="dot" data-goto="2"></button>
@@ -94,8 +97,20 @@
           <div class="eyebrow">Ahora mismo</div>
           <div id="homeEnMarcha"></div>
           <div id="convHome"></div>
-          <div class="home-ahora-t" id="homeAhoraT">¿Dónde jugamos hoy?</div>
-          <div class="start-choice">
+          <button type="button" class="pr-abrir" id="prAbrirBtn"><i data-ico="bandera"></i>Crear partida</button>
+          <div class="home-menu">
+            <button type="button" class="home-menu-btn" id="hmLiga"><i data-ico="podio"></i><span>Clasificación liga</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" data-foco="premios"><i data-ico="trofeo"></i><span>Ganadores de la semana</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" data-foco="medallas"><i data-ico="medalla"></i><span>Medallas nuevas</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" id="hmHcp"><i data-ico="balanza"></i><span>Mi hándicap</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" id="hmDiagnostico"><i data-ico="sube"></i><span>¿Cómo jugué?</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" data-foco="recientes"><i data-ico="historial"></i><span>Últimas partidas</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn hm-derbi" id="hmDerbi"><span class="derbi-insignia" aria-hidden="true"><i class="ds"></i><i class="db"></i></span><span>Especial Sevilla – Betis</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" id="hmReglas"><i data-ico="libro"></i><span>Reglas de golf</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" id="hmConsejos"><i data-ico="diana"></i><span>Consejos de golf</span><i data-ico="flecha" class="hm-flecha"></i></button>
+          </div>
+          <div class="home-ahora-t" id="homeAhoraT" style="display:none;">¿Dónde jugamos hoy?</div>
+          <div class="start-choice" style="display:none;">
             <div class="start-choice-opt course-choice" data-course-id="hato-verde" role="button" tabindex="0">
               <div class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="21" x2="7" y2="3"></line><path d="M7 3l10 4-10 4" fill="var(--gold)"></path><ellipse cx="11" cy="21" rx="7" ry="1.5"></ellipse></svg></div>
               <div class="lbl">Hato Verde</div>
@@ -107,18 +122,6 @@
               <div class="sub">Tomares</div>
             </div>
           </div>
-          <div class="start-choice-opt start-choice-code" id="startChoiceCodigo" role="button" tabindex="0">
-            <span class="lbl">Tengo un código</span><span class="sub">· unirme a una partida</span>
-          </div>
-        </section>
-        <section id="joinGameSection" class="home-oscuro" style="display:none;">
-          <div class="eyebrow">Unirse a una partida</div>
-          <div class="section-sub">Escribe el código para anotar los golpes en la misma partida, en vivo.</div>
-          <div class="field-row" style="margin-top:8px;">
-            <div class="field" style="flex:2;"><input type="text" id="joinCodeInput" placeholder="Código, ej. AB12CD" maxlength="6" style="text-transform:uppercase; font-family:'Barlow', sans-serif;"></div>
-            <div class="field" style="flex:0 0 96px; display:flex; align-items:flex-end;"><div class="play-btn" id="joinCodeBtn" style="width:100%; text-align:center; cursor:pointer;">Unirme</div></div>
-          </div>
-          <div class="section-sub" id="joinCodeError" style="display:none; color:var(--clay-fg); margin-top:6px;"></div>
         </section>
         <section id="normasHome" class="normas-card" style="display:none;"></section>
         <section id="createGameSection" style="display:none;">
@@ -162,6 +165,7 @@
             <div class="modality-opt"><div class="radio-dot"><div class="inner"></div></div>Parejas (Foursome)</div>
             <div class="modality-opt"><div class="radio-dot"><div class="inner"></div></div>Mejor bola (Fourball)</div>
           </div>
+          <div class="section-sub modalidad-aviso" id="modalidadAviso" style="display:none;"></div>
         </section>
         <section>
           <div class="eyebrow">Partidas</div>
@@ -221,24 +225,28 @@
         </section>
         <section style="border-bottom:none;"><div class="actions" style="padding:0;"><div class="btn primary full" id="empezarPartidaBtn">Siguiente ›</div></div></section>
         </div>
+        <button type="button" class="home-volver" id="homeVolver">‹ Volver al inicio</button>
+        <section class="home-vacio" id="homeVacio"></section>
         <section class="home-liga" id="homeLigaSemana">
           <div class="eyebrow">La liga esta semana</div>
           <div id="homeLigaBody"><div class="empty-hint">Cargando la clasificación…</div></div>
           <button type="button" class="home-link" id="ligaLinkBtn">Ver la liga completa ›</button>
         </section>
         <section id="premiosHome" class="premios-card" style="display:none;"></section>
+        <section id="medallasHome" class="premios-card medallas-card" style="display:none;"></section>
         <section id="sponsorHome" class="sponsor-card"></section>
-        <section>
+        <section id="homeRecientes">
           <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
         </section>
         <div class="home-pie">
           <div class="home-pie-links">
-            <button type="button" class="home-pie-btn" id="homeNormasBtn">📜 Normas de la liga</button>
-            <button type="button" class="home-pie-btn" id="adminModeBtn">🔑 Modo administrador</button>
+            <button type="button" class="home-pie-btn" id="homeNormasBtn"><i data-ico="libro"></i> Normas de la liga</button>
+            <button type="button" class="home-pie-btn" id="adminModeBtn"><i data-ico="llave"></i> Modo administrador</button>
           </div>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
+          <button type="button" id="greensMapaBtn" class="lp-open-btn" hidden>Greens en el mapa</button>
           <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
         </div>
       </div>
@@ -281,15 +289,19 @@
       <div class="screen-content">
         <div class="app-bar">
           <button type="button" class="back back-btn" id="s3Back">‹ Salir de la partida</button>
-          <h1 id="s3Title">Nueva ronda</h1>
-          <div class="meta" id="s3ScoringMeta">Hoy · Stableford</div>
+          <h1 id="s3Title" hidden>Nueva ronda</h1>
+          <div class="meta" id="s3ScoringMeta" hidden>Hoy · Stableford</div>
         </div>
-        <section id="roundCodeSection" style="display:none;">
-          <div class="round-code-banner">
-            <div class="lbl">Código de esta partida</div>
-            <div class="code" id="roundCodeValue">——————</div>
-            <div class="hint">Compártelo para que otros móviles anoten golpes aquí en vivo</div>
-            <div class="sync-status" id="syncStatus"><div class="dot3"></div><span>Conectando…</span></div>
+        <section id="greenArriba" class="green-arriba">
+            <div id="holeMapCard" class="hole-map-card" style="display:none;">
+            <button type="button" class="hole-map-thumb" id="holeMapThumb" aria-label="Ver el dibujo del hoyo en grande"><img id="holeMapImg" alt=""></button>
+            <div class="hole-map-info">
+              <div class="k">Distancia al green</div>
+              <div class="dist" id="holeGreenDist">—</div>
+              <div class="hint" id="holeGpsHint">Activa el GPS para ver la distancia</div>
+              <button type="button" class="gps-btn" id="holeGpsBtn">Activar GPS</button>
+              <button type="button" class="gps-admin-btn" id="holeSetGreenBtn" hidden>Guardar green aquí</button>
+            </div>
           </div>
         </section>
         <section id="groupSwitchSection" style="display:none;">
@@ -299,6 +311,7 @@
         <section id="holeStripSection" class="hole-strip-section">
           <div class="hole-strip" id="holeStrip" role="tablist" aria-label="Hoyos"></div>
         </section>
+        <section id="marcadorSection" class="marcador-section"><div id="marcadorVivo" class="marcador-vivo"></div></section>
         <section id="holeViewSection">
           <div class="hole-card-header">
             <div class="hole-nav-btn" id="holePrevBtn">‹</div>
@@ -310,20 +323,6 @@
             <div class="hole-nav-btn" id="holeNextBtn">›</div>
           </div>
           <div id="hvPlayers"></div>
-          <div id="holeMapCard" class="hole-map-card" style="display:none;">
-            <button type="button" class="hole-map-thumb" id="holeMapThumb" aria-label="Ver el dibujo del hoyo en grande"><img id="holeMapImg" alt=""></button>
-            <div class="hole-map-info">
-              <div class="k">Distancia al green</div>
-              <div class="dist" id="holeGreenDist">—</div>
-              <div class="hint" id="holeGpsHint">Activa el GPS para ver la distancia</div>
-              <button type="button" class="gps-btn" id="holeGpsBtn">Activar GPS</button>
-              <button type="button" class="gps-admin-btn" id="holeSetGreenBtn" hidden>Guardar green aquí</button>
-            </div>
-          </div>
-        </section>
-        <section>
-          <div class="eyebrow">Clasificación</div>
-          <div id="leaderboardSection"></div>
         </section>
         <section>
           <div class="eyebrow toggle-grid-lbl" id="toggleGridLbl" role="button" tabindex="0">Ver tarjetas completas ▾</div>
@@ -356,6 +355,13 @@
           <div class="pattern" id="roundWinner"></div>
           <div class="helper-note" id="roundMentalNote" style="margin-top:12px;"></div>
           <div id="leagueHandicapUpdateNote" style="display:none; margin-top:12px;"></div>
+          <div id="medallasRondaNote" style="display:none; margin-top:12px;"></div>
+        </section>
+        <section id="roundCodeSection" style="display:none;">
+          <div class="round-code-banner">
+            <div class="code" id="roundCodeValue" style="display:none;"></div>
+            <div class="sync-status" id="syncStatus"><div class="dot3"></div><span>Conectando…</span></div>
+          </div>
         </section>
       </div>
       <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
@@ -366,10 +372,12 @@
       <div class="screen-content">
         <div class="app-bar">
           <button type="button" class="back back-btn" id="s4Back">‹ Volver a la partida</button>
-          <h1>Diagnóstico post-ronda</h1>
+          <h1>¿Cómo jugué?</h1>
           <div class="meta" id="s4Meta">Ronda de hoy</div>
           <div class="score-line" id="s4ScoreLine"><span class="total">—</span><span class="vs">golpes</span><span class="diff">Sin datos</span></div>
         </div>
+        <button type="button" class="home-volver pantalla-volver back-home">‹ Volver al inicio</button>
+        <button type="button" class="home-menu-btn diag-otro" id="diagOtroBtn"><i data-ico="historial"></i><span>Ver la de otro jugador</span><i data-ico="flecha" class="hm-flecha"></i></button>
         <section id="s4ShareSection" style="display:none;">
           <div class="eyebrow">Partida terminada</div>
           <a class="btn primary full share-wa" id="shareResultWhatsapp" href="#" target="_blank" rel="noopener">Compartir resultado por WhatsApp</a>
@@ -415,12 +423,13 @@
       <div class="screen-content">
         <div class="app-bar">
           <button type="button" class="back back-btn back-home">‹ Inicio</button>
-          <h1>Consejos de Golf</h1>
-          <div class="meta">Tu manual de referencia</div>
+          <h1>Consejos de golf</h1>
+          <div class="meta">Tu chuleta para antes, durante y después de jugar</div>
         </div>
+        <button type="button" class="home-volver pantalla-volver back-home">‹ Volver al inicio</button>
         <div id="consejosContent"></div>
       </div>
-      <div class="actions"><div class="btn primary full" id="s7VolverBtn">‹ Volver a Jugar</div></div>
+      <div class="actions"><div class="btn primary full" id="s7VolverBtn">‹ Volver al inicio</div></div>
     </div>
 
     <!-- SCREEN 6: Liga en Club Hato Verde -->
@@ -431,6 +440,7 @@
           <h1>Liga de Los Iscariotes</h1>
           <div class="meta">Iscariote cada semana · campeón del mes por puntos</div>
         </div>
+        <button type="button" class="home-volver pantalla-volver back-home">‹ Volver al inicio</button>
         <section>
           <div class="liga-month">
             <button type="button" class="hole-nav-btn" id="ligaPrevMonth" aria-label="Mes anterior">‹</button>
@@ -450,12 +460,12 @@
           <div id="ligaChampions"></div>
         </section>
       </div>
-      <div class="actions"><div class="btn primary full" id="ligaVolverBtn">‹ Volver a Jugar</div></div>
+      <div class="actions"><div class="btn primary full" id="ligaVolverBtn">‹ Volver al inicio</div></div>
     </div>
 
   </div>
 
-  <div class="flow-nav">
+  <div class="flow-nav" hidden style="display:none">
     <button class="nav-btn" id="prevBtn" disabled>‹ Anterior</button>
     <span class="nav-label" id="navLabel">1. Jugar</span>
     <button class="nav-btn" id="nextBtn">Siguiente ›</button>
@@ -481,6 +491,13 @@
     <button type="button" class="btn ghost full" id="leaguePlayersClose" style="margin-top:12px; display:block; width:100%; background:transparent;">Cerrar</button>
   </div>
 </div>
+<div id="prOverlay" class="modal-overlay pr-overlay" hidden>
+  <div class="modal-card pr-card" role="dialog" aria-label="Crear partida">
+    <button type="button" class="conv-close" id="prClose" aria-label="Cerrar">✕</button>
+    <div class="pr-titulo">Crear partida</div>
+    <div id="prBody"></div>
+  </div>
+</div>
 <div id="convOverlay" class="modal-overlay conv-overlay" hidden>
   <div class="modal-card conv-card" role="dialog" aria-labelledby="convTitle">
     <button type="button" class="conv-close" id="convClose" aria-label="Cerrar">✕</button>
@@ -491,34 +508,100 @@
     <div id="convBody"></div>
   </div>
 </div>
+<div id="greensMapaOverlay" class="modal-overlay derbi-overlay" hidden>
+  <div class="modal-card derbi-card gm-card" role="dialog" aria-labelledby="gmTitulo">
+    <div class="gm-cab">
+      <button type="button" class="conv-close" id="gmCerrar" aria-label="Cerrar">✕</button>
+      <h2 id="gmTitulo">Greens en el mapa</h2>
+      <p>Coloca el centro de cada green desde casa. Así todos ven los metros al green en la partida.</p>
+      <div class="gm-campos"><button type="button" class="gm-campo on" data-c="hato-verde">Hato Verde</button><button type="button" class="gm-campo" data-c="zaudin">Zaudín</button></div>
+      <button type="button" class="dbi-btn dbi-btn-oro gm-traer" id="gmTraer">Traer del mapa libre</button>
+    </div>
+    <div class="gm-estado" id="gmEstado"></div>
+    <div id="gmMapa" class="gm-mapa"></div>
+    <div class="gm-resumen" id="gmResumen"></div>
+    <div class="gm-hoyos" id="gmHoyos"></div>
+    <div class="gm-pie"><button type="button" class="dbi-btn dbi-btn-oro" id="gmGuardar" disabled>Nada que guardar</button></div>
+  </div>
+</div>
+<div id="hcpOverlay" class="modal-overlay derbi-overlay" hidden>
+  <div class="modal-card derbi-card reglas-card hcp-card" role="dialog" aria-labelledby="hcpTitulo">
+    <div class="reglas-cab">
+      <button type="button" class="conv-close" id="hcpCerrar" aria-label="Cerrar">✕</button>
+      <div class="derbi-cab-k">Liga Los Iscariotes</div>
+      <h2 id="hcpTitulo">Mi hándicap</h2>
+      <p>Cuánto tenías, cuánto tienes ahora y por qué ha cambiado.</p>
+    </div>
+    <button type="button" class="home-volver pantalla-volver" id="hcpVolver">‹ Volver al inicio</button>
+    <div id="hcpBody"></div>
+    <button type="button" class="home-volver pantalla-volver" id="hcpVolver2">‹ Volver al inicio</button>
+  </div>
+</div>
+<div id="reglasOverlay" class="modal-overlay derbi-overlay" hidden>
+  <div class="modal-card derbi-card reglas-card" role="dialog" aria-labelledby="reglasTitulo">
+    <div class="reglas-cab">
+      <button type="button" class="conv-close" id="reglasCerrar" aria-label="Cerrar">✕</button>
+      <div class="derbi-cab-k">Explicadas fácil</div>
+      <h2 id="reglasTitulo">Reglas de golf</h2>
+      <p>Lo que hay que saber en el campo: cuándo hay alivio gratis, cuándo cuesta un golpe y cuándo dos.</p>
+    </div>
+    <button type="button" class="home-volver pantalla-volver" id="reglasVolver">‹ Volver al inicio</button>
+    <div id="reglasBody"></div>
+    <button type="button" class="home-volver pantalla-volver" id="reglasVolver2">‹ Volver al inicio</button>
+  </div>
+</div>
+<div id="derbiOverlay" class="modal-overlay derbi-overlay" hidden>
+  <div class="modal-card derbi-card" role="dialog" aria-labelledby="derbiTitulo">
+    <div class="derbi-cab">
+      <div class="derbi-cab-franjas" aria-hidden="true"><i class="ds"></i><i class="db"></i></div>
+      <button type="button" class="conv-close" id="derbiCerrar" aria-label="Cerrar">✕</button>
+      <div class="derbi-cab-txt">
+        <div class="derbi-cab-vs" id="derbiCabVs"></div>
+        <div class="derbi-cab-k">Los Iscariotes presentan</div>
+        <h2 id="derbiTitulo">Especial Sevilla – Betis</h2>
+      </div>
+    </div>
+    <div id="derbiBody"></div>
+    <button type="button" class="home-volver pantalla-volver" id="derbiVolver">‹ Volver al inicio</button>
+  </div>
+</div>
 <div id="holeMapOverlay" class="hole-map-overlay" hidden>
   <img id="holeMapBig" alt="">
   <button type="button" id="holeMapClose" class="hole-map-close">Cerrar</button>
 </div>
-<script src="js/data.js?v=28"></script>
-<script src="js/players.js?v=29"></script>
-<script src="js/rondas-compartidas.js?v=32"></script>
+<script src="js/iconos.js?v=3"></script>
+<script src="js/data.js?v=29"></script>
+<script src="js/players.js?v=31"></script>
+<script src="js/rondas-compartidas.js?v=35"></script>
 <script src="cuenta.js?v=2"></script>
 <script src="js/historial-jugadores.js?v=28"></script>
 <script src="js/scorecard.js?v=28"></script>
-<script src="js/navigation.js?v=28"></script>
-<script src="js/diagnostico.js?v=28"></script>
-<script src="js/interactions.js?v=28"></script>
-<script src="js/resultados.js?v=28"></script>
-<script src="js/vista-hoyo.js?v=35"></script>
-<script src="js/tarjetas.js?v=2"></script>
+<script src="js/navigation.js?v=31"></script>
+<script src="js/diagnostico.js?v=31"></script>
+<script src="js/interactions.js?v=32"></script>
+<script src="js/resultados.js?v=31"></script>
+<script src="js/vista-hoyo.js?v=39"></script>
+<script src="js/tarjetas.js?v=4"></script>
 <script src="js/caddie.js?v=3"></script>
 <script src="js/caddie-habla.js?v=1"></script>
-<script src="js/patrocinador.js?v=4"></script>
-<script src="js/premios.js?v=3"></script>
-<script src="js/consejos.js?v=28"></script>
-<script src="js/liga.js?v=31"></script>
+<script src="js/patrocinador.js?v=5"></script>
+<script src="js/premios.js?v=4"></script>
+<script src="js/consejos.js?v=29"></script>
+<script src="js/liga.js?v=32"></script>
 <script src="js/gps-hoyo.js?v=3"></script>
-<script src="js/jugadores-liga.js?v=4"></script>
-<script src="js/normas.js?v=3"></script>
-<script src="js/convocatoria.js?v=6"></script>
-<script src="js/portada.js?v=1"></script>
+<script src="js/jugadores-liga.js?v=5"></script>
+<script src="js/normas.js?v=4"></script>
+<script src="js/convocatoria.js?v=10"></script>
+<script src="js/portada.js?v=4"></script>
+<script src="js/home-menu.js?v=7"></script>
+<script src="js/partida-rapida.js?v=4"></script>
+<script src="js/greens-mapa.js?v=1"></script>
+<script src="js/reglas.js?v=2"></script>
+<script src="js/handicap.js?v=3"></script>
+<script src="js/derbi.js?v=4"></script>
+<script src="js/medallas.js?v=3"></script>
 
+<script src="cuenta-ajustes.js?v=1"></script>
 <script src="grupos.js?v=1"></script>
 <script src="marcador.js?v=1"></script>
 <div class="pr-banda">Pruebas</div>
