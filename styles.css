@@ -1266,3 +1266,55 @@
   .message-toast{ top:auto; bottom:calc(env(safe-area-inset-bottom, 0px) + 96px); transform:translateX(-50%) translateY(16px); }
   .message-toast.show{ transform:translateX(-50%) translateY(0); }
   .diag-otro{ width:calc(100% - 28px); margin:8px 14px 4px; min-height:60px; font-size:17px; }
+
+  /* ===== Especial Sevilla – Betis (colores de cada equipo, sin escudos oficiales) ===== */
+  .hm-derbi{ background:linear-gradient(100deg, #8E0C06 0%, #8E0C06 49.6%, #06683A 50.4%, #06683A 100%) !important; border-color:#F6F1E4 !important; }
+  .derbi-insignia{ position:relative; width:34px; height:34px; flex:none; border-radius:50%; overflow:hidden; display:flex; box-shadow:0 0 0 2px #F6F1E4; }
+  .derbi-insignia i, .derbi-cab-franjas i{ flex:1; display:block; }
+  .derbi-insignia .ds, .derbi-cab-franjas .ds{ background:repeating-linear-gradient(90deg, #D2140A 0 5px, #FFFFFF 5px 9px); }
+  .derbi-insignia .db, .derbi-cab-franjas .db{ background:repeating-linear-gradient(90deg, #0A9B4E 0 5px, #FFFFFF 5px 9px); }
+  .derbi-overlay{ padding:0; align-items:stretch; }
+  .derbi-card{ max-width:none; width:100%; min-height:100%; border-radius:0; padding:0 0 24px; overflow-y:auto; background:#0B1830; color:#F6F1E4; position:relative; }
+  .derbi-cab{ position:relative; min-height:210px; display:flex; align-items:flex-end; overflow:hidden; }
+  .derbi-cab-franjas{ position:absolute; inset:0; display:flex; opacity:.9; }
+  .derbi-cab::after{ content:''; position:absolute; inset:0; background:linear-gradient(180deg, rgba(11,24,48,.15) 0%, rgba(11,24,48,.92) 78%); }
+  .derbi-cab .conv-close{ z-index:2; }
+  .derbi-cab-txt{ position:relative; z-index:1; padding:56px 20px 18px; width:100%; }
+  .derbi-cab-k{ font:800 13px 'Barlow', sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#E8C45A; }
+  .derbi-cab h2{ margin:6px 0 10px; font-family:'Anton', Impact, sans-serif; font-weight:400; font-size:42px; line-height:.98; text-transform:uppercase; color:#FFFFFF; }
+  .derbi-cab-vs{ display:flex; align-items:center; gap:12px; font:800 18px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.06em; }
+  .derbi-cab-vs b{ font-family:'Anton', Impact, sans-serif; font-weight:400; color:#E8C45A; font-size:22px; }
+  .dvs-s{ background:#D2140A; color:#FFF; padding:4px 12px; border-radius:999px; }
+  .dvs-b{ background:#0A9B4E; color:#FFF; padding:4px 12px; border-radius:999px; }
+  #derbiBody{ padding:0 16px; }
+  .dbi-intro{ margin-top:16px; padding:14px 16px; border-radius:18px; background:#15294D; font:500 17px/1.45 'Barlow', sans-serif; }
+  .dbi-intro p{ margin:0 0 8px; } .dbi-intro p:last-child{ margin:0; }
+  .dbi-balanza{ display:flex; align-items:center; gap:12px; margin-top:16px; }
+  .dbi-bal-num{ display:flex; flex-direction:column; align-items:center; min-width:58px; }
+  .dbi-bal-num b{ font:800 34px/1 'Barlow', sans-serif; } .dbi-bal-num span{ font:700 13px 'Barlow', sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#B9C3D4; }
+  .dbi-bal-barra{ flex:1; height:16px; border-radius:999px; background:#0A9B4E; overflow:hidden; box-shadow:inset 0 0 0 2px rgba(255,255,255,.25); }
+  .dbi-bal-barra i{ display:block; height:100%; background:#D2140A; border-right:3px solid #FFFFFF; transition:width .3s; }
+  .dbi-consejo{ margin-top:10px; text-align:center; font:600 15px/1.35 'Barlow', sans-serif; color:#E8C45A; }
+  .dbi-cols{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; margin-top:16px; }
+  .dbi-col{ border-radius:18px; overflow:hidden; background:#122546; }
+  .dbi-col-h{ display:flex; align-items:center; gap:10px; padding:12px; color:#FFFFFF; }
+  .dbi-sevilla .dbi-col-h{ background:#B3110A; } .dbi-betis .dbi-col-h{ background:#08854A; }
+  .dbi-col-h b{ display:block; font:800 20px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.04em; }
+  .dbi-col-h small{ display:block; font:600 12.5px/1.25 'Barlow', sans-serif; opacity:.9; }
+  .dbi-escudo{ width:26px; height:30px; flex:none; border-radius:4px 4px 13px 13px; box-shadow:0 0 0 2px #FFFFFF; }
+  .dbi-sevilla .dbi-escudo{ background:repeating-linear-gradient(90deg, #D2140A 0 4px, #FFFFFF 4px 8px); }
+  .dbi-betis .dbi-escudo{ background:repeating-linear-gradient(90deg, #0A9B4E 0 4px, #FFFFFF 4px 8px); }
+  .dbi-lista{ display:flex; flex-direction:column; padding:6px; gap:4px; }
+  .dbi-jug{ display:flex; justify-content:space-between; align-items:center; gap:6px; min-height:42px; padding:6px 10px; border-radius:10px; background:#15294D; border:none; color:#F6F1E4; font:700 16px 'Barlow', sans-serif; text-align:left; }
+  .dbi-jug em{ font-style:normal; color:#E8C45A; font-size:13px; }
+  .dbi-jug b{ color:#B9C3D4; font-size:14px; flex:none; }
+  button.dbi-mover{ cursor:pointer; }
+  .dbi-vacio{ padding:10px; text-align:center; color:#8FA0BC; font-size:15px; }
+  .dbi-nota{ margin-top:8px; font-size:14px; color:#B9C3D4; text-align:center; }
+  .dbi-botones{ display:flex; flex-direction:column; gap:10px; margin:18px 0 6px; }
+  .dbi-btn{ display:flex; align-items:center; justify-content:center; min-height:64px; border:none; border-radius:18px; font:800 19px 'Barlow', sans-serif; letter-spacing:.03em; text-transform:uppercase; color:#FFFFFF; cursor:pointer; text-decoration:none; }
+  .dbi-btn-sevilla{ background:#D2140A; } .dbi-btn-betis{ background:#0A9B4E; }
+  .dbi-btn-quitar{ background:transparent; box-shadow:inset 0 0 0 2px #8FA6CF; color:#C9D3E4; font-size:16px; min-height:54px; }
+  .dbi-btn-wa{ background:#1F7A4D; font-size:16px; min-height:54px; text-transform:none; letter-spacing:0; }
+  .derbi-card .pantalla-volver{ margin-top:6px; }
+  .home-menu-btn span.derbi-insignia{ flex:0 0 34px; width:34px; min-width:0; }
