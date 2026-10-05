@@ -55,7 +55,10 @@
         if(hv) selectCourse(hv);
         document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.toggle('active', o.dataset.courseId === 'hato-verde'));
       }
-      updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(true); n = 0;
+      // El formulario largo de "Configurar partida" queda escondido: se crea siempre con la partida rápida
+      updateLeagueHandicaps(); setDefaultRoundDateTime(); showConfigBlock(false);
+      if(typeof prAbrir === 'function') prAbrir();
+      n = 0;
     }
     else if(n === 0){ showConfigBlock(false); document.querySelectorAll('.start-choice-opt').forEach(o => o.classList.remove('active')); }
     current = n; render(); if(n === 4) renderDiagnostico(); if(n === 0) renderRecentRounds(); if(n === 5) renderConsejos(); if(n === 6){ ligaRoundsCache = null; renderLigaStandings(); } }
