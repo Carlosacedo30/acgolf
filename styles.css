@@ -1051,3 +1051,13 @@
   .med-aviso-fila{ cursor:pointer; }
   .med-aviso-fila span{ color:#C9D3E4; }
   .med-fila-icos{ width:66px; flex:0 0 66px; max-width:66px; font-size:20px; letter-spacing:1px; white-space:normal; text-align:left; }
+  /* Partida rápida: teclas de opciones y grupos */
+  .pr-op-t{ font:700 15px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.06em; color:#E8C45A; margin:14px 0 6px; }
+  .pr-teclas{ display:flex; gap:8px; }
+  .pr-tecla{ flex:1; min-height:58px; padding:6px 4px; border:2px solid #2A4373; border-radius:14px; background:#15294D; color:#F6F1E4; font:700 18px 'Barlow', sans-serif; cursor:pointer; line-height:1.1; }
+  .pr-tecla.on{ border-color:#D4AF37; background:#D4AF37; color:#0E1F3D; }
+  .pr-tecla small{ display:block; font-size:13px; font-weight:600; opacity:.8; }
+  .pr-gtabs{ margin:-4px 0 12px; }
+  .pr-jug.otro{ opacity:.55; }
+  .pr-jug.otro .pr-check{ font-size:13px; }
+  .pr-r-grupo{ font:700 14px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.06em; color:#E8C45A; margin-top:10px; }
