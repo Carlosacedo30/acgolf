@@ -35,6 +35,44 @@
     if(liga) liga.addEventListener('click', ()=>{ homeFoco(null); goTo(6); });
     const consejos = document.getElementById('hmConsejos');
     if(consejos) consejos.addEventListener('click', ()=>{ homeFoco(null); goTo(5); });
+    const diag = document.getElementById('hmDiagnostico');
+    if(diag) diag.addEventListener('click', ()=> abrirUltimaPartida(diag));
     const volver = document.getElementById('homeVolver');
     if(volver) volver.addEventListener('click', ()=> homeFoco(null));
   })();
+
+  // "Mi última partida": abre el diagnóstico (cifras, hoyo a hoyo, hoyos a revisar y plan) de la última
+  // partida terminada en la que jugaste tú (el nombre que este móvil tiene elegido); si no se sabe, la última terminada.
+  async function abrirUltimaPartida(btn){
+    if(btn.dataset.busy) return;
+    const client = (typeof initSupabase === 'function') ? initSupabase() : null;
+    if(!client){ alert('Sin conexión: no se puede abrir la última partida.'); return; }
+    const span = btn.querySelector('span'); const txt = span ? span.textContent : '';
+    btn.dataset.busy = '1'; if(span) span.textContent = 'Buscando…';
+    try {
+      let yo = ''; try { yo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
+      const clave = n => String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toUpperCase();
+      const { data, error } = await client.from('rounds').select('code, match_groups, updated_at')
+        .not('course_id', 'is', null).order('updated_at', { ascending: false }).limit(40);
+      if(error || !data) throw error;
+      const terminadas = data.filter(r => isRoundFinished(r.match_groups));
+      const conmigo = yo ? terminadas.find(r => (r.match_groups || []).some(g => (g.players || []).some(n => clave(n) === clave(yo) || String(n).split(' / ').some(m => clave(m) === clave(yo))))) : null;
+      const ronda = conmigo || terminadas[0];
+      if(!ronda){ alert('Todavía no hay ninguna partida terminada.'); return; }
+      const res = await joinSharedRound(ronda.code);
+      if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo abrir la partida.'); return; }
+      // Ponerse en el grupo y en la pestaña de este jugador
+      if(yo){
+        const gi = matchGroups.findIndex(g => (g.players || []).some(n => clave(n) === clave(yo) || String(n).split(' / ').some(m => clave(m) === clave(yo))));
+        if(gi > 0 && typeof switchGroup === 'function') switchGroup(gi);
+        const pi = players.findIndex(n => clave(n) === clave(yo) || String(n).split(' / ').some(m => clave(m) === clave(yo)));
+        if(pi >= 0) diagActivePlayer = pi;
+      }
+      roundMarkedFinished = true; // terminada: se puede compartir el resultado
+      goTo(4);
+    } catch(e){
+      alert('No se pudo abrir la última partida. Revisa tu conexión.');
+    } finally {
+      delete btn.dataset.busy; if(span) span.textContent = txt;
+    }
+  }

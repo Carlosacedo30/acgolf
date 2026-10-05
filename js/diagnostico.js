@@ -166,7 +166,7 @@
     const backEl = document.getElementById('s4Back');
     const metaEl = document.getElementById('s4Meta');
     const multiGroup = matchGroups.filter(g => g.players.length).length > 1;
-    if(metaEl) metaEl.textContent = 'Ronda de hoy · ' + name + (multiGroup ? ' · Grupo ' + (activeGroup + 1) : '');
+    if(metaEl) metaEl.textContent = (roundName || 'Ronda de hoy') + ' · ' + String(name).replace(' / ', ' y ') + (multiGroup ? ' · Grupo ' + (activeGroup + 1) : '');
     const scoreLine = document.getElementById('s4ScoreLine');
     if(scoreLine){
       scoreLine.innerHTML = holes.length
