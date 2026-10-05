@@ -2,6 +2,7 @@
   // --- Iconos de la app: dibujos de línea fina (en lugar de los emojis de WhatsApp) ---
   // Toman el color del texto que los rodea. Uso: icono('trofeo') o icono('trofeo', 'clase-extra').
   const ICONOS = {
+    balanza:  '<path d="M12 3v18"/><path d="M7 21h10"/><path d="M4 7h16"/><path d="M4 7l-3 7a3.5 3.5 0 0 0 6 0z"/><path d="M20 7l-3 7a3.5 3.5 0 0 0 6 0z"/>',
     bandera:  '<path d="M5 22V3"/><path d="M5 4h12l-2.5 4.5L17 13H5"/><ellipse cx="9" cy="21.5" rx="5" ry="0.8"/>',
     podio:    '<path d="M3 21h18"/><path d="M9.5 21V8h5v13"/><path d="M4 21v-8h5.5"/><path d="M14.5 21V11H20v10"/><path d="M12 3.2l.7 1.4 1.5.2-1.1 1 .3 1.5-1.4-.7-1.4.7.3-1.5-1.1-1 1.5-.2z"/>',
     trofeo:   '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
