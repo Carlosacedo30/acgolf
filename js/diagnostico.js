@@ -1,6 +1,6 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
-  const DIAG_CATEGORIES = ['Drive', 'Approach', 'Juego corto', 'Putt'];
+  const DIAG_CATEGORIES = ['Drive', 'Approach', 'Aproximación a green', 'Putt'];
   // Consejos de "Consejos de Golf" del usuario, uno por categoría de fallo
   const DIAG_TIPS = {
     'Drive': [
@@ -13,7 +13,7 @@
       'Lie de subida: un palo más, peso en pie derecho, apunta a la derecha, pega hacia arriba.',
       'Lie de bajada: un palo menos, peso en pie izquierdo, apunta a la izquierda, pega hacia abajo.',
     ],
-    'Juego corto': [
+    'Aproximación a green': [
       'Desde 100 yardas o menos: medio tiro, suave, con confianza — evita el hinge, ve muy abajo.',
       'Alrededor del green: usa PW o hierro 9, es más fácil y consistente.',
       'Recovery shot: pelota atrás, manos adelante, pega vertical.',
