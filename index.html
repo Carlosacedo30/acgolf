@@ -15,8 +15,8 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=75">
-<link rel="stylesheet" href="tema-grafito.css?v=7">
+<link rel="stylesheet" href="styles.css?v=76">
+<link rel="stylesheet" href="tema-grafito.css?v=8">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&display=swap">
 
 </head>
@@ -242,6 +242,7 @@
             <button type="button" class="home-pie-btn" id="adminModeBtn"><i data-ico="llave"></i> Modo administrador</button>
           </div>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
+          <button type="button" id="greensMapaBtn" class="lp-open-btn" hidden>Greens en el mapa</button>
           <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
         </div>
       </div>
@@ -503,6 +504,22 @@
     <div id="convBody"></div>
   </div>
 </div>
+<div id="greensMapaOverlay" class="modal-overlay derbi-overlay" hidden>
+  <div class="modal-card derbi-card gm-card" role="dialog" aria-labelledby="gmTitulo">
+    <div class="gm-cab">
+      <button type="button" class="conv-close" id="gmCerrar" aria-label="Cerrar">✕</button>
+      <h2 id="gmTitulo">Greens en el mapa</h2>
+      <p>Coloca el centro de cada green desde casa. Así todos ven los metros al green en la partida.</p>
+      <div class="gm-campos"><button type="button" class="gm-campo on" data-c="hato-verde">Hato Verde</button><button type="button" class="gm-campo" data-c="zaudin">Zaudín</button></div>
+      <button type="button" class="dbi-btn dbi-btn-oro gm-traer" id="gmTraer">Traer del mapa libre</button>
+    </div>
+    <div class="gm-estado" id="gmEstado"></div>
+    <div id="gmMapa" class="gm-mapa"></div>
+    <div class="gm-resumen" id="gmResumen"></div>
+    <div class="gm-hoyos" id="gmHoyos"></div>
+    <div class="gm-pie"><button type="button" class="dbi-btn dbi-btn-oro" id="gmGuardar" disabled>Nada que guardar</button></div>
+  </div>
+</div>
 <div id="reglasOverlay" class="modal-overlay derbi-overlay" hidden>
   <div class="modal-card derbi-card reglas-card" role="dialog" aria-labelledby="reglasTitulo">
     <div class="reglas-cab">
@@ -554,12 +571,13 @@
 <script src="js/consejos.js?v=29"></script>
 <script src="js/liga.js?v=32"></script>
 <script src="js/gps-hoyo.js?v=3"></script>
-<script src="js/jugadores-liga.js?v=4"></script>
+<script src="js/jugadores-liga.js?v=5"></script>
 <script src="js/normas.js?v=4"></script>
 <script src="js/convocatoria.js?v=10"></script>
 <script src="js/portada.js?v=4"></script>
 <script src="js/home-menu.js?v=7"></script>
 <script src="js/partida-rapida.js?v=4"></script>
+<script src="js/greens-mapa.js?v=1"></script>
 <script src="js/reglas.js?v=2"></script>
 <script src="js/derbi.js?v=3"></script>
 <script src="js/medallas.js?v=3"></script>
