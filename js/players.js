@@ -33,9 +33,21 @@
     if(modoPartida() !== 'fourball') return 1;
     return (typeof scoringType !== 'undefined' && scoringType === 'matchplay') ? 0.9 : 0.85;
   }
-  // Hándicap con el que se juega de verdad (ya con el porcentaje de la modalidad)
-  function ajusteHcp(h){
+  // Dificultad oficial de cada campo de la liga (barras amarillas). Hato Verde ya con el hoyo 6 de par 3.
+  // Debe coincidir con la función hcp_campo de la base de datos.
+  const CAMPO_DIFICULTAD = { 'hato-verde': { cr: 68.3, sl: 122 }, 'zaudin': { cr: 70.5, sl: 133 } };
+  // Hándicap de campo (regla oficial): hándicap × slope ÷ 113 + (rating − par). Sin datos del campo, el hándicap tal cual.
+  function hcpCampo(h, curso){
     const v = Number(h) || 0;
+    const c = curso || (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
+    const d = c && CAMPO_DIFICULTAD[c.id];
+    if(!d || !Array.isArray(c.par)) return v;
+    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0);
+    return Math.round(v * d.sl / 113 + (d.cr - par));
+  }
+  // Hándicap con el que se juega de verdad: el del campo y, encima, el porcentaje de la modalidad
+  function ajusteHcp(h){
+    const v = hcpCampo(h);
     const f = factorHcpModo();
     return f === 1 ? v : Math.round(v * f * 10) / 10;
   }

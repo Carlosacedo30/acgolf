@@ -267,7 +267,7 @@
         }
         const n = Math.max(0, recibidos);
         const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
-        const hcpTxt = fourball ? 'Juega ' + String(hcpJuego(pIndex)).replace('.', ',') : 'Hcp ' + String(playerHandicaps[pIndex] || 0).replace('.', ',');
+        const hcpTxt = 'Recibe ' + Math.round(hcpJuego(pIndex)); // golpes de regalo en este campo (y con el % de la modalidad)
         return '<div class="hv-cell' + (!fourball && rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + (fourball && cuenta.has(pIndex) ? ' cuenta' : '') + '">'
           // Una fila por jugador: a la izquierda quién es y su par; a la derecha la casilla grande y el resultado
           + '<div class="hv-info">'

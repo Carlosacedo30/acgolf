@@ -105,9 +105,9 @@
         const s = summaries[pIndex];
         const netDiff = s.net - currentCoursePar;
         const netDiffStr = s.total > 0 ? (netDiff >= 0 ? '+' + netDiff : netDiff) : '—';
-        const hcp = playerHandicaps[pIndex] || 0;
+        const hcp = Math.round(hcpJuego(pIndex));
         const cls = s.total > 0 ? (netDiff > 0 ? 'over' : netDiff < 0 ? 'under' : 'par') : '';
-        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Hcp ' + hcp + '</div></div>'
+        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Recibe ' + hcp + ' golpes</div></div>'
           + '<div class="sum-tiles">'
           + '<div class="sum-tile main"><div class="v">' + (s.total > 0 ? s.total : '—') + '</div><div class="k">Golpes</div></div>'
           + '<div class="sum-tile"><div class="v">' + (s.total > 0 ? s.net : '—') + '</div><div class="k">Neto</div></div>'

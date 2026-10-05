@@ -143,14 +143,14 @@
     if(!derbi || !derbi.roundCode) return;
     const client = initSupabase(); if(!client) return;
     try {
-      const { data } = await client.from('rounds').select('match_groups, course_par, course_hcp').eq('code', derbi.roundCode).single();
+      const { data } = await client.from('rounds').select('match_groups, course_par, course_hcp, course_id').eq('code', derbi.roundCode).single();
       if(!data) return;
       const par = data.course_par || [], si = data.course_hcp || [];
       const tot = { sevilla: [], betis: [] };
       let hoyosMax = 0;
       (data.match_groups || []).forEach(g => (g.players || []).forEach((n, i) => {
         if(!n) return;
-        const sc = (g.scores || {})[i] || {}; const h = Number((g.handicaps || [])[i]) || 0;
+        const sc = (g.scores || {})[i] || {}; const h = hcpCampo(Number((g.handicaps || [])[i]) || 0, { id: data.course_id, par });
         let dif = 0, jugados = 0;
         for(let k = 1; k <= 18; k++){
           const gl = parseInt(sc[k], 10); if(isNaN(gl) || gl <= 0) continue;

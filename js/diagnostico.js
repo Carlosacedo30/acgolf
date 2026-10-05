@@ -102,7 +102,7 @@
     if(!section || !box) return;
     if(!holes.length){ section.style.display = 'none'; return; }
     section.style.display = '';
-    const hcp = playerHandicaps[pIndex] || 0;
+    const hcp = hcpJuego(pIndex); // golpes de regalo de verdad en este campo
     let pts = 0, birdies = 0, pars = 0, bogeys = 0, dobles = 0, ida = 0, vuelta = 0, idaN = 0, vueltaN = 0;
     holes.forEach(h => {
       const rec = isNaN(h.si) ? 0 : strokesForHole(hcp, h.si);

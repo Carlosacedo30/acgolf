@@ -123,12 +123,13 @@
           return '<div class="hp-tj"><span>' + hFecha(t.played_at) + ' · ' + hEsc(cp.n) + '</span><span>' + t.ags + ' golpes aj.</span><b>' + hNum(t.diferencial) + '</b></div>';
         }).join('') + '</div>' : '')
 
-      + '<details class="rg-item hp-como"><summary><span class="rg-st"><b>¿Cómo se calcula? Explicado fácil</b><small>La regla de la Federación, en 4 pasos</small></span><span class="rg-mas" aria-hidden="true"></span></summary>'
+      + '<details class="rg-item hp-como"><summary><span class="rg-st"><b>¿Cómo se calcula? Explicado fácil</b><small>La regla de la Federación, en 5 pasos</small></span><span class="rg-mas" aria-hidden="true"></span></summary>'
       + '<ul class="rg-pasos">'
       + '<li><b>Golpes ajustados.</b> En cada hoyo, como máximo cuenta un doble bogey más los golpes que te regala tu hándicap. Así un hoyo desastroso no te hunde.</li>'
       + '<li><b>La dificultad del campo.</b> Cada campo tiene dos números: Hato Verde 68,3 y 122; Zaudín 70,5 y 133. Zaudín es más difícil, así que el mismo resultado allí vale más.</li>'
       + '<li><b>El diferencial.</b> Con eso, cada tarjeta da un número: (golpes ajustados − 68,3) × 113 ÷ 122 en Hato Verde. Cuanto más bajo, mejor jugaste.</li>'
       + '<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
+      + '<li><b>Los golpes de regalo.</b> En cada partida recibes los golpes que te tocan en ese campo: tu hándicap × slope ÷ 113 + (rating − par). En Hato Verde salen casi los mismos que tu hándicap; en Zaudín, unos cuantos más porque es más difícil.</li>'
       + '</ul></details>'
 
       + hcpTodos();

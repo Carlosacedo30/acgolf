@@ -150,7 +150,7 @@
       const neto = bruto - tjSuma(jugadosL, 'rec');
       const diff = tjSuma(jugadosL, 'diff');
       return '<div class="tj-card">'
-        + '<div class="tj-head"><div class="tj-nombre">' + tjEsc(String(name).replace(' / ', ' y ')) + '</div><div class="tj-hcp">' + (String(name).includes(' / ') ? 'Hcp pareja ' : 'Hcp ') + tjHcpTxt(d.hcp) + '</div></div>'
+        + '<div class="tj-head"><div class="tj-nombre">' + tjEsc(String(name).replace(' / ', ' y ')) + '</div><div class="tj-hcp">' + 'Recibe ' + Math.round(d.hcp) + ' golpes' + '</div></div>'
         + tjMitad(pIndex, ida, 'Ida', stableford)
         + tjMitad(pIndex, vuelta, 'Vuelta', stableford)
         + '<div class="tj-total">'
