@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. -->
-<html lang="es">
+<html lang="es" data-tema="grafito">
 <head>
 <meta charset="UTF-8">
 <meta name="author" content="Carlos Acedo Domínguez">
@@ -16,16 +16,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=73">
-<link rel="stylesheet" href="tema-grafito.css?v=3">
+<link rel="stylesheet" href="tema-grafito.css?v=4">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&display=swap">
-<script>
-/* Diseño de prueba: ?tema=grafito lo activa en este móvil, ?tema=normal lo quita */
-(function(){ try {
-  var q = new URLSearchParams(location.search).get('tema');
-  if(q === 'grafito' || q === 'normal'){ localStorage.setItem('acgolfTema', q); }
-  if(localStorage.getItem('acgolfTema') === 'grafito') document.documentElement.setAttribute('data-tema', 'grafito');
-} catch(e){} })();
-</script>
+
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -248,7 +241,6 @@
             <button type="button" class="home-pie-btn" id="adminModeBtn"><i data-ico="llave"></i> Modo administrador</button>
           </div>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
-          <div class="tema-pie" id="temaPie" hidden><button type="button" data-tema="normal">Diseño normal</button><button type="button" data-tema="grafito">Grafito (prueba)</button></div>
           <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
         </div>
       </div>
@@ -552,7 +544,7 @@
 <script src="js/normas.js?v=4"></script>
 <script src="js/convocatoria.js?v=10"></script>
 <script src="js/portada.js?v=4"></script>
-<script src="js/home-menu.js?v=6"></script>
+<script src="js/home-menu.js?v=7"></script>
 <script src="js/partida-rapida.js?v=4"></script>
 <script src="js/derbi.js?v=3"></script>
 <script src="js/medallas.js?v=3"></script>
