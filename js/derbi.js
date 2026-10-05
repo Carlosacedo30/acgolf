@@ -65,14 +65,19 @@
     return false;
   }
 
-  async function derbiApuntar(equipo){
+  async function derbiApuntar(equipo, btn){
+    if(derbiOcupado) return;
     let yo = derbiYo();
     if(!yo && typeof elegirQuienEres === 'function') yo = await elegirQuienEres();
     if(!yo) return;
+    derbiOcupado = true;
+    if(btn){ btn.classList.add('guardando'); const sp = btn.querySelector('span'); if(sp) sp.textContent = 'Guardando…'; }
     await derbiMutate(d => {
       d.sevilla = d.sevilla.filter(n => n !== yo); d.betis = d.betis.filter(n => n !== yo);
       if(equipo) d[equipo].push(yo);
     });
+    derbiOcupado = false;
+    derbiPintar();
   }
   async function derbiMover(nombre){ // solo administrador: pasar a un jugador al otro equipo
     const deSevilla = derbi && derbi.sevilla.includes(nombre);
@@ -181,18 +186,40 @@
     const eq = DERBI_EQ[k];
     const lista = d[k];
     return '<div class="dbi-col dbi-' + k + '">'
-      + '<div class="dbi-col-h"><span class="dbi-escudo" aria-hidden="true"></span><div><b>' + eq.nombre + '</b><small>' + lista.length + (lista.length === 1 ? ' jugador' : ' jugadores') + ' · hcp medio ' + derbiNum(derbiMedia(lista)) + '</small></div></div>'
+      + '<div class="dbi-col-h">' + derbiEscudo(k, 30) + '<div><b>' + eq.nombre + '</b><small>' + lista.length + (lista.length === 1 ? ' jugador' : ' jugadores') + ' · hcp medio ' + derbiNum(derbiMedia(lista)) + '</small></div></div>'
       + '<div class="dbi-lista">' + (lista.length ? lista.map(n => {
           const h = derbiHcp(n);
           const tag = admin ? 'button type="button" class="dbi-jug dbi-mover" data-n="' + derbiEsc(n) + '" aria-label="Pasar a ' + derbiEsc(n) + ' al otro equipo"' : 'div class="dbi-jug"';
           const cierre = admin ? 'button' : 'div';
           return '<' + tag + '><span>' + derbiEsc(derbiCorto(n)) + (n === yo ? ' <em>(tú)</em>' : '') + '</span><b>' + (h === null ? '' : derbiNum(h)) + '</b></' + cierre + '>';
         }).join('') : '<div class="dbi-vacio">Todavía nadie</div>') + '</div>'
+      + (admin ? '<button type="button" class="dbi-add" data-eq="' + k + '">＋ Apuntar a alguien</button>' : '')
       + '</div>';
   }
 
+  // Escudo propio de Los Iscariotes para cada bando (no es el escudo de ningún club): blasón con rayas
+  // del color del equipo, banda dorada con "DERBI" y la inicial en un medallón.
+  function derbiEscudo(k, tam){
+    const c = k === 'sevilla' ? '#D2140A' : '#0A9B4E';
+    const letra = k === 'sevilla' ? 'S' : 'B';
+    const id = 'dbe' + k + Math.random().toString(36).slice(2, 7);
+    let rayas = '';
+    for(let i = 0; i < 7; i++) rayas += '<rect x="' + (10 + i * 12) + '" y="0" width="6" height="120" fill="' + c + '"/>';
+    return '<svg class="dbi-escudo-svg" width="' + tam + '" height="' + Math.round(tam * 1.2) + '" viewBox="0 0 100 120" aria-hidden="true">'
+      + '<defs><clipPath id="' + id + '"><path d="M50 4 L94 16 V58 C94 88 74 106 50 116 C26 106 6 88 6 58 V16 Z"/></clipPath></defs>'
+      + '<g clip-path="url(#' + id + ')"><rect width="100" height="120" fill="#FFFFFF"/>' + rayas + '</g>'
+      + '<path d="M50 4 L94 16 V58 C94 88 74 106 50 116 C26 106 6 88 6 58 V16 Z" fill="none" stroke="#D4AF37" stroke-width="5"/>'
+      + '<rect x="6" y="66" width="88" height="16" fill="#0E1F3D"/><text x="50" y="78.5" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="800" font-size="11" letter-spacing="2.5" fill="#E8C45A">DERBI</text>'
+      + '<circle cx="50" cy="40" r="19" fill="#0E1F3D" stroke="#D4AF37" stroke-width="3"/>'
+      + '<text x="50" y="49" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="26" fill="#FFFFFF">' + letra + '</text>'
+      + '</svg>';
+  }
+
+  let derbiOcupado = false;
   function derbiPintar(){
     const body = document.getElementById('derbiBody'); if(!body) return;
+    const vs = document.getElementById('derbiCabVs');
+    if(vs) vs.innerHTML = '<div class="dvs-eq">' + derbiEscudo('sevilla', 74) + '<span class="dvs-s">Sevilla</span></div><b>VS</b><div class="dvs-eq">' + derbiEscudo('betis', 74) + '<span class="dvs-b">Betis</span></div>';
     const yo = derbiYo();
     const admin = typeof isAdminDevice === 'function' ? isAdminDevice() : !!(typeof getAdminKey === 'function' && getAdminKey());
     const d = derbi || { sevilla: [], betis: [] };
@@ -207,32 +234,62 @@
       else if(ms !== null && mb !== null && Math.abs(ms - mb) >= 3) consejo = 'El ' + (ms < mb ? 'Sevilla' : 'Betis') + ' tiene mejor hándicap medio (' + derbiNum(Math.min(ms, mb)) + ' frente a ' + derbiNum(Math.max(ms, mb)) + '). Conviene equilibrar.';
       else consejo = 'Equipos bastante igualados. ¡Así da gusto!';
     }
-    body.innerHTML =
-      '<div class="dbi-intro">'
-      + '<p><b>Vamos a montar un torneo especial: sevillistas contra béticos.</b></p>'
-      + '<p>Cada uno se apunta en su equipo. Con los equipos hechos, el organizador forma las partidas, pone la fecha y el formato, y al final se suma el resultado de cada equipo. ¡El orgullo de la ciudad en juego!</p>'
-      + '</div>'
+    const nombre = yo ? String(yo).split(/\s+/)[0] : '';
+
+    // Paso 1: apuntarse (lo primero que se ve, con botones enormes)
+    let paso;
+    if(d.roundCode){
+      paso = '<div class="dbi-paso"><div class="dbi-paso-t">Los equipos están cerrados</div><div class="dbi-paso-sub">Las partidas ya están hechas. ' + (miEq ? 'Juegas con el <b>' + DERBI_EQ[miEq].nombre + '</b>.' : '') + '</div></div>';
+    } else if(!yo){
+      paso = '<div class="dbi-paso"><div class="dbi-paso-t">Para apuntarte, primero dinos quién eres</div>'
+        + '<button type="button" class="dbi-btn dbi-btn-oro" id="dbiQuien">Elegir mi nombre</button></div>';
+    } else {
+      paso = '<div class="dbi-paso">'
+        + '<div class="dbi-paso-t">' + (miEq ? '¡Hecho, ' + derbiEsc(nombre) + '! Juegas con el ' + DERBI_EQ[miEq].nombre : 'Hola, ' + derbiEsc(nombre) + '. ¿Con quién vas?') + '</div>'
+        + '<div class="dbi-paso-sub">' + (miEq ? 'Si te has equivocado, toca el otro equipo.' : 'Toca tu equipo y quedas apuntado.') + '</div>'
+        + '<div class="dbi-elige">' + ['sevilla', 'betis'].map(k =>
+            '<button type="button" class="dbi-elige-btn dbi-elige-' + k + (miEq === k ? ' on' : '') + (miEq && miEq !== k ? ' apagado' : '') + '" data-eq="' + k + '"' + (miEq === k ? ' aria-pressed="true"' : '') + '>'
+            + derbiEscudo(k, 64) + '<b>' + DERBI_EQ[k].nombre + '</b>'
+            + '<span>' + (miEq === k ? '✓ Estás aquí' : (miEq ? 'Cambiarme' : 'Me apunto')) + '</span></button>').join('') + '</div>'
+        + '<div class="dbi-paso-pie">' + (miEq ? '<button type="button" class="dbi-link" id="dbiQuitar">Quitarme del torneo</button>' : '')
+        + '<button type="button" class="dbi-link" id="dbiNoSoy">No soy ' + derbiEsc(nombre) + '</button></div>'
+        + '</div>';
+    }
+
+    body.innerHTML = paso
+      + '<div class="dbi-sec-t dbi-sec-t2">Así van los equipos</div>'
       + '<div class="dbi-balanza" aria-label="Equilibrio de los equipos">'
       + '<div class="dbi-bal-num"><b>' + ns + '</b><span>Sevilla</span></div>'
       + '<div class="dbi-bal-barra"><i style="width:' + pct + '%"></i></div>'
       + '<div class="dbi-bal-num"><b>' + nb + '</b><span>Betis</span></div>'
       + '</div>'
       + (consejo ? '<div class="dbi-consejo">' + consejo + '</div>' : '')
-      + '<div class="dbi-cols">' + derbiColumna('sevilla', yo, admin) + derbiColumna('betis', yo, admin) + '</div>'
-      + (admin && !d.roundCode ? '<div class="dbi-nota">Administrador: toca un nombre para pasarlo al otro equipo.</div>' : '')
+      + '<div class="dbi-cols">' + derbiColumna('sevilla', yo, admin && !d.roundCode) + derbiColumna('betis', yo, admin && !d.roundCode) + '</div>'
+      + (admin && !d.roundCode ? '<div class="dbi-nota">Administrador: toca un nombre para pasarlo al otro equipo, o «＋ Apuntar a alguien» para apuntar a quien no lo haga desde su móvil.</div>' : '')
       + derbiSeccionPartidas(d, admin)
-      + '<div class="dbi-botones">'
-      + (d.roundCode ? '<div class="dbi-nota">Las partidas ya están hechas: los equipos quedan cerrados.</div>' : '')
-      + (!d.roundCode && miEq !== 'sevilla' ? '<button type="button" class="dbi-btn dbi-btn-sevilla" data-eq="sevilla">' + (miEq ? 'Cambiarme al Sevilla' : 'Me apunto con el Sevilla') + '</button>' : '')
-      + (!d.roundCode && miEq !== 'betis' ? '<button type="button" class="dbi-btn dbi-btn-betis" data-eq="betis">' + (miEq ? 'Cambiarme al Betis' : 'Me apunto con el Betis') + '</button>' : '')
-      + (!d.roundCode && miEq ? '<button type="button" class="dbi-btn dbi-btn-quitar" data-eq="">Quitarme del torneo</button>' : '')
-      + '<a class="dbi-btn dbi-btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(derbiTexto(d)) + '">Enviar los equipos al grupo</a>'
-      + '</div>';
-    body.querySelectorAll('.dbi-btn[data-eq]').forEach(b => b.addEventListener('click', ()=> derbiApuntar(b.dataset.eq)));
+      + '<div class="dbi-intro"><p><b>¿Qué es esto?</b> Un torneo especial de sevillistas contra béticos. Cada uno se apunta en su equipo; con los equipos hechos se forman las partidas, cara a cara, y al final gana el equipo con mejor resultado. ¡El orgullo de la ciudad en juego!</p></div>'
+      + '<div class="dbi-botones"><a class="dbi-btn dbi-btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(derbiTexto(d)) + '">Enviar los equipos al grupo</a></div>';
+
+    body.querySelectorAll('.dbi-elige-btn').forEach(b => b.addEventListener('click', ()=>{ if(b.dataset.eq !== miEq) derbiApuntar(b.dataset.eq, b); }));
+    const q = document.getElementById('dbiQuien'); if(q) q.addEventListener('click', async ()=>{ if(typeof elegirQuienEres === 'function'){ const n = await elegirQuienEres(); if(n) derbiPintar(); } });
+    const ns2 = document.getElementById('dbiNoSoy'); if(ns2) ns2.addEventListener('click', async ()=>{ if(typeof elegirQuienEres === 'function'){ const n = await elegirQuienEres(); if(n) derbiPintar(); } });
+    const qt = document.getElementById('dbiQuitar'); if(qt) qt.addEventListener('click', ()=>{ if(confirm('¿Quitarte del torneo?')) derbiApuntar('', qt); });
     body.querySelectorAll('.dbi-mover').forEach(b => b.addEventListener('click', ()=> derbiMover(b.dataset.n)));
+    body.querySelectorAll('.dbi-add').forEach(b => b.addEventListener('click', ()=> derbiAnadirOtro(b.dataset.eq)));
     body.querySelectorAll('.dbi-campo').forEach(b => b.addEventListener('click', ()=>{ derbiCampo = b.dataset.c; derbiPintar(); }));
     const cr = document.getElementById('dbiCrear'); if(cr) cr.addEventListener('click', ()=> derbiCrearPartidas(cr));
     const ab = document.getElementById('dbiAbrir'); if(ab) ab.addEventListener('click', derbiAbrirPartida);
+  }
+
+  // Administrador: apuntar a otro jugador en un equipo (sin cambiar quién es el dueño del móvil)
+  async function derbiAnadirOtro(equipo){
+    if(typeof elegirQuienEres !== 'function') return;
+    const n = await elegirQuienEres(true);
+    if(!n) return;
+    await derbiMutate(d => {
+      d.sevilla = d.sevilla.filter(x => x !== n); d.betis = d.betis.filter(x => x !== n);
+      d[equipo].push(n);
+    });
   }
 
   function derbiSeccionPartidas(d, admin){
@@ -276,6 +333,9 @@
 
   (function setupDerbi(){
     const b = document.getElementById('hmDerbi'); if(b) b.addEventListener('click', derbiAbrir);
+    // En el botón del inicio, los dos escudos de Los Iscariotes
+    const ins = b && b.querySelector('.derbi-insignia');
+    if(ins){ ins.classList.add('con-escudos'); ins.innerHTML = derbiEscudo('sevilla', 26) + derbiEscudo('betis', 26); }
     const c = document.getElementById('derbiCerrar'); if(c) c.addEventListener('click', derbiCerrar);
     const v = document.getElementById('derbiVolver'); if(v) v.addEventListener('click', derbiCerrar);
   })();

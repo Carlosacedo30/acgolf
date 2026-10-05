@@ -1348,3 +1348,36 @@
     .dbi-col-h{ padding:10px 8px; gap:8px; }
     .derbi-cab h2{ font-size:36px; }
   }
+
+  /* ===== Especial Sevilla – Betis: escudos propios y apuntarse en un toque ===== */
+  .derbi-insignia.con-escudos{ width:auto !important; flex:0 0 auto !important; border-radius:0; box-shadow:none; overflow:visible; gap:2px; align-items:center; }
+  .home-menu-btn span.derbi-insignia.con-escudos{ width:auto !important; flex:0 0 auto !important; }
+  .derbi-insignia.con-escudos svg{ display:block; }
+  .derbi-cab{ min-height:0; }
+  .derbi-cab-txt{ padding:54px 16px 18px; text-align:center; }
+  .derbi-cab-vs{ justify-content:center; gap:14px; margin-bottom:12px; }
+  .derbi-cab-vs > b{ font-size:34px !important; color:#E8C45A; text-shadow:0 2px 10px rgba(0,0,0,.5); }
+  .dvs-eq{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .dvs-eq svg{ filter:drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
+  .derbi-cab-k{ text-align:center; }
+  .derbi-cab h2{ font-size:clamp(28px, 9vw, 38px) !important; margin:4px 0 0; text-align:center; }
+  .dbi-escudo-svg{ flex:none; display:block; }
+  .dbi-paso{ margin-top:16px; padding:16px; border-radius:20px; background:#15294D; box-shadow:inset 0 0 0 2px #D4AF37; text-align:center; }
+  .dbi-paso-t{ font:800 21px/1.25 'Barlow', sans-serif; color:#FFFFFF; }
+  .dbi-paso-sub{ margin-top:4px; font:500 16px/1.35 'Barlow', sans-serif; color:#C9D3E4; }
+  .dbi-paso .dbi-btn{ width:100%; margin-top:12px; }
+  .dbi-elige{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; margin-top:14px; }
+  .dbi-elige-btn{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 8px; border:3px solid transparent; border-radius:20px; color:#FFFFFF; cursor:pointer; touch-action:manipulation; transition:opacity .2s, transform .1s; }
+  .dbi-elige-btn:active{ transform:scale(0.97); }
+  .dbi-elige-sevilla{ background:#B3110A; } .dbi-elige-betis{ background:#08854A; }
+  .dbi-elige-btn b{ font:800 22px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.04em; }
+  .dbi-elige-btn span{ font:700 15px 'Barlow', sans-serif; background:rgba(0,0,0,.25); padding:5px 12px; border-radius:999px; }
+  .dbi-elige-btn.on{ border-color:#E8C45A; box-shadow:0 0 0 3px rgba(232,196,90,.35); }
+  .dbi-elige-btn.on span{ background:#E8C45A; color:#0E1F3D; }
+  .dbi-elige-btn.apagado{ opacity:.55; }
+  .dbi-elige-btn.guardando{ opacity:.7; }
+  .dbi-paso-pie{ display:flex; justify-content:center; gap:18px; margin-top:12px; flex-wrap:wrap; }
+  .dbi-link{ background:none; border:none; padding:8px 4px; font:700 15px 'Barlow', sans-serif; color:#B9C3D4; text-decoration:underline; cursor:pointer; }
+  .dbi-sec-t2{ margin:20px 0 0; text-align:center; }
+  .dbi-add{ display:block; width:calc(100% - 12px); margin:0 6px 8px; min-height:42px; border-radius:10px; border:1.5px dashed #8FA6CF; background:transparent; color:#C9D3E4; font:700 14px 'Barlow', sans-serif; cursor:pointer; }
+  .dbi-col-h .dbi-escudo-svg{ filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
