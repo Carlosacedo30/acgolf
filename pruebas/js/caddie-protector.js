@@ -1,22 +1,10 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Caddie protector: te orienta, te calma y te celebra. Nunca riñe. ---
-  //  · Al llegar a cada hoyo: cómo jugarlo (notas del campo) y si tienes golpe de regalo.
   //  · Al apuntar golpes: un bocadillo unos segundos con una frase según tu resultado neto
   //    y un consejo para el siguiente hoyo. Se acuerda de la partida (rachas, recuperaciones, mitad).
-  //  · Habla siempre en voz alta (la voz en español del propio móvil).
+  //  · Sin voz: solo texto en pantalla (Carlos no quiere voz).
   // Todo se calcula en el móvil: sin internet y sin coste.
 
-  // Habla siempre (lo pidió Carlos). Los móviles solo dejan hablar después del primer toque en la pantalla:
-  // en ese primer toque se "despierta" la voz con una frase vacía.
-  const cpVoz = true;
-  let cpVozLista = false;
-  function cpDespertarVoz(){
-    if(cpVozLista || !('speechSynthesis' in window)) return;
-    cpVozLista = true;
-    try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch(e){}
-  }
-  ['touchend', 'click'].forEach(ev => document.addEventListener(ev, cpDespertarVoz, { capture: true, passive: true }));
-  let cpUltimoHoyoHablado = null;
   let cpPendientes = {};          // { pIndex: hoyo } golpes recién apuntados, para comentar todos juntos
   let cpTimer = null, cpOcultar = null;
   const cpYaDicho = {};           // 'hoyo-jugador-valor' para no repetir la misma frase
@@ -24,24 +12,6 @@
   const cpPila = n => { const s = String(n || ''); if(s.includes(' / ')) return s.split(' / ').map(x => x.trim().split(/\s+/)[0]).join(' y '); return s.trim().split(/\s+/)[0] || s; };
   const cpElige = (ops, semilla) => ops[Math.abs(semilla | 0) % ops.length];
   const cpTexto = html => String(html).replace(/<[^>]+>/g, '').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').replace(/\s+/g, ' ').trim();
-
-  // ---------- Voz ----------
-  function cpVozEs(){
-    if(!('speechSynthesis' in window)) return null;
-    const vs = speechSynthesis.getVoices() || [];
-    return vs.find(v => /^es[-_]ES/i.test(v.lang)) || vs.find(v => /^es/i.test(v.lang)) || null;
-  }
-  function cpHablar(texto){
-    if(!cpVoz || !('speechSynthesis' in window)) return;
-    const t = cpTexto(texto); if(!t) return;
-    try {
-      const u = new SpeechSynthesisUtterance(t);
-      const v = cpVozEs(); if(v) u.voice = v;
-      u.lang = (v && v.lang) || 'es-ES'; u.rate = 0.98; u.pitch = 1;
-      speechSynthesis.speak(u);
-    } catch(e){}
-  }
-  if('speechSynthesis' in window) try { speechSynthesis.onvoiceschanged = () => {}; speechSynthesis.getVoices(); } catch(e){}
 
   // ---------- Datos del hoyo y del jugador ----------
   function cpHoyo(h){
@@ -82,18 +52,6 @@
       case 'Prudencia': return 'centro de la calle y centro del green, sin prisas';
       default: return '';
     }
-  }
-
-  // ---------- Al llegar al hoyo ----------
-  function cpIntroHoyo(h){
-    const d = cpHoyo(h); if(!d) return '';
-    const partes = ['Hoyo ' + h + ', par ' + d.par + '.'];
-    if(d.nota) partes.push(d.nota.txt + ' ' + d.nota.consejo);
-    const conGolpe = [];
-    (players || []).forEach((n, p) => { if(n && cpRecibe(p, h) > 0) conGolpe.push(cpPila(n)); });
-    if(conGolpe.length && conGolpe.length === players.filter(Boolean).length) partes.push('Todos tenéis golpe de regalo.');
-    else if(conGolpe.length) partes.push((conGolpe.length > 1 ? conGolpe.slice(0, -1).join(', ') + ' y ' + conGolpe[conGolpe.length - 1] + ' tenéis' : conGolpe[0] + ', tienes') + ' golpe de regalo.');
-    return partes.join(' ');
   }
 
   function cpGolpesRegalo(h){
@@ -194,13 +152,11 @@
       if(h === 9) extra = cpResumenMitad();
       if(h < 18){
         extra = (extra ? extra + ' ' : '') + cpConsejoSiguiente(h, todos) + cpGolpesRegalo(h + 1);
-        cpUltimoHoyoHablado = h + 1; // el siguiente hoyo ya está contado: al llegar no se repite
       }
       else extra = '¡Partida terminada! Gracias por dejarme acompañaros.';
     }
     const html = frases.map(f => '<p>' + f + '</p>').join('') + (extra ? '<p class="cp-sig">' + extra + '</p>' : '');
     cpMostrar(html, peor);
-    cpHablar(frases.join(' ') + (extra ? ' ' + extra : ''));
   }
 
   // Escucha cualquier golpe apuntado (casilla grande, teclado o tarjeta)
@@ -213,20 +169,3 @@
     clearTimeout(cpTimer);
     cpTimer = setTimeout(cpComentar, 1600); // espera por si se apuntan varios jugadores seguidos
   }, true);
-
-  // Al llegar a un hoyo nuevo, el caddie cuenta cómo jugarlo
-  (function(){
-    if(typeof renderHoleView !== 'function') return;
-    const original = renderHoleView;
-    renderHoleView = function(){
-      const r = original.apply(this, arguments);
-      try {
-        const vista = document.getElementById('hvHoleNum');
-        if(vista && vista.offsetParent !== null && cpUltimoHoyoHablado !== currentHole){
-          cpUltimoHoyoHablado = currentHole;
-          if(cpVoz) setTimeout(() => cpHablar(cpIntroHoyo(currentHole)), 400);
-        }
-      } catch(e){}
-      return r;
-    };
-  })();
