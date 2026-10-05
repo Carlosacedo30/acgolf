@@ -137,3 +137,28 @@ html[data-tema="grafito"] .dbi-btn-oro{ background:#C6F24E !important; color:#11
 .tema-pie button.on{ background:#0E1F3D; color:#F6F1E4; border-color:#0E1F3D; }
 html[data-tema="grafito"] .tema-pie button{ color:#9AA3AB; border-color:#4A5058; }
 html[data-tema="grafito"] .tema-pie button.on{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
+
+/* ---- Ajustes para que todo quede dentro y centrado en móviles pequeños ---- */
+html[data-tema="grafito"] .pv2-titulo{ font-size:clamp(26px, 9vw, 36px) !important; line-height:.98 !important; }
+html[data-tema="grafito"] .pr-abrir{ font-size:clamp(18px, 6vw, 23px) !important; white-space:nowrap; gap:10px; padding:0 18px; }
+html[data-tema="grafito"] .pr-abrir svg.ico{ margin-right:0 !important; }
+html[data-tema="grafito"] .home-menu-btn{
+  align-items:center !important; justify-content:center !important; text-align:center !important; gap:12px !important;
+  font-size:clamp(14px, 4.4vw, 18px) !important; hyphens:auto; -webkit-hyphens:auto; overflow-wrap:break-word;
+  padding:14px 10px !important; min-height:118px !important;
+}
+html[data-tema="grafito"] .home-menu-btn span{ display:block; width:100%; min-width:0; }
+html[data-tema="grafito"] .home-menu-btn.hm-derbi{ justify-content:center !important; gap:12px !important; }
+html[data-tema="grafito"] .home-menu-btn.hm-derbi span:not(.derbi-insignia){ width:auto; text-align:left; }
+html[data-tema="grafito"] .pr-pie{ background:#1B1E22 !important; border-top-color:#33383E !important; }
+html[data-tema="grafito"] .pr-atras{ border-color:#4A5058 !important; color:#F2F4F5 !important; background:transparent !important; border-radius:999px !important; }
+html[data-tema="grafito"] .pr-op-t, html[data-tema="grafito"] .pr-r-pareja, html[data-tema="grafito"] .pr-r-grupo{ color:#C6F24E !important; }
+html[data-tema="grafito"] .pr-titulo{ font-family:'Archivo', sans-serif !important; font-weight:900 !important; }
+html[data-tema="grafito"] .pr-pasos span{ background:#24282D !important; color:#9AA3AB !important; }
+html[data-tema="grafito"] .pr-pasos span.ok{ background:#2F3A1C !important; color:#C6F24E !important; }
+html[data-tema="grafito"] .pr-pasos span.on{ background:#C6F24E !important; color:#111316 !important; }
+html[data-tema="grafito"] .conv-close{ background:#24282D !important; color:#F2F4F5 !important; }
+html[data-tema="grafito"] .dbi-col{ background:#1B1E22 !important; }
+html[data-tema="grafito"] .dbi-jug, html[data-tema="grafito"] .dbi-partida{ background:#24282D !important; }
+html[data-tema="grafito"] .home-menu-btn span.derbi-insignia{ display:flex !important; width:34px !important; flex:0 0 34px !important; }
+html[data-tema="grafito"] .home-menu-btn.hm-derbi span:not(.derbi-insignia){ width:auto !important; flex:0 1 auto !important; }

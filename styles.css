@@ -1337,3 +1337,14 @@
   .dbi-m b{ font:800 38px/1.05 'Barlow', sans-serif; }
   .dbi-m-sevilla{ background:#B3110A; } .dbi-m-betis{ background:#08854A; }
   .dbi-m-vs{ max-width:84px; text-align:center; font:800 15px/1.2 'Barlow', sans-serif; color:#E8C45A; text-transform:uppercase; }
+
+  /* Crear partida: las teclas pasan a otra línea si no caben (antes "Fourball" se salía en móviles pequeños) */
+  .pr-teclas{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0, 1fr); }
+  .pr-tecla{ min-width:0; font-size:clamp(14px, 4.3vw, 18px); padding:6px 2px; }
+  @media (max-width:360px){
+    .dbi-col-h b{ font-size:17px; }
+    .dbi-col-h small{ font-size:11.5px; }
+    .dbi-escudo{ width:22px; height:26px; }
+    .dbi-col-h{ padding:10px 8px; gap:8px; }
+    .derbi-cab h2{ font-size:36px; }
+  }
