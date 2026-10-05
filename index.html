@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=64">
+<link rel="stylesheet" href="styles.css?v=66">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -97,6 +97,7 @@
             <button type="button" class="home-menu-btn" data-foco="premios"><i data-ico="trofeo"></i><span>Ganadores de la semana</span><i data-ico="flecha" class="hm-flecha"></i></button>
             <button type="button" class="home-menu-btn" data-foco="medallas"><i data-ico="medalla"></i><span>Medallas nuevas</span><i data-ico="flecha" class="hm-flecha"></i></button>
             <button type="button" class="home-menu-btn" data-foco="recientes"><i data-ico="historial"></i><span>Últimas partidas</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" id="hmConsejos"><i data-ico="diana"></i><span>Consejos de golf</span><i data-ico="flecha" class="hm-flecha"></i></button>
           </div>
           <div class="home-ahora-t" id="homeAhoraT" style="display:none;">¿Dónde jugamos hoy?</div>
           <div class="start-choice" style="display:none;">
@@ -411,12 +412,13 @@
       <div class="screen-content">
         <div class="app-bar">
           <button type="button" class="back back-btn back-home">‹ Inicio</button>
-          <h1>Consejos de Golf</h1>
-          <div class="meta">Tu manual de referencia</div>
+          <h1>Consejos de golf</h1>
+          <div class="meta">Tu chuleta para antes, durante y después de jugar</div>
         </div>
+        <button type="button" class="home-volver pantalla-volver back-home">‹ Volver al inicio</button>
         <div id="consejosContent"></div>
       </div>
-      <div class="actions"><div class="btn primary full" id="s7VolverBtn">‹ Volver a Jugar</div></div>
+      <div class="actions"><div class="btn primary full" id="s7VolverBtn">‹ Volver al inicio</div></div>
     </div>
 
     <!-- SCREEN 6: Liga en Club Hato Verde -->
@@ -427,6 +429,7 @@
           <h1>Liga de Los Iscariotes</h1>
           <div class="meta">Iscariote cada semana · campeón del mes por puntos</div>
         </div>
+        <button type="button" class="home-volver pantalla-volver back-home">‹ Volver al inicio</button>
         <section>
           <div class="liga-month">
             <button type="button" class="hole-nav-btn" id="ligaPrevMonth" aria-label="Mes anterior">‹</button>
@@ -441,17 +444,12 @@
           <div class="eyebrow">Semana a semana</div>
           <div id="ligaSemanas"></div>
         </section>
-        <section id="ligaMedallasSection" style="display:none;">
-          <div class="eyebrow"><i data-ico="medalla"></i> Medallas</div>
-          <div class="section-sub" style="margin:4px 0 10px;">Toca un jugador para ver su vitrina: las medallas que tiene y las que le faltan.</div>
-          <div id="ligaMedallas"></div>
-        </section>
         <section id="ligaChampionsSection" style="display:none;">
           <div class="eyebrow">Palmarés</div>
           <div id="ligaChampions"></div>
         </section>
       </div>
-      <div class="actions"><div class="btn primary full" id="ligaVolverBtn">‹ Volver a Jugar</div></div>
+      <div class="actions"><div class="btn primary full" id="ligaVolverBtn">‹ Volver al inicio</div></div>
     </div>
 
   </div>
@@ -503,13 +501,13 @@
   <img id="holeMapBig" alt="">
   <button type="button" id="holeMapClose" class="hole-map-close">Cerrar</button>
 </div>
-<script src="js/iconos.js?v=1"></script>
+<script src="js/iconos.js?v=2"></script>
 <script src="js/data.js?v=28"></script>
 <script src="js/players.js?v=30"></script>
 <script src="js/rondas-compartidas.js?v=35"></script>
 <script src="js/historial-jugadores.js?v=28"></script>
 <script src="js/scorecard.js?v=28"></script>
-<script src="js/navigation.js?v=30"></script>
+<script src="js/navigation.js?v=31"></script>
 <script src="js/diagnostico.js?v=28"></script>
 <script src="js/interactions.js?v=32"></script>
 <script src="js/resultados.js?v=30"></script>
@@ -519,14 +517,14 @@
 <script src="js/caddie-habla.js?v=1"></script>
 <script src="js/patrocinador.js?v=5"></script>
 <script src="js/premios.js?v=4"></script>
-<script src="js/consejos.js?v=28"></script>
+<script src="js/consejos.js?v=29"></script>
 <script src="js/liga.js?v=32"></script>
 <script src="js/gps-hoyo.js?v=3"></script>
 <script src="js/jugadores-liga.js?v=4"></script>
 <script src="js/normas.js?v=4"></script>
 <script src="js/convocatoria.js?v=10"></script>
 <script src="js/portada.js?v=4"></script>
-<script src="js/home-menu.js?v=1"></script>
+<script src="js/home-menu.js?v=2"></script>
 <script src="js/partida-rapida.js?v=4"></script>
 <script src="js/medallas.js?v=3"></script>
 

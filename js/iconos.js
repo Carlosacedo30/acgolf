@@ -20,6 +20,10 @@
     hecho:    '<circle cx="12" cy="12" r="9.5"/><path d="m8 12.5 2.8 2.8L16.5 9.5"/>',
     brillo:   '<path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/><path d="M19 3v3M17.5 4.5h3"/>',
     flecha:   '<path d="m9 6 6 6-6 6"/>',
+    diana:    '<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.5"/>',
+    palo:     '<path d="M15 2.5 7.5 18.5"/><path d="M7.5 18.5c-.6 1.4-.1 2.6 1.3 2.9l3.2.6c.9.2 1.5-.7 1-1.4l-.8-1.2"/><circle cx="18" cy="19.5" r="1.6"/>',
+    llaveInglesa:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+    calentar: '<path d="M12 2v3"/><path d="M12 19v3"/><path d="m4.9 4.9 2.1 2.1"/><path d="m17 17 2.1 2.1"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m4.9 19.1 2.1-2.1"/><path d="m17 7 2.1-2.1"/><circle cx="12" cy="12" r="4"/>',
   };
   function icono(nombre, clase){
     const d = ICONOS[nombre];

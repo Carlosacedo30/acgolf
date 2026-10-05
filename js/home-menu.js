@@ -33,6 +33,8 @@
     document.querySelectorAll('.home-menu-btn[data-foco]').forEach(b => b.addEventListener('click', ()=> homeFoco(b.dataset.foco)));
     const liga = document.getElementById('hmLiga');
     if(liga) liga.addEventListener('click', ()=>{ homeFoco(null); goTo(6); });
+    const consejos = document.getElementById('hmConsejos');
+    if(consejos) consejos.addEventListener('click', ()=>{ homeFoco(null); goTo(5); });
     const volver = document.getElementById('homeVolver');
     if(volver) volver.addEventListener('click', ()=> homeFoco(null));
   })();
