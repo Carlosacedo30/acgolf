@@ -1,0 +1,139 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* ===== Diseño de prueba "Grafito deportivo" (opción D) =====
+   Solo se aplica en el móvil que lo active (html[data-tema="grafito"]). Fondo grafito, verde lima de acento,
+   letra Archivo, botones tipo pastilla y el inicio en cuadrícula. Los colores de resultados (birdie, par, bogey…)
+   y los del Sevilla y el Betis no cambian. */
+html[data-tema="grafito"]{
+  --g-bg:#111316; --g-card:#1B1E22; --g-card2:#24282D; --g-line:#33383E; --g-ink:#F2F4F5; --g-muted:#9AA3AB; --g-lima:#C6F24E; --g-lima-ink:#111316;
+  --surface:#111316; --surface-raised:#1B1E22; --surface-strong:#24282D;
+  --ink-c:#F2F4F5; --ink-muted:#9AA3AB; --accent:#C6F24E; --accent-text:#C6F24E; --on-accent:#111316; --focus:#C6F24E;
+  --paper-fg:#F2F4F5; --ink-fg:#F2F4F5; --forest-fg:#F2F4F5; --forest-soft-fg:#9AA3AB; --cream-fg:#F2F4F5;
+  --gold-fg:#C6F24E; --gold-ink-fg:#C6F24E; --gold-soft-fg:#F2F4F5; --line-fg:#9AA3AB; --line-soft-fg:#9AA3AB;
+  --paper-bg:#1B1E22; --paper-dim-bg:#111316; --forest-bg:#24282D; --forest-soft-bg:#2A2E33; --navy-bg:#24282D; --navy-soft-bg:#1B1E22;
+  --gold-bg:#C6F24E; --gold-soft-bg:#24282D; --gold-ink-bg:#5C7A12; --line-bg:#33383E; --line-soft-bg:#2A2E33;
+  --paper-bd:#33383E; --paper-dim-bd:#33383E; --forest-bd:#4A5058; --forest-soft-bd:#4A5058; --navy-bd:#4A5058; --navy-soft-bd:#33383E;
+  --gold-bd:#C6F24E; --gold-soft-bd:#C6F24E; --gold-ink-bd:#C6F24E; --line-bd:#33383E; --line-soft-bd:#2A2E33;
+  --paper:#1B1E22; --ink:#F2F4F5; --forest:#24282D; --gold:#C6F24E; --line:#33383E; --line-soft:#2A2E33;
+  --bg:#111316; --card:#1B1E22; --shadow:none;
+}
+html[data-tema="grafito"] body,
+html[data-tema="grafito"] .frame,
+html[data-tema="grafito"] .screen-content{ background:#111316 !important; font-family:'Archivo', 'Barlow', sans-serif; }
+html[data-tema="grafito"] h1, html[data-tema="grafito"] h2,
+html[data-tema="grafito"] .pv2-titulo, html[data-tema="grafito"] .tj-nombre, html[data-tema="grafito"] .home-ahora-t,
+html[data-tema="grafito"] .derbi-cab h2{ font-family:'Archivo', sans-serif !important; font-weight:900 !important; letter-spacing:-0.01em; }
+html[data-tema="grafito"] section{ background:#1B1E22; box-shadow:none; }
+html[data-tema="grafito"] .eyebrow{ color:#9AA3AB !important; }
+
+/* ---- Cabeceras ---- */
+html[data-tema="grafito"] .app-bar{ background:#111316 !important; border-bottom:1px solid #2A2E33 !important; border-radius:0 !important; }
+html[data-tema="grafito"] .app-bar .back{ color:#C6F24E !important; }
+html[data-tema="grafito"] .portada.portada-v2{ background:#111316 !important; border-bottom:none !important; }
+html[data-tema="grafito"] .pv2-franjas{ display:none !important; }
+html[data-tema="grafito"] .pv2-eyebrow{ color:#9AA3AB !important; }
+html[data-tema="grafito"] .pv2-titulo, html[data-tema="grafito"] .pv2-titulo span{ color:#F2F4F5 !important; }
+
+/* ---- Inicio ---- */
+html[data-tema="grafito"] .screen[data-screen="0"] .screen-content{
+  background:#111316 !important;
+  --card:#1B1E22; --ink-fg:#F2F4F5; --paper-fg:#F2F4F5; --forest-fg:#F2F4F5; --forest-soft-fg:#9AA3AB;
+  --gold-fg:#C6F24E; --gold-ink-fg:#C6F24E; --gold-soft-bg:#24282D; --gold-soft-bd:#33383E;
+  --line-bd:#33383E; --line-soft-bd:#2A2E33; --paper-bg:#1B1E22; --paper-dim-bg:#111316; color:#F2F4F5;
+}
+html[data-tema="grafito"] .home-patro span{ color:#9AA3AB !important; }
+html[data-tema="grafito"] .home-patro img{ background:#F2F4F5; border-radius:8px; padding:3px 6px; }
+html[data-tema="grafito"] .screen[data-screen="0"] section.home-ahora{ background:transparent !important; box-shadow:none !important; padding-left:16px; padding-right:16px; }
+html[data-tema="grafito"] .home-ahora > .eyebrow{ display:none; }
+html[data-tema="grafito"] .pr-abrir{ border-radius:999px !important; background:#C6F24E !important; color:#111316 !important; box-shadow:none !important; font-family:'Archivo', sans-serif !important; font-weight:900 !important; }
+html[data-tema="grafito"] .home-menu{ display:grid !important; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
+html[data-tema="grafito"] .home-menu-btn{
+  flex-direction:column; align-items:flex-start !important; justify-content:space-between; gap:16px !important;
+  min-height:124px !important; padding:16px !important; border:none !important; border-radius:20px !important;
+  background:#1B1E22 !important; color:#F2F4F5 !important; font:800 18px/1.15 'Archivo', sans-serif !important;
+  text-transform:none !important; letter-spacing:0 !important;
+}
+html[data-tema="grafito"] .home-menu-btn svg.ico{ color:#C6F24E !important; width:30px !important; height:30px !important; }
+html[data-tema="grafito"] .home-menu-btn .hm-flecha{ display:none !important; }
+html[data-tema="grafito"] .home-menu-btn span{ flex:none !important; }
+html[data-tema="grafito"] .home-menu-btn.hm-derbi{ order:10; grid-column:1 / -1; min-height:84px !important; flex-direction:row; align-items:center !important; background:linear-gradient(100deg, #8E0C06 0%, #8E0C06 49.6%, #06683A 50.4%, #06683A 100%) !important; }
+html[data-tema="grafito"] .screen[data-screen="0"] .premios-card,
+html[data-tema="grafito"] .screen[data-screen="0"] .sponsor-card,
+html[data-tema="grafito"] .screen[data-screen="0"] .normas-card{ background:#1B1E22 !important; }
+html[data-tema="grafito"] .screen[data-screen="0"] .premio{ background:#24282D !important; }
+html[data-tema="grafito"] .screen[data-screen="0"] .premio-quien,
+html[data-tema="grafito"] .screen[data-screen="0"] .sponsor-premio b,
+html[data-tema="grafito"] .screen[data-screen="0"] .sponsor-premio a{ color:#F2F4F5 !important; }
+html[data-tema="grafito"] .screen[data-screen="0"] .premios-fechas,
+html[data-tema="grafito"] .screen[data-screen="0"] .premio-detalle,
+html[data-tema="grafito"] .screen[data-screen="0"] .sponsor-premio,
+html[data-tema="grafito"] .screen[data-screen="0"] .empty-hint,
+html[data-tema="grafito"] .home-pie-btn, html[data-tema="grafito"] .app-copyright{ color:#9AA3AB !important; }
+html[data-tema="grafito"] .premio-ico svg.ico{ color:#C6F24E !important; }
+html[data-tema="grafito"] .home-volver{ background:#1B1E22 !important; border:2px solid #C6F24E !important; border-radius:999px !important; color:#F2F4F5 !important; font-family:'Archivo', sans-serif !important; }
+
+/* ---- Botones generales ---- */
+html[data-tema="grafito"] .btn.primary{ background:#C6F24E !important; color:#111316 !important; border-color:#C6F24E !important; box-shadow:none !important; border-radius:999px !important; }
+html[data-tema="grafito"] .btn.ghost{ border-radius:999px !important; border-color:#4A5058 !important; color:#F2F4F5 !important; background:transparent !important; }
+html[data-tema="grafito"] .actions{ background:#111316 !important; }
+
+/* ---- Pantalla de anotar ---- */
+html[data-tema="grafito"] .hole-map-card, html[data-tema="grafito"] .green-arriba{ background:#1B1E22 !important; }
+html[data-tema="grafito"] .hole-map-info .dist{ font-family:'Archivo', sans-serif; font-weight:900 !important; }
+html[data-tema="grafito"] .gps-btn{ background:#C6F24E !important; color:#111316 !important; border-radius:999px !important; }
+html[data-tema="grafito"] .hole-chip{ border-color:#33383E !important; color:#9AA3AB !important; background:transparent !important; }
+html[data-tema="grafito"] .hole-chip.done{ background:#24282D !important; color:#C6F24E !important; border-color:#24282D !important; }
+html[data-tema="grafito"] .hole-chip.current{ background:#C6F24E !important; color:#111316 !important; border-color:#C6F24E !important; box-shadow:none !important; }
+html[data-tema="grafito"] .mv-item, html[data-tema="grafito"] .mv-match{ background:#1B1E22 !important; box-shadow:none !important; }
+html[data-tema="grafito"] .mv-item.lider, html[data-tema="grafito"] .mv-match{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .mv-item.lider .mv-v, html[data-tema="grafito"] .mv-l{ color:#C6F24E !important; }
+html[data-tema="grafito"] .hole-badge-big{ background:#24282D !important; box-shadow:none !important; }
+html[data-tema="grafito"] .hole-nav-btn{ background:#1B1E22 !important; border-color:#33383E !important; color:#F2F4F5 !important; }
+html[data-tema="grafito"] .hv-cell{ background:#1B1E22 !important; box-shadow:none !important; }
+html[data-tema="grafito"] .hv-cell.lead, html[data-tema="grafito"] .hv-cell.cuenta{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .hv-tp{ background:#24282D !important; color:#C6F24E !important; }
+html[data-tema="grafito"] .hv-cell .stroke-box{ background:#24282D !important; border-color:#4A5058 !important; color:#F2F4F5 !important; border-radius:16px !important; }
+html[data-tema="grafito"] .hv-pareja{ box-shadow:inset 0 0 0 1.5px #33383E !important; }
+html[data-tema="grafito"] .hv-pareja.lead{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .hv-pareja-h span, html[data-tema="grafito"] .tj-h, html[data-tema="grafito"] .tj-sub span,
+html[data-tema="grafito"] .tj-hcp, html[data-tema="grafito"] .tj-quien-mb{ color:#C6F24E !important; }
+html[data-tema="grafito"] .tj-card{ border-top-color:#2A2E33 !important; }
+html[data-tema="grafito"] .r-par{ background:#C6F24E !important; color:#111316 !important; box-shadow:none !important; }
+
+/* ---- Teclado grande de golpes ---- */
+html[data-tema="grafito"] .np-sheet, html[data-tema="grafito"] .np-card{ background:#1B1E22 !important; border-top-color:#C6F24E !important; }
+html[data-tema="grafito"] .np-key{ background:#24282D !important; border-color:#4A5058 !important; color:#F2F4F5 !important; }
+html[data-tema="grafito"] .np-key.is-par{ background:#C6F24E !important; color:#111316 !important; border-color:#C6F24E !important; }
+
+/* ---- Ventanas (crear partida, convocatoria, medallas…) ---- */
+html[data-tema="grafito"] .modal-card{ background:#1B1E22 !important; }
+html[data-tema="grafito"] .pr-tecla.on, html[data-tema="grafito"] .pr-jug.on{ background:#C6F24E !important; color:#111316 !important; border-color:#C6F24E !important; }
+html[data-tema="grafito"] .pr-sig, html[data-tema="grafito"] .pr-empezar{ background:#C6F24E !important; color:#111316 !important; border-radius:999px !important; }
+html[data-tema="grafito"] .pr-jug, html[data-tema="grafito"] .pr-campo, html[data-tema="grafito"] .pr-tecla{ background:#24282D !important; border-color:#33383E !important; }
+html[data-tema="grafito"] .pr-pasos .on{ background:#C6F24E !important; color:#111316 !important; }
+
+/* ---- Liga, consejos y diagnóstico ---- */
+html[data-tema="grafito"] .leaderboard-row.p1{ background:#24282D !important; box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .leaderboard-row.p1 .leaderboard-pos{ background:#C6F24E !important; color:#111316 !important; }
+html[data-tema="grafito"] .cj-dia{ background:#C6F24E !important; color:#111316 !important; }
+html[data-tema="grafito"] details.cj-ap{ background:#1B1E22 !important; box-shadow:none !important; }
+html[data-tema="grafito"] details.cj-ap[open]{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .cj-num{ background:#24282D !important; color:#C6F24E !important; }
+html[data-tema="grafito"] details.cj-ap > summary svg.ico, html[data-tema="grafito"] .cj-h, html[data-tema="grafito"] .cj-ficha-t{ color:#C6F24E !important; }
+html[data-tema="grafito"] .cj-ficha{ border-left-color:#C6F24E !important; background:#24282D !important; }
+html[data-tema="grafito"] .cj-lista li{ background:#24282D !important; }
+html[data-tema="grafito"] .cj-lista li::before{ background:#C6F24E !important; }
+html[data-tema="grafito"] .cj-pasos li{ background:#24282D !important; }
+html[data-tema="grafito"] .cj-pasos li b{ background:#C6F24E !important; color:#111316 !important; }
+html[data-tema="grafito"] .cj-cita{ background:#24282D !important; }
+html[data-tema="grafito"] .derbi-card{ background:#111316 !important; }
+html[data-tema="grafito"] .dbi-intro, html[data-tema="grafito"] .dbi-sec{ background:#1B1E22 !important; }
+html[data-tema="grafito"] .dbi-sec{ box-shadow:inset 0 0 0 2px #C6F24E !important; }
+html[data-tema="grafito"] .dbi-sec-t, html[data-tema="grafito"] .dbi-consejo{ color:#C6F24E !important; }
+html[data-tema="grafito"] .dbi-btn-oro{ background:#C6F24E !important; color:#111316 !important; border-radius:999px !important; }
+
+/* Interruptor del diseño (pie del inicio) */
+.tema-pie{ display:flex; justify-content:center; gap:8px; margin-top:6px; }
+.tema-pie button{ padding:8px 14px; border-radius:999px; border:1.5px solid #8FA0BC; background:transparent; color:#5A6478; font:700 14px 'Barlow', sans-serif; cursor:pointer; }
+.tema-pie button.on{ background:#0E1F3D; color:#F6F1E4; border-color:#0E1F3D; }
+html[data-tema="grafito"] .tema-pie button{ color:#9AA3AB; border-color:#4A5058; }
+html[data-tema="grafito"] .tema-pie button.on{ background:#C6F24E; color:#111316; border-color:#C6F24E; }

@@ -117,3 +117,22 @@
       if(n) abrirUltimaPartida(b, n);
     });
   })();
+
+  // Interruptor del diseño de prueba "Grafito" (solo se ve en el móvil del administrador)
+  (function(){
+    const pie = document.getElementById('temaPie'); if(!pie) return;
+    let admin = false; try { admin = !!localStorage.getItem('golfAppAdminKey'); } catch(e){}
+    if(!admin) return;
+    pie.hidden = false;
+    const marcar = () => {
+      const t = document.documentElement.getAttribute('data-tema') === 'grafito' ? 'grafito' : 'normal';
+      pie.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.tema === t));
+    };
+    pie.querySelectorAll('button').forEach(b => b.addEventListener('click', ()=>{
+      try { localStorage.setItem('acgolfTema', b.dataset.tema); } catch(e){}
+      if(b.dataset.tema === 'grafito') document.documentElement.setAttribute('data-tema', 'grafito');
+      else document.documentElement.removeAttribute('data-tema');
+      marcar();
+    }));
+    marcar();
+  })();
