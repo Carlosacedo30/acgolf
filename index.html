@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=63">
+<link rel="stylesheet" href="styles.css?v=64">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -91,7 +91,13 @@
           <div class="eyebrow">Ahora mismo</div>
           <div id="homeEnMarcha"></div>
           <div id="convHome"></div>
-          <button type="button" class="pr-abrir" id="prAbrirBtn">⛳ Crear partida</button>
+          <button type="button" class="pr-abrir" id="prAbrirBtn"><i data-ico="bandera"></i>Crear partida</button>
+          <div class="home-menu">
+            <button type="button" class="home-menu-btn" id="hmLiga"><i data-ico="podio"></i><span>Clasificación liga</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" data-foco="premios"><i data-ico="trofeo"></i><span>Ganadores de la semana</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" data-foco="medallas"><i data-ico="medalla"></i><span>Medallas nuevas</span><i data-ico="flecha" class="hm-flecha"></i></button>
+            <button type="button" class="home-menu-btn" data-foco="recientes"><i data-ico="historial"></i><span>Últimas partidas</span><i data-ico="flecha" class="hm-flecha"></i></button>
+          </div>
           <div class="home-ahora-t" id="homeAhoraT" style="display:none;">¿Dónde jugamos hoy?</div>
           <div class="start-choice" style="display:none;">
             <div class="start-choice-opt course-choice" data-course-id="hato-verde" role="button" tabindex="0">
@@ -208,6 +214,8 @@
         </section>
         <section style="border-bottom:none;"><div class="actions" style="padding:0;"><div class="btn primary full" id="empezarPartidaBtn">Siguiente ›</div></div></section>
         </div>
+        <button type="button" class="home-volver" id="homeVolver">‹ Volver al inicio</button>
+        <section class="home-vacio" id="homeVacio"></section>
         <section class="home-liga" id="homeLigaSemana">
           <div class="eyebrow">La liga esta semana</div>
           <div id="homeLigaBody"><div class="empty-hint">Cargando la clasificación…</div></div>
@@ -216,15 +224,15 @@
         <section id="premiosHome" class="premios-card" style="display:none;"></section>
         <section id="medallasHome" class="premios-card medallas-card" style="display:none;"></section>
         <section id="sponsorHome" class="sponsor-card"></section>
-        <section>
+        <section id="homeRecientes">
           <div class="eyebrow" id="recentRoundsTitle" style="user-select:none; -webkit-user-select:none;">Últimas partidas</div>
           <div id="recentRoundsList"></div>
           <div class="empty-hint" id="recentRoundsEmpty">Todavía no hay ninguna partida — cuando alguien empiece una, aparecerá aquí para poder volver a ella.</div>
         </section>
         <div class="home-pie">
           <div class="home-pie-links">
-            <button type="button" class="home-pie-btn" id="homeNormasBtn">📜 Normas de la liga</button>
-            <button type="button" class="home-pie-btn" id="adminModeBtn">🔑 Modo administrador</button>
+            <button type="button" class="home-pie-btn" id="homeNormasBtn"><i data-ico="libro"></i> Normas de la liga</button>
+            <button type="button" class="home-pie-btn" id="adminModeBtn"><i data-ico="llave"></i> Modo administrador</button>
           </div>
           <button type="button" id="leaguePlayersBtn" class="lp-open-btn" hidden>Jugadores de la liga</button>
           <div class="app-copyright">© 2026 Carlos Acedo Domínguez · Todos los derechos reservados</div>
@@ -434,7 +442,7 @@
           <div id="ligaSemanas"></div>
         </section>
         <section id="ligaMedallasSection" style="display:none;">
-          <div class="eyebrow">🏅 Medallas</div>
+          <div class="eyebrow"><i data-ico="medalla"></i> Medallas</div>
           <div class="section-sub" style="margin:4px 0 10px;">Toca un jugador para ver su vitrina: las medallas que tiene y las que le faltan.</div>
           <div id="ligaMedallas"></div>
         </section>
@@ -495,12 +503,13 @@
   <img id="holeMapBig" alt="">
   <button type="button" id="holeMapClose" class="hole-map-close">Cerrar</button>
 </div>
+<script src="js/iconos.js?v=1"></script>
 <script src="js/data.js?v=28"></script>
 <script src="js/players.js?v=30"></script>
 <script src="js/rondas-compartidas.js?v=35"></script>
 <script src="js/historial-jugadores.js?v=28"></script>
 <script src="js/scorecard.js?v=28"></script>
-<script src="js/navigation.js?v=29"></script>
+<script src="js/navigation.js?v=30"></script>
 <script src="js/diagnostico.js?v=28"></script>
 <script src="js/interactions.js?v=32"></script>
 <script src="js/resultados.js?v=30"></script>
@@ -508,17 +517,18 @@
 <script src="js/tarjetas.js?v=3"></script>
 <script src="js/caddie.js?v=3"></script>
 <script src="js/caddie-habla.js?v=1"></script>
-<script src="js/patrocinador.js?v=4"></script>
-<script src="js/premios.js?v=3"></script>
+<script src="js/patrocinador.js?v=5"></script>
+<script src="js/premios.js?v=4"></script>
 <script src="js/consejos.js?v=28"></script>
-<script src="js/liga.js?v=31"></script>
+<script src="js/liga.js?v=32"></script>
 <script src="js/gps-hoyo.js?v=3"></script>
 <script src="js/jugadores-liga.js?v=4"></script>
 <script src="js/normas.js?v=4"></script>
-<script src="js/convocatoria.js?v=9"></script>
-<script src="js/portada.js?v=3"></script>
+<script src="js/convocatoria.js?v=10"></script>
+<script src="js/portada.js?v=4"></script>
+<script src="js/home-menu.js?v=1"></script>
 <script src="js/partida-rapida.js?v=4"></script>
-<script src="js/medallas.js?v=2"></script>
+<script src="js/medallas.js?v=3"></script>
 
 </body>
 </html>

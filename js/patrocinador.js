@@ -6,7 +6,7 @@
     logo: 'logo-bolarecuperada.png?v=1',
     web: 'https://bolarecuperada.com',
     premio: '12 bolas cada semana para los premios de la liga',
-    premioIscariote: '🎁 Se lleva las bolas de Bolarecuperada.com',
+    premioIscariote: 'Se lleva las bolas de Bolarecuperada.com',
     foto: 'premio-semana.jpg?v=2',          // foto del premio de la semana (cámbiala cuando cambie el premio)
     fotoTexto: 'El premio de esta semana: 12 bolas Srixon AD333',
     premioCorto: '12 bolas Srixon AD333',  // lo que se lee bajo la foto en Inicio

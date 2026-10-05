@@ -138,7 +138,7 @@
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;
-    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">📣 Convocar salida por WhatsApp</button>' : '';
+    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Convocar salida por WhatsApp</button>' : '';
     if(!lista.length){
       box.innerHTML = nuevoBtn;
       const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
@@ -184,7 +184,7 @@
     }).join('') + '</div>';
 
     if(conv.roundCode){
-      h += '<div class="conv-created">✅ Partida creada'
+      h += '<div class="conv-created">' + icono('hecho') + ' Partida creada'
         + '<button type="button" class="conv-btn primary" id="convOpenRound">Abrir partida para apuntar</button></div>';
     }
 
@@ -226,7 +226,7 @@
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
       h += '<button type="button" class="conv-link" id="convNewBtn">Convocar otra salida</button>';
-      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">🗑 Borrar esta convocatoria</button>';
+      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar esta convocatoria</button>';
     }
     h += '</div>';
     body.innerHTML = h;
@@ -364,7 +364,7 @@
     if(!confirm('¿Borrar la convocatoria del ' + convLongDate(conv.date) + '?\nDesaparece para todos los jugadores y no se puede deshacer.')) return;
     btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
     const res = await deleteSharedRound(conv.code);
-    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar la convocatoria'); delete btn.dataset.busy; btn.textContent = '🗑 Borrar esta convocatoria'; return; }
+    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar la convocatoria'); delete btn.dataset.busy; btn.innerHTML = icono('papelera') + ' Borrar esta convocatoria'; return; }
     const client = initSupabase();
     if(convChannel && client){ try { client.removeChannel(convChannel); } catch(e){} convChannel = null; }
     convActivas = convActivas.filter(c => c.code !== conv.code);

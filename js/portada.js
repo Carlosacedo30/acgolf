@@ -25,7 +25,7 @@
       + '<div class="home-marcha-sub">' + homeEsc(r.roundName ? r.roundName + ' · ' : '') + homeEsc(r.courseName || 'Campo') + '</div>'
       + (quien.length ? '<div class="home-marcha-chips">' + quien.map(n => '<span>' + homeEsc(n) + '</span>').join('') + '</div>' : '')
       + '<button type="button" class="home-big-btn" id="homeContinuarBtn">Continuar partida ›</button>'
-      + (homeEsAdmin() ? '<button type="button" class="home-marcha-borrar" id="homeBorrarBtn">🗑 Borrar esta partida</button>' : '')
+      + (homeEsAdmin() ? '<button type="button" class="home-marcha-borrar" id="homeBorrarBtn">' + icono('papelera') + ' Borrar esta partida</button>' : '')
       + '</div>';
     const borrar = document.getElementById('homeBorrarBtn');
     if(borrar) borrar.addEventListener('click', async ()=>{
@@ -35,7 +35,7 @@
       borrar.dataset.busy = '1'; borrar.textContent = 'Borrando…';
       const res = await deleteSharedRound(r.code);
       if(res && res.ok){ if(typeof renderRecentRounds === 'function') renderRecentRounds(); }
-      else { alert((res && res.msg) || 'No se pudo borrar la partida'); delete borrar.dataset.busy; borrar.textContent = '🗑 Borrar esta partida'; }
+      else { alert((res && res.msg) || 'No se pudo borrar la partida'); delete borrar.dataset.busy; borrar.innerHTML = icono('papelera') + ' Borrar esta partida'; }
     });
     const btn = document.getElementById('homeContinuarBtn');
     if(btn) btn.addEventListener('click', async ()=>{
