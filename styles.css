@@ -1252,3 +1252,16 @@
   /* Sin barra de "Anterior / Siguiente" ni puntos de pantallas: cada página solo con su información
      (cada una ya tiene su botón de volver) */
   .flow-nav, .dots{ display:none !important; }
+
+  /* ===== Pantalla de anotar: arriba el green, sin título; "En vivo" y avisos abajo; sin clasificación ===== */
+  .screen[data-screen="3"] .app-bar{ padding-top:10px; padding-bottom:10px; }
+  .screen[data-screen="3"] .app-bar .back{ margin-bottom:0; font-size:16px; }
+  .green-arriba{ padding-top:8px !important; padding-bottom:8px !important; }
+  .green-arriba:has(#holeMapCard[style*="none"]){ display:none; }
+  .green-arriba .hole-map-card{ margin-top:0; }
+  .green-arriba .hole-map-thumb{ height:150px; width:84px; }
+  .green-arriba .hole-map-info .k{ font-size:13px; }
+  .green-arriba .hole-map-info .dist{ font-size:46px; font-weight:800; }
+  .green-arriba .hole-map-info .hint{ font-size:14px; }
+  .message-toast{ top:auto; bottom:calc(env(safe-area-inset-bottom, 0px) + 96px); transform:translateX(-50%) translateY(16px); }
+  .message-toast.show{ transform:translateX(-50%) translateY(0); }

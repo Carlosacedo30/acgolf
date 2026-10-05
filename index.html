@@ -15,7 +15,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@1,600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=67">
+<link rel="stylesheet" href="styles.css?v=68">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -279,13 +279,19 @@
       <div class="screen-content">
         <div class="app-bar">
           <button type="button" class="back back-btn" id="s3Back">‹ Salir de la partida</button>
-          <h1 id="s3Title">Nueva ronda</h1>
-          <div class="meta" id="s3ScoringMeta">Hoy · Stableford</div>
+          <h1 id="s3Title" hidden>Nueva ronda</h1>
+          <div class="meta" id="s3ScoringMeta" hidden>Hoy · Stableford</div>
         </div>
-        <section id="roundCodeSection" style="display:none;">
-          <div class="round-code-banner">
-            <div class="code" id="roundCodeValue" style="display:none;"></div>
-            <div class="sync-status" id="syncStatus"><div class="dot3"></div><span>Conectando…</span></div>
+        <section id="greenArriba" class="green-arriba">
+            <div id="holeMapCard" class="hole-map-card" style="display:none;">
+            <button type="button" class="hole-map-thumb" id="holeMapThumb" aria-label="Ver el dibujo del hoyo en grande"><img id="holeMapImg" alt=""></button>
+            <div class="hole-map-info">
+              <div class="k">Distancia al green</div>
+              <div class="dist" id="holeGreenDist">—</div>
+              <div class="hint" id="holeGpsHint">Activa el GPS para ver la distancia</div>
+              <button type="button" class="gps-btn" id="holeGpsBtn">Activar GPS</button>
+              <button type="button" class="gps-admin-btn" id="holeSetGreenBtn" hidden>Guardar green aquí</button>
+            </div>
           </div>
         </section>
         <section id="groupSwitchSection" style="display:none;">
@@ -307,20 +313,6 @@
             <div class="hole-nav-btn" id="holeNextBtn">›</div>
           </div>
           <div id="hvPlayers"></div>
-          <div id="holeMapCard" class="hole-map-card" style="display:none;">
-            <button type="button" class="hole-map-thumb" id="holeMapThumb" aria-label="Ver el dibujo del hoyo en grande"><img id="holeMapImg" alt=""></button>
-            <div class="hole-map-info">
-              <div class="k">Distancia al green</div>
-              <div class="dist" id="holeGreenDist">—</div>
-              <div class="hint" id="holeGpsHint">Activa el GPS para ver la distancia</div>
-              <button type="button" class="gps-btn" id="holeGpsBtn">Activar GPS</button>
-              <button type="button" class="gps-admin-btn" id="holeSetGreenBtn" hidden>Guardar green aquí</button>
-            </div>
-          </div>
-        </section>
-        <section>
-          <div class="eyebrow">Clasificación</div>
-          <div id="leaderboardSection"></div>
         </section>
         <section>
           <div class="eyebrow toggle-grid-lbl" id="toggleGridLbl" role="button" tabindex="0">Ver tarjetas completas ▾</div>
@@ -354,6 +346,12 @@
           <div class="helper-note" id="roundMentalNote" style="margin-top:12px;"></div>
           <div id="leagueHandicapUpdateNote" style="display:none; margin-top:12px;"></div>
           <div id="medallasRondaNote" style="display:none; margin-top:12px;"></div>
+        </section>
+        <section id="roundCodeSection" style="display:none;">
+          <div class="round-code-banner">
+            <div class="code" id="roundCodeValue" style="display:none;"></div>
+            <div class="sync-status" id="syncStatus"><div class="dot3"></div><span>Conectando…</span></div>
+          </div>
         </section>
       </div>
       <div class="actions"><div class="btn ghost" id="guardarLuegoBtn">Guardar y seguir luego</div><div class="btn primary" id="finalizarRondaBtn">Finalizar ronda</div></div>
