@@ -237,7 +237,8 @@
         if(String(n || '').includes(' / ')) return nombrePareja(String(n).split(' / ')); // Foursome: "Carlos y Pepe"
         const w = String(n || '').trim().split(/\s+/);
         const dup = firstNames.filter(f => f === firstNames[i]).length > 1;
-        return dup && w[1] ? w[0] + ' ' + w[1].charAt(0) + '.' : firstNames[i];
+        // En filas hay sitio: nombre y primer apellido (si se repite el nombre, siempre con apellido)
+        return w[1] ? w[0] + ' ' + w[1] : (dup ? w[0] : firstNames[i]);
       });
       const fourball = modoPartida() === 'fourball';
       const rankDe = pIndex => standings.findIndex(s => s.group === activeGroup && (s.pIndexes ? s.pIndexes.includes(pIndex) : s.pIndex === pIndex));
@@ -268,12 +269,15 @@
         const pips = n ? Array.from({ length: Math.min(n, 3) }, () => '<i></i>').join('') : '<i class="off"></i>';
         const hcpTxt = fourball ? 'Juega ' + String(hcpJuego(pIndex)).replace('.', ',') : 'Hcp ' + String(playerHandicaps[pIndex] || 0).replace('.', ',');
         return '<div class="hv-cell' + (!fourball && rank === 0 && s && s.holesFilled > 0 ? ' lead' : '') + (fourball && cuenta.has(pIndex) ? ' cuenta' : '') + '">'
+          // Una fila por jugador: a la izquierda quién es y su par; a la derecha la casilla grande y el resultado
+          + '<div class="hv-info">'
           + '<div class="hv-n" title="' + name + '">' + shortNames[pIndex] + '</div>'
           + '<div class="hv-h">' + hcpTxt + '</div>'
           + '<div class="hv-tp' + (n ? '' : ' cero') + '"><span class="gr-pips" aria-hidden="true">' + pips + '</span><span>Tu par <b>' + (par != null ? par + n : '—') + '</b></span></div>'
+          + (posTxt ? '<div class="hv-pos">' + posTxt + '</div>' : '')
+          + '</div>'
           + '<input class="stroke-box' + (val ? ' filled' : '') + '" type="text" inputmode="none" readonly placeholder="+" value="' + val + '" data-hole-input-for="' + pIndex + '" aria-label="Golpes de ' + name + ' (toca para anotar)">'
           + '<div class="result-box ' + resultClass + '">' + resultText + '</div>'
-          + '<div class="hv-pos">' + (posTxt || '&nbsp;') + '</div>'
           + '</div>';
       };
       let cells;

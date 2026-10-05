@@ -1110,3 +1110,50 @@
   .mv-l{ font:800 16px 'Barlow', sans-serif; color:#E8C45A; text-transform:uppercase; letter-spacing:.04em; text-align:center; }
   .mv-res{ font:800 20px 'Barlow', sans-serif; color:#F6F1E4; text-align:center; }
   .mv-pie{ margin-top:4px; text-align:center; font:600 14px 'Barlow', sans-serif; color:#8FA0BC; }
+
+  /* ===== Pantalla de anotar: una FILA por jugador (antes columnas estrechas que cortaban los números) =====
+     Va al final para mandar sobre lo anterior. El teclado grande de golpes no cambia. */
+  #hvPlayers .hv-scores{ display:flex; flex-direction:column; gap:8px; }
+  #hvPlayers .hv-cell{ display:grid; grid-template-columns:minmax(0, 1fr) 88px 70px; align-items:center; gap:10px; padding:10px 10px 10px 14px; border-radius:16px; text-align:left; }
+  #hvPlayers .hv-info{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  #hvPlayers .hv-n{ font-size:21px; font-weight:800; line-height:1.15; white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; }
+  #hvPlayers .hv-h{ font-size:15px; font-weight:600; }
+  #hvPlayers .hv-tp{ flex-direction:row; justify-content:flex-start; align-self:flex-start; gap:6px; min-height:0; padding:3px 9px; border-radius:8px; font-size:15px; }
+  #hvPlayers .hv-tp b{ font-size:19px; }
+  #hvPlayers .hv-pos{ font-size:15px; white-space:normal; line-height:1.2; }
+  #hvPlayers .hv-cell .stroke-box{ width:88px; height:76px; padding:0; margin:0; font-size:44px; font-weight:800; line-height:76px; text-align:center; text-indent:0; letter-spacing:0; -webkit-appearance:none; appearance:none; }
+  #hvPlayers .hv-cell .stroke-box::placeholder{ font-size:38px; }
+  #hvPlayers .hv-cell .result-box{ width:70px; height:76px; font-size:22px; font-weight:800; }
+  /* Mejor bola: las dos parejas una debajo de otra */
+  #hvPlayers .hv-parejas{ grid-template-columns:1fr; gap:10px; }
+  #hvPlayers .hv-pareja{ padding:8px; }
+  #hvPlayers .hv-pareja-h{ flex-direction:row; justify-content:space-between; padding:2px 6px 8px; }
+  #hvPlayers .hv-pareja .hv-cell{ padding:10px 10px 10px 14px; }
+  @media (max-width:340px){
+    #hvPlayers .hv-cell{ grid-template-columns:minmax(0, 1fr) 78px 58px; gap:8px; padding-left:10px; }
+    #hvPlayers .hv-cell .stroke-box{ width:78px; }
+    #hvPlayers .hv-cell .result-box{ width:58px; font-size:20px; }
+    #hvPlayers .hv-n{ font-size:19px; }
+  }
+  /* Fila más compacta: el nombre arriba ocupando todo el ancho; debajo datos | casilla grande | resultado */
+  #hvPlayers .hv-cell{ grid-template-columns:minmax(0, 1fr) 88px 70px; grid-template-rows:auto auto auto auto; row-gap:4px; column-gap:10px; align-items:center; padding:10px 10px 10px 14px; }
+  #hvPlayers .hv-info{ display:contents; }
+  #hvPlayers .hv-n{ grid-column:1 / -1; grid-row:1; font-size:21px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; overflow-wrap:normal; }
+  #hvPlayers .hv-h{ grid-column:1; grid-row:2; align-self:end; }
+  #hvPlayers .hv-tp{ grid-column:1; grid-row:3; white-space:nowrap; align-self:start; }
+  #hvPlayers .hv-pos{ grid-column:1; grid-row:4; align-self:start; }
+  #hvPlayers .hv-cell .stroke-box{ grid-column:2; grid-row:2 / span 3; align-self:center; }
+  #hvPlayers .hv-cell .result-box{ grid-column:3; grid-row:2 / span 3; align-self:center; }
+  #hvPlayers .hv-tp .gr-pips i{ width:9px; height:9px; }
+  @media (max-width:340px){
+    #hvPlayers .hv-cell{ grid-template-columns:minmax(0, 1fr) 78px 58px; column-gap:8px; padding-left:10px; }
+    #hvPlayers .hv-h, #hvPlayers .hv-tp, #hvPlayers .hv-pos{ font-size:14px; }
+    #hvPlayers .hv-tp b{ font-size:17px; }
+  }
+  #hvPlayers .hv-h, #hvPlayers .hv-tp{ white-space:nowrap; }
+  @media (max-width:380px){
+    #hvPlayers .hv-tp .gr-pips{ display:none; }
+    #hvPlayers .hv-tp{ padding:3px 7px; }
+    #hvPlayers .hv-pareja{ padding:6px 4px; }
+    #hvPlayers .hv-pareja .hv-cell{ padding:8px 8px 8px 10px; column-gap:8px; }
+  }
