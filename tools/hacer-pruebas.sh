@@ -35,7 +35,7 @@ s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>', 1)
 s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=5">\n<link rel="stylesheet" href="ligas.css?v=2">\n</head>', 1)
 s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="cuenta.js?v=2"></script>', s, count=1)
-s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=1"></script>\n<script src="ligas.js?v=2"></script>\n<script src="enlace-partida.js?v=1"></script>\n<script src="aviso-partida.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=1"></script>\n<script src="ligas.js?v=3"></script>\n<script src="enlace-partida.js?v=1"></script>\n<script src="aviso-partida.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'ligas.js' in s and 'ligas.css' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'

@@ -4,14 +4,14 @@
    y la primera hora de salida. La app calcula la fecha de cada jornada (una por semana) y prepara la
    convocatoria de cada una con todos los jugadores ya colocados en grupos de 4 (los grupos cambian cada
    jornada para que todos coincidan con todos). Cada jornada es una partida con todos los jugadores.
-   Clasificación por puesto: en cada jornada, por neto, 10 · 8 · 6 · 5 · 4 · 3 · 2 · resto 1 (no jugar: 0).
+   Clasificación por puesto: en cada jornada, por neto, 25 · 18 · 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1, del 11.º en adelante 0 (escala de Fórmula 1).
    Empate en neto: gana el de hándicap más bajo.
    Se guarda como una fila de "rounds" sin campo (no sale en la liga semanal ni en "Últimas partidas").
    La convocatoria de cada jornada se crea cuando le toca (la próxima que falte), con un código fijo
    (código de la liga + J + número) para que nunca salga repetida. */
 
 const LIGA_TAG = 'Liga de amigos';
-const LIGA_PUNTOS = [10, 8, 6, 5, 4, 3, 2];
+const LIGA_PUNTOS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const LIGA_MAX_JORNADAS = 30;
 let ligasTodas = [];          // [{ id, code, updatedAt, nombre, jugadores, dia, courseId, hora, jornadas:[{n, date, courseId}] }]
 let ligaAbierta = null;       // code de la liga que se está viendo
@@ -174,7 +174,7 @@ async function ligaResultados(l){
       filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp });
     }));
     filas.sort((a, b) => a.neto - b.neto || a.hcp - b.hcp);
-    filas.forEach((f, i) => { f.pos = i + 1; f.puntos = LIGA_PUNTOS[i] != null ? LIGA_PUNTOS[i] : 1; });
+    filas.forEach((f, i) => { f.pos = i + 1; f.puntos = LIGA_PUNTOS[i] != null ? LIGA_PUNTOS[i] : 0; });
     out[j.n] = filas;
   });
   return out;
@@ -270,7 +270,7 @@ function ligaPintarForm(){
     + (Object.keys(f.fechas).length ? '<button type="button" class="conv-link" id="lgFechasAuto">Volver a las fechas automáticas</button>' : '')
     + (f.jugadores.length ? '<div class="lg-aviso">Cada jornada es una partida con todos: ' + nGrupos + (nGrupos === 1 ? ' grupo' : ' grupos') + '. Los grupos cambian cada jornada.</div>' : '')
     + (nGrupos > MAX_GROUPS ? '<div class="lg-aviso lg-mal">Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4. Quita jugadores.</div>' : '')
-    + '<div class="lg-aviso">Puntos por puesto en cada jornada (por neto): 10 · 8 · 6 · 5 · 4 · 3 · 2 · resto 1. Quien no juega, 0.</div>'
+    + '<div class="lg-aviso">Puntos por puesto en cada jornada (por neto), como en la Fórmula 1: 25 · 18 · 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1. Del 11.º en adelante y quien no juega, 0.</div>'
     + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="lgCrear">Crear la liga</button>'
     + '<button type="button" class="conv-link" id="lgCancelar">Cancelar</button></div>';
 
