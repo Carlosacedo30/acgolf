@@ -453,6 +453,20 @@ async function ligaConfigJornada(l, n, res){
   const cfg = { date: j.date, courseId: j.courseId, hora: j.hora || l.hora, salida: j.salida || 'normal', hoyoInicio: Number(j.hoyoInicio || l.hoyoInicio) || 1,
     hoyos: ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), G).hoyos };
   const card = body.closest('.conv-card');
+  const grupos = (c && c.groups && c.groups.some(g => g && g.length)) ? c.groups : ligaGrupos(l.jugadores, code);
+
+  // Partidas de la jornada con sus jugadores, con la hora/hoyo que se está eligiendo
+  const pintarPartidas = () => {
+    const jj = Object.assign({}, j, { hora: cfg.hora, salida: cfg.salida === 'tiro' ? 'tiro' : undefined, hoyos: cfg.hoyos, hoyoInicio: cfg.hoyoInicio });
+    const sal = ligaSalidas(l, jj, grupos.length);
+    return '<div class="conv-eyebrow">Partidas <span class="lg-cuenta">' + (c ? 'como están en la convocatoria' : 'así saldrán en la convocatoria') + '</span></div>'
+      + '<div class="lg-partidas">' + grupos.map((g, i) => {
+          const etq = cfg.salida === 'tiro' ? 'Hoyo ' + (sal.hoyos[i] || 1) : String(sal.times[i] || '').replace(/^0/, '') + (cfg.hoyoInicio > 1 ? ' · hoyo ' + cfg.hoyoInicio : '');
+          return '<div class="lg-partida"><div class="lg-partida-h"><b>Partida ' + (i + 1) + '</b><span>' + ligaEsc(etq) + '</span></div>'
+            + (g && g.length ? '<ul>' + g.map(n => '<li>' + ligaEsc(ligaCortoN(n)) + (ligaHcp(n) !== null ? ' <small>' + String(ligaHcp(n)).replace('.', ',') + '</small>' : '') + '</li>').join('') + '</ul>' : '<div class="lg-aviso" style="margin:4px 0 0;">Sin jugadores todavía</div>')
+            + '</div>';
+        }).join('') + '</div>';
+  };
 
   const pintar = () => {
     const y = card ? card.scrollTop : 0;
@@ -481,9 +495,10 @@ async function ligaConfigJornada(l, n, res){
               + (repetidos ? '<div class="lg-aviso lg-mal">Hay dos grupos en el mismo hoyo.</div>' : '')
             : ligaPasoHoyo(cfg.hoyoInicio, 'ljHoyoIni')
               + '<div class="lg-aviso">Todos los grupos salen por el hoyo ' + cfg.hoyoInicio + ', uno cada 10 minutos: ' + ligaHoras(cfg.hora, G).map(t => t.replace(/^0/, '')).join(', ') + '.</div>')
+        + pintarPartidas()
         + '<div class="lg-aviso lg-guardar-ayuda">«Guardar los cambios» guarda la fecha, el campo, la hora y la salida de esta jornada. Si su convocatoria ya está creada, se cambia también; los jugadores siguen en sus grupos.</div>'
         + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="ljGuardar">Guardar los cambios</button>'
-        + (cfg.date >= ligaHoy() ? '<button type="button" class="conv-btn ghost" id="ljAbrir">' + (c ? 'Ver la convocatoria' : 'Abrir la convocatoria') + '</button>' : '')
+        + (cfg.date >= ligaHoy() ? '<button type="button" class="conv-btn ghost" id="ljAbrir">' + (c ? 'Ver la convocatoria' : 'Publicar la convocatoria') + '</button>' : '')
         + '<button type="button" class="conv-link" id="ljVolver">‹ Volver a la liga</button></div>';
     }
     if(card) card.scrollTop = y;
