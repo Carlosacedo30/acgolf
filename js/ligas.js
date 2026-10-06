@@ -488,9 +488,9 @@ async function ligaConfigJornada(l, n, res){
           + '</div>').join('') + '</div>'
       + (fuera.length ? '<div class="conv-eyebrow">No juegan esta jornada <span class="lg-cuenta">toca para meterlo</span></div>'
           + '<div class="lg-partida lg-fuera"><div class="lg-pjs">' + fuera.map(jug).join('') + '</div>' + (elegido && fuera.includes(elegido) ? opciones(elegido) : '') + '</div>' : '')
-      + (otros.length ? '<button type="button" class="conv-btn ghost lg-otros-btn" id="ljOtros">' + (verOtros ? '− Ocultar el listado de jugadores' : '＋ Meter a otro jugador (listado completo)') + '</button>'
+      + ('<button type="button" class="conv-btn ghost lg-otros-btn" id="ljOtros">' + (verOtros ? '− Ocultar el listado de jugadores' : '＋ Meter a otro jugador (listado completo)') + '</button>'
           + (verOtros ? '<div class="lg-aviso" style="margin-top:6px;">Jugadores que no están en esta liga. Pueden jugar la jornada como sustitutos, pero no suman puntos en la liga.</div>'
-              + '<div class="lg-partida lg-fuera"><div class="lg-pjs">' + otros.map(jug).join('') + '</div>' + (elegido && otros.includes(elegido) ? opciones(elegido) : '') + '</div>' : '') : '')
+              + '<div class="lg-partida lg-fuera"><div class="lg-pjs">' + (otros.length ? otros.map(jug).join('') : '<span class="lg-aviso" style="margin:0;">Todos los jugadores del club ya están en esta liga.</span>') + '</div>' + (elegido && otros.includes(elegido) ? opciones(elegido) : '') + '</div>' : ''))
       + '<div class="lg-dos" style="margin-top:8px;"><button type="button" class="lg-opc" id="ljMasPartida"' + (grupos.length >= MAX_GROUPS ? ' disabled' : '') + '>＋ Otra partida</button>'
       + '<button type="button" class="lg-opc" id="ljRepartir">Repartir de nuevo</button></div>';
   };
