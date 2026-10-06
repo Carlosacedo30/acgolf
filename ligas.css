@@ -117,3 +117,4 @@ button.lg-cal-f{ cursor:pointer; }
 .lg-mover-b.no{ border-color:#E07A72; color:#F2A19E; flex-basis:100%; }
 .lg-opc:disabled{ opacity:.4; }
 .conv-liga-nota{ margin-top:10px; }
+.lg-otros-btn{ width:100%; margin-top:12px; }

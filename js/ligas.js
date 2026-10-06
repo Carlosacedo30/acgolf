@@ -461,6 +461,7 @@ async function ligaConfigJornada(l, n, res){
   const card = body.closest('.conv-card');
   cfg.grupos = ((c && c.groups && c.groups.some(g => g && g.length)) ? c.groups : ligaGruposJornada(l, j)).map(g => (g || []).slice());
   let elegido = null; // jugador tocado para moverlo
+  let verOtros = false; // lista de todos los jugadores, para meter un sustituto
 
   // Partidas de la jornada con sus jugadores: se tocan para moverlos de partida o quitarlos esta jornada
   const pintarPartidas = () => {
@@ -469,6 +470,7 @@ async function ligaConfigJornada(l, n, res){
     const sal = ligaSalidas(l, jj, grupos.length);
     const etq = i => cfg.salida === 'tiro' ? 'Hoyo ' + (sal.hoyos[i] || 1) : String(sal.times[i] || '').replace(/^0/, '') + (cfg.hoyoInicio > 1 ? ' · hoyo ' + cfg.hoyoInicio : '');
     const fuera = l.jugadores.filter(n => !grupos.some(g => g.includes(n)));
+    const otros = ligaJugadoresTodos().filter(n => !l.jugadores.includes(n) && !grupos.some(g => g.includes(n)));
     const opciones = n => {
       const dentro = grupos.findIndex(g => g.includes(n));
       return '<div class="lg-mover">' + grupos.map((g, i) => i === dentro ? '' :
@@ -486,6 +488,9 @@ async function ligaConfigJornada(l, n, res){
           + '</div>').join('') + '</div>'
       + (fuera.length ? '<div class="conv-eyebrow">No juegan esta jornada <span class="lg-cuenta">toca para meterlo</span></div>'
           + '<div class="lg-partida lg-fuera"><div class="lg-pjs">' + fuera.map(jug).join('') + '</div>' + (elegido && fuera.includes(elegido) ? opciones(elegido) : '') + '</div>' : '')
+      + (otros.length ? '<button type="button" class="conv-btn ghost lg-otros-btn" id="ljOtros">' + (verOtros ? '− Ocultar el listado de jugadores' : '＋ Meter a otro jugador (listado completo)') + '</button>'
+          + (verOtros ? '<div class="lg-aviso" style="margin-top:6px;">Jugadores que no están en esta liga. Pueden jugar la jornada como sustitutos, pero no suman puntos en la liga.</div>'
+              + '<div class="lg-partida lg-fuera"><div class="lg-pjs">' + otros.map(jug).join('') + '</div>' + (elegido && otros.includes(elegido) ? opciones(elegido) : '') + '</div>' : '') : '')
       + '<div class="lg-dos" style="margin-top:8px;"><button type="button" class="lg-opc" id="ljMasPartida"' + (grupos.length >= MAX_GROUPS ? ' disabled' : '') + '>＋ Otra partida</button>'
       + '<button type="button" class="lg-opc" id="ljRepartir">Repartir de nuevo</button></div>';
   };
@@ -552,6 +557,7 @@ async function ligaConfigJornada(l, n, res){
       if(destino >= 0 && cfg.grupos[destino].length < 4) cfg.grupos[destino].push(elegido);
       elegido = null; pintar();
     }));
+    const ot = document.getElementById('ljOtros'); if(ot) ot.addEventListener('click', ()=>{ leer(); verOtros = !verOtros; if(!verOtros) elegido = null; pintar(); });
     const mp = document.getElementById('ljMasPartida'); if(mp) mp.addEventListener('click', ()=>{
       leer(); if(cfg.grupos.length < MAX_GROUPS){ cfg.grupos.push([]); cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), cfg.grupos.length).hoyos; } pintar();
     });

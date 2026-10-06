@@ -225,8 +225,7 @@
 
     // Acciones
     h += '<div class="conv-actions">'
-      + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>'
-      + '<button type="button" class="conv-btn ghost" id="convCopy">Copiar lista (para golfdirecto)</button>';
+      + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
       h += '<button type="button" class="conv-link" id="convNewBtn">Convocar otra salida</button>';
