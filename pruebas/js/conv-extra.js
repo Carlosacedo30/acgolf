@@ -81,6 +81,18 @@ function ligaDeConvTexto(code){
       d.querySelector('span').textContent = t;
       body.insertBefore(d, body.firstChild);
     }
+    // Jornada de liga: los grupos los hace el administrador en la liga, así que no hace falta la lista para apuntarse
+    if(t && body){
+      body.querySelectorAll('.conv-search, .conv-list').forEach(e => e.remove());
+      body.querySelectorAll('.conv-eyebrow').forEach(e => { if(/Qui[eé]n eres/i.test(e.textContent)) e.remove(); });
+      if(!body.querySelector('.conv-liga-nota')){
+        const nota = document.createElement('div');
+        nota.className = 'lg-aviso conv-liga-nota';
+        nota.textContent = 'Partidas de la jornada preparadas por el administrador. Si no puedes venir, avísale.';
+        const tees = body.querySelector('.conv-tees');
+        if(tees && tees.nextSibling) body.insertBefore(nota, tees.nextSibling); else body.appendChild(nota);
+      }
+    }
     const acc = ov.querySelector('.conv-actions'); if(!acc) return;
     const p = window.miPerfil;
     if(p && p.es_admin && !acc.querySelector('#convMail')){

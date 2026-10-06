@@ -102,3 +102,18 @@ button.lg-cal-f{ cursor:pointer; }
 /* Convocatoria de una jornada de liga */
 .conv-liga{ display:flex; align-items:center; gap:8px; margin:0 0 10px; padding:10px 12px; border-radius:12px; background:var(--lg-c2, rgba(0,0,0,.06)); border:1px solid var(--lg-acc, #c9a227); color:var(--lg-acc, #c9a227); font-weight:800; font-size:16px; }
 .conv-liga .ico{ width:22px; height:22px; flex:none; }
+
+/* Jornada: jugadores que se tocan para moverlos */
+.lg-pjs{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.lg-pj{ min-height:40px; padding:6px 12px; border-radius:999px; border:1.5px solid var(--lg-line); background:transparent; color:var(--forest-fg); font:700 15px 'Barlow', sans-serif; cursor:pointer; }
+.lg-pj small{ color:var(--lg-mut); font-weight:600; font-size:12.5px; }
+.lg-pj.sel{ border-color:var(--lg-acc); background:var(--lg-acc); color:var(--lg-acc-ink); }
+.lg-pj.sel small{ color:var(--lg-acc-ink); }
+.lg-partida-h small{ color:var(--lg-mut); font-weight:600; font-size:12.5px; margin-left:4px; }
+.lg-fuera{ border-style:dashed; }
+.lg-mover{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid var(--lg-line); }
+.lg-mover-b{ flex:1 1 40%; min-height:44px; border-radius:10px; border:1.5px solid var(--lg-acc); background:transparent; color:var(--lg-acc); font:800 15px 'Barlow', sans-serif; cursor:pointer; }
+.lg-mover-b:disabled{ opacity:.4; border-color:var(--lg-line); color:var(--lg-mut); }
+.lg-mover-b.no{ border-color:#E07A72; color:#F2A19E; flex-basis:100%; }
+.lg-opc:disabled{ opacity:.4; }
+.conv-liga-nota{ margin-top:10px; }

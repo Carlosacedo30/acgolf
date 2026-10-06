@@ -100,6 +100,12 @@ function ligaGrupos(jugadores, semilla){
   return grupos;
 }
 
+// Grupos de una jornada: los que haya dejado el administrador o, si no, los automáticos
+function ligaGruposJornada(l, j){
+  if(Array.isArray(j.grupos) && j.grupos.some(g => g && g.length)) return j.grupos.map(g => (g || []).slice());
+  return ligaGrupos(l.jugadores, ligaCodigoJornada(l, j.n));
+}
+
 // ---------- Base de datos ----------
 function ligaDesdeFila(row){
   const mg = Array.isArray(row.match_groups) ? row.match_groups : [];
@@ -127,7 +133,7 @@ async function ligaCrearConvocatoria(l, j){
   const code = ligaCodigoJornada(l, j.n);
   const { data: hay } = await client.from('rounds').select('id').eq('code', code).limit(1);
   if(hay && hay.length) return false;
-  const grupos = ligaGrupos(l.jugadores, code);
+  const grupos = ligaGruposJornada(l, j);
   const sal = ligaSalidas(l, j, grupos.length);
   const fila = sal.times.map((t, i) => Object.assign({ time: t, players: grupos[i], handicaps: [], scores: {} }, sal.hoyos[i] ? { hoyo: sal.hoyos[i] } : {}))
     .concat([{ players: [], handicaps: [], scores: {}, meta: { date: j.date, courseId: j.courseId, roundCode: null } }]);
@@ -453,19 +459,35 @@ async function ligaConfigJornada(l, n, res){
   const cfg = { date: j.date, courseId: j.courseId, hora: j.hora || l.hora, salida: j.salida || 'normal', hoyoInicio: Number(j.hoyoInicio || l.hoyoInicio) || 1,
     hoyos: ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), G).hoyos };
   const card = body.closest('.conv-card');
-  const grupos = (c && c.groups && c.groups.some(g => g && g.length)) ? c.groups : ligaGrupos(l.jugadores, code);
+  cfg.grupos = ((c && c.groups && c.groups.some(g => g && g.length)) ? c.groups : ligaGruposJornada(l, j)).map(g => (g || []).slice());
+  let elegido = null; // jugador tocado para moverlo
 
-  // Partidas de la jornada con sus jugadores, con la hora/hoyo que se está eligiendo
+  // Partidas de la jornada con sus jugadores: se tocan para moverlos de partida o quitarlos esta jornada
   const pintarPartidas = () => {
+    const grupos = cfg.grupos;
     const jj = Object.assign({}, j, { hora: cfg.hora, salida: cfg.salida === 'tiro' ? 'tiro' : undefined, hoyos: cfg.hoyos, hoyoInicio: cfg.hoyoInicio });
     const sal = ligaSalidas(l, jj, grupos.length);
-    return '<div class="conv-eyebrow">Partidas <span class="lg-cuenta">' + (c ? 'como están en la convocatoria' : 'así saldrán en la convocatoria') + '</span></div>'
-      + '<div class="lg-partidas">' + grupos.map((g, i) => {
-          const etq = cfg.salida === 'tiro' ? 'Hoyo ' + (sal.hoyos[i] || 1) : String(sal.times[i] || '').replace(/^0/, '') + (cfg.hoyoInicio > 1 ? ' · hoyo ' + cfg.hoyoInicio : '');
-          return '<div class="lg-partida"><div class="lg-partida-h"><b>Partida ' + (i + 1) + '</b><span>' + ligaEsc(etq) + '</span></div>'
-            + (g && g.length ? '<ul>' + g.map(n => '<li>' + ligaEsc(ligaCortoN(n)) + (ligaHcp(n) !== null ? ' <small>' + String(ligaHcp(n)).replace('.', ',') + '</small>' : '') + '</li>').join('') + '</ul>' : '<div class="lg-aviso" style="margin:4px 0 0;">Sin jugadores todavía</div>')
-            + '</div>';
-        }).join('') + '</div>';
+    const etq = i => cfg.salida === 'tiro' ? 'Hoyo ' + (sal.hoyos[i] || 1) : String(sal.times[i] || '').replace(/^0/, '') + (cfg.hoyoInicio > 1 ? ' · hoyo ' + cfg.hoyoInicio : '');
+    const fuera = l.jugadores.filter(n => !grupos.some(g => g.includes(n)));
+    const opciones = n => {
+      const dentro = grupos.findIndex(g => g.includes(n));
+      return '<div class="lg-mover">' + grupos.map((g, i) => i === dentro ? '' :
+          '<button type="button" class="lg-mover-b" data-mover="' + i + '"' + (g.length >= 4 ? ' disabled' : '') + '>Partida ' + (i + 1) + (g.length >= 4 ? ' · llena' : '') + '</button>').join('')
+        + (dentro >= 0 ? '<button type="button" class="lg-mover-b no" data-mover="-1">No juega esta jornada</button>' : '')
+        + '</div>';
+    };
+    const jug = n => '<button type="button" class="lg-pj' + (elegido === n ? ' sel' : '') + '" data-j="' + ligaEsc(n) + '">' + ligaEsc(ligaCortoN(n))
+      + (ligaHcp(n) !== null ? ' <small>' + String(ligaHcp(n)).replace('.', ',') + '</small>' : '') + '</button>';
+    return '<div class="conv-eyebrow">Partidas <span class="lg-cuenta">toca un jugador para cambiarlo</span></div>'
+      + '<div class="lg-partidas">' + grupos.map((g, i) =>
+          '<div class="lg-partida"><div class="lg-partida-h"><b>Partida ' + (i + 1) + ' <small>' + g.length + '/4</small></b><span>' + ligaEsc(etq(i)) + '</span></div>'
+          + (g.length ? '<div class="lg-pjs">' + g.map(jug).join('') + '</div>' : '<div class="lg-aviso" style="margin:4px 0 0;">Sin jugadores</div>')
+          + (elegido && g.includes(elegido) ? opciones(elegido) : '')
+          + '</div>').join('') + '</div>'
+      + (fuera.length ? '<div class="conv-eyebrow">No juegan esta jornada <span class="lg-cuenta">toca para meterlo</span></div>'
+          + '<div class="lg-partida lg-fuera"><div class="lg-pjs">' + fuera.map(jug).join('') + '</div>' + (elegido && fuera.includes(elegido) ? opciones(elegido) : '') + '</div>' : '')
+      + '<div class="lg-dos" style="margin-top:8px;"><button type="button" class="lg-opc" id="ljMasPartida"' + (grupos.length >= MAX_GROUPS ? ' disabled' : '') + '>＋ Otra partida</button>'
+      + '<button type="button" class="lg-opc" id="ljRepartir">Repartir de nuevo</button></div>';
   };
 
   const pintar = () => {
@@ -488,17 +510,20 @@ async function ligaConfigJornada(l, n, res){
         + (cfg.salida === 'tiro'
             ? '<div class="lg-aviso">Todos salen a la vez. Elige por qué hoyo sale cada grupo:</div>'
               + '<div class="lg-tiro">' + cfg.hoyos.map((h, i) => '<div class="lg-tiro-f"><div class="lg-tiro-g"><b>Grupo ' + (i + 1) + '</b>'
-                  + (c && c.groups[i] && c.groups[i].length ? '<small>' + c.groups[i].map(x => ligaEsc(String(x).split(/\s+/)[0])).join(', ') + '</small>' : '') + '</div>'
+                  + (cfg.grupos[i] && cfg.grupos[i].length ? '<small>' + cfg.grupos[i].map(x => ligaEsc(String(x).split(/\s+/)[0])).join(', ') + '</small>' : '') + '</div>'
                   + '<button type="button" class="lg-mas lg-mas-p" data-i="' + i + '" data-d="-1" aria-label="Hoyo anterior">−</button>'
                   + '<div class="lg-tiro-h' + (cfg.hoyos.filter(x => x === h).length > 1 ? ' lg-mal' : '') + '"><small>Hoyo</small><b>' + h + '</b></div>'
                   + '<button type="button" class="lg-mas lg-mas-p" data-i="' + i + '" data-d="1" aria-label="Hoyo siguiente">+</button></div>').join('') + '</div>'
               + (repetidos ? '<div class="lg-aviso lg-mal">Hay dos grupos en el mismo hoyo.</div>' : '')
             : ligaPasoHoyo(cfg.hoyoInicio, 'ljHoyoIni')
-              + '<div class="lg-aviso">Todos los grupos salen por el hoyo ' + cfg.hoyoInicio + ', uno cada 10 minutos: ' + ligaHoras(cfg.hora, G).map(t => t.replace(/^0/, '')).join(', ') + '.</div>')
+              + '<div class="lg-aviso">Todos los grupos salen por el hoyo ' + cfg.hoyoInicio + ', uno cada 10 minutos: ' + ligaHoras(cfg.hora, cfg.grupos.length).map(t => t.replace(/^0/, '')).join(', ') + '.</div>')
         + pintarPartidas()
-        + '<div class="lg-aviso lg-guardar-ayuda">«Guardar los cambios» guarda la fecha, el campo, la hora y la salida de esta jornada. Si su convocatoria ya está creada, se cambia también; los jugadores siguen en sus grupos.</div>'
-        + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="ljGuardar">Guardar los cambios</button>'
-        + (cfg.date >= ligaHoy() ? '<button type="button" class="conv-btn ghost" id="ljAbrir">' + (c ? 'Ver la convocatoria' : 'Publicar la convocatoria') + '</button>' : '')
+        + '<div class="lg-aviso lg-guardar-ayuda">' + (c
+            ? 'La convocatoria ya está publicada. Si cambias algo aquí y guardas, se cambia también para todos.'
+            : 'Deja aquí la jornada como quieras (fecha, hora, salida y partidas) y después publícala. Los jugadores la verán ya hecha.') + '</div>'
+        + '<div class="conv-actions">'
+        + (cfg.date >= ligaHoy() ? '<button type="button" class="conv-btn primary" id="ljAbrir">' + (c ? 'Guardar y ver la convocatoria' : 'Guardar y publicar la convocatoria') + '</button>' : '')
+        + '<button type="button" class="conv-btn ghost" id="ljGuardar">Guardar los cambios</button>'
         + '<button type="button" class="conv-link" id="ljVolver">‹ Volver a la liga</button></div>';
     }
     if(card) card.scrollTop = y;
@@ -515,8 +540,28 @@ async function ligaConfigJornada(l, n, res){
     }));
     const fe = document.getElementById('ljFecha'); if(fe) fe.addEventListener('change', ()=>{ leer(); pintar(); });
     const ab = document.getElementById('ljAbrir'); if(ab) ab.addEventListener('click', async ()=>{
-      if(!ronda && !c && !(await ligaGuardarJornada(l, j, cfg, null, true))) return; // antes de abrirla, se guarda lo elegido
+      leer();
+      if(!ronda){ ab.textContent = 'Guardando…'; if(!(await ligaGuardarJornada(l, j, cfg, c, true))){ pintar(); return; } } // antes de abrirla, se guarda lo elegido
       ligaAbrirJornada(l, n, res);
+    });
+    body.querySelectorAll('.lg-pj').forEach(b => b.addEventListener('click', ()=>{ leer(); elegido = elegido === b.dataset.j ? null : b.dataset.j; pintar(); }));
+    body.querySelectorAll('[data-mover]').forEach(b => b.addEventListener('click', ()=>{
+      leer();
+      const destino = Number(b.dataset.mover);
+      cfg.grupos = cfg.grupos.map(g => g.filter(x => x !== elegido));
+      if(destino >= 0 && cfg.grupos[destino].length < 4) cfg.grupos[destino].push(elegido);
+      elegido = null; pintar();
+    }));
+    const mp = document.getElementById('ljMasPartida'); if(mp) mp.addEventListener('click', ()=>{
+      leer(); if(cfg.grupos.length < MAX_GROUPS){ cfg.grupos.push([]); cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), cfg.grupos.length).hoyos; } pintar();
+    });
+    const rp = document.getElementById('ljRepartir'); if(rp) rp.addEventListener('click', ()=>{
+      leer();
+      const juegan = cfg.grupos.flat();
+      const ng = Math.max(1, Math.ceil(juegan.length / 4));
+      const nuevos = Array.from({ length: ng }, () => []);
+      juegan.slice().sort(() => Math.random() - 0.5).forEach((x, i) => nuevos[i % ng].push(x));
+      cfg.grupos = nuevos; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), ng).hoyos; elegido = null; pintar();
     });
     document.getElementById('ljVolver').addEventListener('click', ()=> ligaVer(l.code));
     const gu = document.getElementById('ljGuardar'); if(gu) gu.addEventListener('click', async ()=>{
@@ -531,16 +576,24 @@ async function ligaGuardarJornada(l, j, cfg, c, callado){
   if(cfg.date < ligaHoy()){ alert('La fecha no puede ser anterior a hoy.'); return false; }
   if(l.jornadas.some(x => x !== j && x.date === cfg.date)){ alert('Ya hay otra jornada ese día.'); return false; }
   if(cfg.salida === 'tiro' && new Set(cfg.hoyos).size < cfg.hoyos.length){ alert('Hay dos grupos en el mismo hoyo. Cámbialo antes de guardar.'); return false; }
+  if(cfg.grupos){
+    const llenos = cfg.grupos.filter(g => g.length);
+    if(!llenos.length){ alert('No hay ningún jugador en las partidas.'); return false; }
+    cfg.grupos = llenos; // las partidas vacías no se guardan
+    if(cfg.hoyos && cfg.hoyos.length > llenos.length) cfg.hoyos = cfg.hoyos.slice(0, llenos.length);
+  }
   const client = initSupabase(); if(!client) return false;
   const antes = JSON.stringify(j);
   j.date = cfg.date; j.courseId = cfg.courseId;
   if(cfg.hora && cfg.hora !== l.hora) j.hora = cfg.hora; else delete j.hora;
+  if(cfg.grupos) j.grupos = cfg.grupos.map(g => g.slice());
   if(cfg.salida === 'tiro'){ j.salida = 'tiro'; j.hoyos = cfg.hoyos.slice(); delete j.hoyoInicio; }
   else { delete j.salida; delete j.hoyos; if(cfg.hoyoInicio && cfg.hoyoInicio !== (l.hoyoInicio || 1)) j.hoyoInicio = cfg.hoyoInicio; else delete j.hoyoInicio; }
   const { error } = await client.from('rounds').update({ match_groups: ligaAFila(l) }).eq('id', l.id);
   if(error){ Object.assign(j, JSON.parse(antes)); console.error(error); alert('No se pudo guardar. Revisa la conexión.'); return false; }
   // Si la convocatoria ya existe (y aún no tiene partida), se cambia también, sin mover a nadie de grupo
   if(c && !c.roundCode && typeof convToGroups === 'function'){
+    if(j.grupos) c.groups = j.grupos.map(g => g.slice());
     const sal = ligaSalidas(l, j, c.groups.length);
     c.date = j.date; c.courseId = j.courseId; c.times = sal.times; c.hoyos = sal.hoyos;
     const { error: e2 } = await client.from('rounds').update({ match_groups: convToGroups(c), course_name: ligaCampo(j.courseId).name, updated_at: new Date().toISOString() }).eq('id', c.id);
