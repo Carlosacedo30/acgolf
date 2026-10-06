@@ -1,7 +1,7 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Patrocinador de la liga: aparece en Inicio, en los premios de la semana y en el mensaje de WhatsApp ---
   // Para cambiar de patrocinador basta con tocar estos datos (y poner su logo en la carpeta de la app).
-  const PATROCINADOR = {
+  let PATROCINADOR = {
     nombre: 'Bolarecuperada.com',
     logo: 'logo-bolarecuperada.png?v=1',
     web: 'https://bolarecuperada.com',

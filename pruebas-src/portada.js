@@ -146,6 +146,9 @@
       const pal = nombre.trim().split(/\s+/);
       t.innerHTML = pal.length > 1 ? esc(pal[0]) + '<br><span>' + esc(pal.slice(1).join(' ')) + '</span>' : '<span>' + esc(nombre) + '</span>';
     }
+    // El patrocinador de Los Iscariotes no sale en los demás grupos (ni en Inicio, ni en premios, ni en WhatsApp)
+    try { if(typeof PATROCINADOR !== 'undefined') PATROCINADOR = null; } catch(e){}
+    const sh = document.getElementById('sponsorHome'); if(sh){ sh.innerHTML = ''; sh.style.display = 'none'; }
     const pat = document.querySelector('.home-patro');
     if(pat){
       if(m.patrocinador && !personal){

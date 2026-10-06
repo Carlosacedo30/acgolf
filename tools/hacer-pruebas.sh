@@ -27,6 +27,10 @@ grep -q "const MAX_GROUPS = 8;" pruebas/js/players.js || { echo "ERROR: no se ca
 # Enlaces de convocatoria apuntando a la versión de pruebas
 sed -i "s#https://carlosacedo30.github.io/acgolf/'#https://carlosacedo30.github.io/acgolf/pruebas/'#" pruebas/js/convocatoria.js
 
+# El patrocinador de Los Iscariotes se puede quitar en los demás grupos (portada.js lo pone a null)
+sed -i "s#^  const PATROCINADOR = {#  let PATROCINADOR = {#" pruebas/js/patrocinador.js
+grep -q "let PATROCINADOR = {" pruebas/js/patrocinador.js || { echo "ERROR: no se cambió el patrocinador"; exit 1; }
+
 # index.html: almacén separado, cuentas y banda de "VERSIÓN DE PRUEBAS"
 python3 - <<'EOF'
 import re
@@ -34,7 +38,7 @@ p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>', 1)
 s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=9">\n</head>', 1)
-s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="portada.js?v=2"></script>\n<script src="cuenta.js?v=6"></script>', s, count=1)
+s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="portada.js?v=3"></script>\n<script src="cuenta.js?v=6"></script>', s, count=1)
 s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=1"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s
 open(p, 'w', encoding='utf-8').write(s)
