@@ -149,16 +149,24 @@
       return;
     }
     const me = convMe();
-    box.innerHTML = lista.map((c, i) => {
+    const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    box.innerHTML = '<div class="conv-prox-h">' + icono('calendario') + '<span>Próximas salidas organizadas</span><b>' + lista.length + '</b></div>'
+      + lista.map((c, i) => {
       const total = c.groups.reduce((a, g) => a + g.length, 0);
+      const plazas = c.times.length * CONV_SLOTS;
       const mySlot = me ? convSlotOf(c, me) : -1;
-      const cta = c.roundCode ? 'Partida creada · abrir ›' : (mySlot >= 0 ? 'Estás en la de las ' + convTime(c.times[mySlot]) + ' ›' : 'Apuntarme ›');
-      return '<div class="conv-home-card" role="button" tabindex="0" data-conv-code="' + convEsc(c.code) + '"' + (i ? ' style="margin-top:10px;"' : '') + '>'
-        + '<div class="conv-home-top"><span class="conv-home-eyebrow">' + (i === 0 ? 'Próxima salida' : 'Siguiente salida') + '</span><span class="conv-home-count">' + total + '/' + (c.times.length * CONV_SLOTS) + '</span></div>'
-        + '<div class="conv-home-date">' + convEsc(convLongDate(c.date)) + '</div>'
-        + '<div class="conv-home-sub">' + convEsc(convCourse(c.courseId).name) + ' · ' + (convAlTiro(c) ? 'salida al tiro ' + convTime(c.times[0]) : c.times.map(convTime).join(' y ')) + '</div>'
-        + '<div class="conv-home-cta">' + cta + '</div>'
-        + '</div>';
+      const d = new Date(c.date + 'T12:00:00');
+      const cta = c.roundCode ? 'Partida creada · abrir' : (mySlot >= 0 ? 'Juegas a las ' + convTime(c.times[mySlot]) : 'Apuntarme');
+      const horas = convAlTiro(c) ? 'Al tiro · ' + convTime(c.times[0]) : c.times.map((t, k) => convEtq(c, k)).join(' · ');
+      return '<div class="conv-home-card conv-prox' + (i === 0 ? ' primera' : '') + '" role="button" tabindex="0" data-conv-code="' + convEsc(c.code) + '">'
+        + '<div class="conv-prox-fecha"><small>' + DIAS[d.getDay()].slice(0, 3) + '</small><b>' + d.getDate() + '</b><small>' + MESES[d.getMonth()] + '</small></div>'
+        + '<div class="conv-prox-info">'
+        +   '<span class="conv-home-eyebrow">' + (i === 0 ? 'Próxima salida' : 'Salida organizada') + '</span>'
+        +   '<div class="conv-prox-campo">' + convEsc(convCourse(c.courseId).name) + '</div>'
+        +   '<div class="conv-prox-horas">' + convEsc(horas) + '</div>'
+        +   '<div class="conv-prox-pie"><span class="conv-home-cta' + (mySlot >= 0 || c.roundCode ? ' ok' : '') + '">' + cta + ' ›</span><span class="conv-home-count">' + total + '/' + plazas + ' apuntados</span></div>'
+        + '</div></div>';
     }).join('') + (nuevoBtn ? '<div style="margin-top:10px;">' + nuevoBtn + '</div>' : '');
     box.querySelectorAll('[data-conv-code]').forEach(card => card.addEventListener('click', ()=>{
       const c = convActivas.find(x => x.code === card.dataset.convCode);

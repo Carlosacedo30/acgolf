@@ -37,6 +37,9 @@ function ligaDeConvTexto(code){
           const t = ligaDeConvTexto(card.dataset.convCode);
           const ey = card.querySelector('.conv-home-eyebrow');
           if(t && ey) ey.textContent = t;
+          const cta = card.querySelector('.conv-home-cta');
+          if(t && cta && /^Apuntarme/.test(cta.textContent)) cta.textContent = 'Ver las partidas ›';
+          if(t) card.classList.add('de-liga');
         });
       } catch(e){}
       return r;
