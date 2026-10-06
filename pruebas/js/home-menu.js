@@ -117,3 +117,20 @@
       if(n) abrirUltimaPartida(b, n);
     });
   })();
+
+  // Interruptor «App de la liga / Pruebas con cuentas» (pie del inicio, solo el administrador)
+  (function(){
+    const pie = document.getElementById('versionPie'); if(!pie) return;
+    const enPruebas = /\/pruebas\//.test(location.pathname);
+    const base = location.pathname.replace(/pruebas\/.*$/, '').replace(/[^/]*$/, '');
+    pie.querySelectorAll('button').forEach(b => {
+      b.classList.toggle('on', (b.dataset.v === 'pruebas') === enPruebas);
+      b.addEventListener('click', ()=>{
+        if((b.dataset.v === 'pruebas') === enPruebas) return;
+        location.href = location.origin + base + (b.dataset.v === 'pruebas' ? 'pruebas/' : '');
+      });
+    });
+    // En pruebas, el administrador se sabe al entrar con la cuenta: se mira otra vez al poco
+    const mirar = () => { if(typeof getAdminKey === 'function' && getAdminKey()) pie.hidden = false; };
+    mirar(); setTimeout(mirar, 2500); setTimeout(mirar, 6000);
+  })();

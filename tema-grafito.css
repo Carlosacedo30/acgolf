@@ -132,7 +132,8 @@ html[data-tema="grafito"] .dbi-sec-t, html[data-tema="grafito"] .dbi-consejo{ co
 html[data-tema="grafito"] .dbi-btn-oro{ background:#C6F24E !important; color:#111316 !important; border-radius:999px !important; }
 
 /* Interruptor del diseño (pie del inicio) */
-.tema-pie{ display:flex; justify-content:center; gap:8px; margin-top:6px; }
+.tema-pie{ display:flex; justify-content:center; gap:8px; margin-top:6px; flex-wrap:wrap; }
+.tema-pie[hidden]{ display:none; }
 .tema-pie button{ padding:8px 14px; border-radius:999px; border:1.5px solid #8FA0BC; background:transparent; color:#5A6478; font:700 14px 'Barlow', sans-serif; cursor:pointer; }
 .tema-pie button.on{ background:#0E1F3D; color:#F6F1E4; border-color:#0E1F3D; }
 html[data-tema="grafito"] .tema-pie button{ color:#9AA3AB; border-color:#4A5058; }
