@@ -116,8 +116,8 @@
 
   function convSlotOf(c, name){ return c.groups.findIndex(g => g.includes(name)); }
   // Nombre de cada partida: la hora, o «Hoyo 7» si se sale al tiro
-  const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean));
-  function convEtq(c, i){ const h = c.hoyos && c.hoyos[i]; return h ? 'Hoyo ' + h : convTime(c.times[i]); }
+  const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean) && (new Set(c.times).size === 1 || new Set(c.hoyos).size > 1));
+  function convEtq(c, i){ const h = c.hoyos && c.hoyos[i]; return h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i]); }
 
   async function convSignUp(name, slot){ // slot = -1 -> no juega
     convSetMe(name);

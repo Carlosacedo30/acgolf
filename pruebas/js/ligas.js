@@ -573,6 +573,10 @@ async function ligaBorrar(l, btn){
   if(ancla && !document.getElementById('hmLigas')){
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'home-menu-btn'; b.id = 'hmLigas';
+    // En la app de la liga, «Ligas» solo lo ve el administrador. En pruebas lo ven todos los que entran con cuenta.
+    const enPruebas = /\/pruebas\//.test(location.pathname);
+    const mostrar = () => { b.hidden = !(enPruebas || ligaEsAdmin()); };
+    mostrar(); setInterval(mostrar, 3000);
     b.innerHTML = (typeof icono === 'function' ? icono('bandera') : '') + '<span>Ligas</span>' + (typeof icono === 'function' ? icono('flecha', 'hm-flecha') : '');
     ancla.parentNode.insertBefore(b, ancla);
     b.addEventListener('click', ligaAbrir);
