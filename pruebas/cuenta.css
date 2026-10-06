@@ -92,3 +92,9 @@ html[data-tema="grafito"] .cg-link, html[data-tema="grafito"] .fm-link, html[dat
 html[data-tema="grafito"] .mk-col, html[data-tema="grafito"] .mk-elegir{ background:#1B1E22 !important; }
 html[data-tema="grafito"] .mk-box.filled, html[data-tema="grafito"] .mk-tp{ background:#24282D !important; }
 html[data-tema="grafito"] .fm-fila, html[data-tema="grafito"] .mk-fila{ border-color:#2C3137 !important; }
+
+/* Invitar a tu grupo (solo administrador) */
+.cg-invita{ margin:14px 0; padding:14px; border-radius:14px; border:1.5px solid #C6F24E; background:rgba(198,242,78,.06); }
+.cg-invita > b{ font-size:16px; }
+.cg-enlace{ font-size:13px; word-break:break-all; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.06); margin-bottom:10px; }
+.cg-invita a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decoration:none; }

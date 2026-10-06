@@ -10,6 +10,14 @@
   gate.className = 'cg';
   document.body.appendChild(gate);
 
+  const APP_PRUEBAS = 'https://carlosacedo30.github.io/acgolf/pruebas/';
+  try {
+    const inv = new URLSearchParams(location.search).get('unirse');
+    if(inv){ localStorage.setItem('acgolfInvitacion', inv.trim().toUpperCase()); history.replaceState(null, '', location.pathname); }
+  } catch(e){}
+  const invitacion = () => { try { return localStorage.getItem('acgolfInvitacion') || ''; } catch(e){ return ''; } };
+  const olvidarInvitacion = () => { try { localStorage.removeItem('acgolfInvitacion'); } catch(e){} };
+
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const $ = id => document.getElementById(id);
 
@@ -126,7 +134,76 @@
     });
   }
 
+  const aceptoHtml = '<label class="cg-acepto"><input type="checkbox" id="cgAcepto"><span>He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y las <a href="condiciones.html" target="_blank" rel="noopener">condiciones de uso</a>.</span></label>';
+  const leerHcp = id => { const v = parseFloat(String(($(id) || {}).value || '').replace(',', '.')); return isNaN(v) ? null : v; };
+
+  // Entrar en un grupo con el enlace de invitación
+  async function pantallaUnirse(email, codigo){
+    mostrar(cabecera('Cargando invitación…', '') );
+    let info = null;
+    try { const r = await client.rpc('info_invitacion', { p_codigo: codigo }); if(r.error) throw r.error; info = r.data; } catch(e){}
+    if(!info){
+      mostrar(cabecera('Esa invitación no vale', 'Puede que el administrador haya cambiado el enlace. Pídele uno nuevo.')
+        + '<button type="button" class="cg-btn" id="cgSinInv">Seguir sin invitación</button>'
+        + '<button type="button" class="cg-link" id="cgSalir">Salir</button>');
+      $('cgSinInv').onclick = () => { olvidarInvitacion(); pantallaCompletar(email); };
+      $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
+      return;
+    }
+    let elegido = '';
+    const libres = info.libres || [];
+    mostrar(cabecera('Te unes a «' + esc(info.grupo) + '»', libres.length ? 'Toca tu nombre. Si no estás en la lista, escríbelo abajo.' : 'Escribe tu nombre y tu hándicap.')
+      + (libres.length ? '<div class="cg-nombres">' + libres.map(n => '<button type="button" class="cg-nombre" data-n="' + esc(n) + '">' + esc(n) + '</button>').join('') + '</div>'
+          + '<div class="cg-sep">¿No estás en la lista?</div>' : '')
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
+      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      + aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgEmpezar">Entrar en el grupo</button>'
+      + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
+    gate.querySelectorAll('.cg-nombre').forEach(b => b.onclick = () => {
+      elegido = elegido === b.dataset.n ? '' : b.dataset.n;
+      gate.querySelectorAll('.cg-nombre').forEach(x => x.classList.toggle('on', x.dataset.n === elegido));
+      if(elegido){ $('cgNombre').value = ''; $('cgHcp').value = ''; }
+    });
+    $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
+    $('cgEmpezar').onclick = e => ocupado(e.target, async () => {
+      const nombre = elegido || $('cgNombre').value.trim();
+      if(!nombre){ msg('Toca tu nombre o escríbelo.'); return; }
+      const hcp = elegido ? null : leerHcp('cgHcp');
+      if(!elegido && hcp === null){ msg('Escribe tu hándicap.'); return; }
+      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      const { error } = await client.rpc('unirse_grupo', { p_codigo: codigo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error){ msg(traducir(error)); return; }
+      olvidarInvitacion();
+      location.reload();
+    });
+  }
+
+  // Crear un grupo nuevo: quien lo crea queda como administrador
+  function pantallaCrearGrupo(email){
+    mostrar(cabecera('Crear un grupo nuevo', 'Tendréis vuestra propia liga, hándicaps, medallas y caddie. Solo lo veréis los de vuestro grupo.')
+      + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Los Pollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
+      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      + aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgCrearGrupo">Crear el grupo</button>'
+      + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
+    $('cgVolver').onclick = () => pantallaCompletar(email);
+    $('cgCrearGrupo').onclick = e => ocupado(e.target, async () => {
+      const grupo = $('cgGrupo').value.trim(), nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
+      if(!grupo){ msg('Ponle un nombre al grupo.'); return; }
+      if(!nombre){ msg('Escribe tu nombre.'); return; }
+      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
+      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      if(!confirm('¿Crear el grupo «' + grupo + '»?\n\nTú serás su administrador. Después podrás invitar a los demás con un enlace.')) return;
+      const { error } = await client.rpc('crear_grupo', { p_nombre: grupo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error){ msg(traducir(error)); return; }
+      location.reload();
+    });
+  }
+
   async function pantallaCompletar(email){
+    if(invitacion()){ pantallaUnirse(email, invitacion()); return; }
     mostrar(cabecera('¿Quién eres?', 'Toca tu nombre. Solo se hace una vez.') + '<div class="cg-p">Cargando jugadores…</div>');
     let libres = [];
     try {
@@ -142,7 +219,11 @@
       + '<label class="cg-acepto"><input type="checkbox" id="cgAcepto"><span>He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y las <a href="condiciones.html" target="_blank" rel="noopener">condiciones de uso</a>.</span></label>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgEmpezar">Empezar</button>'
+      + '<div class="cg-sep">¿Vienes de otro grupo de amigos?</div>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo nuevo</button>'
+      + '<p class="cg-p" style="font-size:14px;">Si te han mandado un enlace de invitación, ábrelo desde el mensaje y entrarás directamente en tu grupo.</p>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
+    $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(email);
     gate.querySelectorAll('.cg-nombre').forEach(b => b.onclick = () => {
       elegido = b.dataset.n;
       gate.querySelectorAll('.cg-nombre').forEach(x => x.classList.toggle('on', x === b));
@@ -161,7 +242,8 @@
   // ---------- Mi cuenta ----------
   function panelMiCuenta(perfil){
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
-      + '<p class="cg-sub">' + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
+      + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
+      + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invitar a tu grupo</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
       + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
@@ -196,6 +278,26 @@
       mostrar(cabecera('Solicitud recibida', 'Tu cuenta se borrará en unos días. Ya has salido de la app en este móvil.')
         + '<button type="button" class="cg-btn" onclick="location.reload()">De acuerdo</button>');
     });
+    if(perfil.es_admin){
+      const pintarInvita = (inv) => {
+        const box = $('cgInvita'); if(!box) return;
+        if(!inv){ box.remove(); return; }
+        const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
+        const texto = '⛳ Te invito a «' + inv.grupo + '» en la app de golf. Crea tu cuenta desde este enlace y entrarás directamente en el grupo:\n' + enlace;
+        box.innerHTML = '<b>Invitar a «' + esc(inv.grupo) + '»</b>'
+          + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a los de tu grupo. Al abrirlo y crear su cuenta, entran directamente.</div>'
+          + '<div class="cg-enlace">' + esc(enlace) + '</div>'
+          + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
+          + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
+          + '<button type="button" class="cg-link" id="cgNuevoEnlace">Cambiar el enlace (el anterior deja de valer)</button>';
+        $('cgCopiar').onclick = async () => { try { await navigator.clipboard.writeText(enlace); msg('Enlace copiado.', true); } catch(e){ prompt('Copia el enlace:', enlace); } };
+        $('cgNuevoEnlace').onclick = async () => {
+          if(!confirm('¿Cambiar el enlace de invitación?\nEl enlace anterior dejará de funcionar.')) return;
+          const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: true }); pintarInvita(r.data);
+        };
+      };
+      client.rpc('invitacion_de_mi_grupo', { p_nuevo: false }).then(r => pintarInvita(r.data), () => pintarInvita(null));
+    }
     if(perfil.es_admin) client.rpc('bajas_pendientes').then(({ data }) => {
       if(!data || !data.length) return;
       const box = document.createElement('div');
