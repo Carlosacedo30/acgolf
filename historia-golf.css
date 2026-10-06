@@ -75,3 +75,12 @@ details.hg-rep[open] .hg-rep-t i{ display:none; }
 .hg-rep-txt{ padding:0 16px 18px; }
 .hg-rep-txt p{ margin:0 0 12px; font:500 17.5px/1.55 'Barlow', sans-serif; color:#E3E7EA; }
 .hg-rep-txt p:first-child::first-letter{ float:left; font:400 52px/0.85 'Anton', sans-serif; color:#C6F24E; margin:6px 8px 0 0; }
+/* Webs del golf */
+.hg-webs-g{ margin:6px 4px 8px; font:800 16px 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; }
+.hg-webs{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; margin-bottom:14px; }
+.hg-web{ display:flex; flex-direction:column; gap:4px; padding:12px; border-radius:14px; background:#1B1E22; box-shadow:inset 0 0 0 1.5px #2A2E33; text-decoration:none; }
+.hg-web b{ font:800 16px/1.2 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; }
+.hg-web b::after{ content:' ↗'; color:#C6F24E; }
+.hg-web span{ font:500 14px/1.3 'Barlow', sans-serif; color:#C9D0D6; }
+.hg-web em{ margin-top:auto; padding-top:4px; font:700 12.5px 'Barlow', sans-serif; font-style:normal; color:#9AA3AB; }
+.hg-web em.es{ color:#C6F24E; }

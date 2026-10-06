@@ -136,6 +136,26 @@
           'Fue la última gran página de Seve en la Ryder: la Copa levantada en España, por un capitán español. Para muchos, el día que el golf español se hizo mayor.'] },
   ];
 
+  // Webs oficiales del golf (se abren fuera de la app)
+  const WEBS = [
+    ['En España', [
+      ['Real Federación Española de Golf', 'Licencias, hándicap, torneos y la selección española', 'https://www.rfegolf.es', 'es'],
+      ['Fundación Seve Ballesteros', 'La fundación de Seve contra los tumores cerebrales', 'https://seveballesteros.com/es/', 'es'],
+    ]],
+    ['Los cuatro grandes', [
+      ['The Masters', 'Augusta, en abril: la chaqueta verde', 'https://www.masters.com', 'en'],
+      ['PGA Championship', 'El grande de mayo', 'https://www.pgachampionship.com', 'en'],
+      ['US Open', 'El grande de junio, el más duro', 'https://www.usopen.com', 'en'],
+      ['The Open', 'El Open Británico, el más antiguo', 'https://www.theopen.com', 'en'],
+    ]],
+    ['Circuitos y competiciones', [
+      ['DP World Tour', 'El circuito europeo, el de Seve', 'https://www.europeantour.com', 'en'],
+      ['PGA Tour', 'El circuito americano', 'https://www.pgatour.com', 'en'],
+      ['LIV Golf', 'La liga por equipos, con varios españoles', 'https://www.livgolf.com', 'en'],
+      ['Ryder Cup', 'Europa contra Estados Unidos', 'https://www.rydercup.com', 'en'],
+    ]],
+  ];
+
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
   function foto(id, clase, pie){
@@ -166,7 +186,7 @@
   function pintar(){
     const body = document.getElementById('hgBody'); if(!body) return;
     body.innerHTML =
-      '<nav class="hg-saltos"><a href="#hgHistoria">Los orígenes</a><a href="#hgSeve">Seve</a><a href="#hgReportajes">Reportajes</a></nav>'
+      '<nav class="hg-saltos"><a href="#hgHistoria">Los orígenes</a><a href="#hgSeve">Seve</a><a href="#hgReportajes">Reportajes</a><a href="#hgWebs">Webs</a></nav>'
       + '<div class="hg-hist" id="hgHistoria">'
       +   '<div class="hg-portada">' + foto('swilcan', 'hg-portada-foto hg-portada-ancha', 'El puente de Swilcan y la casa club de la R&A en St Andrews')
       +     '<div class="hg-portada-txt"><div class="hg-k">De Escocia al mundo</div><h3>Seis siglos de golf</h3><p>Del hielo holandés a St Andrews, Augusta y Pedreña</p></div></div>'
@@ -182,6 +202,11 @@
             '<details class="hg-rep" name="hgrep"><summary>' + foto(r.foto, 'hg-rep-foto', '') 
             + '<span class="hg-rep-t"><b>' + esc(r.t) + '</b><small>' + esc(r.sub) + '</small><i>Leer reportaje</i></span></summary>'
             + '<div class="hg-rep-txt">' + r.p.map(x => '<p>' + esc(x) + '</p>').join('') + '</div></details>').join('') + '</div>'
+      + '</div>'
+      + '<div id="hgWebs"><div class="hg-sec-t">Webs del golf</div>'
+      +   WEBS.map(g => '<div class="hg-webs-g">' + esc(g[0]) + '</div><div class="hg-webs">' + g[1].map(w =>
+            '<a class="hg-web" href="' + w[2] + '" target="_blank" rel="noopener"><b>' + esc(w[0]) + '</b><span>' + esc(w[1]) + '</span>'
+            + (w[3] === 'en' ? '<em>Web en inglés</em>' : '<em class="es">Web en español</em>') + '</a>').join('') + '</div>').join('')
       + '</div>'
       + '<p class="hg-pie">Textos escritos para la app. Fotos de Wikimedia Commons con licencia libre; debajo de cada una van su autor y su licencia.</p>';
     body.querySelectorAll('.hg-saltos a').forEach(a => a.addEventListener('click', e => {
