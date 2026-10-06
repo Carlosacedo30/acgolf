@@ -38,9 +38,10 @@
     return m || 'Algo ha fallado. Vuelve a probar.';
   }
 
+  const LOGO_APP = '<svg class="cg-logo" width="76" height="76" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#111316" stroke="#C6F24E" stroke-width="4"/><path d="M42 74 V26" stroke="#F2F4F5" stroke-width="5" stroke-linecap="round"/><path d="M45 26 L70 35 L45 45 Z" fill="#C6F24E"/><ellipse cx="46" cy="76" rx="16" ry="4" fill="#F2F4F5" opacity=".3"/></svg>';
   function cabecera(titulo, sub){
-    return '<div class="cg-head"><img src="logo-iscariotes.svg?v=6" alt="" width="84" height="84">'
-      + '<div class="cg-eyebrow">Los Iscariotes · Liga de golf</div>'
+    return '<div class="cg-head">' + LOGO_APP
+      + '<div class="cg-eyebrow">acgolf · Golf entre amigos</div>'
       + '<h1 class="cg-title">' + titulo + '</h1>'
       + (sub ? '<p class="cg-sub">' + sub + '</p>' : '') + '</div>';
   }
@@ -188,7 +189,7 @@
   // Crear un grupo nuevo: quien lo crea queda como administrador
   function pantallaCrearGrupo(email, yaTengoCuenta){
     mostrar(cabecera('Crear un grupo nuevo', 'Tendréis vuestra propia liga, hándicaps, medallas y caddie. Solo lo veréis los de vuestro grupo.')
-      + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Los Pollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
+      + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Cajapollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
       + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
       + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
       + (yaTengoCuenta ? '' : aceptoHtml) + '<div id="cgMsg" class="cg-msg"></div>'
@@ -324,12 +325,121 @@
     });
   }
 
+  // ---------- Asistente: montar la portada del grupo ----------
+  // Sale solo la primera vez que el administrador entra en un grupo nuevo (y desde «Mi cuenta» cuando quiera cambiarla).
+  function asistentePortada(perfil, desdeCuenta){
+    const P = window.acgolfPortada;
+    if(!P){ ocultar(); return; }
+    const st = P.marcaDe(perfil);
+    const TOTAL = 4;
+    const barra = n => '<div class="pg-pasos" aria-label="Paso ' + n + ' de ' + TOTAL + '">'
+      + Array.from({ length: TOTAL }, (_, i) => '<i class="' + (i < n ? 'on' : '') + '"></i>').join('') + '</div>'
+      + '<div class="pg-paso-n">Paso ' + n + ' de ' + TOTAL + '</div>';
+    const cab = (n, titulo, sub) => '<div class="cg-head pg-head">' + barra(n)
+      + '<div class="cg-eyebrow">' + esc(perfil.grupo) + '</div><h1 class="cg-title">' + titulo + '</h1>'
+      + (sub ? '<p class="cg-sub">' + sub + '</p>' : '') + '</div>';
+    const salir = desdeCuenta ? '<button type="button" class="cg-link" id="pgSalir">Dejarlo como está</button>' : '';
+    const ponerSalir = () => { const b = $('pgSalir'); if(b) b.onclick = ocultar; };
+
+    function paso1(){
+      mostrar(cab(1, 'Elegid vuestro escudo', 'Lo hacemos con las iniciales del grupo. Podéis cambiar las letras.')
+        + '<label class="cg-lbl">Iniciales<small>Hasta 3 letras</small><input id="pgIni" type="text" maxlength="3" autocapitalize="characters" value="' + esc(st.iniciales) + '"></label>'
+        + '<div class="pg-escudos" id="pgEscudos"></div>'
+        + '<button type="button" class="cg-btn" id="pgSig">Siguiente: el color</button>' + salir);
+      const pintar = () => {
+        $('pgEscudos').innerHTML = P.ESCUDOS.map(e => '<button type="button" class="pg-op' + (e.id === st.escudo ? ' on' : '') + '" data-e="' + e.id + '">'
+          + P.escudo(e.id, st.iniciales, st.color, 84) + '<span>' + esc(e.n) + '</span></button>').join('');
+        gate.querySelectorAll('.pg-op').forEach(b => b.onclick = () => { st.escudo = b.dataset.e; pintar(); });
+      };
+      pintar();
+      $('pgIni').oninput = e => { st.iniciales = e.target.value.replace(/[^A-Za-zÑñ0-9]/g, '').toUpperCase() || P.iniciales(perfil.grupo); pintar(); };
+      $('pgSig').onclick = paso2; ponerSalir();
+    }
+
+    function paso2(){
+      mostrar(cab(2, 'Vuestro color', 'Se usa en el escudo, en la portada y en el botón de crear partida.')
+        + '<div class="pg-muestra" id="pgMuestra"></div>'
+        + '<div class="pg-colores" id="pgColores"></div>'
+        + '<button type="button" class="cg-btn" id="pgSig">Siguiente: vuestro campo</button>'
+        + '<button type="button" class="cg-link" id="pgAtras">‹ Atrás</button>');
+      const pintar = () => {
+        $('pgMuestra').innerHTML = P.escudo(st.escudo, st.iniciales, st.color, 120);
+        $('pgColores').innerHTML = P.COLORES.map(c => '<button type="button" class="pg-color' + (c.c === st.color ? ' on' : '') + '" data-c="' + c.c + '" style="--c:' + c.c + '"><i></i><span>' + esc(c.n) + '</span></button>').join('');
+        gate.querySelectorAll('.pg-color').forEach(b => b.onclick = () => { st.color = b.dataset.c; pintar(); });
+      };
+      pintar();
+      $('pgSig').onclick = paso3; $('pgAtras').onclick = paso1;
+    }
+
+    function paso3(){
+      mostrar(cab(3, 'Dónde jugáis', 'Sale encima del nombre del grupo. El patrocinador es opcional.')
+        + '<label class="cg-lbl">Campo donde soléis jugar<small>Por ejemplo: Hato Verde</small><input id="pgCampo" type="text" maxlength="40" value="' + esc(st.campo) + '"></label>'
+        + '<label class="cg-lbl">Temporada<small>Por ejemplo: Liga 2026</small><input id="pgTemp" type="text" maxlength="20" value="' + esc(st.temporada) + '"></label>'
+        + '<label class="cg-lbl">Patrocinador (opcional)<small>Un bar, una tienda, un amigo con negocio…</small><input id="pgPatro" type="text" maxlength="40" value="' + esc(st.patrocinador) + '"></label>'
+        + '<button type="button" class="cg-btn" id="pgSig">Ver cómo queda</button>'
+        + '<button type="button" class="cg-link" id="pgAtras">‹ Atrás</button>');
+      const leer = () => { st.campo = $('pgCampo').value.trim(); st.temporada = $('pgTemp').value.trim(); st.patrocinador = $('pgPatro').value.trim(); };
+      $('pgSig').onclick = () => { leer(); paso4(); };
+      $('pgAtras').onclick = () => { leer(); paso2(); };
+    }
+
+    function paso4(){
+      const pal = String(perfil.grupo || '').trim().split(/\s+/);
+      const titulo = pal.length > 1 ? esc(pal[0]) + '<br><span>' + esc(pal.slice(1).join(' ')) + '</span>' : '<span>' + esc(perfil.grupo) + '</span>';
+      mostrar(cab(4, 'Así queda vuestra portada', 'Si os gusta, guardadla. Se puede cambiar cuando queráis desde «Mi cuenta».')
+        + '<div class="pg-vista" style="--grupo-color:' + st.color + '">'
+        +   '<div class="pg-vista-cab">' + P.escudo(st.escudo, st.iniciales, st.color, 92)
+        +     '<div><div class="pg-vista-eb">' + esc([st.campo, st.temporada].filter(Boolean).join(' · ')) + '</div><div class="pg-vista-t">' + titulo + '</div></div></div>'
+        +   (st.patrocinador ? '<div class="pg-vista-patro">Patrocina <b>' + esc(st.patrocinador) + '</b></div>' : '')
+        +   '<div class="pg-vista-btn">Crear partida</div>'
+        + '</div>'
+        + '<div id="cgMsg" class="cg-msg"></div>'
+        + '<button type="button" class="cg-btn" id="pgGuardar">Guardar la portada</button>'
+        + '<button type="button" class="cg-link" id="pgAtras">‹ Cambiar algo</button>');
+      $('pgAtras').onclick = paso3;
+      $('pgGuardar').onclick = e => ocupado(e.target, async () => {
+        const { data, error } = await client.rpc('guardar_marca', { p_marca: st });
+        if(error){ msg(traducir(error)); return; }
+        perfil.grupo_marca = data;
+        if(desdeCuenta){ P.aplicar(perfil); ocultar(); return; }
+        pasoInvitar();
+      });
+    }
+
+    // Último paso del alta: invitar a los demás
+    async function pasoInvitar(){
+      mostrar('<div class="cg-head">' + P.escudo(st.escudo, st.iniciales, st.color, 84)
+        + '<div class="cg-eyebrow">' + esc(perfil.grupo) + '</div><h1 class="cg-title">¡Grupo listo!</h1>'
+        + '<p class="cg-sub">Ahora manda el enlace a tus compañeros. Al abrirlo y crear su cuenta, entran directamente en el grupo.</p></div>'
+        + '<div class="cg-invita" id="cgInvita"><div class="cg-p">Cargando enlace…</div></div>'
+        + '<div id="cgMsg" class="cg-msg"></div>'
+        + '<button type="button" class="cg-btn" id="pgEntrar">Entrar en la app</button>');
+      $('pgEntrar').onclick = () => location.reload();
+      try {
+        const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: false });
+        const inv = r.data; const box = $('cgInvita');
+        if(!inv || !box){ if(box) box.remove(); return; }
+        const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
+        const texto = '⛳ Te invito a «' + inv.grupo + '» en la app de golf. Crea tu cuenta desde este enlace y entrarás directamente en el grupo:\n' + enlace;
+        box.innerHTML = '<b>Invitar a «' + esc(inv.grupo) + '»</b>'
+          + '<div class="cg-enlace">' + esc(enlace) + '</div>'
+          + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
+          + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
+          + '<p class="cg-p" style="font-size:16px;margin-top:4px;">Este enlace también lo tienes siempre en «Mi cuenta».</p>';
+        $('cgCopiar').onclick = async () => { try { await navigator.clipboard.writeText(enlace); msg('Enlace copiado.', true); } catch(e){ prompt('Copia el enlace:', enlace); } };
+      } catch(e){ const box = $('cgInvita'); if(box) box.remove(); }
+    }
+
+    paso1();
+  }
+
   // ---------- Mi cuenta ----------
   function panelMiCuenta(perfil){
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
       + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
       + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invitar a tu grupo</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
+      + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
       + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
@@ -339,6 +449,7 @@
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
     $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
+    if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
     $('cgClave').onclick = pantallaNuevaClave;
     $('cgSalir').onclick = async () => {
       if(!confirm('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
@@ -410,7 +521,7 @@
   }
 
   // ---------- Arranque ----------
-  mostrar('<div class="cg-head"><img src="logo-iscariotes.svg?v=6" alt="" width="84" height="84"><p class="cg-sub">Cargando…</p></div>');
+  mostrar('<div class="cg-head">' + LOGO_APP + '<p class="cg-sub">Cargando…</p></div>');
   let recuperando = /type=recovery/.test(location.hash);
   if(client) client.auth.onAuthStateChange(ev => { if(ev === 'PASSWORD_RECOVERY'){ recuperando = true; pantallaNuevaClave(); } });
 
@@ -432,6 +543,15 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }
     botonMiCuenta(perfil);
+    const P = window.acgolfPortada;
+    if(P){
+      const pintar = () => P.aplicar(perfil);
+      if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();
+      // Grupo recién creado: el administrador monta la portada e invita a los demás
+      if(perfil.es_admin && perfil.grupo_tipo === 'liga' && !(perfil.grupo_marca || {}).hecho && !P.esPortadaOriginal(perfil)){
+        asistentePortada(perfil, false); return;
+      }
+    }
     ocultar();
   })();
 })();
