@@ -98,3 +98,16 @@ html[data-tema="grafito"] .fm-fila, html[data-tema="grafito"] .mk-fila{ border-c
 .cg-invita > b{ font-size:16px; }
 .cg-enlace{ font-size:13px; word-break:break-all; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.06); margin-bottom:10px; }
 .cg-invita a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decoration:none; }
+
+/* Grupos: selector, «Mis grupos» y bienvenida */
+.cg-selgrupo{ position:fixed; top:calc(env(safe-area-inset-top, 0px) + 54px); right:10px; z-index:900; max-width:62vw; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font:800 14px 'Archivo', 'Barlow', sans-serif; padding:7px 12px; border-radius:999px; border:1.5px solid #C6F24E; background:rgba(17,19,22,.92); color:#C6F24E; cursor:pointer; }
+.cg-grupos{ display:flex; flex-direction:column; gap:8px; margin:6px 0 12px; }
+.cg-grupo{ display:block; width:100%; text-align:left; padding:12px 14px; border-radius:14px; border:1.5px solid #33383E; background:#1B1E22; color:#F2F4F5; cursor:pointer; font-family:inherit; }
+.cg-grupo b{ display:block; font-size:17px; }
+.cg-grupo span{ display:block; font-size:14px; color:#9AA3AB; margin-top:2px; }
+.cg-grupo i{ display:inline-block; margin-top:6px; font-style:normal; font-weight:800; font-size:13px; color:#111316; background:#C6F24E; border-radius:999px; padding:3px 10px; }
+.cg-grupo.on{ border-color:#C6F24E; }
+.cg-opcion{ border:1.5px solid #C6F24E; border-radius:16px; padding:14px; margin:6px 0 14px; }
+.cg-opcion > b{ display:block; font-size:19px; }
+.cg-opcion > span{ display:block; font-size:15px; color:#9AA3AB; margin:4px 0 8px; }

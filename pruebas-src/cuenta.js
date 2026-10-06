@@ -150,6 +150,12 @@
       $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
       return;
     }
+    if(info.yaEstoy){
+      const { error } = await client.rpc('unirse_grupo', { p_codigo: codigo, p_player: '', p_hcp: null, p_version: VERSION_PRIVACIDAD });
+      olvidarInvitacion();
+      if(error){ msg(traducir(error)); return; }
+      location.reload(); return;
+    }
     let elegido = '';
     const libres = info.libres || [];
     mostrar(cabecera('Te unes a «' + esc(info.grupo) + '»', libres.length ? 'Toca tu nombre. Si no estás en la lista, escríbelo abajo.' : 'Escribe tu nombre y tu hándicap.')
@@ -180,21 +186,21 @@
   }
 
   // Crear un grupo nuevo: quien lo crea queda como administrador
-  function pantallaCrearGrupo(email){
+  function pantallaCrearGrupo(email, yaTengoCuenta){
     mostrar(cabecera('Crear un grupo nuevo', 'Tendréis vuestra propia liga, hándicaps, medallas y caddie. Solo lo veréis los de vuestro grupo.')
       + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Los Pollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
       + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
       + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
-      + aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
+      + (yaTengoCuenta ? '' : aceptoHtml) + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgCrearGrupo">Crear el grupo</button>'
       + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
-    $('cgVolver').onclick = () => pantallaCompletar(email);
+    $('cgVolver').onclick = () => yaTengoCuenta ? pantallaMisGrupos(window.miPerfil || { email }) : pantallaBienvenida(email);
     $('cgCrearGrupo').onclick = e => ocupado(e.target, async () => {
       const grupo = $('cgGrupo').value.trim(), nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
       if(!grupo){ msg('Ponle un nombre al grupo.'); return; }
       if(!nombre){ msg('Escribe tu nombre.'); return; }
       if(hcp === null){ msg('Escribe tu hándicap.'); return; }
-      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      if($('cgAcepto') && !$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
       if(!confirm('¿Crear el grupo «' + grupo + '»?\n\nTú serás su administrador. Después podrás invitar a los demás con un enlace.')) return;
       const { error } = await client.rpc('crear_grupo', { p_nombre: grupo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
       if(error){ msg(traducir(error)); return; }
@@ -202,8 +208,89 @@
     });
   }
 
-  async function pantallaCompletar(email){
+  // Cuenta nueva sin invitación: empezar gratis (espacio personal), Los Iscariotes o crear un grupo
+  function pantallaBienvenida(email){
+    mostrar(cabecera('Bienvenido', 'Elige cómo quieres empezar. Solo se hace una vez.')
+      + '<div class="cg-opcion"><b>⛳ Empezar gratis</b><span>Apunta tus partidas, lleva tu hándicap y usa el caddie. Solo lo ves tú.</span>'
+      +   '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
+      +   '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      +   aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
+      +   '<button type="button" class="cg-btn" id="cgPersonal">Empezar</button></div>'
+      + '<div class="cg-sep">¿Juegas con un grupo de amigos?</div>'
+      + '<p class="cg-p" style="font-size:14px;">Si te han mandado un enlace de invitación, ábrelo desde el mensaje y entrarás en tu grupo.</p>'
+      + '<button type="button" class="cg-btn ghost" id="cgIscariotes">Soy de Los Iscariotes</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo con liga</button>'
+      + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
+    $('cgIscariotes').onclick = () => pantallaCompletar(email, true);
+    $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(email);
+    $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
+    $('cgPersonal').onclick = e => ocupado(e.target, async () => {
+      const nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
+      if(!nombre){ msg('Escribe tu nombre.'); return; }
+      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
+      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      const { error } = await client.rpc('empezar_personal', { p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error){ msg(traducir(error)); return; }
+      location.reload();
+    });
+  }
+
+  // Mis grupos: cambiar de grupo, crear uno, unirse con un código o empezar el espacio personal
+  async function pantallaMisGrupos(perfil){
+    mostrar(cabecera('Mis grupos', 'Cargando…'));
+    let grupos = [];
+    try { const r = await client.rpc('mis_grupos'); if(r.error) throw r.error; grupos = r.data || []; } catch(e){}
+    const tienePersonal = grupos.some(g => g.tipo === 'personal');
+    mostrar(cabecera('Mis grupos', 'Toca un grupo para entrar en él. Cada grupo solo ve lo suyo.')
+      + '<div class="cg-grupos">' + grupos.map(g => '<button type="button" class="cg-grupo' + (g.activo ? ' on' : '') + '" data-g="' + esc(g.id) + '">'
+          + '<b>' + (g.tipo === 'personal' ? '⛳ ' : '🏆 ') + esc(g.nombre) + '</b>'
+          + '<span>' + (g.tipo === 'personal' ? 'Tu espacio personal (gratis)' : 'Grupo con liga') + ' · ' + esc(g.jugador) + (g.es_admin && g.tipo !== 'personal' ? ' · Administrador' : '') + '</span>'
+          + (g.activo ? '<i>Estás aquí</i>' : '') + '</button>').join('') + '</div>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<div class="cg-sep">Unirme a otro grupo</div>'
+      + '<label class="cg-lbl">Código de invitación<small>Viene al final del enlace que te mandaron</small><input id="cgCodigo" type="text" autocapitalize="characters" maxlength="12"></label>'
+      + '<button type="button" class="cg-btn ghost" id="cgUnirme">Unirme</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo con liga</button>'
+      + (tienePersonal ? '' : '<button type="button" class="cg-btn ghost" id="cgPersonal">Empezar mi espacio personal</button>')
+      + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
+    $('cgCerrar').onclick = ocultar;
+    gate.querySelectorAll('.cg-grupo').forEach(b => b.onclick = async () => {
+      if(b.classList.contains('on')){ ocultar(); return; }
+      b.disabled = true;
+      const { error } = await client.rpc('cambiar_grupo', { p_grupo: b.dataset.g });
+      if(error){ b.disabled = false; msg(traducir(error)); return; }
+      location.reload();
+    });
+    $('cgUnirme').onclick = () => {
+      const c = $('cgCodigo').value.trim().toUpperCase().replace(/.*UNIRSE=/, '');
+      if(!c){ msg('Escribe el código.'); return; }
+      try { localStorage.setItem('acgolfInvitacion', c); } catch(e){}
+      pantallaUnirse(perfil.email, c);
+    };
+    $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(perfil.email, true);
+    const pp = $('cgPersonal'); if(pp) pp.onclick = () => pantallaPersonalExtra(perfil);
+  }
+
+  function pantallaPersonalExtra(perfil){
+    mostrar(cabecera('Mi espacio personal', 'Tus partidas, tu hándicap y tu caddie, solo para ti.')
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" value="' + esc(perfil.player_name) + '"></label>'
+      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgPersonal">Crear mi espacio</button>'
+      + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
+    $('cgVolver').onclick = () => pantallaMisGrupos(perfil);
+    $('cgPersonal').onclick = e => ocupado(e.target, async () => {
+      const hcp = leerHcp('cgHcp');
+      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
+      const { error } = await client.rpc('empezar_personal', { p_player: $('cgNombre').value.trim(), p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error){ msg(traducir(error)); return; }
+      location.reload();
+    });
+  }
+
+  async function pantallaCompletar(email, iscariotes){
     if(invitacion()){ pantallaUnirse(email, invitacion()); return; }
+    if(!iscariotes){ pantallaBienvenida(email); return; }
     mostrar(cabecera('¿Quién eres?', 'Toca tu nombre. Solo se hace una vez.') + '<div class="cg-p">Cargando jugadores…</div>');
     let libres = [];
     try {
@@ -219,11 +306,9 @@
       + '<label class="cg-acepto"><input type="checkbox" id="cgAcepto"><span>He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y las <a href="condiciones.html" target="_blank" rel="noopener">condiciones de uso</a>.</span></label>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgEmpezar">Empezar</button>'
-      + '<div class="cg-sep">¿Vienes de otro grupo de amigos?</div>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo nuevo</button>'
-      + '<p class="cg-p" style="font-size:14px;">Si te han mandado un enlace de invitación, ábrelo desde el mensaje y entrarás directamente en tu grupo.</p>'
+      + '<button type="button" class="cg-link" id="cgVolverB">‹ Volver</button>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
-    $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(email);
+    $('cgVolverB').onclick = () => pantallaBienvenida(email);
     gate.querySelectorAll('.cg-nombre').forEach(b => b.onclick = () => {
       elegido = b.dataset.n;
       gate.querySelectorAll('.cg-nombre').forEach(x => x.classList.toggle('on', x === b));
@@ -245,6 +330,7 @@
       + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
       + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invitar a tu grupo</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
       + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
       + '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
@@ -252,6 +338,7 @@
       + '<p class="cg-legal"><a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a><br>Aceptadas el ' + esc(new Date(perfil.privacidad_aceptada_en).toLocaleDateString('es-ES')) + '</p>'
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
+    $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
     $('cgClave').onclick = pantallaNuevaClave;
     $('cgSalir').onclick = async () => {
       if(!confirm('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
@@ -315,6 +402,11 @@
     b.textContent = '👤 ' + String(perfil.player_name).split(' ')[0];
     b.onclick = () => panelMiCuenta(perfil);
     document.body.appendChild(b);
+    const sg = document.createElement('button');
+    sg.type = 'button'; sg.className = 'cg-selgrupo'; sg.setAttribute('aria-label', 'Cambiar de grupo');
+    sg.textContent = (perfil.grupo_tipo === 'personal' ? '⛳ ' : '🏆 ') + (perfil.grupo || 'Mi grupo') + ' ▾';
+    sg.onclick = () => pantallaMisGrupos(perfil);
+    document.body.appendChild(sg);
   }
 
   // ---------- Arranque ----------
@@ -331,6 +423,7 @@
     const { data: perfil, error } = await client.rpc('mi_perfil');
     if(error){ mostrar(cabecera('Sin conexión', traducir(error)) + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
     if(!perfil){ pantallaCompletar(session.user && session.user.email); return; }
+    if(invitacion()){ pantallaUnirse(perfil.email, invitacion()); return; }
     const eraAdmin = esAdminGuardado();
     let eraYo = ''; try { eraYo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
     try { localStorage.setItem('acgolfEsAdmin', perfil.es_admin ? '1' : '0'); } catch(e){}
