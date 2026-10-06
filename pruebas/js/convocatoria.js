@@ -39,11 +39,12 @@
       id: row.id, code: row.code, updatedAt: row.updated_at,
       times: slots.map(g => g.time),
       groups: slots.map(g => Array.isArray(g.players) ? g.players.slice() : []),
+      hoyos: slots.map(g => Number(g.hoyo) || null), // salida al tiro: hoyo por el que sale cada grupo
       date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null,
     };
   }
   function convToGroups(c){
-    return c.times.map((t, i) => ({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }))
+    return c.times.map((t, i) => Object.assign({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }, (c.hoyos && c.hoyos[i]) ? { hoyo: c.hoyos[i] } : {}))
       .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode } }]);
   }
 
@@ -114,6 +115,9 @@
   }
 
   function convSlotOf(c, name){ return c.groups.findIndex(g => g.includes(name)); }
+  // Nombre de cada partida: la hora, o «Hoyo 7» si se sale al tiro
+  const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean));
+  function convEtq(c, i){ const h = c.hoyos && c.hoyos[i]; return h ? 'Hoyo ' + h : convTime(c.times[i]); }
 
   async function convSignUp(name, slot){ // slot = -1 -> no juega
     convSetMe(name);
@@ -152,7 +156,7 @@
       return '<div class="conv-home-card" role="button" tabindex="0" data-conv-code="' + convEsc(c.code) + '"' + (i ? ' style="margin-top:10px;"' : '') + '>'
         + '<div class="conv-home-top"><span class="conv-home-eyebrow">' + (i === 0 ? 'Próxima salida' : 'Siguiente salida') + '</span><span class="conv-home-count">' + total + '/' + (c.times.length * CONV_SLOTS) + '</span></div>'
         + '<div class="conv-home-date">' + convEsc(convLongDate(c.date)) + '</div>'
-        + '<div class="conv-home-sub">' + convEsc(convCourse(c.courseId).name) + ' · ' + c.times.map(convTime).join(' y ') + '</div>'
+        + '<div class="conv-home-sub">' + convEsc(convCourse(c.courseId).name) + ' · ' + (convAlTiro(c) ? 'salida al tiro ' + convTime(c.times[0]) : c.times.map(convTime).join(' y ')) + '</div>'
         + '<div class="conv-home-cta">' + cta + '</div>'
         + '</div>';
     }).join('') + (nuevoBtn ? '<div style="margin-top:10px;">' + nuevoBtn + '</div>' : '');
@@ -172,7 +176,7 @@
     const me = convMe();
     const course = convCourse(conv.courseId);
     let h = '<div class="conv-when">' + convEsc(convLongDate(conv.date)) + '</div>'
-      + '<div class="conv-where">' + convEsc(course.name) + '</div>';
+      + '<div class="conv-where">' + convEsc(course.name) + (convAlTiro(conv) ? ' · salida al tiro a las ' + convTime(conv.times[0]) : '') + '</div>';
 
     // Partidas por hora
     h += '<div class="conv-tees">' + conv.times.map((t, i) => {
@@ -180,7 +184,7 @@
       const seats = Array.from({ length: CONV_SLOTS }, (_, k) => g[k]
         ? '<div class="conv-seat filled' + (g[k] === me ? ' me' : '') + '">' + convEsc(g[k]) + '</div>'
         : '<div class="conv-seat">Libre</div>').join('');
-      return '<div class="conv-tee"><div class="conv-tee-h"><span class="conv-tee-time">' + convTime(t) + '</span><span class="conv-tee-n">' + g.length + '/' + CONV_SLOTS + '</span></div>' + seats + '</div>';
+      return '<div class="conv-tee"><div class="conv-tee-h"><span class="conv-tee-time">' + convEtq(conv, i) + '</span><span class="conv-tee-n">' + g.length + '/' + CONV_SLOTS + '</span></div>' + seats + '</div>';
     }).join('') + '</div>';
 
     if(conv.roundCode){
@@ -204,11 +208,11 @@
       const open = convOpenPlayer === n;
       let row = '<div class="conv-row' + (n === me ? ' me' : '') + (open ? ' open' : '') + '" data-name="' + convEsc(n) + '">'
         + '<span class="conv-row-name">' + convEsc(n) + '</span>'
-        + '<span class="conv-row-tag' + (s >= 0 ? ' in' : '') + '">' + (s >= 0 ? convTime(conv.times[s]) : '—') + '</span></div>';
+        + '<span class="conv-row-tag' + (s >= 0 ? ' in' : '') + '">' + (s >= 0 ? convEtq(conv, s) : '—') + '</span></div>';
       if(open){
         row += '<div class="conv-pick">' + conv.times.map((t, i) => {
           const full = (conv.groups[i] || []).length >= CONV_SLOTS && s !== i;
-          return '<button type="button" class="conv-pick-btn' + (s === i ? ' sel' : '') + '" data-slot="' + i + '"' + (full ? ' disabled' : '') + '>' + convTime(t) + (full ? ' · llena' : '') + '</button>';
+          return '<button type="button" class="conv-pick-btn' + (s === i ? ' sel' : '') + '" data-slot="' + i + '"' + (full ? ' disabled' : '') + '>' + convEtq(conv, i) + (full ? ' · llena' : '') + '</button>';
         }).join('') + '<button type="button" class="conv-pick-btn no" data-slot="-1">No voy</button></div>';
       }
       return row;
@@ -267,19 +271,19 @@
   function convSummaryText(){
     return conv.times.map((t, i) => {
       const g = conv.groups[i] || [];
-      return '⛳ ' + convTime(t) + (g.length ? ': ' + g.join(', ') : ': (libre)') + (g.length < CONV_SLOTS ? ' — quedan ' + (CONV_SLOTS - g.length) : ' — completa');
+      return '⛳ ' + convEtq(conv, i) + (g.length ? ': ' + g.join(', ') : ': (libre)') + (g.length < CONV_SLOTS ? ' — quedan ' + (CONV_SLOTS - g.length) : ' — completa');
     }).join('\n');
   }
   // Enlace normal (no window.open): en el móvil con la app instalada, window.open se bloquea a menudo
   function convWaHref(){
     const link = APP_URL + '?conv=' + conv.code;
-    const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + '\n\n'
+    const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + (convAlTiro(conv) ? ' · salida al tiro a las ' + convTime(conv.times[0]) : '') + '\n\n'
       + convSummaryText() + '\n\n👉 Apúntate tocando tu nombre: ' + link;
     return 'https://wa.me/?text=' + encodeURIComponent(text);
   }
   async function convCopyList(btn){
     const text = convLongDate(conv.date) + ' · ' + convCourse(conv.courseId).name + '\n' + conv.times.map((t, i) =>
-      convTime(t) + '\n' + (conv.groups[i] || []).map(n => {
+      convEtq(conv, i) + '\n' + (conv.groups[i] || []).map(n => {
         const hcp = (typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) ? ' (hcp ' + String(FAVORITE_HANDICAPS[n]).replace('.', ',') + ')' : '';
         return '  ' + n + hcp;
       }).join('\n')).join('\n');
@@ -293,11 +297,14 @@
     const client = initSupabase(); if(!client) return;
     const fresh = await convFetch(conv.code); if(fresh) conv = fresh;
     if(conv.roundCode){ renderConv(); return; }
-    const withPlayers = conv.times.map((t, i) => ({ t, names: conv.groups[i] || [] })).filter(x => x.names.length);
+    const withPlayers = conv.times.map((t, i) => ({ t, names: conv.groups[i] || [], hoyo: (conv.hoyos && conv.hoyos[i]) || null, etq: convEtq(conv, i) })).filter(x => x.names.length);
     if(!withPlayers.length){ alert('Todavía no se ha apuntado nadie.'); return; }
-    if(!confirm('¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
+    if(!confirm(convAlTiro(conv)
+      ? '¿Crear la partida al tiro con ' + withPlayers.length + ' grupos?\nCada grupo empieza en su hoyo: ' + withPlayers.map(x => x.etq.toLowerCase()).join(', ') + '.'
+      : '¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
     const course = convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
+      hoyoSalida: x.hoyo || undefined,
       players: x.names.slice(0, 4),
       handicaps: x.names.slice(0, 4).map(n => (typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) ? Number(FAVORITE_HANDICAPS[n]) : 0),
       scores: {},

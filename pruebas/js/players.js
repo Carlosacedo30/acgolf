@@ -191,6 +191,7 @@
       recalcResultados();
     }
     renderGroupSwitcher();
+    if(typeof grupoEmpiezaEnSuHoyo === 'function' && grupoEmpiezaEnSuHoyo() && typeof renderHoleView === 'function') renderHoleView();
     diagActivePlayer = 0;
     saveRoundState();
   }

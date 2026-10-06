@@ -173,9 +173,27 @@
     return mine.length ? holeFilledFor(h, mine) : isHoleComplete(h);
   }
 
+  // Salida al tiro: cada grupo sale por su hoyo (p. ej. el 7: 7, 8 … 18, 1 … 6). Sin él, del 1 al 18 como siempre.
+  function hoyoSalidaActual(){
+    const g = (typeof matchGroups !== 'undefined' && matchGroups[activeGroup]) || {};
+    const h = Number(g.hoyoSalida);
+    return h >= 1 && h <= 18 ? h : 1;
+  }
+  const hoyoSiguiente = h => h % 18 + 1;
+  const hoyoAnterior = h => (h + 16) % 18 + 1;
+  const hoyoUltimo = () => hoyoAnterior(hoyoSalidaActual());
+  // Si el grupo sale al tiro y aún no ha apuntado nada, se coloca en su hoyo de salida
+  function grupoEmpiezaEnSuHoyo(){
+    const g = (typeof matchGroups !== 'undefined' && matchGroups[activeGroup]) || {};
+    const s = hoyoSalidaActual(); if(s === 1) return false;
+    const algo = Object.values(g.scores || {}).some(p => Object.values(p || {}).some(v => v !== '' && v != null));
+    if(algo) return false;
+    currentHole = s; return true;
+  }
+
   function scheduleAutoAdvance(){
     clearTimeout(autoAdvanceTimer);
-    if(arrivedComplete || currentHole >= 18) return;
+    if(arrivedComplete || currentHole === hoyoUltimo()) return;
     const h = currentHole;
     if(!isHoleCompleteForMe(h)) return;
     // Si todavía hay huecos vacíos y acabas de "estrenar" jugador en este hoyo, más margen por si apuntas a otro
@@ -183,7 +201,7 @@
     autoAdvanceTimer = setTimeout(()=>{
       if(currentHole !== h || !isHoleCompleteForMe(h)) return;
       if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
-      currentHole = h + 1;
+      currentHole = hoyoSiguiente(h);
       renderHoleView();
       const card = document.getElementById('holeViewSection');
       if(card){ card.classList.remove('hole-advanced'); void card.offsetWidth; card.classList.add('hole-advanced'); }
@@ -194,8 +212,8 @@
     const holeNumEl = document.getElementById('hvHoleNum');
     if(!holeNumEl) return; // la pantalla 3 todavía no está en el DOM montado
     if(typeof ensureCaddieLoaded === 'function') ensureCaddieLoaded();
-    if(currentHole < 1) currentHole = 1;
-    if(currentHole > 18) currentHole = 18;
+    if(currentHole < 1) currentHole = hoyoSalidaActual() === 1 ? 1 : 18;
+    if(currentHole > 18) currentHole = hoyoSalidaActual() === 1 ? 18 : 1;
     if(arrivedHole !== currentHole){
       arrivedHole = currentHole;
       arrivedComplete = isHoleCompleteForMe(currentHole);
@@ -203,7 +221,8 @@
     }
     const scoringMetaEl = document.getElementById('s3ScoringMeta');
     if(scoringMetaEl) scoringMetaEl.textContent = 'Hoy · ' + (scoringType === 'stableford' ? 'Stableford' : scoringType === 'matchplay' ? 'Match Play' : 'Stroke Play')
-      + (modoPartida() === 'fourball' ? ' · Mejor bola' : modoPartida() === 'foursome' ? ' · Foursome' : '');
+      + (modoPartida() === 'fourball' ? ' · Mejor bola' : modoPartida() === 'foursome' ? ' · Foursome' : '')
+      + (hoyoSalidaActual() > 1 ? ' · Salís por el ' + hoyoSalidaActual() : '');
     if(currentHole < 1) currentHole = 1;
     if(currentHole > 18) currentHole = 18;
     const input0 = document.querySelector('.golpes-input[data-hole="' + currentHole + '"]');
@@ -214,8 +233,8 @@
     const hcpEl = document.getElementById('hvHcp'); if(hcpEl) hcpEl.textContent = strokeIndex != null ? strokeIndex : '—';
     const prevBtn = document.getElementById('holePrevBtn');
     const nextBtn = document.getElementById('holeNextBtn');
-    if(prevBtn) prevBtn.classList.toggle('disabled', currentHole <= 1);
-    if(nextBtn) nextBtn.classList.toggle('disabled', currentHole >= 18);
+    if(prevBtn) prevBtn.classList.toggle('disabled', currentHole === hoyoSalidaActual());
+    if(nextBtn) nextBtn.classList.toggle('disabled', currentHole === hoyoUltimo());
 
     const standings = computeStandings();
     const leader = standings.find(s => s.holesFilled > 0);
@@ -390,7 +409,8 @@
       const inputs = [...document.querySelectorAll('.golpes-input[data-hole="' + h + '"]')];
       const filled = inputs.filter(i => i.value !== '').length;
       const state = filled === 0 ? '' : (filled >= Math.min(nPlayers, inputs.length) ? ' done' : ' partial');
-      html += '<button type="button" class="hole-chip' + state + (h === currentHole ? ' current' : '') + '" data-hole="' + h + '" aria-label="Hoyo ' + h + '">' + h + '</button>';
+      const sal = h === hoyoSalidaActual() && h > 1;
+      html += '<button type="button" class="hole-chip' + state + (h === currentHole ? ' current' : '') + (sal ? ' salida' : '') + '" data-hole="' + h + '" aria-label="Hoyo ' + h + (sal ? ', hoyo de salida' : '') + '">' + h + '</button>';
       if(h === 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';
     }
     strip.innerHTML = html;
@@ -403,9 +423,9 @@
   }
 
   const holePrevBtn = document.getElementById('holePrevBtn');
-  if(holePrevBtn) holePrevBtn.addEventListener('click', ()=>{ currentHole--; renderHoleView(); });
+  if(holePrevBtn) holePrevBtn.addEventListener('click', ()=>{ if(currentHole === hoyoSalidaActual()) return; currentHole = hoyoAnterior(currentHole); renderHoleView(); });
   const holeNextBtn = document.getElementById('holeNextBtn');
-  if(holeNextBtn) holeNextBtn.addEventListener('click', ()=>{ currentHole++; renderHoleView(); });
+  if(holeNextBtn) holeNextBtn.addEventListener('click', ()=>{ if(currentHole === hoyoUltimo()) return; currentHole = hoyoSiguiente(currentHole); renderHoleView(); });
   const clasificacionBtn = document.getElementById('clasificacionBtn');
   if(clasificacionBtn) clasificacionBtn.addEventListener('click', ()=>{
     const el = document.getElementById('leaderboardSection');

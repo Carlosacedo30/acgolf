@@ -1481,3 +1481,6 @@
   .pr-gnav-c span{ display:block; font-size:13px; color:#B9C3D4; }
   .pr-r-linea{ font-size:14px; line-height:1.35; padding:6px 0; border-top:1px solid rgba(255,255,255,.08); }
   .pr-r-linea b{ color:#E8C45A; margin-right:4px; }
+  /* Salida al tiro: el hoyo por el que sale el grupo lleva una banderita */
+  .hole-chip.salida{ position:relative; }
+  .hole-chip.salida::after{ content:''; position:absolute; top:-3px; right:-3px; width:12px; height:12px; border-radius:50%; background:var(--gold-bg); border:2px solid var(--paper-bg); }

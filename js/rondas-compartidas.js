@@ -36,6 +36,7 @@
       };
       if(g && g.modo && g.modo !== 'individual') out.modo = g.modo; // modalidad por parejas
       if(g && Array.isArray(g.parejas)) out.parejas = g.parejas;   // foursome: quién forma cada pareja
+      if(g && Number(g.hoyoSalida) > 1 && Number(g.hoyoSalida) <= 18) out.hoyoSalida = Number(g.hoyoSalida); // salida al tiro
       return out;
     });
   }
@@ -236,12 +237,14 @@
         recalcResultados();
       }
       renderGroupSwitcher();
-      // Con muchos grupos, se abre directamente el grupo del dueño del móvil
-      if(matchGroups.filter(g => g.players.length).length > GRUPOS_EN_PESTANAS){
+      // Con muchos grupos, o saliendo al tiro, se abre directamente el grupo del dueño del móvil
+      if(matchGroups.filter(g => g.players.length).length > GRUPOS_EN_PESTANAS || matchGroups.some(g => g.hoyoSalida)){
         let yo = ''; try { yo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
         const mi = yo ? matchGroups.findIndex(g => g.players.includes(yo)) : -1;
         if(mi > 0) switchGroup(mi);
       }
+      // Salida al tiro: si el grupo aún no ha apuntado nada, se empieza en su hoyo de salida
+      if(typeof grupoEmpiezaEnSuHoyo === 'function' && grupoEmpiezaEnSuHoyo()) renderHoleView();
       showRoundCode(data.code);
       subscribeToRound(data.id);
       setSyncStatus('live');

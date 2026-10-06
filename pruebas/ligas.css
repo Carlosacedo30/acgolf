@@ -57,3 +57,20 @@ button.lg-cal-f{ cursor:pointer; }
 .lg-nom{ font-weight:700; min-width:0; line-height:1.25; overflow-wrap:anywhere; }
 .lg-pts{ font-weight:900; color:var(--lg-acc); }
 .lg-lider{ background:var(--lg-c2); }
+
+/* Calendario editable: toda la fila abre el calendario del móvil */
+.lg-cal-ed{ position:relative; cursor:pointer; }
+.lg-cal-in{ position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; border:none; }
+.lg-cal-f.lg-cambiada{ border-color:var(--lg-acc); border-style:dashed; }
+
+/* Salida al tiro: un hoyo por grupo */
+.lg-tiro{ display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.lg-tiro-f{ display:grid; grid-template-columns:1fr 44px 58px 44px; align-items:center; gap:6px; padding:8px 10px; border-radius:12px; border:1px solid var(--lg-line); background:var(--lg-c2); }
+.lg-tiro-g{ min-width:0; color:var(--forest-fg); }
+.lg-tiro-g b{ display:block; font-size:15px; }
+.lg-tiro-g small{ display:block; font-size:12.5px; color:var(--lg-mut); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.lg-mas.lg-mas-p{ width:44px; height:44px; font-size:24px; }
+.lg-tiro-h{ text-align:center; }
+.lg-tiro-h small{ display:block; font-size:11px; color:var(--lg-mut); text-transform:uppercase; letter-spacing:.05em; }
+.lg-tiro-h b{ display:block; font:900 26px/1 'Archivo', 'Barlow', sans-serif; color:var(--forest-fg); }
+.lg-tiro-h.lg-mal b{ color:#F2A19E; }
