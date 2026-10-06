@@ -97,7 +97,7 @@
   }
 
   // Propuesta de partidas: cada grupo con 2 sevillistas y 2 béticos de hándicap parecido (cara a cara),
-  // y los que sobren completan grupos. Máximo 4 grupos de 4 (lo que admite una partida de la app).
+  // y los que sobren completan grupos. Máximo MAX_GROUPS grupos de 4 (lo que admite una partida de la app).
   function derbiGrupos(d){
     const orden = l => l.slice().sort((a, b) => (derbiHcp(a) ?? 99) - (derbiHcp(b) ?? 99));
     const S = orden(d.sevilla), B = orden(d.betis);
@@ -123,7 +123,7 @@
     if(!derbi || derbi.roundCode){ derbiPintar(); return; }
     const grupos = derbiGrupos(derbi);
     if(!grupos.length){ alert('Todavía no hay jugadores apuntados.'); return; }
-    if(grupos.length > 4){ alert('Sois más de 16: una partida de la app admite 4 grupos de 4. Quita a alguien o lo hacemos en dos partidas.'); return; }
+    if(grupos.length > MAX_GROUPS){ alert('Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4. Quita a alguien o lo hacemos en dos partidas.'); return; }
     const course = COURSES.find(c => c.id === derbiCampo) || COURSES[0];
     if(!confirm('¿Crear la partida del derbi en ' + course.name + ' con ' + grupos.length + (grupos.length === 1 ? ' grupo' : ' grupos') + '?')) return;
     const groups = normalizeMatchGroups(grupos.map(g => ({
@@ -324,7 +324,7 @@
     return '<div class="dbi-sec"><div class="dbi-sec-t">Propuesta de partidas</div>'
       + '<div class="dbi-nota" style="margin-top:0;">Cada grupo, cara a cara: sevillistas y béticos de hándicap parecido.</div>'
       + '<div class="dbi-partidas">' + grupos.map((g, i) => '<div class="dbi-partida"><div class="dbi-partida-t">Partida ' + (i + 1) + '</div>' + g.map(fila).join('') + '</div>').join('') + '</div>'
-      + (grupos.length > 4 ? '<div class="dbi-consejo">Sois más de 16: hay que hacerlo en dos partidas.</div>' : '')
+      + (grupos.length > MAX_GROUPS ? '<div class="dbi-consejo">Sois más de ' + (MAX_GROUPS * 4) + ': hay que hacerlo en dos partidas.</div>' : '')
       + (admin ? '<div class="dbi-campos">' + [['hato-verde', 'Hato Verde'], ['zaudin', 'Zaudín']].map(c => '<button type="button" class="dbi-campo' + (derbiCampo === c[0] ? ' on' : '') + '" data-c="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
         + '<button type="button" class="dbi-btn dbi-btn-oro" id="dbiCrear">Crear las partidas</button>' : '')
       + '</div>';

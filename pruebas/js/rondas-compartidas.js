@@ -236,6 +236,12 @@
         recalcResultados();
       }
       renderGroupSwitcher();
+      // Con muchos grupos, se abre directamente el grupo del dueño del móvil
+      if(matchGroups.filter(g => g.players.length).length > GRUPOS_EN_PESTANAS){
+        let yo = ''; try { yo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
+        const mi = yo ? matchGroups.findIndex(g => g.players.includes(yo)) : -1;
+        if(mi > 0) switchGroup(mi);
+      }
       showRoundCode(data.code);
       subscribeToRound(data.id);
       setSyncStatus('live');

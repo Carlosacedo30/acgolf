@@ -15,7 +15,7 @@
   let prPunt = 'strokeplay';   // 'strokeplay' | 'stableford' | 'matchplay'
   let prHoyos = 18;            // 9 | 18
   let prModal = 'Individual';  // texto de la modalidad
-  let prNGrupos = 1;           // 1 a 4
+  let prNGrupos = 1;           // 1 a MAX_GROUPS
   let prGrupo = 0;             // grupo que se está rellenando en "¿Quién juega?"
   let prGrupos = [[]];         // nombres por grupo
   const PR_PUNT = [['strokeplay','Stroke Play'],['stableford','Stableford'],['matchplay','Match Play']];
@@ -97,7 +97,11 @@
         + fila('Puntuación', 'punt', PR_PUNT, prPunt)
         + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
         + fila('Modalidad', 'modal', PR_MODAL, prModal)
-        + fila('Grupos', 'grupos', [[1,'1'],[2,'2'],[3,'3'],[4,'4']], prNGrupos)
+        + (MAX_GROUPS > GRUPOS_EN_PESTANAS
+            ? '<div class="pr-op-t">Grupos</div><div class="pr-npaso"><button type="button" class="pr-tecla pr-nmas" data-d="-1" aria-label="Un grupo menos"' + (prNGrupos > 1 ? '' : ' disabled') + '>−</button>'
+              + '<div class="pr-nnum"><b>' + prNGrupos + '</b><small>hasta ' + (prNGrupos * PR_MAX) + ' jugadores</small></div>'
+              + '<button type="button" class="pr-tecla pr-nmas" data-d="1" aria-label="Un grupo más"' + (prNGrupos < MAX_GROUPS ? '' : ' disabled') + '>+</button></div>'
+            : fila('Grupos', 'grupos', [[1,'1'],[2,'2'],[3,'3'],[4,'4']], prNGrupos))
         + '<div class="pr-pie">'
         + '<button type="button" class="pr-atras" id="prAtras">‹ Atrás</button>'
         + '<button type="button" class="pr-sig" id="prSig">Siguiente ›</button>'
@@ -111,7 +115,11 @@
       prElegidos = prGrupos[prGrupo];
       const otroGrupo = n => prGrupos.findIndex((g, i) => i !== prGrupo && g.includes(n));
       h += '<div class="pr-q">¿Quién juega?</div>'
-        + (prNGrupos > 1 ? '<div class="pr-teclas pr-gtabs">' + prGrupos.map((g, i) =>
+        + (prNGrupos > GRUPOS_EN_PESTANAS
+            ? '<div class="pr-gnav"><button type="button" class="pr-tecla pr-gtab" data-g="' + (prGrupo - 1) + '"' + (prGrupo > 0 ? '' : ' disabled') + ' aria-label="Grupo anterior">‹</button>'
+              + '<div class="pr-gnav-c"><b>Grupo ' + (prGrupo + 1) + ' <small>de ' + prNGrupos + '</small></b><span>' + prGrupos[prGrupo].length + '/' + PR_MAX + ' · en total ' + prTodos().length + ' jugadores</span></div>'
+              + '<button type="button" class="pr-tecla pr-gtab" data-g="' + (prGrupo + 1) + '"' + (prGrupo < prNGrupos - 1 ? '' : ' disabled') + ' aria-label="Grupo siguiente">›</button></div>'
+          : prNGrupos > 1 ? '<div class="pr-teclas pr-gtabs">' + prGrupos.map((g, i) =>
             '<button type="button" class="pr-tecla pr-gtab' + (i === prGrupo ? ' on' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + '<small>' + g.length + '/' + PR_MAX + '</small></button>').join('') + '</div>' : '')
         + '<div class="pr-ayuda">' + (prNGrupos > 1 ? 'Grupo ' + (prGrupo + 1) + ': toca' : 'Toca') + ' los nombres. Máximo ' + PR_MAX + '. Llevas <b>' + prElegidos.length + '</b>.</div>'
         + (prParejas() ? prCuadroParejas(prElegidos) : '')
@@ -147,12 +155,14 @@
         + '<div class="pr-resumen">'
         + '<div class="pr-r-campo">' + prEsc(campo ? campo.name : '') + '</div>'
         + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · ' + prModalTxt(prModal) + ' · hoy</div>'
-        + llenos.map((g, i) => (llenos.length > 1 ? '<div class="pr-r-grupo">Grupo ' + (i + 1) + '</div>' : '')
+        + (llenos.length > GRUPOS_EN_PESTANAS && !prParejas() && !prTodos().some(prEsInv)
+            ? llenos.map((g, i) => '<div class="pr-r-linea"><b>Grupo ' + (i + 1) + '</b> ' + g.map(n => { const w = String(n).trim().split(/\s+/); return prEsc(w.length > 2 ? w.slice(0, -1).join(' ') : w.join(' ')); }).join(', ') + '</div>').join('')
+            : llenos.map((g, i) => (llenos.length > 1 ? '<div class="pr-r-grupo">Grupo ' + (i + 1) + '</div>' : '')
             + g.map((n, k) => (prParejas() && k % 2 === 0 ? '<div class="pr-r-pareja">Pareja ' + LETRA_PAREJA[k / 2] + '</div>' : '')
               + (prEsInv(n)
                   ? '<div class="pr-r-jug"><span>' + prEsc(n) + '<small class="pr-r-inv">invitado</small></span>'
                     + '<label class="pr-r-hcp">Hcp <input type="text" inputmode="decimal" class="pr-r-hcp-in" data-n="' + prEsc(n) + '" value="' + prHcpTxt(n) + '"></label></div>'
-                  : '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + prHcpTxt(n) + '</b></div>')).join('')).join('')
+                  : '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + prHcpTxt(n) + '</b></div>')).join('')).join(''))
         + (prTodos().some(prEsInv) ? '<div class="pr-r-nota">El hándicap del invitado se puede cambiar aquí. Los de la liga salen de la base de datos.</div>' : '')
         + (modoDesdeTexto(prModal) === 'fourball' ? '<div class="pr-r-nota">Cuenta la mejor bola de cada pareja · hándicap al ' + (prPunt === 'matchplay' ? '90' : '85') + ' %</div>' : '')
         + (modoDesdeTexto(prModal) === 'foursome' ? '<div class="pr-r-nota">Una bola por pareja · hándicap de pareja: la mitad de la suma</div>' : '')
@@ -171,7 +181,7 @@
     body.querySelectorAll('.pr-jug').forEach(b => b.addEventListener('click', ()=>{
       const n = b.dataset.n;
       if(prElegidos.includes(n)) prGrupos[prGrupo] = prElegidos = prElegidos.filter(x => x !== n);
-      else if(prElegidos.length >= PR_MAX){ alert('Máximo ' + PR_MAX + ' jugadores por grupo.' + (prNGrupos < 4 ? '\nSi sois más, vuelve atrás y elige otro grupo.' : '')); return; }
+      else if(prElegidos.length >= PR_MAX){ alert('Máximo ' + PR_MAX + ' jugadores por grupo.' + (prNGrupos < MAX_GROUPS ? '\nSi sois más, vuelve atrás y pon otro grupo.' : '')); return; }
       else {
         prGrupos = prGrupos.map(g => g.filter(x => x !== n)); // si estaba en otro grupo, se cambia a este
         prGrupos[prGrupo].push(n); prElegidos = prGrupos[prGrupo];
@@ -231,16 +241,20 @@
       if(k === 'punt') prPunt = v;
       if(k === 'hoyos') prHoyos = Number(v);
       if(k === 'modal') prModal = v;
-      if(k === 'grupos'){
-        prNGrupos = Number(v);
-        const todos = prGrupos.slice(prNGrupos).reduce((a, g) => a.concat(g), []);
-        prGrupos = prGrupos.slice(0, prNGrupos);
-        while(prGrupos.length < prNGrupos) prGrupos.push([]);
-        todos.forEach(n => { const g = prGrupos.find(x => x.length < PR_MAX); if(g) g.push(n); }); // los de grupos quitados no se pierden
-        if(prGrupo >= prNGrupos) prGrupo = 0;
-      }
+      if(k === 'grupos') prCambiarNGrupos(Number(v));
       prPintar();
     }));
+    body.querySelectorAll('.pr-nmas').forEach(b => b.addEventListener('click', ()=>{
+      prCambiarNGrupos(Math.min(MAX_GROUPS, Math.max(1, prNGrupos + Number(b.dataset.d)))); prPintar();
+    }));
+    function prCambiarNGrupos(nuevo){
+      prNGrupos = nuevo;
+      const todos = prGrupos.slice(prNGrupos).reduce((a, g) => a.concat(g), []);
+      prGrupos = prGrupos.slice(0, prNGrupos);
+      while(prGrupos.length < prNGrupos) prGrupos.push([]);
+      todos.forEach(n => { const g = prGrupos.find(x => x.length < PR_MAX); if(g) g.push(n); }); // los de grupos quitados no se pierden
+      if(prGrupo >= prNGrupos) prGrupo = 0;
+    }
     body.querySelectorAll('.pr-gtab').forEach(b => b.addEventListener('click', ()=>{ prGrupo = Number(b.dataset.g); prPintar(); }));
     const sg = document.getElementById('prSig'); if(sg) sg.addEventListener('click', ()=>{
       if(prPaso === 3 && (!prTodos().length || prErrorParejas())) return;

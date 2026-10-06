@@ -1456,3 +1456,28 @@
   .gm-card > *{ flex-shrink:0; }
   .leaflet-marker-icon.gm-pin{ display:flex !important; align-items:center; justify-content:center; border:none; }
   .gm-mapa .leaflet-control-attribution{ font-size:10px; }
+
+  /* Muchos grupos (más de 4): se ve un grupo cada vez, con flechas */
+  .tab-toggle.grp-paso{ display:grid; grid-template-columns:48px 1fr 48px; align-items:center; gap:8px; }
+  .grp-flecha{ height:48px; border-radius:12px; border:1.5px solid var(--forest-bd); background:transparent; color:var(--forest-fg); font:700 26px/1 'Barlow', sans-serif; cursor:pointer; touch-action:manipulation; }
+  .grp-flecha:disabled{ opacity:.3; }
+  .grp-centro{ text-align:center; min-width:0; }
+  .grp-centro b{ display:block; font-size:17px; color:var(--forest-fg); }
+  .grp-centro b small{ font-size:13px; font-weight:600; color:var(--forest-soft-fg); }
+  .grp-centro b em{ font-style:normal; font-size:13px; color:var(--gold-fg); }
+  .grp-centro span{ display:block; font-size:13px; color:var(--forest-soft-fg); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .grp-mio{ grid-column:1 / -1; min-height:40px; border-radius:999px; border:1.5px solid var(--gold-bd); background:transparent; color:var(--gold-fg); font:700 14px 'Barlow', sans-serif; cursor:pointer; }
+  .pr-npaso{ display:grid; grid-template-columns:64px 1fr 64px; align-items:center; gap:10px; }
+  .pr-npaso .pr-tecla{ font-size:28px; }
+  .pr-npaso .pr-tecla:disabled, .pr-gnav .pr-tecla:disabled{ opacity:.3; }
+  .pr-nnum{ text-align:center; }
+  .pr-nnum b{ display:block; font:900 34px/1 'Archivo', 'Barlow', sans-serif; color:#F6F1E4; }
+  .pr-nnum small{ font-size:13px; color:#B9C3D4; }
+  .pr-gnav{ display:grid; grid-template-columns:56px 1fr 56px; align-items:center; gap:8px; margin-bottom:6px; }
+  .pr-gnav .pr-tecla{ font-size:28px; min-height:52px; }
+  .pr-gnav-c{ text-align:center; min-width:0; }
+  .pr-gnav-c b{ display:block; font-size:19px; color:#F6F1E4; }
+  .pr-gnav-c b small{ font-size:14px; color:#B9C3D4; font-weight:600; }
+  .pr-gnav-c span{ display:block; font-size:13px; color:#B9C3D4; }
+  .pr-r-linea{ font-size:14px; line-height:1.35; padding:6px 0; border-top:1px solid rgba(255,255,255,.08); }
+  .pr-r-linea b{ color:#E8C45A; margin-right:4px; }

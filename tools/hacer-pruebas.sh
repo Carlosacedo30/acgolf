@@ -20,6 +20,10 @@ sed -i \
   pruebas/js/rondas-compartidas.js
 grep -q svnkgmbfanwftncopqjg pruebas/js/rondas-compartidas.js || { echo "ERROR: no se cambió la base de datos"; exit 1; }
 
+# Partidas de hasta 8 grupos de 4 (32 jugadores) en la versión de pruebas
+sed -i "s#const MAX_GROUPS = 4;#const MAX_GROUPS = 8;#" pruebas/js/players.js
+grep -q "const MAX_GROUPS = 8;" pruebas/js/players.js || { echo "ERROR: no se cambió el número de grupos"; exit 1; }
+
 # Enlaces de convocatoria apuntando a la versión de pruebas
 sed -i "s#https://carlosacedo30.github.io/acgolf/'#https://carlosacedo30.github.io/acgolf/pruebas/'#" pruebas/js/convocatoria.js
 

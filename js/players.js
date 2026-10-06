@@ -88,7 +88,9 @@
   }
 
   // Hasta 4 grupos de 4 jugadores jugando la misma ronda, cada uno con su propia tarjeta
+  // (la versión de pruebas sube a 8 grupos: 32 jugadores)
   const MAX_GROUPS = 4;
+  const GRUPOS_EN_PESTANAS = 4; // con más grupos, en vez de pestañas sale «‹ Grupo 3 de 7 ›»
   let matchGroups = Array.from({ length: MAX_GROUPS }, () => ({ players: [], handicaps: [], scores: {} }));
   let configGroup = 0; // qué grupo se está rellenando en "Configurar partida"
   let activeGroup = 0; // qué grupo se está viendo en "Introducir resultados" / Diagnóstico
@@ -146,12 +148,33 @@
     const groupsWithPlayers = matchGroups.filter(g => g.players.length).length;
     if(groupsWithPlayers <= 1){ section.style.display = 'none'; return; }
     section.style.display = '';
+    if(groupsWithPlayers > GRUPOS_EN_PESTANAS){ renderGroupStepper(wrap); return; }
+    wrap.classList.remove('grp-paso');
     wrap.innerHTML = matchGroups.map((g, i) => g.players.length ?
       '<div class="tab' + (i === activeGroup ? ' active' : '') + '" data-g="' + i + '">Grupo ' + (i + 1) + ' (' + g.players.length + ')</div>' : ''
     ).join('');
     wrap.querySelectorAll('.tab').forEach(tab=>{
       tab.addEventListener('click', ()=> switchGroup(parseInt(tab.dataset.g, 10)));
     });
+  }
+  // Muchos grupos: solo se ve el grupo abierto, con flechas para pasar al anterior o al siguiente
+  function renderGroupStepper(wrap){
+    const con = matchGroups.map((g, i) => g.players.length ? i : -1).filter(i => i >= 0);
+    let pos = con.indexOf(activeGroup); if(pos < 0) pos = 0;
+    const g = matchGroups[con[pos]] || { players: [] };
+    const yo = (()=>{ try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } })();
+    const miG = yo ? con.find(i => matchGroups[i].players.includes(yo)) : undefined;
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    wrap.classList.add('grp-paso');
+    wrap.innerHTML = '<button type="button" class="grp-flecha" data-d="-1" aria-label="Grupo anterior"' + (pos ? '' : ' disabled') + '>‹</button>'
+      + '<div class="grp-centro"><b>Grupo ' + (con[pos] + 1) + ' <small>de ' + con.length + '</small>' + (miG === con[pos] ? ' <em>· el tuyo</em>' : '') + '</b>'
+      + '<span>' + g.players.map(n => esc(String(n).split(/\s+/)[0])).join(', ') + '</span></div>'
+      + '<button type="button" class="grp-flecha" data-d="1" aria-label="Grupo siguiente"' + (pos < con.length - 1 ? '' : ' disabled') + '>›</button>'
+      + (miG !== undefined && miG !== con[pos] ? '<button type="button" class="grp-mio">Ir a mi grupo</button>' : '');
+    wrap.querySelectorAll('.grp-flecha').forEach(b => b.addEventListener('click', ()=>{
+      const n = con[pos + Number(b.dataset.d)]; if(n !== undefined) switchGroup(n);
+    }));
+    const mio = wrap.querySelector('.grp-mio'); if(mio) mio.addEventListener('click', ()=> switchGroup(miG));
   }
   function switchGroup(newGroup){
     if(newGroup === activeGroup) return;

@@ -241,7 +241,7 @@ function ligaPintarForm(){
     + '<div class="conv-eyebrow">Calendario</div>'
     + '<div class="lg-cal">' + cal.map(j => '<div class="lg-cal-f"><span>J' + j.n + '</span><b>' + ligaEsc(ligaFechaLarga(j.date)) + '</b><small>' + ligaCampoCorto(j.courseId) + '</small></div>').join('') + '</div>'
     + (f.jugadores.length ? '<div class="lg-aviso">Cada jornada es una partida con todos: ' + nGrupos + (nGrupos === 1 ? ' grupo' : ' grupos') + ', salidas ' + ligaHoras(f.hora, nGrupos).map(t => t.replace(/^0/, '')).join(', ') + '. Los grupos cambian cada jornada.</div>' : '')
-    + (nGrupos > 4 ? '<div class="lg-aviso lg-mal">Sois más de 16: una partida de la app admite 4 grupos de 4. Quita jugadores.</div>' : '')
+    + (nGrupos > MAX_GROUPS ? '<div class="lg-aviso lg-mal">Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4. Quita jugadores.</div>' : '')
     + '<div class="lg-aviso">Puntos por puesto en cada jornada (por neto): 10 · 8 · 6 · 5 · 4 · 3 · 2 · resto 1. Quien no juega, 0.</div>'
     + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="lgCrear">Crear la liga</button>'
     + '<button type="button" class="conv-link" id="lgCancelar">Cancelar</button></div>';
@@ -283,7 +283,7 @@ async function ligaCrear(){
   f.hora = document.getElementById('lgHora').value || '08:40';
   if(!f.nombre){ alert('Ponle un nombre a la liga.'); document.getElementById('lgNombre').focus(); return; }
   if(f.jugadores.length < 2){ alert('Elige al menos 2 jugadores.'); return; }
-  if(f.jugadores.length > 16){ alert('Sois más de 16: una partida de la app admite 4 grupos de 4.'); return; }
+  if(f.jugadores.length > MAX_GROUPS * 4){ alert('Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4.'); return; }
   if(!f.inicio || f.inicio < ligaHoy()){ alert('La primera jornada tiene que ser hoy o más adelante.'); return; }
   const cal = ligaCalendario(f.inicio, f.jornadas, f.campo);
   if(!confirm('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' jornadas.\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
