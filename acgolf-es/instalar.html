@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Instalar acgolf en el móvil</title>
+<meta name="description" content="Cómo instalar la app acgolf en iPhone o Android, paso a paso.">
+<meta name="theme-color" content="#111316">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png?v=2">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --fondo:#111316; --tarjeta:#1B1E22; --borde:#2A2E33; --texto:#F2F4F5; --suave:#B8C0C7; --lima:#C6F24E; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--fondo); color:var(--texto); font-family:'Archivo', system-ui, sans-serif; font-size:18px; line-height:1.45; }
+  main{ max-width:520px; margin:0 auto; padding:calc(env(safe-area-inset-top, 0px) + 24px) 16px calc(env(safe-area-inset-bottom, 0px) + 40px); }
+  .cab{ text-align:center; }
+  .cab img{ width:84px; height:84px; border-radius:20px; }
+  .cab h1{ margin:10px 0 4px; font-size:30px; font-weight:900; line-height:1.1; }
+  .cab p{ margin:0; color:var(--suave); }
+  .tabs{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:22px 0 16px; padding:5px; border-radius:999px; background:var(--tarjeta); }
+  .tabs button{ border:none; border-radius:999px; padding:13px 8px; font:800 18px 'Archivo', sans-serif; background:transparent; color:var(--texto); cursor:pointer; }
+  .tabs button[aria-selected="true"]{ background:var(--lima); color:#111316; }
+  .aviso{ border-radius:16px; padding:14px 16px; margin-bottom:16px; background:#2A2410; box-shadow:inset 0 0 0 1.5px #E6C25A; color:#F6E7B0; font-size:17px; }
+  .aviso b{ color:#FFF3C4; }
+  ol{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px; counter-reset:paso; }
+  li{ counter-increment:paso; display:grid; grid-template-columns:44px 1fr; gap:12px; align-items:start; padding:16px; border-radius:18px; background:var(--tarjeta); }
+  li::before{ content:counter(paso); width:44px; height:44px; border-radius:50%; background:var(--lima); color:#111316; font:900 22px 'Archivo', sans-serif; display:flex; align-items:center; justify-content:center; }
+  li b{ display:block; font-size:19px; font-weight:900; margin-bottom:3px; }
+  li span{ color:var(--suave); }
+  .ico{ display:inline-flex; align-items:center; justify-content:center; vertical-align:-6px; width:30px; height:30px; border-radius:8px; background:#2A2E33; color:var(--lima); margin:0 2px; }
+  .dibujo{ margin-top:10px; border-radius:12px; background:#24282D; padding:10px; }
+  .dibujo svg{ display:block; width:100%; height:auto; }
+  .listo{ margin-top:16px; padding:16px; border-radius:18px; box-shadow:inset 0 0 0 2px var(--lima); background:rgba(198,242,78,.06); }
+  .listo b{ color:var(--lima); }
+  .botones{ display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+  .btn{ display:block; text-align:center; text-decoration:none; border:none; border-radius:999px; padding:17px; font:900 19px 'Archivo', sans-serif; cursor:pointer; }
+  .btn.lima{ background:var(--lima); color:#111316; }
+  .btn.borde{ background:transparent; color:var(--texto); box-shadow:inset 0 0 0 2px #4A5058; }
+  [hidden]{ display:none !important; }
+  .pie{ margin-top:22px; text-align:center; color:#9AA3AB; font-size:15px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="cab">
+    <img src="icon-192.png" alt="Icono de acgolf">
+    <h1>Instala acgolf en tu móvil</h1>
+    <p>Es gratis y se hace en un minuto. No hace falta ninguna tienda de apps.</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" id="tAndroid" aria-selected="true">Android</button>
+    <button type="button" role="tab" id="tIphone" aria-selected="false">iPhone</button>
+  </div>
+
+  <div class="aviso" id="avisoWhatsapp" hidden>
+    <b>Estás dentro de WhatsApp.</b> Desde aquí no se puede instalar. Haz primero el paso 1 para abrirla en el navegador.
+  </div>
+
+  <!-- ANDROID -->
+  <section id="pAndroid">
+    <ol>
+      <li><div><b>Ábrela en Chrome</b><span>Abre la app <b style="display:inline;color:var(--texto)">Chrome</b> y escribe <b style="display:inline;color:var(--texto)">acgolf.es</b> arriba. Si vienes de WhatsApp: toca <span class="ico">⋮</span> arriba a la derecha y elige «Abrir en Chrome».</span></div></li>
+      <li><div><b>Pulsa «Instalar»</b><span>Abajo te saldrá un aviso <b style="display:inline;color:var(--texto)">«Instala acgolf»</b>. Pulsa el botón <b style="display:inline;color:var(--texto)">Instalar</b>.</span>
+        <div class="dibujo" aria-hidden="true"><svg viewBox="0 0 300 70"><rect x="2" y="2" width="296" height="66" rx="14" fill="#1B1E22" stroke="#C6F24E" stroke-width="2"/><rect x="14" y="15" width="40" height="40" rx="9" fill="#111316" stroke="#C6F24E" stroke-width="2"/><path d="M30 46V24" stroke="#F2F4F5" stroke-width="3" stroke-linecap="round"/><path d="M32 24l12 4-12 5z" fill="#C6F24E"/><text x="66" y="32" fill="#F2F4F5" font-family="Archivo, sans-serif" font-weight="900" font-size="15">Instala acgolf</text><text x="66" y="50" fill="#B8C0C7" font-family="Archivo, sans-serif" font-size="12">Icono en tu móvil</text><rect x="206" y="19" width="76" height="32" rx="16" fill="#C6F24E"/><text x="244" y="40" text-anchor="middle" fill="#111316" font-family="Archivo, sans-serif" font-weight="900" font-size="14">Instalar</text></svg></div>
+      </div></li>
+      <li><div><b>¿No sale el aviso?</b><span>Toca <span class="ico">⋮</span> arriba a la derecha de Chrome y elige <b style="display:inline;color:var(--texto)">«Instalar aplicación»</b> o <b style="display:inline;color:var(--texto)">«Añadir a pantalla de inicio»</b>.</span></div></li>
+    </ol>
+  </section>
+
+  <!-- IPHONE -->
+  <section id="pIphone" hidden>
+    <ol>
+      <li><div><b>Ábrela en Safari</b><span>Tiene que ser <b style="display:inline;color:var(--texto)">Safari</b> (la brújula azul). Escribe <b style="display:inline;color:var(--texto)">acgolf.es</b> arriba. Si vienes de WhatsApp: toca el icono de Safari o «Abrir en Safari».</span></div></li>
+      <li><div><b>Toca «Compartir»</b><span>Es el cuadrado con una flecha hacia arriba <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></span>, abajo en el centro (o arriba a la derecha en algunos iPhone).</span></div></li>
+      <li><div><b>«Añadir a pantalla de inicio»</b><span>Baja un poco en la lista que se abre y toca <b style="display:inline;color:var(--texto)">«Añadir a pantalla de inicio»</b> <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg></span>.</span></div></li>
+      <li><div><b>Pulsa «Añadir»</b><span>Arriba a la derecha. Listo.</span></div></li>
+    </ol>
+  </section>
+
+  <div class="listo"><b>¡Ya está!</b> Te aparecerá en el móvil el icono de <b style="color:var(--texto)">acgolf</b> (la bandera verde). Ábrela desde ahí siempre, como cualquier otra app.</div>
+
+  <div class="botones">
+    <a class="btn lima" href="/">Abrir acgolf</a>
+    <button type="button" class="btn borde" id="copiar">Copiar la dirección acgolf.es</button>
+  </div>
+  <p class="pie">¿Dudas? Pregunta al administrador de tu grupo.</p>
+</main>
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  var iphone = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var dentroDeApp = /WhatsApp|Instagram|FBAN|FBAV|FB_IAB|Telegram|; wv\)/i.test(ua);
+  function ver(cual){
+    var esI = cual === 'iphone';
+    document.getElementById('pIphone').hidden = !esI;
+    document.getElementById('pAndroid').hidden = esI;
+    document.getElementById('tIphone').setAttribute('aria-selected', esI ? 'true' : 'false');
+    document.getElementById('tAndroid').setAttribute('aria-selected', esI ? 'false' : 'true');
+  }
+  document.getElementById('tIphone').onclick = function(){ ver('iphone'); };
+  document.getElementById('tAndroid').onclick = function(){ ver('android'); };
+  ver(iphone ? 'iphone' : 'android');
+  if(dentroDeApp) document.getElementById('avisoWhatsapp').hidden = false;
+  document.getElementById('copiar').onclick = function(){
+    var b = this;
+    if(navigator.clipboard) navigator.clipboard.writeText('https://acgolf.es').then(function(){ b.textContent = 'Copiado: acgolf.es'; }, function(){ prompt('Copia la dirección:', 'https://acgolf.es'); });
+    else prompt('Copia la dirección:', 'https://acgolf.es');
+  };
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function(){});
+})();
+</script>
+</body>
+</html>

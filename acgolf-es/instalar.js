@@ -82,7 +82,7 @@
   // Para que se pueda pedir desde cualquier botón de la app («Instalar la app»)
   window.acgolfInstalar = function(){
     if(eventoInstalar){ eventoInstalar.prompt(); return; }
-    if(!explicar()) pintar('Instala acgolf', 'Abre <b>acgolf.es</b> en el móvil, con Chrome (Android) o Safari (iPhone), y sigue los pasos que salen abajo.');
+    location.href = '/instalar.html'; // guía paso a paso para iPhone y Android
   };
 
   // Si en unos segundos el móvil no ha ofrecido «Instalar» por su cuenta, se explica cómo hacerlo
