@@ -74,3 +74,17 @@ button.lg-cal-f{ cursor:pointer; }
 .lg-tiro-h small{ display:block; font-size:11px; color:var(--lg-mut); text-transform:uppercase; letter-spacing:.05em; }
 .lg-tiro-h b{ display:block; font:900 26px/1 'Archivo', 'Barlow', sans-serif; color:var(--forest-fg); }
 .lg-tiro-h.lg-mal b{ color:#F2A19E; }
+
+/* Bases de la liga */
+.lgb-btn{ width:100%; margin:10px 0 4px; display:flex; align-items:center; justify-content:center; gap:8px; }
+.lgb-btn .ico{ width:20px; height:20px; }
+.lgb{ color:var(--forest-fg); font-size:16px; line-height:1.5; }
+.lgb-h{ font-size:17px; font-weight:800; margin:18px 0 6px; color:var(--forest-fg); }
+.lgb-p{ margin:0 0 8px; }
+.lgb-ul{ margin:0 0 8px; padding-left:20px; }
+.lgb-ul li{ margin-bottom:4px; }
+.lgb-pts{ display:grid; grid-template-columns:repeat(4, 1fr); gap:6px; margin:6px 0 10px; }
+.lgb-pts div{ text-align:center; padding:8px 4px; border-radius:10px; border:1px solid var(--lg-line); background:var(--lg-c2); }
+.lgb-pts small{ display:block; font-size:12px; color:var(--lg-mut); }
+.lgb-pts b{ display:block; font-size:20px; font-weight:900; color:var(--lg-acc); }
+.lg-guardar-ayuda{ font-size:13.5px; }

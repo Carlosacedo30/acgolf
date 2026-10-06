@@ -27,15 +27,27 @@ grep -q "const MAX_GROUPS = 8;" pruebas/js/players.js || { echo "ERROR: no se ca
 # Enlaces de convocatoria apuntando a la versión de pruebas
 sed -i "s#https://carlosacedo30.github.io/acgolf/'#https://carlosacedo30.github.io/acgolf/pruebas/'#" pruebas/js/convocatoria.js
 
+# Convocatoria: si todos los grupos salen por el mismo hoyo a distinta hora (por ejemplo por el 10), no es «al tiro»
+python3 - <<'PYEOF'
+p = 'pruebas/js/convocatoria.js'
+s = open(p, encoding='utf-8').read()
+a = "const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean));"
+b = "function convEtq(c, i){ const h = c.hoyos && c.hoyos[i]; return h ? 'Hoyo ' + h : convTime(c.times[i]); }"
+assert a in s and b in s, 'convocatoria.js cambió: revisar el parche de salida por otro hoyo'
+s = s.replace(a, "const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean) && (new Set(c.times).size === 1 || new Set(c.hoyos).size > 1));")
+s = s.replace(b, "function convEtq(c, i){ const h = c.hoyos && c.hoyos[i]; return h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i]); }")
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
+
 # index.html: almacén separado, cuentas y banda de "VERSIÓN DE PRUEBAS"
 python3 - <<'EOF'
 import re
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>', 1)
-s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=5">\n<link rel="stylesheet" href="ligas.css?v=2">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=5">\n<link rel="stylesheet" href="ligas.css?v=3">\n</head>', 1)
 s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="cuenta.js?v=2"></script>', s, count=1)
-s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=1"></script>\n<script src="ligas.js?v=3"></script>\n<script src="enlace-partida.js?v=1"></script>\n<script src="aviso-partida.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=1"></script>\n<script src="bases-liga.js?v=1"></script>\n<script src="ligas.js?v=4"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=2"></script>\n<script src="conv-extra.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'ligas.js' in s and 'ligas.css' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'

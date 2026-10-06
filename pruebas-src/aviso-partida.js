@@ -17,21 +17,29 @@
     return r;
   };
 
-  async function avisarPorMail(code){
+  function avisarPorMail(code){
+    if(!window.miPerfil || !window.miPerfil.es_admin) return; // de momento, solo al administrador
+    acgolfMandarMail('https://carlosacedo30.github.io/acgolf/pruebas/?partida=' + encodeURIComponent(code), 'la partida');
+  }
+
+  // Manda al administrador un mail con un enlace que le deja ya dentro de la app, en esa pantalla.
+  // Usa el correo de «entrar con un enlace» de Supabase (la plantilla está escrita para Los Iscariotes).
+  window.acgolfMandarMail = async function(url, que){
     const p = window.miPerfil;
-    if(!p || !p.es_admin || !p.email) return; // de momento, solo al administrador
+    if(!p || !p.es_admin || !p.email){ aviso('De momento el mail solo se manda al administrador'); return false; }
     const client = initSupabase();
-    if(!client) return;
-    const url = 'https://carlosacedo30.github.io/acgolf/pruebas/?partida=' + encodeURIComponent(code);
+    if(!client) return false;
     try {
       const { error } = await client.auth.signInWithOtp({ email: p.email, options: { emailRedirectTo: url, shouldCreateUser: false } });
       if(error) throw error;
-      aviso('✉️ Te hemos mandado un mail con el enlace a la partida');
+      aviso('✉️ Te hemos mandado un mail con el enlace a ' + que);
+      return true;
     } catch(e){
-      console.error('No se pudo mandar el mail de la partida', e);
-      aviso('No se pudo mandar el mail de la partida');
+      console.error('No se pudo mandar el mail', e);
+      aviso(/rate|seconds|segundos/i.test(String(e && e.message)) ? 'Espera un minuto antes de mandar otro mail' : 'No se pudo mandar el mail');
+      return false;
     }
-  }
+  };
 
   function aviso(texto){
     const d = document.createElement('div');
