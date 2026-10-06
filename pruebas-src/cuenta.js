@@ -246,7 +246,8 @@
       + '<div class="cg-grupos">' + grupos.map(g => '<button type="button" class="cg-grupo' + (g.activo ? ' on' : '') + '" data-g="' + esc(g.id) + '">'
           + '<b>' + (g.tipo === 'personal' ? '⛳ ' : '🏆 ') + esc(g.nombre) + '</b>'
           + '<span>' + (g.tipo === 'personal' ? 'Tu espacio personal (gratis)' : 'Grupo con liga') + ' · ' + esc(g.jugador) + (g.es_admin && g.tipo !== 'personal' ? ' · Administrador' : '') + '</span>'
-          + (g.activo ? '<i>Estás aquí</i>' : '') + '</button>').join('') + '</div>'
+          + (g.activo ? '<i>Estás aquí</i>' : '') + '</button>'
+          + (g.es_admin && g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="cg-borrar-g" data-g="' + esc(g.id) + '">Borrar «' + esc(g.nombre) + '»</button>' : '')).join('') + '</div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<div class="cg-sep">Unirme a otro grupo</div>'
       + '<label class="cg-lbl">Código de invitación<small>Viene al final del enlace que te mandaron</small><input id="cgCodigo" type="text" autocapitalize="characters" maxlength="12"></label>'
@@ -262,6 +263,9 @@
       if(error){ b.disabled = false; msg(traducir(error)); return; }
       location.reload();
     });
+    gate.querySelectorAll('.cg-borrar-g').forEach(b => b.onclick = () => {
+      const g = grupos.find(x => x.id === b.dataset.g); if(g) pantallaBorrarGrupo(perfil, g);
+    });
     $('cgUnirme').onclick = () => {
       const c = $('cgCodigo').value.trim().toUpperCase().replace(/.*UNIRSE=/, '');
       if(!c){ msg('Escribe el código.'); return; }
@@ -270,6 +274,26 @@
     };
     $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(perfil.email, true);
     const pp = $('cgPersonal'); if(pp) pp.onclick = () => pantallaPersonalExtra(perfil);
+  }
+
+  // Borrar un grupo entero (solo su administrador; Los Iscariotes no se pueden borrar)
+  function pantallaBorrarGrupo(perfil, g){
+    mostrar(cabecera('Borrar «' + esc(g.nombre) + '»', 'Se borran el grupo, sus jugadores, sus partidas, sus hándicaps y sus ligas. Los demás miembros dejarán de verlo.')
+      + '<p class="cg-p"><b>No se puede deshacer desde la app.</b> Para confirmar, escribe el nombre del grupo tal cual:</p>'
+      + '<div class="cg-enlace" style="font-size:18px;font-weight:700;">' + esc(g.nombre) + '</div>'
+      + '<label class="cg-lbl">Nombre del grupo<input id="cgBorrarNombre" type="text" autocomplete="off" autocapitalize="off"></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn danger" id="cgBorrarSi">Borrar el grupo para siempre</button>'
+      + '<button type="button" class="cg-link" id="cgVolver">No, volver</button>');
+    $('cgVolver').onclick = () => pantallaMisGrupos(perfil);
+    $('cgBorrarSi').onclick = e => ocupado(e.target, async () => {
+      const escrito = $('cgBorrarNombre').value.trim();
+      if(escrito.toLowerCase() !== String(g.nombre).trim().toLowerCase()){ msg('El nombre no coincide. Escríbelo igual que arriba.'); return; }
+      const { error } = await client.rpc('borrar_grupo', { p_grupo: g.id, p_nombre: escrito });
+      if(error){ msg(traducir(error)); return; }
+      mostrar(cabecera('Grupo borrado', '«' + esc(g.nombre) + '» ya no existe.')
+        + '<button type="button" class="cg-btn" onclick="location.reload()">Seguir</button>');
+    });
   }
 
   function pantallaPersonalExtra(perfil){

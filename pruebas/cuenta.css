@@ -154,3 +154,5 @@ html.con-marca[data-tema="grafito"] .portada.portada-v2.home-cab{
 .pg-fondo i b{ display:block; height:14px; border-radius:5px; background:var(--f1); }
 .pg-fondo i s{ display:block; height:12px; width:60%; margin:0 auto; border-radius:999px; background:var(--c); }
 .pg-fondo.on{ border-color:var(--c); box-shadow:inset 0 0 0 1px var(--c); }
+/* Borrar un grupo */
+.cg-borrar-g{ align-self:flex-end; margin:-4px 4px 6px; background:none; border:none; color:#F29A5B; font:700 15px 'Barlow', sans-serif; text-decoration:underline; padding:6px; cursor:pointer; }
