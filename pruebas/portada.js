@@ -8,6 +8,13 @@
     { c:'#C6F24E', n:'Lima' }, { c:'#4FD1E8', n:'Turquesa' }, { c:'#FFB547', n:'Naranja' },
     { c:'#FF7A6B', n:'Coral' }, { c:'#E6C25A', n:'Oro' }, { c:'#5FD38D', n:'Verde' }
   ];
+  // Tonos de fondo de toda la app: cada gris del tema grafito se cambia por el tono equivalente
+  const FONDOS = [
+    { id:'grafito', n:'Grafito', t:['#111316','#1B1E22','#24282D','#2A2E33','#2C3137','#33383E','#4A5058','#9AA3AB'] },
+    { id:'verde',   n:'Verde club', t:['#0C1F17','#142C21','#1B382A','#1F3D2F','#214032','#28493A','#3D5E4E','#9DB5A8'] },
+    { id:'azul',    n:'Azul noche', t:['#0D1626','#152238','#1C2B45','#21314C','#22344F','#293C5A','#3E5375','#9FB0C8'] },
+    { id:'burdeos', n:'Burdeos', t:['#1E0F15','#2B1620','#361C28','#3C202D','#3E2230','#472836','#634050','#BBA0AA'] }
+  ];
   const ESCUDOS = [
     { id:'sello', n:'Sello moderno' }, { id:'clasico', n:'Escudo clásico' },
     { id:'bandera', n:'Bandera de green' }, { id:'bola', n:'Bola de golf' }
@@ -56,12 +63,42 @@
     return '<svg width="' + tam + '" height="' + tam + '" viewBox="0 0 100 100" aria-hidden="true">' + dentro + '</svg>';
   }
 
+  // ---- Tonos de la app ----
+  // Se copia la hoja del tema con los colores cambiados y se pone detrás de la original (gana la copia).
+  const hojas = {};
+  async function leerHoja(nombre){
+    if(hojas[nombre] !== undefined) return hojas[nombre];
+    const l = Array.from(document.querySelectorAll('link[rel="stylesheet"]')).find(x => (x.getAttribute('href') || '').split('?')[0] === nombre);
+    hojas[nombre] = '';
+    if(!l) return '';
+    try { hojas[nombre] = await (await fetch(l.href)).text(); } catch(e){}
+    return hojas[nombre];
+  }
+  const rgb = h => [1,3,5].map(i => parseInt(h.slice(i, i + 2), 16)).join(',');
+  let turno = 0;
+  async function tonos(color, fondo){
+    const yo = ++turno;
+    const f = FONDOS.find(x => x.id === fondo) || FONDOS[0];
+    color = /^#[0-9A-Fa-f]{6}$/.test(color || '') ? color.toUpperCase() : '#C6F24E';
+    let st = document.getElementById('pgTonos');
+    if(f.id === 'grafito' && color === '#C6F24E'){ if(st) st.textContent = ''; return; }
+    const css = (await leerHoja('tema-grafito.css')) + '\n' + (await leerHoja('cuenta.css'));
+    if(yo !== turno) return;
+    let out = css.replace(/#C6F24E/gi, color).replace(/rgba\(\s*198\s*,\s*242\s*,\s*78\s*,/g, 'rgba(' + rgb(color) + ',');
+    FONDOS[0].t.forEach((g, i) => { out = out.split(g).join(f.t[i]).split(g.toLowerCase()).join(f.t[i]); });
+    out = out.replace(/rgba\(\s*17\s*,\s*19\s*,\s*22\s*,/g, 'rgba(' + rgb(f.t[0]) + ',');
+    if(!st){ st = document.createElement('style'); st.id = 'pgTonos'; document.head.appendChild(st); }
+    st.textContent = out;
+    const mt = document.querySelector('meta[name="theme-color"]'); if(mt) mt.setAttribute('content', f.t[0]);
+  }
+
   // Marca efectiva de un perfil: la guardada o, si no hay, una automática con el nombre del grupo
   function marcaDe(perfil){
     const m = (perfil && perfil.grupo_marca) || {};
     return {
       escudo: m.escudo || 'sello',
       color: m.color || '#C6F24E',
+      fondo: m.fondo || 'grafito',
       iniciales: m.iniciales || iniciales(perfil && perfil.grupo),
       campo: m.campo || '',
       temporada: m.temporada || ('Liga ' + new Date().getFullYear()),
@@ -87,6 +124,7 @@
       : marcaDe(perfil);
     const nombre = personal ? String(perfil.player_name || 'Mi golf').split(' ')[0] : (perfil.grupo || 'Mi grupo');
     document.documentElement.classList.add('con-marca');
+    tonos(m.color, m.fondo);
     document.documentElement.style.setProperty('--grupo-color', m.color);
 
     const img = cab.querySelector('.pv2-escudo');
@@ -120,5 +158,5 @@
     document.title = (personal ? 'Mi golf' : nombre) + ' · Golf PRUEBAS';
   }
 
-  window.acgolfPortada = { COLORES, ESCUDOS, iniciales, escudo, marcaDe, aplicar, esPortadaOriginal };
+  window.acgolfPortada = { COLORES, ESCUDOS, FONDOS, tonos, iniciales, escudo, marcaDe, aplicar, esPortadaOriginal };
 })();

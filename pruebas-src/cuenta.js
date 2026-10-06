@@ -339,13 +339,13 @@
       + '<div class="cg-eyebrow">' + esc(perfil.grupo) + '</div><h1 class="cg-title">' + titulo + '</h1>'
       + (sub ? '<p class="cg-sub">' + sub + '</p>' : '') + '</div>';
     const salir = desdeCuenta ? '<button type="button" class="cg-link" id="pgSalir">Dejarlo como está</button>' : '';
-    const ponerSalir = () => { const b = $('pgSalir'); if(b) b.onclick = ocultar; };
+    const ponerSalir = () => { const b = $('pgSalir'); if(b) b.onclick = () => { const g = P.marcaDe(perfil); P.tonos(g.color, g.fondo); ocultar(); }; };
 
     function paso1(){
       mostrar(cab(1, 'Elegid vuestro escudo', 'Lo hacemos con las iniciales del grupo. Podéis cambiar las letras.')
         + '<label class="cg-lbl">Iniciales<small>Hasta 3 letras</small><input id="pgIni" type="text" maxlength="3" autocapitalize="characters" value="' + esc(st.iniciales) + '"></label>'
         + '<div class="pg-escudos" id="pgEscudos"></div>'
-        + '<button type="button" class="cg-btn" id="pgSig">Siguiente: el color</button>' + salir);
+        + '<button type="button" class="cg-btn" id="pgSig">Siguiente: los colores</button>' + salir);
       const pintar = () => {
         $('pgEscudos').innerHTML = P.ESCUDOS.map(e => '<button type="button" class="pg-op' + (e.id === st.escudo ? ' on' : '') + '" data-e="' + e.id + '">'
           + P.escudo(e.id, st.iniciales, st.color, 84) + '<span>' + esc(e.n) + '</span></button>').join('');
@@ -357,14 +357,19 @@
     }
 
     function paso2(){
-      mostrar(cab(2, 'Vuestro color', 'Se usa en el escudo, en la portada y en el botón de crear partida.')
+      mostrar(cab(2, 'Los colores de la app', 'Elegid el tono de fondo y vuestro color. La app entera cambia mientras elegís.')
+        + '<div class="pg-sub">Tono de fondo</div><div class="pg-fondos" id="pgFondos"></div>'
+        + '<div class="pg-sub">Vuestro color</div><div class="pg-colores" id="pgColores"></div>'
         + '<div class="pg-muestra" id="pgMuestra"></div>'
-        + '<div class="pg-colores" id="pgColores"></div>'
         + '<button type="button" class="cg-btn" id="pgSig">Siguiente: vuestro campo</button>'
         + '<button type="button" class="cg-link" id="pgAtras">‹ Atrás</button>');
       const pintar = () => {
-        $('pgMuestra').innerHTML = P.escudo(st.escudo, st.iniciales, st.color, 120);
+        P.tonos(st.color, st.fondo);
+        $('pgFondos').innerHTML = P.FONDOS.map(f => '<button type="button" class="pg-fondo' + (f.id === st.fondo ? ' on' : '') + '" data-f="' + f.id + '" style="--f0:' + f.t[0] + ';--f1:' + f.t[2] + ';--c:' + st.color + '">'
+          + '<i><b></b><b></b><s></s></i><span>' + esc(f.n) + '</span></button>').join('');
         $('pgColores').innerHTML = P.COLORES.map(c => '<button type="button" class="pg-color' + (c.c === st.color ? ' on' : '') + '" data-c="' + c.c + '" style="--c:' + c.c + '"><i></i><span>' + esc(c.n) + '</span></button>').join('');
+        $('pgMuestra').innerHTML = P.escudo(st.escudo, st.iniciales, st.color, 96);
+        gate.querySelectorAll('.pg-fondo').forEach(b => b.onclick = () => { st.fondo = b.dataset.f; pintar(); });
         gate.querySelectorAll('.pg-color').forEach(b => b.onclick = () => { st.color = b.dataset.c; pintar(); });
       };
       pintar();
