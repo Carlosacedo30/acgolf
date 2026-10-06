@@ -158,7 +158,7 @@
         pat.replaceWith(d);
       } else pat.style.display = 'none';
     }
-    document.title = (personal ? 'Mi golf' : nombre) + ' · Golf PRUEBAS';
+    document.title = (personal ? 'Mi golf' : nombre) + ' · acgolf';
   }
 
   window.acgolfPortada = { COLORES, ESCUDOS, FONDOS, tonos, iniciales, escudo, marcaDe, aplicar, esPortadaOriginal };
