@@ -63,7 +63,9 @@
       + '<button type="button" class="cg-btn" id="cgEntrar">Entrar</button>'
       + '<button type="button" class="cg-link" id="cgIrOlvido">He olvidado mi contraseña</button>'
       + '<div class="cg-sep">¿Es tu primera vez?</div>'
-      + '<button type="button" class="cg-btn ghost" id="cgIrCrear">Crear mi cuenta</button>');
+      + '<button type="button" class="cg-btn ghost" id="cgIrCrear">Crear mi cuenta</button>'
+      + (window.acgolfInstalar ? '<button type="button" class="cg-link" id="cgInstalar">📲 Instalar la app en el móvil</button>' : ''));
+    if($('cgInstalar')) $('cgInstalar').onclick = () => window.acgolfInstalar();
     if(aviso) msg(aviso, true);
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgIrCrear').onclick = () => pantallaCrear();
@@ -470,6 +472,7 @@
       + '<div id="cgMsg" class="cg-msg"></div>'
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
+      + (window.acgolfInstalar ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
       + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
       + '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
@@ -478,6 +481,7 @@
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
     $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
+    if($('cgInstalar')) $('cgInstalar').onclick = () => { ocultar(); window.acgolfInstalar(); };
     if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
     $('cgClave').onclick = pantallaNuevaClave;
     $('cgSalir').onclick = async () => {
