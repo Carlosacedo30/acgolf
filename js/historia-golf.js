@@ -60,7 +60,7 @@
     { foto: 'lytham', ano: '1988', t: 'La vuelta perfecta en Lytham',
       p: ['Volvió a ganar el Open en Royal Lytham con una última vuelta de 65 golpes, que él consideraba quizá la mejor de su carrera. Era su quinto grande.'] },
     { foto: 'olazabal', ano: '1979–1997', t: 'El alma de la Ryder Cup',
-      p: ['Desde 1979 los jugadores de toda Europa pueden jugar la Ryder Cup contra Estados Unidos. Seve fue el gran motivo: con él, Europa pasó de perder siempre a ganar.',
+      p: ['Desde 1979 los jugadores de toda Europa pueden jugar la Ryder Cup contra Estados Unidos. Seve fue el gran motivo: con él, Europa pasó de perder casi siempre a ganar.',
           'Jugó 8 Ryder Cups. Con José María Olazábal formó la mejor pareja de la historia del torneo: jugaron 15 partidos juntos y ganaron 11, empataron 2 y solo perdieron 2.',
           'En 1997 fue el capitán en Valderrama (Cádiz), la primera Ryder Cup jugada en la Europa continental. Europa ganó 14½ a 13½.'],
       pie: 'En la foto, José María Olazábal en la Ryder Cup de 2025.' },
@@ -79,17 +79,26 @@
     { foto: 'calotipo', ano: '1744', t: 'Las primeras reglas escritas',
       p: 'Los golfistas de Leith, en Edimburgo, escribieron las 13 primeras reglas del golf para su torneo. Algunas ideas siguen hoy, como no cambiar de bola durante el hoyo.',
       pie: 'En la foto, golfistas de St Andrews hacia 1845, entre ellos Allan Robertson y un joven Tom Morris: una de las fotografías de golf más antiguas.' },
-    { foto: 'swilcan', ano: '1754–1764', t: 'St Andrews y los 18 hoyos',
+    { ano: '1754–1764', t: 'St Andrews y los 18 hoyos',
       p: 'En 1754 se fundó la sociedad de golfistas de St Andrews, que en 1834 pasó a llamarse Royal and Ancient (la R&A, que todavía publica las reglas). En 1764 su campo se quedó con 18 hoyos y desde entonces es la medida de todos los campos del mundo.' },
     { foto: 'featherie', ano: '1848 y 1898', t: 'De las plumas a la goma',
       p: 'Las primeras bolas buenas eran de cuero relleno de plumas («featherie»): caras y se rompían. En 1848 llegó la de gutapercha, mucho más barata, y en 1898 la Haskell, con núcleo de hilos de goma, que volaba mucho más. Ahí empezó el golf moderno.' },
     { foto: 'morris', ano: '1860', t: 'Nace el Open',
       p: 'El primer Open se jugó en Prestwick (Escocia) y lo ganó Willie Park. Old Tom Morris lo ganó cuatro veces y su hijo, Young Tom, otras cuatro; fue el primer gran genio del golf y murió con solo 24 años.' },
+    { ano: '1895–1916', t: 'Nacen los otros grandes',
+      p: 'Al Open se sumaron el US Open (1895) y el PGA Championship (1916). Con el Masters, desde 1934, forman los cuatro «grandes» que hoy deciden quién es el mejor jugador del mundo.' },
+    { ano: '1900', t: 'El golf, deporte olímpico',
+      p: 'El golf estuvo en los Juegos Olímpicos de París 1900 y de San Luis 1904. Luego desapareció y no volvió hasta Río 2016.' },
     { ano: '1891', t: 'El golf llega a España',
       p: 'Un grupo de británicos que vivían en Gran Canaria fundó el club de golf de Las Palmas, el más antiguo de España.' },
     { foto: 'jones', ano: '1927–1934', t: 'Ryder Cup, Bobby Jones y Augusta',
       p: 'En 1927 se jugó la primera Ryder Cup, en Estados Unidos. En 1930 el aficionado Bobby Jones ganó los cuatro grandes de la época en el mismo año, algo que nadie ha repetido. Después creó el campo de Augusta, donde en 1934 nació el Masters.' },
-    { ano: 'Después de Seve', t: 'Los herederos españoles',
+    { ano: '1958–1986', t: 'La televisión y los gigantes',
+      p: 'La televisión llevó el golf a todas las casas. Arnold Palmer arrastraba multitudes y Jack Nicklaus ganó 18 grandes, el récord que todavía nadie ha superado. Durante años los americanos ganaban casi todo.' },
+    { seve: true, ano: '1976–1997', t: 'Seve Ballesteros, el genio de Pedreña' },
+    { ano: '1997–2019', t: 'Tiger Woods',
+      p: 'Ganó su primer Masters en 1997 con 21 años y por 12 golpes. Llegó a 15 grandes y cambió el deporte: más fuerza, más preparación física y millones de nuevos aficionados.' },
+    { ano: '1994–2023', t: 'Los herederos españoles',
       p: 'José María Olazábal ganó el Masters en 1994 y 1999; Sergio García, en 2017; y Jon Rahm ganó el US Open de 2021 y el Masters de 2023. En 2016 el golf volvió a los Juegos Olímpicos después de 112 años.' },
   ];
 
@@ -115,32 +124,36 @@
 
   const ICO_HIST = '<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3 6 19"/><path d="M6 19h4"/><circle cx="16.5" cy="18.5" r="2.5"/><path d="M4 21h16"/></svg>';
 
-  function pintar(){
-    const body = document.getElementById('hgBody'); if(!body) return;
-    body.innerHTML =
-      '<nav class="hg-saltos"><a href="#hgSeve">Seve</a><a href="#hgHistoria">Historia</a><a href="#hgLeer">Para leer más</a></nav>'
-      // ---- Seve ----
-      + '<div class="hg-seve" id="hgSeve">'
-      +   '<div class="hg-portada">' + foto('seveAccion', 'hg-portada-foto', 'Seve Ballesteros jugando en Holanda en 1987')
-      +     '<div class="hg-portada-txt"><div class="hg-k">El genio de Pedreña</div><h3>Seve Ballesteros</h3><p>1957 – 2011</p></div></div>'
-      +   '<p class="hg-intro">Para muchos, el golfista con más talento e imaginación de la historia. Cambió el golf europeo para siempre y fue el motivo por el que tantos españoles cogimos un palo.</p>'
+  // Capítulo destacado de Seve dentro de la línea del tiempo
+  function capituloSeve(h){
+    return '<li class="hg-hito hg-hito-seve" id="hgSeve">'
+      + '<div class="hg-ano">' + esc(h.ano) + '</div><h4>' + esc(h.t) + '</h4>'
+      + '<div class="hg-seve-caja">'
+      +   foto('seveAccion', 'hg-seve-foto', 'Seve Ballesteros jugando en Holanda en 1987')
+      +   '<p class="hg-intro">Para muchos, el golfista con más talento e imaginación de la historia. Con él Europa empezó a ganar a los americanos y en España miles de personas cogieron un palo por primera vez.</p>'
       +   '<div class="hg-cifras">' + SEVE_CIFRAS.map(c => '<div class="hg-cifra"><b>' + c[0] + '</b><span>' + c[1] + '</span><small>' + c[2] + '</small></div>').join('') + '</div>'
       +   '<ol class="hg-capitulos">' + SEVE.map((c, i) =>
             '<li class="hg-cap">'
-            + (c.foto && i !== 5 ? foto(c.foto, '', c.pie || '') : '')
-            + '<div class="hg-cap-txt"><div class="hg-ano">' + esc(c.ano) + '</div><h4>' + esc(c.t) + '</h4>'
+            + (c.foto && i !== 1 && i !== 5 ? foto(c.foto, 'hg-foto-peq', c.pie || '') : '')
+            + '<div class="hg-cap-txt"><div class="hg-ano">' + esc(c.ano) + '</div><h5>' + esc(c.t) + '</h5>'
             + c.p.map(x => '<p>' + esc(x) + '</p>').join('') + '</div></li>').join('') + '</ol>'
-      + '</div>'
-      // ---- Historia ----
+      + '</div></li>';
+  }
+
+  function pintar(){
+    const body = document.getElementById('hgBody'); if(!body) return;
+    body.innerHTML =
+      '<nav class="hg-saltos"><a href="#hgHistoria">Los orígenes</a><a href="#hgSeve">Seve</a><a href="#hgLeer">Para leer más</a></nav>'
       + '<div class="hg-hist" id="hgHistoria">'
-      +   '<div class="hg-sec-t">De dónde viene el golf</div>'
-      +   '<ol class="hg-linea">' + HISTORIA.map(h =>
+      +   '<div class="hg-portada">' + foto('swilcan', 'hg-portada-foto hg-portada-ancha', 'El puente de Swilcan y la casa club de la R&A en St Andrews')
+      +     '<div class="hg-portada-txt"><div class="hg-k">De Escocia al mundo</div><h3>Seis siglos de golf</h3><p>Del hielo holandés a St Andrews, Augusta y Pedreña</p></div></div>'
+      +   '<p class="hg-intro">Un juego de palo y bola que se hizo mayor en las costas de Escocia y hoy se juega en todo el mundo. Estos son los momentos que lo hicieron como es.</p>'
+      +   '<ol class="hg-linea">' + HISTORIA.map(h => h.seve ? capituloSeve(h) :
             '<li class="hg-hito">'
             + '<div class="hg-ano">' + esc(h.ano) + '</div><h4>' + esc(h.t) + '</h4><p>' + esc(h.p) + '</p>'
             + (h.foto ? foto(h.foto, 'hg-foto-peq', h.pie || '') : '')
             + '</li>').join('') + '</ol>'
       + '</div>'
-      // ---- Para leer más ----
       + '<div id="hgLeer"><div class="hg-sec-t">Para leer más</div>'
       +   '<div class="hg-leer">' + LEER.map(l => '<a class="hg-art" href="' + l[2] + '" target="_blank" rel="noopener"><b>' + esc(l[0]) + '</b><span>' + esc(l[1]) + '</span></a>').join('') + '</div>'
       + '</div>'
@@ -161,7 +174,7 @@
       +   '<button type="button" class="conv-close" id="hgCerrar" aria-label="Cerrar">✕</button>'
       +   '<div class="derbi-cab-k">De Escocia a Pedreña</div>'
       +   '<h2 id="hgTitulo">Historia del golf</h2>'
-      +   '<p>Cómo nació el juego, quién lo hizo grande y, sobre todo, la historia de Seve.</p>'
+      +   '<p>Cómo nació el golf, quién lo hizo grande y el lugar de Seve en esa historia.</p>'
       + '</div>'
       + '<button type="button" class="home-volver pantalla-volver" id="hgVolver">‹ Volver al inicio</button>'
       + '<div id="hgBody"></div>'
@@ -186,7 +199,7 @@
     if(!ancla || document.getElementById('hmHistoria')) return;
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'home-menu-btn'; b.id = 'hmHistoria';
-    b.innerHTML = ICO_HIST + '<span>Historia del golf · Seve</span>' + (typeof icono === 'function' ? icono('flecha', 'hm-flecha') : '');
+    b.innerHTML = ICO_HIST + '<span>Historia del golf</span>' + (typeof icono === 'function' ? icono('flecha', 'hm-flecha') : '');
     ancla.parentNode.insertBefore(b, ancla.nextSibling);
     b.addEventListener('click', abrir);
   })();
