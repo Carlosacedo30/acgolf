@@ -102,24 +102,47 @@
       p: 'José María Olazábal ganó el Masters en 1994 y 1999; Sergio García, en 2017; y Jon Rahm ganó el US Open de 2021 y el Masters de 2023. En 2016 el golf volvió a los Juegos Olímpicos después de 112 años.' },
   ];
 
-  const LEER = [
-    ['Forever Seve: el Open de 1979 que creó la leyenda', 'Golf.com (Alan Shipnuck, en inglés)', 'https://golf.com/news/features/seve-ballesteros-1979-open-championship-win-birthed-legend/'],
-    ['Seve en St Andrews, 40 años después', 'The Open (en inglés)', 'https://www.theopen.com/latest/seve-ballesteros-st-andrews-40-years-on'],
-    ['Seve, 10 años después: documental, libro y exposición', 'The R&A (en inglés)', 'https://www.randa.org/articles/seve-ballesteros-10-years-on'],
-    ['Seve y Olazábal, la pareja de la Ryder', 'Golf Digest (en inglés)', 'https://www.golfdigest.com/story/huggan-ballesteros-olazabal'],
-    ['El club de golf más antiguo de España cumple 125 años', 'eldiario.es', 'https://www.eldiario.es/canariasahora/Deportes/otros_deportes/club-golf-espana-gran-canaria_1_4049006.html'],
-    ['Severiano Ballesteros', 'Wikipedia', 'https://es.wikipedia.org/wiki/Severiano_Ballesteros'],
-    ['Historia del golf', 'Wikipedia (en inglés)', 'https://en.wikipedia.org/wiki/History_of_golf'],
+  // Reportajes: historias largas, escritas para la app
+  const REPORTAJES = [
+    { foto: 'morris', t: 'Old Tom y Young Tom, padre e hijo', sub: 'La primera gran saga del golf',
+      p: ['Tom Morris, al que todos llaman Old Tom, fue el gran hombre de St Andrews en el siglo XIX: hacía bolas y palos, diseñaba campos y cuidaba el Old Course. Ganó cuatro Open y en 1867, con 46 años, se convirtió en el campeón más veterano de la historia del torneo. Ese récord sigue en pie.',
+          'Su hijo, Young Tom, fue todavía mejor. En 1868 ganó el Open con 17 años, el campeón más joven de siempre, y lo volvió a ganar en 1869 y 1870. Al ganarlo tres veces seguidas se quedó en propiedad el premio de entonces, un cinturón de cuero rojo, y en 1871 no hubo Open porque no había trofeo.',
+          'Para el año siguiente se encargó una jarra de plata, la famosa Claret Jug, que todavía hoy levanta el ganador del Open. El primer nombre grabado en ella es el de Young Tom, que ganó en 1872.',
+          'Su historia acabó en tragedia. En 1875 murieron su mujer y su hijo recién nacido en el parto, y pocos meses después, el día de Navidad, murió él con solo 24 años. Padre e hijo están enterrados en St Andrews, a pocos metros del campo donde lo cambiaron todo.'] },
+    { foto: 'jones', t: 'Bobby Jones y el año perfecto', sub: '1930: los cuatro grandes en un solo año',
+      p: ['Bobby Jones nunca fue profesional. Era abogado en Atlanta y jugaba como aficionado, pero ganaba a los mejores del mundo.',
+          'En 1930 hizo algo que nadie ha repetido: ganó en el mismo año los cuatro grandes torneos de la época. Primero el Amateur Británico en St Andrews, después el Open en Hoylake, luego el US Open y por último el Amateur de Estados Unidos. Nueva York le recibió con un desfile por las calles.',
+          'Con solo 28 años decidió retirarse. Ya no tenía nada que demostrar.',
+          'Su gran obra vino después: junto a su amigo Clifford Roberts creó en Georgia el club de Augusta National. En 1934 organizó allí un torneo por invitación que acabó siendo el Masters, el grande más famoso del mundo. El que Seve ganaría dos veces.'] },
+    { foto: 'olazabal', t: 'Seve y Olazábal, la pareja invencible', sub: 'La Armada española de la Ryder Cup',
+      p: ['En 1987 Europa viajó a Muirfield Village, en Ohio, el campo de Jack Nicklaus, a defender la Ryder Cup. Nunca había ganado en Estados Unidos. En el equipo iba un debutante de 21 años de Hondarribia, José María Olazábal, y el capitán lo emparejó con Seve.',
+          'Funcionó desde el primer día. Seve era el genio que se inventaba golpes imposibles; Olazábal, el compañero tranquilo que no fallaba. Se hablaban en castellano, se animaban con el puño en alto y los americanos no sabían cómo pararlos. Europa ganó aquella Ryder, la primera en suelo americano.',
+          'Juntos jugaron 15 partidos de Ryder Cup: ganaron 11, empataron 2 y solo perdieron 2. Es el mejor registro de una pareja en toda la historia del torneo. La prensa los bautizó como la Armada española.',
+          'Olazábal ganaría después dos Masters, en 1994 y 1999, y en 2012 fue el capitán europeo en la remontada de Medinah. Aquel equipo jugó el último día con la silueta de Seve, que había muerto el año anterior, bordada en la ropa.'] },
+    { foto: 'lytham', t: 'Lytham 1979: el campeón del aparcamiento', sub: 'El primer grande de Seve',
+      p: ['Royal Lytham & St Annes, en la costa noroeste de Inglaterra, julio de 1979. Seve tiene 22 años y llega al último día luchando por el Open con Hale Irwin, campeón del US Open.',
+          'Seve no es un jugador recto. Pega fuerte y la bola se le va, pero tiene una mano prodigiosa para salvar golpes desde cualquier sitio. En el hoyo 16 su salida se marcha muy a la derecha y acaba entre los coches del aparcamiento de los espectadores.',
+          'Le dan alivio por la zona de coches, juega un golpe precioso al green y mete el putt para birdie. Irwin, que jugaba con él, no daba crédito. Seve ganó por tres golpes y la prensa británica le llamó para siempre «el campeón del aparcamiento».',
+          'Era el primer jugador de la Europa continental que ganaba el Open desde 1907. Aquella victoria abrió la puerta a todo lo que vino después.'] },
+    { foto: 'green18', t: 'St Andrews 1984: el puño al cielo', sub: 'El momento más feliz de Seve',
+      p: ['El Open de 1984 se jugó en St Andrews, la cuna del golf. El último día Seve iba codo con codo con Tom Watson, que buscaba su sexto Open.',
+          'En el hoyo 18, con el viejo edificio de la R&A al fondo, Seve tenía un putt para birdie. La bola cayó en el hoyo por el borde y Seve explotó: se giró hacia el público y levantó el puño una y otra vez, con una sonrisa enorme.',
+          'Watson, que iba un partido por detrás, hizo bogey en el famoso hoyo 17, el Road Hole, y Seve se llevó su segundo Open.',
+          'Aquella celebración se convirtió en la imagen de su vida. Él mismo dijo que fue el momento más feliz de toda su carrera deportiva.'] },
+    { foto: 'seveLluvia', t: 'Valderrama 1997: la Ryder de Seve', sub: 'La primera Ryder Cup en la Europa continental',
+      p: ['Durante setenta años la Ryder Cup se jugó siempre en Gran Bretaña o en Estados Unidos. En 1997 llegó por fin a la Europa continental: al club Valderrama, en Sotogrande (Cádiz). Y el capitán europeo era Seve.',
+          'Seve vivió aquella semana a su manera: recorría el campo sin parar en un buggy, aparecía en cualquier hoyo a dar consejos y estaba encima de cada detalle. Enfrente estaban los americanos, con un debutante llamado Tiger Woods.',
+          'Europa dominó los dos primeros días y llegó al domingo con ventaja. Los americanos apretaron en los individuales, pero no les alcanzó: Europa ganó 14½ a 13½.',
+          'Fue la última gran página de Seve en la Ryder: la Copa levantada en España, por un capitán español. Para muchos, el día que el golf español se hizo mayor.'] },
   ];
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const commons = f => 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(f.file);
 
   function foto(id, clase, pie){
     const f = FOTOS[id]; if(!f) return '';
     return '<figure class="hg-foto ' + (clase || '') + '">'
       + '<img src="' + f.src + '" width="' + f.w + '" height="' + f.h + '" loading="lazy" decoding="async" alt="' + esc(pie || '') + '" style="object-position:' + f.pos + '">'
-      + '<figcaption>' + (pie ? esc(pie) + ' · ' : '') + 'Foto: <a href="' + commons(f) + '" target="_blank" rel="noopener">' + esc(f.autor) + '</a> · ' + esc(f.lic) + '</figcaption></figure>';
+      + '<figcaption>' + (pie ? esc(pie) + ' · ' : '') + 'Foto: ' + esc(f.autor) + ' · ' + esc(f.lic) + ' · Wikimedia Commons' + '</figcaption></figure>';
   }
 
   const ICO_HIST = '<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3 6 19"/><path d="M6 19h4"/><circle cx="16.5" cy="18.5" r="2.5"/><path d="M4 21h16"/></svg>';
@@ -143,7 +166,7 @@
   function pintar(){
     const body = document.getElementById('hgBody'); if(!body) return;
     body.innerHTML =
-      '<nav class="hg-saltos"><a href="#hgHistoria">Los orígenes</a><a href="#hgSeve">Seve</a><a href="#hgLeer">Para leer más</a></nav>'
+      '<nav class="hg-saltos"><a href="#hgHistoria">Los orígenes</a><a href="#hgSeve">Seve</a><a href="#hgReportajes">Reportajes</a></nav>'
       + '<div class="hg-hist" id="hgHistoria">'
       +   '<div class="hg-portada">' + foto('swilcan', 'hg-portada-foto hg-portada-ancha', 'El puente de Swilcan y la casa club de la R&A en St Andrews')
       +     '<div class="hg-portada-txt"><div class="hg-k">De Escocia al mundo</div><h3>Seis siglos de golf</h3><p>Del hielo holandés a St Andrews, Augusta y Pedreña</p></div></div>'
@@ -154,10 +177,13 @@
             + (h.foto ? foto(h.foto, 'hg-foto-peq', h.pie || '') : '')
             + '</li>').join('') + '</ol>'
       + '</div>'
-      + '<div id="hgLeer"><div class="hg-sec-t">Para leer más</div>'
-      +   '<div class="hg-leer">' + LEER.map(l => '<a class="hg-art" href="' + l[2] + '" target="_blank" rel="noopener"><b>' + esc(l[0]) + '</b><span>' + esc(l[1]) + '</span></a>').join('') + '</div>'
+      + '<div id="hgReportajes"><div class="hg-sec-t">Reportajes</div>'
+      +   '<div class="hg-reps">' + REPORTAJES.map(r =>
+            '<details class="hg-rep" name="hgrep"><summary>' + foto(r.foto, 'hg-rep-foto', '') 
+            + '<span class="hg-rep-t"><b>' + esc(r.t) + '</b><small>' + esc(r.sub) + '</small><i>Leer reportaje</i></span></summary>'
+            + '<div class="hg-rep-txt">' + r.p.map(x => '<p>' + esc(x) + '</p>').join('') + '</div></details>').join('') + '</div>'
       + '</div>'
-      + '<p class="hg-pie">Textos escritos para la app a partir de esas fuentes. Fotos de Wikimedia Commons con licencia libre; toca el nombre del autor para ver la foto original y su licencia.</p>';
+      + '<p class="hg-pie">Textos escritos para la app. Fotos de Wikimedia Commons con licencia libre; debajo de cada una van su autor y su licencia.</p>';
     body.querySelectorAll('.hg-saltos a').forEach(a => a.addEventListener('click', e => {
       e.preventDefault();
       const d = document.querySelector(a.getAttribute('href'));
