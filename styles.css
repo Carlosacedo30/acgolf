@@ -1318,6 +1318,10 @@
   .dbi-jug em{ font-style:normal; color:#E8C45A; font-size:13px; }
   .dbi-jug b{ color:#B9C3D4; font-size:14px; flex:none; }
   button.dbi-mover{ cursor:pointer; }
+  .dbi-fila{ display:flex; gap:4px; align-items:stretch; }
+  .dbi-fila .dbi-jug{ padding-right:6px; }
+  .dbi-fila .dbi-jug{ flex:1; min-width:0; }
+  .dbi-baja{ flex:none; width:32px; padding:0; min-height:42px; border-radius:10px; border:1.5px solid #C0504D; background:transparent; color:#F2A19E; font:700 16px 'Barlow', sans-serif; cursor:pointer; }
   .dbi-vacio{ padding:10px; text-align:center; color:#8FA0BC; font-size:15px; }
   .dbi-nota{ margin-top:8px; font-size:14px; color:#B9C3D4; text-align:center; }
   .dbi-botones{ display:flex; flex-direction:column; gap:10px; margin:18px 0 6px; }

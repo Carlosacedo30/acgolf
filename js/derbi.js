@@ -89,6 +89,13 @@
     });
   }
 
+  async function derbiBaja(nombre){ // solo administrador: quitar a un jugador de la lista
+    if(!confirm('¿Dar de baja a ' + derbiCorto(nombre) + ' del torneo?')) return;
+    await derbiMutate(d => {
+      d.sevilla = d.sevilla.filter(n => n !== nombre); d.betis = d.betis.filter(n => n !== nombre);
+    });
+  }
+
   // Propuesta de partidas: cada grupo con 2 sevillistas y 2 béticos de hándicap parecido (cara a cara),
   // y los que sobren completan grupos. Máximo 4 grupos de 4 (lo que admite una partida de la app).
   function derbiGrupos(d){
@@ -191,7 +198,8 @@
           const h = derbiHcp(n);
           const tag = admin ? 'button type="button" class="dbi-jug dbi-mover" data-n="' + derbiEsc(n) + '" aria-label="Pasar a ' + derbiEsc(n) + ' al otro equipo"' : 'div class="dbi-jug"';
           const cierre = admin ? 'button' : 'div';
-          return '<' + tag + '><span>' + derbiEsc(derbiCorto(n)) + (n === yo ? ' <em>(tú)</em>' : '') + '</span><b>' + (h === null ? '' : derbiNum(h)) + '</b></' + cierre + '>';
+          const fila = '<' + tag + '><span>' + derbiEsc(derbiCorto(n)) + (n === yo ? ' <em>(tú)</em>' : '') + '</span><b>' + (h === null ? '' : derbiNum(h)) + '</b></' + cierre + '>';
+          return admin ? '<div class="dbi-fila">' + fila + '<button type="button" class="dbi-baja" data-n="' + derbiEsc(n) + '" aria-label="Dar de baja a ' + derbiEsc(n) + '">✕</button></div>' : fila;
         }).join('') : '<div class="dbi-vacio">Todavía nadie</div>') + '</div>'
       + (admin ? '<button type="button" class="dbi-add" data-eq="' + k + '">＋ Apuntar a alguien</button>' : '')
       + '</div>';
@@ -265,7 +273,7 @@
       + '</div>'
       + (consejo ? '<div class="dbi-consejo">' + consejo + '</div>' : '')
       + '<div class="dbi-cols">' + derbiColumna('sevilla', yo, admin && !d.roundCode) + derbiColumna('betis', yo, admin && !d.roundCode) + '</div>'
-      + (admin && !d.roundCode ? '<div class="dbi-nota">Administrador: toca un nombre para pasarlo al otro equipo, o «＋ Apuntar a alguien» para apuntar a quien no lo haga desde su móvil.</div>' : '')
+      + (admin && !d.roundCode ? '<div class="dbi-nota">Administrador: toca un nombre para pasarlo al otro equipo, ✕ para darlo de baja, o «＋ Apuntar a alguien» para apuntar a quien no lo haga desde su móvil.</div>' : '')
       + derbiSeccionPartidas(d, admin)
       + '<div class="dbi-intro"><p><b>¿Qué es esto?</b> Un torneo especial de sevillistas contra béticos. Cada uno se apunta en su equipo; con los equipos hechos se forman las partidas, cara a cara, y al final gana el equipo con mejor resultado. ¡El orgullo de la ciudad en juego!</p></div>'
       + '<div class="dbi-botones"><a class="dbi-btn dbi-btn-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(derbiTexto(d)) + '">Enviar los equipos al grupo</a></div>';
@@ -275,6 +283,7 @@
     const ns2 = document.getElementById('dbiNoSoy'); if(ns2) ns2.addEventListener('click', async ()=>{ if(typeof elegirQuienEres === 'function'){ const n = await elegirQuienEres(); if(n) derbiPintar(); } });
     const qt = document.getElementById('dbiQuitar'); if(qt) qt.addEventListener('click', ()=>{ if(confirm('¿Quitarte del torneo?')) derbiApuntar('', qt); });
     body.querySelectorAll('.dbi-mover').forEach(b => b.addEventListener('click', ()=> derbiMover(b.dataset.n)));
+    body.querySelectorAll('.dbi-baja').forEach(b => b.addEventListener('click', ()=> derbiBaja(b.dataset.n)));
     body.querySelectorAll('.dbi-add').forEach(b => b.addEventListener('click', ()=> derbiAnadirOtro(b.dataset.eq)));
     body.querySelectorAll('.dbi-campo').forEach(b => b.addEventListener('click', ()=>{ derbiCampo = b.dataset.c; derbiPintar(); }));
     const cr = document.getElementById('dbiCrear'); if(cr) cr.addEventListener('click', ()=> derbiCrearPartidas(cr));
