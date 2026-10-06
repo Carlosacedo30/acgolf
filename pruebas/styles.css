@@ -1023,6 +1023,15 @@
   .pr-r-sub{ font-size:16px; color:#C9D3E4; margin:2px 0 10px; }
   .pr-r-jug{ display:flex; justify-content:space-between; gap:10px; padding:10px 0; border-top:1px solid #2A4373; font-size:19px; color:#F6F1E4; }
   .pr-r-jug b{ color:#E8C45A; white-space:nowrap; }
+  .pr-inv-hcp{ margin-left:auto; font-size:15px; color:#E8C45A; white-space:nowrap; }
+  .pr-inv-form{ margin-top:12px; padding:14px; border:2px solid #D4AF37; border-radius:14px; background:#15294D; }
+  .pr-inv-l{ display:block; margin-bottom:10px; font:600 17px 'Barlow', sans-serif; color:#C9D3E4; }
+  .pr-inv-l input{ display:block; width:100%; box-sizing:border-box; margin-top:6px; min-height:54px; padding:10px 12px; border:2px solid #8FA6CF; border-radius:12px; background:#0E1F3D; color:#F6F1E4; font:700 22px 'Barlow', sans-serif; }
+  .pr-inv-bot{ display:flex; gap:10px; margin-top:6px; }
+  .pr-r-inv{ display:block; font-size:14px; color:#C9D3E4; }
+  .pr-r-hcp{ display:flex; align-items:center; gap:8px; color:#E8C45A; font-weight:700; white-space:nowrap; }
+  .pr-r-hcp-in{ width:84px; min-height:46px; padding:6px 8px; border:2px solid #D4AF37; border-radius:10px; background:#0E1F3D; color:#F6F1E4; font:700 20px 'Barlow', sans-serif; text-align:center; }
+  .pr-r-hcp-in.mal{ border-color:#F2B8A0; background:#4A1F1F; }
   .pr-empezar{ display:block; width:100%; min-height:76px; margin-top:16px; border:none; border-radius:18px; background:#D4AF37; color:#0E1F3D; font:800 26px 'Barlow', sans-serif; text-transform:uppercase; cursor:pointer; }
 
   /* Medallas de la liga (js/medallas.js) */

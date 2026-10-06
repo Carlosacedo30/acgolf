@@ -9,6 +9,8 @@
   let prCampo = null;   // id del campo
   let prElegidos = [];  // nombres
   let prInvitados = []; // nombres escritos a mano
+  let prHcpInv = {};    // hándicap de cada invitado (lo escribe quien crea la partida)
+  let prFormInv = false; // cajita de "Añadir un invitado" abierta
   // Opciones de la partida, elegidas con teclas dentro de la partida rápida
   let prPunt = 'strokeplay';   // 'strokeplay' | 'stableford' | 'matchplay'
   let prHoyos = 18;            // 9 | 18
@@ -43,7 +45,20 @@
 
   const prEsc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function prYo(){ try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } }
-  function prHcp(n){ const h = Number(FAVORITE_HANDICAPS[n]); return isNaN(h) ? 0 : h; }
+  const prEsInv = n => !FAVORITE_PLAYERS.includes(n);
+  function prHcp(n){
+    if(prEsInv(n)){ const hi = Number(prHcpInv[n]); return isNaN(hi) ? 0 : hi; }
+    const h = Number(FAVORITE_HANDICAPS[n]); return isNaN(h) ? 0 : h;
+  }
+  const prHcpTxt = n => String(prHcp(n)).replace('.', ',');
+  // Lee un hándicap escrito a mano (acepta coma o punto). Devuelve null si no vale.
+  function prLeerHcp(v){
+    const t = String(v == null ? '' : v).trim().replace(',', '.');
+    if(t === '') return null;
+    const h = Number(t);
+    if(isNaN(h) || h < -10 || h > 54) return null;
+    return Math.round(h * 10) / 10;
+  }
   function prNombrePartida(){
     const d = new Date();
     const s = d.toLocaleDateString('es-ES', { weekday:'short', day:'numeric', month:'short' }).replace(/[.,]/g, '');
@@ -52,7 +67,7 @@
 
   function prAbrir(){
     const ov = document.getElementById('prOverlay'); if(!ov) return;
-    prPaso = 1; prCampo = null; prInvitados = [];
+    prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false;
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
     const yo = prYo();
     prGrupos = [yo ? [yo] : []];
@@ -104,9 +119,20 @@
             const on = prElegidos.includes(n);
             const og = otroGrupo(n);
             return '<button type="button" class="pr-jug' + (on ? ' on' : '') + (og >= 0 ? ' otro' : '') + '" data-n="' + prEsc(n) + '">'
-              + '<span class="pr-check">' + (on ? '✓' : og >= 0 ? 'G' + (og + 1) : '') + '</span><span class="pr-jn">' + prEsc(n) + '</span></button>';
+              + '<span class="pr-check">' + (on ? '✓' : og >= 0 ? 'G' + (og + 1) : '') + '</span><span class="pr-jn">' + prEsc(n) + '</span>'
+              + (prEsInv(n) ? '<span class="pr-inv-hcp">Invitado · hcp ' + prHcpTxt(n) + '</span>' : '') + '</button>';
           }).join('') + '</div>'
-        + '<button type="button" class="pr-mas" id="prInvitado">＋ Añadir un invitado</button>'
+        + (prFormInv
+            ? '<div class="pr-inv-form">'
+              + '<div class="pr-op-t">Nuevo invitado</div>'
+              + '<label class="pr-inv-l">Nombre y apellido<input type="text" id="prInvNombre" autocomplete="off" placeholder="Ej.: Juan Pérez"></label>'
+              + '<label class="pr-inv-l">Hándicap<input type="text" id="prInvHcp" inputmode="decimal" autocomplete="off" placeholder="Ej.: 18,4"></label>'
+              + '<div class="pr-ayuda pr-aviso" id="prInvError" hidden></div>'
+              + '<div class="pr-inv-bot">'
+              + '<button type="button" class="pr-atras" id="prInvCancelar">Cancelar</button>'
+              + '<button type="button" class="pr-sig" id="prInvOk">Añadir</button>'
+              + '</div></div>'
+            : '<button type="button" class="pr-mas" id="prInvitado">＋ Añadir un invitado</button>')
         + '<div class="pr-pie">'
         + '<button type="button" class="pr-atras" id="prAtras">‹ Atrás</button>'
         + '<button type="button" class="pr-sig" id="prSig"' + (prTodos().length && !prErrorParejas() ? '' : ' disabled') + '>Siguiente ›</button>'
@@ -123,7 +149,11 @@
         + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · ' + prModalTxt(prModal) + ' · hoy</div>'
         + llenos.map((g, i) => (llenos.length > 1 ? '<div class="pr-r-grupo">Grupo ' + (i + 1) + '</div>' : '')
             + g.map((n, k) => (prParejas() && k % 2 === 0 ? '<div class="pr-r-pareja">Pareja ' + LETRA_PAREJA[k / 2] + '</div>' : '')
-              + '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + String(prHcp(n)).replace('.', ',') + '</b></div>').join('')).join('')
+              + (prEsInv(n)
+                  ? '<div class="pr-r-jug"><span>' + prEsc(n) + '<small class="pr-r-inv">invitado</small></span>'
+                    + '<label class="pr-r-hcp">Hcp <input type="text" inputmode="decimal" class="pr-r-hcp-in" data-n="' + prEsc(n) + '" value="' + prHcpTxt(n) + '"></label></div>'
+                  : '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + prHcpTxt(n) + '</b></div>')).join('')).join('')
+        + (prTodos().some(prEsInv) ? '<div class="pr-r-nota">El hándicap del invitado se puede cambiar aquí. Los de la liga salen de la base de datos.</div>' : '')
         + (modoDesdeTexto(prModal) === 'fourball' ? '<div class="pr-r-nota">Cuenta la mejor bola de cada pareja · hándicap al ' + (prPunt === 'matchplay' ? '90' : '85') + ' %</div>' : '')
         + (modoDesdeTexto(prModal) === 'foursome' ? '<div class="pr-r-nota">Una bola por pareja · hándicap de pareja: la mitad de la suma</div>' : '')
         + '</div>'
@@ -154,12 +184,38 @@
     }));
     const inv = document.getElementById('prInvitado');
     if(inv) inv.addEventListener('click', ()=>{
-      const n = (prompt('Nombre y apellido del invitado:') || '').trim().replace(/\s+/g, ' ');
-      if(!n) return;
       if(prElegidos.length >= PR_MAX){ alert('Ya hay ' + PR_MAX + ' jugadores en este grupo. Quita uno primero.'); return; }
-      if(!prInvitados.includes(n) && !FAVORITE_PLAYERS.includes(n)) prInvitados.push(n);
+      prFormInv = true; prPintar();
+      const f = document.getElementById('prInvNombre'); if(f){ f.focus(); f.scrollIntoView({ block:'center' }); }
+    });
+    const invNo = document.getElementById('prInvCancelar');
+    if(invNo) invNo.addEventListener('click', ()=>{ prFormInv = false; prPintar(); });
+    const invOk = document.getElementById('prInvOk');
+    if(invOk) invOk.addEventListener('click', ()=>{
+      const err = document.getElementById('prInvError');
+      const mal = t => { if(err){ err.textContent = t; err.hidden = false; } };
+      const n = (document.getElementById('prInvNombre').value || '').trim().replace(/\s+/g, ' ');
+      const h = prLeerHcp(document.getElementById('prInvHcp').value);
+      if(!n) return mal('Escribe el nombre del invitado.');
+      if(FAVORITE_PLAYERS.includes(n)) return mal('Ese nombre ya está en la liga: elígelo en la lista.');
+      if(h === null) return mal('Escribe su hándicap (un número entre 0 y 54, por ejemplo 18,4).');
+      if(prElegidos.length >= PR_MAX && !prElegidos.includes(n)){ mal('Ya hay ' + PR_MAX + ' jugadores en este grupo. Quita uno primero.'); return; }
+      prHcpInv[n] = h;
+      if(!prInvitados.includes(n)) prInvitados.push(n);
       if(!prTodos().includes(n)) prElegidos.push(n);
+      prFormInv = false;
       prPintar();
+    });
+    const invH = document.getElementById('prInvHcp');
+    if(invH) invH.addEventListener('keydown', e => { if(e.key === 'Enter' && invOk) invOk.click(); });
+    body.querySelectorAll('.pr-r-hcp-in').forEach(inp => {
+      const guardar = ()=>{
+        const h = prLeerHcp(inp.value);
+        if(h === null){ inp.classList.add('mal'); return; }
+        inp.classList.remove('mal'); prHcpInv[inp.dataset.n] = h;
+      };
+      inp.addEventListener('input', guardar);
+      inp.addEventListener('blur', ()=>{ guardar(); if(!inp.classList.contains('mal')) inp.value = prHcpTxt(inp.dataset.n); });
     });
     const cp = document.getElementById('prCambiarParejas');
     if(cp) cp.addEventListener('click', ()=>{
@@ -204,6 +260,8 @@
     const campo = COURSES.find(c => c.id === prCampo);
     const llenos = prGrupos.filter(g => g.length);
     if(!campo || !llenos.length) return;
+    const malHcp = document.querySelector('#prBody .pr-r-hcp-in.mal');
+    if(malHcp){ alert('Revisa el hándicap del invitado: tiene que ser un número entre 0 y 54.'); malHcp.focus(); return; }
     btn.dataset.busy = '1'; btn.textContent = 'Creando…';
 
     selectCourse(campo);
