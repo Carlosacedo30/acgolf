@@ -11,6 +11,7 @@
   let prInvitados = []; // nombres escritos a mano
   let prHcpInv = {};    // hándicap de cada invitado (lo escribe quien crea la partida)
   let prFormInv = false; // cajita de "Añadir un invitado" abierta
+  let prBarras = {};    // barra de salida de cada jugador (si no se elige: amarillas)
   // Opciones de la partida, elegidas con teclas dentro de la partida rápida
   let prPunt = 'strokeplay';   // 'strokeplay' | 'stableford' | 'matchplay'
   let prHoyos = 18;            // 9 | 18
@@ -51,6 +52,24 @@
     const h = Number(FAVORITE_HANDICAPS[n]); return isNaN(h) ? 0 : h;
   }
   const prHcpTxt = n => String(prHcp(n)).replace('.', ',');
+  // --- Barra de salida de cada jugador (solo si la versión la tiene activada: window.acgolfBarras) ---
+  // Por parejas no se elige: se juega desde amarillas.
+  const PR_BARRA_TXT = { blancas:'Blancas', amarillas:'Amarillas', azules:'Azules', rojas:'Rojas' };
+  const prBarrasOn = () => !!window.acgolfBarras && !prParejas() && typeof BARRAS_SALIDA !== 'undefined';
+  const prBarra = n => (typeof BARRAS_SALIDA !== 'undefined' && BARRAS_SALIDA.includes(prBarras[n])) ? prBarras[n] : 'amarillas';
+  function prRecibe(n){
+    const campo = COURSES.find(c => c.id === prCampo);
+    return typeof hcpCampo === 'function' ? hcpCampo(prHcp(n), campo, prBarra(n)) : Math.round(prHcp(n));
+  }
+  function prBarraHtml(n){
+    if(!prBarrasOn()) return '';
+    const campo = COURSES.find(c => c.id === prCampo);
+    if(!campo || !campo.tees) return '';
+    const b = prBarra(n);
+    return '<div class="pr-r-barra pr-b-' + b + '"><label>Sale de <select class="pr-barra-sel" data-n="' + prEsc(n) + '">'
+      + BARRAS_SALIDA.filter(x => campo.tees[x]).map(x => '<option value="' + x + '"' + (x === b ? ' selected' : '') + '>' + PR_BARRA_TXT[x] + '</option>').join('')
+      + '</select></label><span class="pr-r-rec" data-n="' + prEsc(n) + '">Recibe <b>' + prRecibe(n) + '</b></span></div>';
+  }
   // Lee un hándicap escrito a mano (acepta coma o punto). Devuelve null si no vale.
   function prLeerHcp(v){
     const t = String(v == null ? '' : v).trim().replace(',', '.');
@@ -67,7 +86,7 @@
 
   function prAbrir(){
     const ov = document.getElementById('prOverlay'); if(!ov) return;
-    prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false;
+    prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false; prBarras = {};
     if(window.acgolfTorneo) window.acgolfTorneo.con = true;
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
     const yo = prYo();
@@ -165,7 +184,7 @@
               + (prEsInv(n)
                   ? '<div class="pr-r-jug"><span>' + prEsc(n) + '<small class="pr-r-inv">invitado</small></span>'
                     + '<label class="pr-r-hcp">Hcp <input type="text" inputmode="decimal" class="pr-r-hcp-in" data-n="' + prEsc(n) + '" value="' + prHcpTxt(n) + '"></label></div>'
-                  : '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + prHcpTxt(n) + '</b></div>')).join('')).join(''))
+                  : '<div class="pr-r-jug"><span>' + prEsc(n) + '</span><b>Hcp ' + prHcpTxt(n) + '</b></div>') + prBarraHtml(n)).join('')).join(''))
         + (prTodos().some(prEsInv) ? '<div class="pr-r-nota">El hándicap del invitado se puede cambiar aquí. Los de la liga salen de la base de datos.</div>' : '')
         + (modoDesdeTexto(prModal) === 'fourball' ? '<div class="pr-r-nota">Cuenta la mejor bola de cada pareja · hándicap al ' + (prPunt === 'matchplay' ? '90' : '85') + ' %</div>' : '')
         + (modoDesdeTexto(prModal) === 'foursome' ? '<div class="pr-r-nota">Una bola por pareja · hándicap de pareja: la mitad de la suma</div>' : '')
@@ -226,10 +245,17 @@
         const h = prLeerHcp(inp.value);
         if(h === null){ inp.classList.add('mal'); return; }
         inp.classList.remove('mal'); prHcpInv[inp.dataset.n] = h;
+        body.querySelectorAll('.pr-r-rec').forEach(r => { if(r.dataset.n === inp.dataset.n) r.innerHTML = 'Recibe <b>' + prRecibe(inp.dataset.n) + '</b>'; });
       };
       inp.addEventListener('input', guardar);
       inp.addEventListener('blur', ()=>{ guardar(); if(!inp.classList.contains('mal')) inp.value = prHcpTxt(inp.dataset.n); });
     });
+    body.querySelectorAll('.pr-barra-sel').forEach(sel => sel.addEventListener('change', ()=>{
+      prBarras[sel.dataset.n] = sel.value;
+      const caja = sel.closest('.pr-r-barra');
+      if(caja) caja.className = 'pr-r-barra pr-b-' + prBarra(sel.dataset.n);
+      body.querySelectorAll('.pr-r-rec').forEach(r => { if(r.dataset.n === sel.dataset.n) r.innerHTML = 'Recibe <b>' + prRecibe(sel.dataset.n) + '</b>'; });
+    }));
     const cp = document.getElementById('prCambiarParejas');
     if(cp) cp.addEventListener('click', ()=>{
       // Rota las 3 combinaciones posibles: (1-2)(3-4) → (1-3)(2-4) → (1-4)(2-3) → vuelta a empezar
@@ -300,6 +326,7 @@
       const nombres = llenos[i] || [];
       g.players = nombres.slice();
       g.handicaps = nombres.map(prHcp);
+      if(prBarrasOn() && nombres.length) g.barras = nombres.map(prBarra); else delete g.barras;
       g.scores = {};
       delete g.modo; delete g.parejas;
     });

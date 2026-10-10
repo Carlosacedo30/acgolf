@@ -36,7 +36,7 @@ python3 - <<'EOF'
 import re
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
-s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>', 1)
+s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>\n<script>window.acgolfBarras = true; /* elegir barra de salida de cada jugador */</script>', 1)
 s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=13">\n</head>', 1)
 s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="portada.js?v=4"></script>\n<script src="cuenta.js?v=13"></script>', s, count=1)
 # La pantalla blanca y el resumen tienen que ir DESPUÉS del marcador: se quitan de su sitio y se ponen tras él

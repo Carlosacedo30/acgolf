@@ -33,25 +33,42 @@
     if(modoPartida() !== 'fourball') return 1;
     return (typeof scoringType !== 'undefined' && scoringType === 'matchplay') ? 0.9 : 0.85;
   }
-  // Dificultad oficial de cada campo de la liga (barras amarillas). Hato Verde ya con el hoyo 6 de par 3.
-  // Debe coincidir con la función hcp_campo de la base de datos.
-  const CAMPO_DIFICULTAD = { 'hato-verde': { cr: 68.3, sl: 122 }, 'zaudin': { cr: 70.5, sl: 133 } };
-  // Hándicap de campo (regla oficial): hándicap × slope ÷ 113 + (rating − par). Sin datos del campo, el hándicap tal cual.
-  function hcpCampo(h, curso){
+  // Barras de salida. Cada grupo puede guardar "barras" (una por jugador, en el orden de "players").
+  // Sin barra guardada se juega desde amarillas (la de siempre de la liga).
+  // Debe coincidir con las funciones campo_rating / campo_slope / hcp_campo de la base de datos.
+  const BARRAS_SALIDA = ['blancas', 'amarillas', 'azules', 'rojas'];
+  const BARRA_DEFECTO = 'amarillas';
+  function barraDe(g, i){
+    if(!g || (g.modo && g.modo !== 'individual')) return BARRA_DEFECTO; // por parejas: amarillas
+    const b = Array.isArray(g.barras) ? g.barras[i] : null;
+    return BARRAS_SALIDA.includes(b) ? b : BARRA_DEFECTO;
+  }
+  // Rating y slope oficiales de un campo y una barra (de "tees" en data.js). null si el campo no los tiene.
+  function dificultadCampo(curso, barra){
+    const real = curso && (typeof COURSES !== 'undefined' ? COURSES.find(x => x.id === curso.id) : null);
+    const tees = (real && real.tees) || (curso && curso.tees);
+    return tees ? (tees[barra] || tees[BARRA_DEFECTO] || null) : null;
+  }
+  // Hándicap de campo (regla oficial): hándicap × slope ÷ 113 + (rating − par), con el rating y slope
+  // de la barra desde la que sale el jugador. Sin datos del campo, el hándicap tal cual.
+  function hcpCampo(h, curso, barra){
     const v = Number(h) || 0;
     const c = curso || (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
-    const d = c && CAMPO_DIFICULTAD[c.id];
+    const d = c && dificultadCampo(c, barra || BARRA_DEFECTO);
     if(!d || !Array.isArray(c.par)) return v;
     const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0);
-    return Math.round(v * d.sl / 113 + (d.cr - par));
+    return Math.round(v * d.slope / 113 + (d.rating - par));
   }
-  // Hándicap con el que se juega de verdad: el del campo y, encima, el porcentaje de la modalidad
-  function ajusteHcp(h){
-    const v = hcpCampo(h);
+  // Hándicap con el que se juega de verdad: el del campo (según su barra) y, encima, el porcentaje de la modalidad
+  function ajusteHcp(h, barra){
+    const v = hcpCampo(h, null, barra);
     const f = factorHcpModo();
     return f === 1 ? v : Math.round(v * f * 10) / 10;
   }
-  function hcpJuego(pIndex){ return ajusteHcp(playerHandicaps[pIndex]); }
+  function hcpJuego(pIndex){
+    const g = (typeof matchGroups !== 'undefined' && typeof activeGroup !== 'undefined') ? matchGroups[activeGroup] : null;
+    return ajusteHcp(playerHandicaps[pIndex], barraDe(g, pIndex));
+  }
   // Parejas de un grupo en Fourball: [[0,1],[2,3]] (solo las posiciones con jugador)
   function parejasFourball(lista){
     const n = (lista || []).filter(Boolean).length;

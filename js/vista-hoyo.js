@@ -26,7 +26,7 @@
   // Junta a TODOS los jugadores de los 4 grupos de la partida, no solo el grupo activo.
   // En Mejor bola (Fourball) compite cada pareja: en cada hoyo cuenta el mejor resultado neto de los dos.
   // En Foursome cada "jugador" ya es una pareja (una sola bola), así que funciona igual que individual.
-  function netosHoyo(scoresJugador, hcp){
+  function netosHoyo(scoresJugador, hcp, barra){
     const par = selectedCourse ? selectedCourse.par : [];
     const siArr = selectedCourse ? selectedCourse.hcp : [];
     const out = [];
@@ -34,7 +34,7 @@
       const golpes = parseInt((scoresJugador || {})[h], 10);
       if(isNaN(golpes) || golpes <= 0){ out.push(null); continue; }
       const holePar = par[h - 1];
-      const netHole = golpes - strokesForHole(ajusteHcp(hcp), siArr[h - 1]);
+      const netHole = golpes - strokesForHole(ajusteHcp(hcp, barra), siArr[h - 1]);
       out.push({ golpes, par: holePar, diff: netHole - holePar, pts: stablefordPoints(netHole - holePar) });
     }
     return out;
@@ -44,7 +44,7 @@
     matchGroups.forEach((group, gIndex)=>{
       if(!group.players || !group.players.length) return;
       const scores = gIndex === activeGroup ? collectGroupScores() : (group.scores || {});
-      const hoyosDe = pIndex => netosHoyo(scores[pIndex], (group.handicaps && group.handicaps[pIndex]) || 0);
+      const hoyosDe = pIndex => netosHoyo(scores[pIndex], (group.handicaps && group.handicaps[pIndex]) || 0, barraDe(group, pIndex));
       if(group.modo === 'fourball'){
         parejasFourball(group.players).forEach((par, k)=>{
           const lineas = par.map(hoyosDe);

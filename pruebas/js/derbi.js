@@ -157,7 +157,7 @@
       let hoyosMax = 0;
       (data.match_groups || []).forEach(g => (g.players || []).forEach((n, i) => {
         if(!n) return;
-        const sc = (g.scores || {})[i] || {}; const h = hcpCampo(Number((g.handicaps || [])[i]) || 0, { id: data.course_id, par });
+        const sc = (g.scores || {})[i] || {}; const h = hcpCampo(Number((g.handicaps || [])[i]) || 0, { id: data.course_id, par }, barraDe(g, i));
         let dif = 0, jugados = 0;
         for(let k = 1; k <= 18; k++){
           const gl = parseInt(sc[k], 10); if(isNaN(gl) || gl <= 0) continue;

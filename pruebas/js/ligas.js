@@ -183,7 +183,7 @@ async function ligaResultados(l){
       if(golpes.length < 18) return; // solo cuentan las tarjetas completas
       const hcp = Number((g.handicaps || [])[i]) || 0;
       const bruto = golpes.reduce((a, b) => a + b, 0);
-      const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso) : Math.round(hcp);
+      const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined) : Math.round(hcp);
       filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp });
     }));
     filas.sort((a, b) => a.neto - b.neto || a.hcp - b.hcp);

@@ -1032,6 +1032,16 @@
   .pr-r-hcp{ display:flex; align-items:center; gap:8px; color:#E8C45A; font-weight:700; white-space:nowrap; }
   .pr-r-hcp-in{ width:84px; min-height:46px; padding:6px 8px; border:2px solid #D4AF37; border-radius:10px; background:#0E1F3D; color:#F6F1E4; font:700 20px 'Barlow', sans-serif; text-align:center; }
   .pr-r-hcp-in.mal{ border-color:#F2B8A0; background:#4A1F1F; }
+  /* Barra de salida de cada jugador (partida rápida) */
+  .pr-r-barra{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:0 0 10px; font-size:17px; color:#F6F1E4; }
+  .pr-r-barra label{ display:flex; align-items:center; gap:8px; }
+  .pr-barra-sel{ min-height:46px; padding:6px 10px; border:2px solid #D4AF37; border-radius:10px; background:#0E1F3D; color:#F6F1E4; font:700 18px 'Barlow', sans-serif; border-left-width:12px; }
+  .pr-b-blancas .pr-barra-sel{ border-left-color:#F4F4F4; }
+  .pr-b-amarillas .pr-barra-sel{ border-left-color:#F2C200; }
+  .pr-b-azules .pr-barra-sel{ border-left-color:#2F6FE0; }
+  .pr-b-rojas .pr-barra-sel{ border-left-color:#D23B2E; }
+  .pr-r-rec{ white-space:nowrap; }
+  .pr-r-rec b{ color:#E8C45A; font-size:20px; }
   .pr-empezar{ display:block; width:100%; min-height:76px; margin-top:16px; border:none; border-radius:18px; background:#D4AF37; color:#0E1F3D; font:800 26px 'Barlow', sans-serif; text-transform:uppercase; cursor:pointer; }
 
   /* Medallas de la liga (js/medallas.js) */

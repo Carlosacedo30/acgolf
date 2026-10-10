@@ -36,6 +36,7 @@
       };
       if(g && g.modo && g.modo !== 'individual') out.modo = g.modo; // modalidad por parejas
       if(g && Array.isArray(g.parejas)) out.parejas = g.parejas;   // foursome: quién forma cada pareja
+      if(g && Array.isArray(g.barras)) out.barras = g.barras;     // barra de salida de cada jugador
       if(g && Number(g.hoyoSalida) > 1 && Number(g.hoyoSalida) <= 18) out.hoyoSalida = Number(g.hoyoSalida); // salida al tiro
       return out;
     });
