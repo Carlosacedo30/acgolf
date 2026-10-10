@@ -17,6 +17,13 @@
   } catch(e){}
   const invitacion = () => { try { return localStorage.getItem('acgolfInvitacion') || ''; } catch(e){ return ''; } };
   const olvidarInvitacion = () => { try { localStorage.removeItem('acgolfInvitacion'); } catch(e){} };
+  // Código de administrador (lo manda el super administrador): ?admin=ADM-XXXXXX
+  try {
+    const adm = new URLSearchParams(location.search).get('admin');
+    if(adm){ localStorage.setItem('acgolfCodigoAdmin', adm.trim().toUpperCase()); history.replaceState(null, '', location.pathname); }
+  } catch(e){}
+  const codigoAdmin = () => { try { return localStorage.getItem('acgolfCodigoAdmin') || ''; } catch(e){ return ''; } };
+  const olvidarCodigoAdmin = () => { try { localStorage.removeItem('acgolfCodigoAdmin'); } catch(e){} };
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const $ = id => document.getElementById(id);
@@ -211,6 +218,70 @@
     });
   }
 
+  // Usar un código de administrador: crear el grupo nuevo o hacerse administrador del grupo del código
+  async function pantallaCodigoAdmin(email, perfil, codigo){
+    const volver = () => { olvidarCodigoAdmin(); perfil ? pantallaMisGrupos(perfil) : pantallaBienvenida(email); };
+    if(!codigo){
+      mostrar(cabecera('Código de administrador', 'Para crear un grupo hace falta un código. Te lo manda Carlos, el administrador de acgolf.')
+        + '<label class="cg-lbl">Tu código<small>Empieza por ADM-</small><input id="caCodigo" type="text" autocapitalize="characters" maxlength="40" placeholder="ADM-"></label>'
+        + '<div id="cgMsg" class="cg-msg"></div>'
+        + '<button type="button" class="cg-btn" id="caSeguir">Seguir</button>'
+        + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
+      $('cgVolver').onclick = volver;
+      $('caSeguir').onclick = () => {
+        let c = $('caCodigo').value.trim().toUpperCase().replace(/.*ADMIN=/, '');
+        if(!c){ msg('Escribe el código.'); return; }
+        if(!/^ADM-/.test(c)) c = 'ADM-' + c.replace(/^ADM/, '');
+        try { localStorage.setItem('acgolfCodigoAdmin', c); } catch(e){}
+        pantallaCodigoAdmin(email, perfil, c);
+      };
+      return;
+    }
+    mostrar(cabecera('Comprobando el código…', ''));
+    let info = null;
+    try { const r = await client.rpc('info_codigo_admin', { p_codigo: codigo }); if(r.error) throw r.error; info = r.data; } catch(e){}
+    if(!info || !info.valido){
+      const porque = !info ? 'Ese código no existe. Revisa que esté bien escrito.' : info.usado ? 'Ese código ya se ha usado. Pide otro a Carlos.' : 'Ese código ha caducado. Pide otro a Carlos.';
+      mostrar(cabecera('Ese código no vale', porque)
+        + '<button type="button" class="cg-btn" id="caOtro">Escribir otro código</button>'
+        + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
+      $('caOtro').onclick = () => { olvidarCodigoAdmin(); pantallaCodigoAdmin(email, perfil, ''); };
+      $('cgVolver').onclick = volver;
+      return;
+    }
+    const sinCuenta = !perfil;
+    const nuevo = info.nuevo;
+    mostrar(cabecera(nuevo ? 'Crear tu grupo' : 'Administrador de «' + esc(info.grupo) + '»',
+        nuevo ? 'Con este código creas tu grupo y quedas como su administrador. Tendréis vuestra propia liga, hándicaps y caddie.'
+              : 'Con este código pasas a ser administrador de «' + esc(info.grupo) + '».')
+      + (nuevo ? '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Cajapollos</small><input id="cgGrupo" type="text" maxlength="40"></label>' : '')
+      + (nuevo || sinCuenta ? '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
+          + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>' : '')
+      + (sinCuenta ? aceptoHtml : '') + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="caUsar">' + (nuevo ? 'Crear el grupo' : 'Ser administrador') + '</button>'
+      + '<button type="button" class="cg-link" id="cgVolver">Ahora no</button>');
+    $('cgVolver').onclick = volver;
+    $('caUsar').onclick = e => ocupado(e.target, async () => {
+      const grupo = nuevo ? $('cgGrupo').value.trim() : '';
+      const nombre = $('cgNombre') ? $('cgNombre').value.trim() : '';
+      const hcp = $('cgHcp') ? leerHcp('cgHcp') : null;
+      if(nuevo && !grupo){ msg('Ponle un nombre al grupo.'); return; }
+      if($('cgNombre') && !nombre){ msg('Escribe tu nombre.'); return; }
+      if(nuevo && hcp === null){ msg('Escribe tu hándicap.'); return; }
+      if($('cgAcepto') && !$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      const { error } = await client.rpc('usar_codigo_admin', { p_codigo: codigo, p_nombre_grupo: grupo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error){ msg(traducir(error)); return; }
+      olvidarCodigoAdmin(); olvidarInvitacion();
+      location.reload();
+    });
+  }
+
+  // Crear un grupo: el super administrador lo crea directamente; los demás necesitan su código
+  function botonNuevoGrupo(email, perfil){
+    if(perfil && perfil.es_super) pantallaCrearGrupo(email, true);
+    else pantallaCodigoAdmin(email, perfil || null, '');
+  }
+
   // Cuenta nueva sin invitación: empezar gratis (espacio personal), Los Iscariotes o crear un grupo
   function pantallaBienvenida(email){
     mostrar(cabecera('Bienvenido', 'Elige cómo quieres empezar. Solo se hace una vez.')
@@ -222,10 +293,10 @@
       + '<div class="cg-sep">¿Juegas con un grupo de amigos?</div>'
       + '<p class="cg-p" style="font-size:14px;">Si te han mandado un enlace de invitación, ábrelo desde el mensaje y entrarás en tu grupo.</p>'
       + '<button type="button" class="cg-btn ghost" id="cgIscariotes">Soy de Los Iscariotes</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo con liga</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Tengo un código de administrador</button>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
     $('cgIscariotes').onclick = () => pantallaCompletar(email, true);
-    $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(email);
+    $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
     $('cgPersonal').onclick = e => ocupado(e.target, async () => {
       const nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
@@ -254,7 +325,7 @@
       + '<div class="cg-sep">Unirme a otro grupo</div>'
       + '<label class="cg-lbl">Código de invitación<small>Viene al final del enlace que te mandaron</small><input id="cgCodigo" type="text" autocapitalize="characters" maxlength="12"></label>'
       + '<button type="button" class="cg-btn ghost" id="cgUnirme">Unirme</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo con liga</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">' + (perfil.es_super ? 'Crear un grupo con liga' : 'Tengo un código de administrador') + '</button>'
       + (tienePersonal ? '' : '<button type="button" class="cg-btn ghost" id="cgPersonal">Empezar mi espacio personal</button>')
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
@@ -274,7 +345,7 @@
       try { localStorage.setItem('acgolfInvitacion', c); } catch(e){}
       pantallaUnirse(perfil.email, c);
     };
-    $('cgNuevoGrupo').onclick = () => pantallaCrearGrupo(perfil.email, true);
+    $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(perfil.email, perfil);
     const pp = $('cgPersonal'); if(pp) pp.onclick = () => pantallaPersonalExtra(perfil);
   }
 
@@ -316,6 +387,7 @@
   }
 
   async function pantallaCompletar(email, iscariotes){
+    if(codigoAdmin()){ pantallaCodigoAdmin(email, null, codigoAdmin()); return; }
     if(invitacion()){ pantallaUnirse(email, invitacion()); return; }
     if(!iscariotes){ pantallaBienvenida(email); return; }
     mostrar(cabecera('¿Quién eres?', 'Toca tu nombre. Solo se hace una vez.') + '<div class="cg-p">Cargando jugadores…</div>');
@@ -472,11 +544,14 @@
   async function pantallaSuper(perfil, pestana){
     pestana = pestana || 'grupos';
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1></div><p class="cg-p">Cargando…</p>');
-    const r = await client.rpc(pestana === 'grupos' ? 'sa_grupos' : 'sa_usuarios');
+    const r = await client.rpc(pestana === 'grupos' ? 'sa_grupos' : pestana === 'codigos' ? 'sa_codigos_admin' : 'sa_usuarios');
     if(r.error){ mostrar(cabecera('No se pudo abrir', traducir(r.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>'); $('cgCerrar').onclick = ocultar; return; }
     const datos = r.data || [];
     const tabs = '<div class="pa-tabs"><button type="button" data-t="grupos" class="' + (pestana === 'grupos' ? 'on' : '') + '">Grupos</button>'
-      + '<button type="button" data-t="usuarios" class="' + (pestana === 'usuarios' ? 'on' : '') + '">Usuarios</button></div>';
+      + '<button type="button" data-t="usuarios" class="' + (pestana === 'usuarios' ? 'on' : '') + '">Usuarios</button>'
+      + '<button type="button" data-t="codigos" class="' + (pestana === 'codigos' ? 'on' : '') + '">Códigos</button></div>';
+    let gruposLiga = [];
+    if(pestana === 'codigos'){ try { const rg = await client.rpc('sa_grupos'); gruposLiga = (rg.data || []).filter(g => g.tipo !== 'personal'); } catch(e){} }
     let cuerpo = '';
     if(pestana === 'grupos'){
       cuerpo = '<div class="pa-lista">' + datos.map(g => '<div class="pa-fila">'
@@ -489,6 +564,25 @@
         + '<label class="cg-lbl">Nombre del grupo<input id="paNombre" type="text" maxlength="40"></label>'
         + '<label class="cg-lbl">Correo de su administrador<small>Opcional. Tiene que tener ya cuenta en acgolf.</small><input id="paAdmin" type="email" autocapitalize="off"></label>'
         + '<button type="button" class="cg-btn ghost" id="paCrear">Crear el grupo</button>';
+    } else if(pestana === 'codigos'){
+      const estado = c => c.usado_en ? '✅ Usado por ' + esc(c.usado_por || '') + ' el ' + fecha(c.usado_en) + (c.grupo_creado ? ' · «' + esc(c.grupo_creado) + '»' : '')
+        : new Date(c.caduca) <= new Date() ? '⛔ Anulado o caducado' : '⏳ Sin usar · vale hasta el ' + fecha(c.caduca);
+      cuerpo = '<p class="cg-p" style="font-size:16px;">Crea un código y mándaselo a quien quieras hacer administrador. Sirve <b>una sola vez</b> y caduca a los 30 días.</p>'
+        + '<label class="cg-lbl">¿Para qué es?<select id="paCodGrupo"><option value="">Para crear un grupo nuevo</option>'
+        +   gruposLiga.map(g => '<option value="' + esc(g.id) + '">Administrador de «' + esc(g.nombre) + '»</option>').join('') + '</select></label>'
+        + '<label class="cg-lbl">¿Para quién?<small>Una nota para acordarte. Por ejemplo: Paco</small><input id="paCodNota" type="text" maxlength="60"></label>'
+        + '<button type="button" class="cg-btn" id="paCodCrear">Crear código</button>'
+        + '<div id="paCodNuevo"></div>'
+        + '<div class="cg-sep">Códigos creados</div>'
+        + (datos.length ? '<div class="pa-lista">' + datos.map(c => {
+            const vivo = !c.usado_en && new Date(c.caduca) > new Date();
+            return '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(c.codigo) + (c.nota ? ' · ' + esc(c.nota) : '') + '</b>'
+              + '<span>' + (c.grupo && !c.usado_en ? 'Administrador de «' + esc(c.grupo) + '»' : c.usado_en ? '' : 'Para crear un grupo nuevo') + '</span>'
+              + '<span>' + estado(c) + '</span></div>'
+              + (vivo ? '<div class="pa-acc"><button type="button" class="pa-b" data-enviar="' + esc(c.codigo) + '" data-gr="' + esc(c.grupo || '') + '">Enviar</button>'
+                  + '<button type="button" class="pa-b rojo" data-anular="' + esc(c.codigo) + '">Anular</button></div>' : '')
+              + '</div>'; }).join('') + '</div>'
+          : '<p class="cg-p" style="font-size:16px;">Todavía no has creado ninguno.</p>');
     } else {
       cuerpo = '<div class="pa-lista">' + datos.map(u => '<div class="pa-fila">'
           + '<div class="pa-fila-t"><b>' + esc(u.nombre) + (u.super ? ' <em class="pa-super">Super admin</em>' : '') + '</b><span>' + esc(u.email) + '</span>'
@@ -500,7 +594,7 @@
           + '</div></div>').join('') + '</div>';
     }
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1>'
-      + '<p class="cg-sub">' + (pestana === 'grupos' ? datos.length + ' grupos' : datos.length + ' usuarios') + '</p></div>'
+      + '<p class="cg-sub">' + (pestana === 'grupos' ? datos.length + ' grupos' : pestana === 'codigos' ? 'Códigos de administrador' : datos.length + ' usuarios') + '</p></div>'
       + tabs + '<div id="cgMsg" class="cg-msg"></div>' + cuerpo
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
@@ -519,6 +613,34 @@
       const { error } = await client.rpc('sa_crear_grupo', { p_nombre: nombre, p_admin_email: $('paAdmin').value.trim() || null });
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'grupos');
+    });
+    // Códigos de administrador
+    const enviarCodigo = (codigo, grupo) => {
+      const enlace = APP_PRUEBAS + '?admin=' + encodeURIComponent(codigo);
+      const texto = '⛳ Te invito a ser administrador ' + (grupo ? 'de «' + grupo + '» ' : 'de tu propio grupo ') + 'en acgolf, la app de golf entre amigos.\n'
+        + 'Abre este enlace, crea tu cuenta y ' + (grupo ? 'quedarás como administrador:' : 'podrás crear tu grupo:') + '\n' + enlace
+        + '\n\nTu código es ' + codigo + ' (sirve una sola vez).';
+      const box = $('paCodNuevo');
+      box.innerHTML = '<div class="cg-invita"><b>Código ' + esc(codigo) + '</b><div class="cg-enlace">' + esc(enlace) + '</div>'
+        + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
+        + '<button type="button" class="cg-btn ghost" id="paCodCopiar">Copiar el mensaje</button></div>';
+      $('paCodCopiar').onclick = async () => { try { await navigator.clipboard.writeText(texto); msg('Mensaje copiado. Pégalo donde quieras.', true); } catch(e){ prompt('Copia el mensaje:', texto); } };
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    if($('paCodCrear')) $('paCodCrear').onclick = e => ocupado(e.target, async () => {
+      const sel = $('paCodGrupo');
+      const { data, error } = await client.rpc('sa_crear_codigo_admin', { p_grupo: sel.value || null, p_nota: $('paCodNota').value.trim() || null });
+      if(error){ msg(traducir(error)); return; }
+      const grupo = sel.value ? sel.options[sel.selectedIndex].text.replace(/^Administrador de «|»$/g, '') : '';
+      await pantallaSuper(perfil, 'codigos');
+      enviarCodigo(data, grupo);
+    });
+    gate.querySelectorAll('[data-enviar]').forEach(b => b.onclick = () => enviarCodigo(b.dataset.enviar, b.dataset.gr));
+    gate.querySelectorAll('[data-anular]').forEach(b => b.onclick = async () => {
+      if(!confirm('¿Anular el código ' + b.dataset.anular + '?\nYa no servirá para nada.')) return;
+      const { error } = await client.rpc('sa_anular_codigo_admin', { p_codigo: b.dataset.anular });
+      if(error){ msg(traducir(error)); return; }
+      pantallaSuper(perfil, 'codigos');
     });
     gate.querySelectorAll('select[data-u]').forEach(sel => sel.onchange = async () => {
       sel.disabled = true;
@@ -674,6 +796,7 @@
     const { data: perfil, error } = await client.rpc('mi_perfil');
     if(error){ mostrar(cabecera('Sin conexión', traducir(error)) + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
     if(!perfil){ pantallaCompletar(session.user && session.user.email); return; }
+    if(codigoAdmin()){ pantallaCodigoAdmin(perfil.email, perfil, codigoAdmin()); return; }
     if(invitacion()){ pantallaUnirse(perfil.email, invitacion()); return; }
     const eraAdmin = esAdminGuardado();
     let eraYo = ''; try { eraYo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}

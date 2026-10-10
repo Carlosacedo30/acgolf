@@ -79,7 +79,17 @@ begin
     perform _entrar_en_grupo(g, nm, true, p_version);
   else
     g := c.grupo_id;
+    -- cuenta nueva sin ningún grupo: se apunta con su nombre, su hándicap y la privacidad aceptada
+    if not exists (select 1 from perfiles where user_id = auth.uid()) then
+      if coalesce(p_version,'') = '' then raise exception 'Hay que aceptar la política de privacidad'; end if;
+      if nm = '' then raise exception 'Escribe tu nombre'; end if;
+      insert into perfiles (user_id, player_name, es_admin, privacidad_version, grupo_id) values (auth.uid(), nm, true, p_version, g);
+    end if;
     perform _meter_en_grupo(auth.uid(), g, true);
+    if p_hcp is not null and p_hcp between -10 and 54 then
+      update league_players set hcp = coalesce(hcp, round(p_hcp, 1)), hcp_base = coalesce(hcp_base, round(p_hcp, 1))
+        where grupo_id = g and name = (select player_name from miembros where user_id = auth.uid() and grupo_id = g);
+    end if;
     update miembros set es_admin = true where user_id = auth.uid() and grupo_id = g;
     update perfiles set grupo_id = g, player_name = (select player_name from miembros where user_id = auth.uid() and grupo_id = g), es_admin = true
       where user_id = auth.uid();
