@@ -1,0 +1,148 @@
+/* © 2026 Carlos Acedo Domínguez. Pantalla de anotar en blanco (solo esta pantalla; el resto de la app sigue oscura) */
+html.tb-on .screen[data-screen="3"],
+html.tb-on .screen[data-screen="3"] .screen-content{ background:#FFFFFF !important; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] section{ background:transparent !important; box-shadow:none !important; color:#111316; }
+html.tb-on .screen[data-screen="3"] .eyebrow{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .section-sub, html.tb-on .screen[data-screen="3"] .helper-note{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .app-bar{ background:#FFFFFF !important; border-bottom:1px solid #DADFE3 !important; }
+html.tb-on .screen[data-screen="3"] .app-bar .back{ color:#2E7D32 !important; font-weight:800 !important; }
+html.tb-on .screen[data-screen="3"] .hole-strip-section{ display:none !important; }
+
+/* Clasificación */
+html.tb-on .screen[data-screen="3"] .marcador-section{ padding:8px 12px 0 !important; margin:0 !important; }
+.tb-cl{ background:#F2F4F6; border:1px solid #DADFE3; border-radius:16px; padding:6px 4px 4px; }
+.tb-cl-cab, .tb-cl-fila{ display:grid; grid-template-columns:34px minmax(0,1fr) 50px 58px 44px; gap:4px; align-items:center; padding:0 10px; }
+.tb-cl-cab{ font:700 13px 'Barlow', sans-serif; color:#5C6670; letter-spacing:.5px; padding-bottom:4px; }
+.tb-cl-cab span:nth-child(n+3){ text-align:right; }
+.tb-cl-fila{ width:100%; min-height:46px; border:none; border-radius:12px; background:transparent; color:#111316; text-align:left; cursor:pointer; font-family:'Barlow', sans-serif; margin-bottom:2px; }
+.tb-cl-fila:disabled{ cursor:default; color:#111316; }
+.tb-cl-fila.on{ background:#E4F5B5; }
+.tb-cl-pos{ font:800 18px 'Barlow Condensed', 'Barlow', sans-serif; color:#4A535C; }
+.tb-cl-n{ display:flex; flex-direction:column; min-width:0; }
+.tb-cl-n b{ font-size:18px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tb-cl-n b small{ font-size:13px; color:#5C6670; font-weight:700; }
+.tb-cl-n > small{ font-size:13px; font-weight:600; color:#5C6670; }
+.tb-cl-g, .tb-cl-h{ font:700 20px 'Barlow Condensed', 'Barlow', sans-serif; text-align:right; }
+.tb-cl-h{ font-size:18px; color:#4A535C; }
+.tb-cl-p{ font:800 22px 'Barlow Condensed', 'Barlow', sans-serif; text-align:right; color:#4A535C; }
+.tb-cl-p.bajo{ color:#D92D20; }
+.tb-cl-p.par{ color:#111316; }
+.tb-cl-fila.lider .tb-cl-pos::after{ content:''; }
+
+/* Mapa y distancia */
+html.tb-on .screen[data-screen="3"] .green-arriba, html.tb-on .screen[data-screen="3"] .hole-map-card{ background:#F2F4F6 !important; border:1px solid #DADFE3; border-radius:14px; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hole-map-info .k, html.tb-on .screen[data-screen="3"] .hole-map-info .hint{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .hole-map-info .dist{ color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .gps-btn{ background:#2E7D32 !important; color:#FFFFFF !important; }
+
+/* Cabecera del hoyo con flechas grandes */
+html.tb-on .screen[data-screen="3"] .hole-badge-big{ background:transparent !important; box-shadow:none !important; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hole-badge-big .hoyo-num{ color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hole-badge-big .hoyo-lbl{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .hole-meta-item .k{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .hole-meta-item .v{ color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hole-meta-item{ background:#F2F4F6 !important; border-color:#DADFE3 !important; }
+html.tb-on .screen[data-screen="3"] .hole-nav-btn{
+  width:64px !important; height:64px !important; min-width:64px; border-radius:50% !important; border:none !important;
+  background:#2E7D32 !important; color:#FFFFFF !important; font:800 38px/1 'Barlow Condensed', 'Barlow', sans-serif !important;
+  display:flex !important; align-items:center; justify-content:center; padding-bottom:4px; box-shadow:0 3px 0 #1B5E20 !important; cursor:pointer;
+}
+html.tb-on .screen[data-screen="3"] .hole-nav-btn.disabled{ background:#E3E7EA !important; color:#9AA3AB !important; box-shadow:none !important; }
+
+/* Jugadores */
+html.tb-on .screen[data-screen="3"] .hv-cell{ background:#F2F4F6 !important; border:1px solid #DADFE3 !important; box-shadow:none !important; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell.lead, html.tb-on .screen[data-screen="3"] .hv-cell.cuenta{ box-shadow:inset 0 0 0 2px #2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .hv-n{ color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hv-h, html.tb-on .screen[data-screen="3"] .hv-pos{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .hv-tp{ background:transparent !important; color:#4A535C !important; padding-left:0 !important; }
+html.tb-on .screen[data-screen="3"] .hv-tp b{ color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .hv-tp .gr-pips i{ background:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box{ background:#FFFFFF !important; border:2px dashed #9AA3AB !important; color:#111316 !important; border-radius:12px !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box.filled{ border-style:solid !important; border-color:#8A939B !important; }
+html.tb-on .screen[data-screen="3"] .result-box{ color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .hv-pareja{ box-shadow:inset 0 0 0 1.5px #DADFE3 !important; }
+html.tb-on .screen[data-screen="3"] .hv-pareja-h span{ color:#2E7D32 !important; }
+
+/* Colores del resultado en la casilla (como en la tele) */
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box.tb-eagle, html.tb-on .screen[data-screen="3"] .mk-box.tb-eagle{ background:#F5B83D !important; color:#111316 !important; border:none !important; border-radius:50% !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box.tb-birdie, html.tb-on .screen[data-screen="3"] .mk-box.tb-birdie{ background:#E5484D !important; color:#FFFFFF !important; border:none !important; border-radius:50% !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box.tb-par, html.tb-on .screen[data-screen="3"] .mk-box.tb-par{ background:#FFFFFF !important; color:#111316 !important; border:2px solid #8A939B !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box.tb-bogey, html.tb-on .screen[data-screen="3"] .mk-box.tb-bogey{ background:#8DB8FF !important; color:#111316 !important; border:none !important; }
+html.tb-on .screen[data-screen="3"] .hv-cell .stroke-box.tb-doble, html.tb-on .screen[data-screen="3"] .mk-box.tb-doble{ background:#2F5BD3 !important; color:#FFFFFF !important; border:none !important; }
+
+/* Marcador (validación cruzada) en blanco */
+html.tb-on .screen[data-screen="3"] .mk-col, html.tb-on .screen[data-screen="3"] .mk-elegir{ background:#F2F4F6 !important; border-color:#DADFE3; }
+html.tb-on .screen[data-screen="3"] .mk-col.ok{ border-color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .mk-col.mal{ border-color:#C2410C !important; background:#FFF1EA !important; }
+html.tb-on .screen[data-screen="3"] .mk-n, html.tb-on .screen[data-screen="3"] .mk-tit, html.tb-on .screen[data-screen="3"] .mk-q{ color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .mk-sub, html.tb-on .screen[data-screen="3"] .mk-st, html.tb-on .screen[data-screen="3"] .mk-p{ color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .mk-col.ok .mk-st{ color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .mk-col.mal .mk-st{ color:#C2410C !important; }
+html.tb-on .screen[data-screen="3"] .mk-tp{ background:transparent !important; color:#4A535C !important; }
+html.tb-on .screen[data-screen="3"] .mk-tp b{ color:#2E7D32; }
+html.tb-on .screen[data-screen="3"] .mk-box{ background:#FFFFFF !important; border:2px dashed #9AA3AB !important; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .mk-op{ background:#FFFFFF !important; border-color:#C9CED3 !important; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .mk-op.on{ border-color:#2E7D32 !important; box-shadow:inset 0 0 0 1px #2E7D32 !important; background:#E4F5B5 !important; }
+html.tb-on .screen[data-screen="3"] .mk-op.on::after{ color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .mk-btn{ background:#2E7D32 !important; color:#FFFFFF !important; }
+html.tb-on .screen[data-screen="3"] .mk-solo{ background:#FFF1EA !important; border-color:#C2410C !important; color:#111316 !important; }
+
+/* Caddie */
+html.tb-on .screen[data-screen="3"] .ch-bocadillo{ background:#F2F4F6 !important; color:#111316 !important; border-color:#DADFE3 !important; }
+html.tb-on .screen[data-screen="3"] .ch-quien, html.tb-on .screen[data-screen="3"] .ch-cab{ color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .ch-campo{ color:#4A535C !important; }
+
+/* Media tarjeta */
+.tb-tira-sec{ padding:8px 12px 0 !important; margin:0 !important; }
+.tb-tira-cab{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding:0 2px; }
+.tb-tira-cab b{ font:800 14px 'Barlow', sans-serif; color:#2A3036; letter-spacing:.5px; }
+.tb-ver{ border:none; background:transparent; color:#2E7D32; font:800 15px 'Barlow', sans-serif; cursor:pointer; padding:4px; min-height:44px; }
+.tb-bloque{ background:#FFFFFF; border:1px solid #DADFE3; border-radius:14px; overflow:hidden; margin-bottom:8px; }
+.tb-r{ display:grid; grid-template-columns:50px repeat(9, minmax(0,1fr)) 38px; align-items:center; text-align:center; }
+.tb-lbl{ text-align:left; padding-left:8px; }
+.tb-r-h{ background:#2E7D32; color:#FFFFFF; font:800 15px/30px 'Barlow Condensed', 'Barlow', sans-serif; }
+.tb-h{ border:none; background:transparent; color:#FFFFFF; font:inherit; padding:0; min-height:30px; cursor:pointer; }
+.tb-h.actual{ background:#C6F24E; color:#111316; }
+.tb-r-p{ font:700 15px/26px 'Barlow Condensed', 'Barlow', sans-serif; color:#2A3036; }
+.tb-r-g{ padding:3px 0 6px; border-top:1px solid #DADFE3; }
+.tb-r-g .tb-lbl{ font:800 14px 'Barlow', sans-serif; }
+.tb-r-g > span{ display:flex; justify-content:center; }
+.tb-r-g > span.tb-lbl{ display:block; }
+.tb-tot{ font:700 15px 'Barlow Condensed', 'Barlow', sans-serif; }
+.tb-tot.b{ font-size:18px; font-weight:800; justify-content:center; }
+.tb-m{ font-style:normal; display:inline-flex; align-items:center; justify-content:center; box-sizing:border-box; width:26px; height:26px; border-radius:6px; font:800 16px 'Barlow Condensed', 'Barlow', sans-serif; color:#111316; }
+.tb-m.tb-eagle{ background:#F5B83D; border-radius:50%; }
+.tb-m.tb-birdie{ background:#E5484D; color:#FFFFFF; border-radius:50%; }
+.tb-m.tb-bogey{ background:#8DB8FF; }
+.tb-m.tb-doble{ background:#2F5BD3; color:#FFFFFF; }
+.tb-pista{ margin:0 2px 4px; font:600 14px 'Barlow', sans-serif; color:#5C6670; }
+
+/* Leyenda */
+.tb-leyenda{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px 12px; padding:2px 12px 10px; font:700 13px 'Barlow', sans-serif; color:#4A535C; }
+.tb-leyenda span{ display:flex; align-items:center; gap:5px; }
+.tb-leyenda i{ width:16px; height:16px; border-radius:4px; display:inline-block; }
+.tb-leyenda i.tb-eagle{ background:#F5B83D; border-radius:50%; }
+.tb-leyenda i.tb-birdie{ background:#E5484D; border-radius:50%; }
+.tb-leyenda i.tb-par{ border:2px solid #8A939B; box-sizing:border-box; }
+.tb-leyenda i.tb-bogey{ background:#8DB8FF; }
+.tb-leyenda i.tb-doble{ background:#2F5BD3; }
+html:not(.tb-on) .tb-leyenda, .screen:not([data-screen="3"]) .tb-leyenda{ display:none; }
+
+/* Lo de abajo (tarjetas completas, resultado de la ronda) también en blanco */
+html.tb-on .screen[data-screen="3"] .toggle-grid-lbl{ color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .tj-card{ border-top-color:#DADFE3 !important; }
+html.tb-on .screen[data-screen="3"] .tj-h, html.tb-on .screen[data-screen="3"] .tj-sub span, html.tb-on .screen[data-screen="3"] .tj-hcp, html.tb-on .screen[data-screen="3"] .tj-quien-mb{ color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .actions{ background:#FFFFFF !important; border-top:1px solid #DADFE3; }
+
+/* Teclado de golpes en blanco */
+html.tb-on .np-sheet, html.tb-on .np-card{ background:#FFFFFF !important; color:#111316 !important; border-top-color:#2E7D32 !important; }
+html.tb-on .np-sheet *, html.tb-on .np-card *{ color:#111316; }
+html.tb-on .np-key{ background:#FFFFFF !important; border:2px solid #C9CED3 !important; color:#111316 !important; }
+html.tb-on .np-key.is-par{ background:#C6F24E !important; border-color:#C6F24E !important; color:#111316 !important; }
+html.tb-on .screen[data-screen="3"] .actions .btn.ghost{ color:#111316 !important; border-color:#8A939B !important; background:#FFFFFF !important; }
+html.tb-on .screen[data-screen="3"] .actions .btn.primary{ background:#2E7D32 !important; border-color:#2E7D32 !important; color:#FFFFFF !important; }
+html.tb-on .screen[data-screen="3"] .gps-admin-btn{ color:#2E7D32 !important; border-color:#2E7D32 !important; }
+html.tb-on .screen[data-screen="3"] .marcador-section{ padding-top:44px !important; }
+html.tb-on .screen[data-screen="3"] .result-box:not([class*="r-"]){ background:#FFFFFF !important; border:2px solid #DADFE3 !important; color:#9AA3AB !important; }
+html.tb-on .screen[data-screen="3"] .result-box{ box-shadow:none !important; }
+.tb-m.tb-par{ border:1.5px solid #8A939B; }
