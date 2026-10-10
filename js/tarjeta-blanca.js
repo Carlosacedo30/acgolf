@@ -9,6 +9,7 @@
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   let tbDe = null;          // jugador (índice en el grupo activo) cuya tarjeta se ve abajo
   let tbEntera = false;     // ver la tarjeta entera (ida y vuelta)
+  let tbCompleta = false;   // con 5 o más jugadores: ver la clasificación de todos (si no, solo tu grupo)
 
   const inp = (h, i) => document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + i + '"]');
   const golpesDe = (h, i) => { const x = inp(h, i); const v = x ? parseInt(x.value, 10) : NaN; return isNaN(v) || v <= 0 ? null : v; };
@@ -67,7 +68,11 @@
     const pagan = jugados.length >= 2 ? Math.floor(jugados.length / 2) : 0;
     const pagaCerveza = s => pagan > 0 && jugados.indexOf(s) >= jugados.length - pagan;
     window.tbPaganCervezas = jugados.slice(jugados.length - pagan).map(s => s.name);
-    const filas = lista.slice(0, 12).map((s, k) => {
+    // Con 5 o más jugadores, de entrada solo se ven los de tu grupo (con su puesto entre todos)
+    const recortar = lista.length >= 5 && variosGrupos && !tbCompleta;
+    const ver = recortar ? lista.filter(s => s.group === activeGroup) : lista;
+    const filas = ver.slice(0, 16).map((s) => {
+      const k = lista.indexOf(s);
       const jugado = s.holesFilled > 0;
       const birra = pagaCerveza(s);
       const pos = jugado ? String(k + 1) : ''; // sin empates: a igual resultado, gana el hándicap más bajo (ya viene ordenado así)
@@ -84,7 +89,10 @@
         + '<span class="tb-cl-h">' + s.holesFilled + '</span></button>';
     }).join('');
     box.innerHTML = '<div class="tb-cl"><div class="tb-cl-cab"><span>#</span><span>JUGADOR · HCP</span><span>GOLPES</span><span>' + (sf ? 'PUNTOS' : 'AL PAR') + '</span><span>HOYOS</span></div>' + filas
+      + (lista.length >= 5 && variosGrupos ? '<button type="button" class="tb-cl-todos" id="tbClTodos">' + (tbCompleta ? 'Ver solo mi grupo ▴' : 'Ver clasificación completa (' + lista.length + ') ▾') + '</button>' : '')
       + '</div>';
+    const todos = document.getElementById('tbClTodos');
+    if(todos) todos.addEventListener('click', () => { tbCompleta = !tbCompleta; renderHoleView(); });
     box.querySelectorAll('.tb-cl-fila[data-p]').forEach(b => b.addEventListener('click', () => { tbDe = +b.dataset.p; renderHoleView(); }));
   };
 

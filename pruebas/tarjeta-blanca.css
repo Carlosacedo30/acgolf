@@ -204,3 +204,4 @@ html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box.tb-eagle, ht
 html.tb-on .screen[data-screen="3"] #hvPlayers .hv-scores{ gap:5px !important; }
 html.tb-on .screen[data-screen="3"] .actions{ padding-top:8px !important; padding-bottom:8px !important; }
 html.tb-on .screen[data-screen="3"] #finalizarRondaBtn{ min-height:52px !important; }
+.tb-cl-todos{ display:block; width:100%; min-height:40px; border:none; border-top:1px solid #DADFE3; background:transparent; color:#2E7D32; font:800 15px 'Barlow', sans-serif; cursor:pointer; margin-top:2px; }
