@@ -1,0 +1,6 @@
+-- 2026-10-10 · PRUEBAS: la copia automática desde la liga ya no se para por una tarjeta entregada
+-- 1) rounds_proteger(): primera línea añadida
+--      if current_setting('acgolf.sync_liga', true) = 'on' then return new; end if;
+-- 2) sincronizar_desde_liga(): activa ese permiso con
+--      perform set_config('acgolf.sync_liga', 'on', true);
+--    y cada partida va dentro de begin … exception when others then … end (si una falla, se salta y siguen las demás)

@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 rm -rf pruebas
 mkdir pruebas
 for f in *; do
-  case "$f" in pruebas|pruebas-src|tools|acgolf-es|README.md|LICENSE|app-golf-movil.html) continue ;; esac
+  case "$f" in pruebas|pruebas-src|tools|acgolf-es|supabase|README.md|LICENSE|app-golf-movil.html) continue ;; esac
   cp -R "$f" pruebas/
 done
 cp pruebas-src/* pruebas/

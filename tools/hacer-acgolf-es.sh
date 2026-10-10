@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 DEST="${1:-../acgolf-app}"
 bash tools/hacer-pruebas.sh >/dev/null
 [ -d "$DEST/.git" ] || { echo "ERROR: no encuentro el repositorio acgolf-app en $DEST"; exit 1; }
-find "$DEST" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+find "$DEST" -mindepth 1 -maxdepth 1 ! -name .git ! -name .github ! -name .gitignore ! -name .gitleaks.toml -exec rm -rf {} +
 cp -R pruebas/. "$DEST/"
 cp acgolf-es/manifest.json acgolf-es/sw.js acgolf-es/instalar.js acgolf-es/instalar.css acgolf-es/instalar.html acgolf-es/icon-*.png "$DEST/"
 echo "acgolf.es" > "$DEST/CNAME"

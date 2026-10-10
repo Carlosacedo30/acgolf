@@ -1,0 +1,5 @@
+[extend]
+useDefault = true
+[allowlist]
+description = "Claves publicables de Supabase: van en la app a propósito y no dan permisos especiales"
+regexes = ['''sb_publishable_[A-Za-z0-9_-]+''']
