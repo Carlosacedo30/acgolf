@@ -584,13 +584,17 @@
               + '</div>'; }).join('') + '</div>'
           : '<p class="cg-p" style="font-size:16px;">Todavía no has creado ninguno.</p>');
     } else {
+      datos.sort((a, b) => (b.sin_nombre ? 1 : 0) - (a.sin_nombre ? 1 : 0));
       cuerpo = '<div class="pa-lista">' + datos.map(u => '<div class="pa-fila">'
           + '<div class="pa-fila-t"><b>' + esc(u.nombre) + (u.super ? ' <em class="pa-super">Super admin</em>' : '') + '</b><span>' + esc(u.email) + '</span>'
+          + (u.sin_nombre ? '<span>' + (u.confirmado ? '⚠️ Confirmó el correo pero no terminó el alta' : '⏳ No ha confirmado su correo') + (u.creado ? ' · se apuntó el ' + fecha(u.creado) : '') + '</span>' : '')
           + (u.grupos.length ? u.grupos.map(g => '<label class="pa-rol">' + esc(g.nombre)
               + '<select data-u="' + esc(u.id) + '" data-g="' + esc(g.id) + '"><option value="user"' + (g.rol === 'user' ? ' selected' : '') + '>Jugador</option><option value="group_admin"' + (g.rol === 'group_admin' ? ' selected' : '') + '>Administrador</option></select></label>').join('')
             : '<span><i>Sin grupo todavía</i></span>')
           + '</div><div class="pa-acc">'
-          + (u.id === (window.miPerfilId || '') ? '' : '<button type="button" class="pa-b" data-super="' + esc(u.id) + '" data-on="' + (u.super ? '1' : '0') + '">' + (u.super ? 'Quitar super' : 'Hacer super') + '</button>')
+          + (u.sin_nombre && u.id !== (window.miPerfilId || '') ? '<button type="button" class="pa-b" data-reenviar="' + esc(u.email) + '" data-conf="' + (u.confirmado ? '1' : '0') + '">Reenviar correo</button>'
+              + '<button type="button" class="pa-b rojo" data-borrar-u="' + esc(u.id) + '" data-e="' + esc(u.email) + '">Borrar</button>' : '')
+          + (u.id === (window.miPerfilId || '') || u.sin_nombre ? '' : '<button type="button" class="pa-b" data-super="' + esc(u.id) + '" data-on="' + (u.super ? '1' : '0') + '">' + (u.super ? 'Quitar super' : 'Hacer super') + '</button>')
           + '</div></div>').join('') + '</div>';
     }
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1>'
@@ -648,6 +652,20 @@
       sel.disabled = false;
       if(error){ msg(traducir(error)); return; }
       msg('Rol cambiado.', true);
+    });
+    gate.querySelectorAll('[data-reenviar]').forEach(b => b.onclick = () => ocupado(b, async () => {
+      const email = b.dataset.reenviar;
+      const { error } = b.dataset.conf === '1'
+        ? await client.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: APP_PRUEBAS } })
+        : await client.auth.resend({ type: 'signup', email, options: { emailRedirectTo: APP_PRUEBAS } });
+      if(error){ msg(traducir(error)); return; }
+      msg('Correo reenviado a ' + email + '. Que pulse el enlace del correo para terminar.', true);
+    }));
+    gate.querySelectorAll('[data-borrar-u]').forEach(b => b.onclick = async () => {
+      if(!confirm('¿Borrar la cuenta de ' + b.dataset.e + '?\n\nNo había terminado el alta. Si luego quiere entrar, tendrá que crear la cuenta otra vez.')) return;
+      const { error } = await client.rpc('sa_borrar_usuario', { p_user: b.dataset.borrarU });
+      if(error){ msg(traducir(error)); return; }
+      pantallaSuper(perfil, 'usuarios');
     });
     gate.querySelectorAll('[data-super]').forEach(b => b.onclick = async () => {
       const quitar = b.dataset.on === '1';
