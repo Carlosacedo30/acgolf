@@ -50,8 +50,23 @@ Deno.serve(async (req) => {
   const { data: u, error: eu } = await admin.auth.getUser(token);
   if (eu || !u?.user) return res({ error: "Tienes que entrar con tu cuenta" }, 401);
 
-  let code = "";
-  try { code = String((await req.json()).code || "").trim().toUpperCase(); } catch { /* sin cuerpo */ }
+  let code = "", prueba = false;
+  try { const b = await req.json(); code = String(b.code || "").trim().toUpperCase(); prueba = b.prueba === true; } catch { /* sin cuerpo */ }
+
+  // Correo de prueba: solo el super administrador, y solo a sí mismo
+  if (prueba) {
+    const { data: s } = await admin.from("super_admins").select("user_id").eq("user_id", u.user.id).maybeSingle();
+    if (!s) return res({ error: "Solo el super administrador" }, 403);
+    code = "PRUEBA"; // para el enlace del ejemplo
+    const m = correo({ code, grupo: "Prueba", quien: "acgolf", nombre: "Correo de prueba", campo: "" });
+    const r = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "api-key": brevo, "Content-Type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ sender: { name: "acgolf", email: "avisos@acgolf.es" }, to: [{ email: u.user.email }],
+        subject: m.asunto, htmlContent: m.html, textContent: m.texto, tags: ["aviso-prueba"] }),
+    });
+    return res(r.ok ? { enviados: 1, a: u.user.email } : { error: "Brevo " + r.status + ": " + (await r.text()).slice(0, 200) }, r.ok ? 200 : 502);
+  }
   if (!/^[A-Z0-9]{4,12}$/.test(code)) return res({ error: "Falta el código de la partida" }, 400);
 
   const { data: a, error } = await admin.rpc("_aviso_partida", { p_user: u.user.id, p_code: code });
