@@ -171,10 +171,13 @@
 
   const goOrig = window.goTo;
   window.goTo = function(n){
+    const antes = document.querySelector('.screen.active');
+    const desdePartida = antes && antes.dataset.screen === '3';
     const r = goOrig.apply(this, arguments);
     if(n === 4){
       document.documentElement.classList.add('rj-on');
-      elegido = null;
+      // Desde «¿Cómo jugué?» del inicio: se abre directamente el resumen de ese jugador
+      elegido = (!desdePartida && typeof diagActivePlayer === 'number' && players[diagActivePlayer]) ? diagActivePlayer : null;
       pedirDatos(true);
       setTimeout(pintar, 0);
     }
