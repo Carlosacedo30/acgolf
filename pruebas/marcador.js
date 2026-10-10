@@ -3,7 +3,7 @@
 // Cada jugador, con su móvil y su cuenta, apunta sus golpes y los del jugador al que marca.
 // Hoyo a hoyo se compara lo que apunta cada uno: ✅ coincide / ⚠️ no coincide.
 // Al final se entrega la tarjeta: es oficial cuando la entrega el jugador y la confirma su marcador.
-// Sin marcador (jugando solo) la tarjeta no cuenta para la liga.
+// Solo en las partidas de una liga creada en «Crear liga»; las partidas normales cuentan sin marcador.
 (function(){
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const corto = n => { const w = String(n || '').trim().split(/\s+/); return w[0] || n; };
@@ -11,47 +11,18 @@
   let elegidos = null, elegidosKey = '';       // marcadores elegidos en pantalla antes de confirmar
   let llegada = { hoyo: null, completo: false }, avanceTimer = null;
 
-  // ---------- Modo torneo: con marcador o sin marcador (se elige al crear la partida) ----------
-  window.acgolfTorneo = { con: true };
-  const modos = {};                       // código de partida → true (con marcador) / false (sin)
-  const conMarcadorEn = code => modos[code] !== false;
+  // ---------- ¿Hace falta marcador? ----------
+  // Solo en las partidas que salen de una liga creada en «Crear liga».
+  // Las partidas normales no llevan marcador y cuentan solas para la liga semanal y mensual.
+  const modos = {};                       // código de partida → true (de una liga creada) / false (normal)
+  const conMarcadorEn = code => modos[code] === true;
   async function cargarModo(code){
     if(code in modos) return;
     try {
-      const { data, error } = await initSupabase().from('modo_partida').select('con_marcador').eq('round_code', code).maybeSingle();
-      if(!error) modos[code] = data ? !!data.con_marcador : true;
+      const { data, error } = await initSupabase().rpc('es_partida_liga', { p_code: code });
+      if(!error) modos[code] = data === true;
     } catch(e){}
   }
-  // Al crear la partida se guarda el modo elegido
-  let creando = false;
-  if(typeof createSharedRound === 'function' && typeof rememberRoundCode === 'function'){
-    const crearOrig = createSharedRound;
-    window.createSharedRound = async function(){ creando = true; try { return await crearOrig.apply(this, arguments); } finally { creando = false; } };
-    const recOrig = rememberRoundCode;
-    window.rememberRoundCode = function(code){
-      const r = recOrig.apply(this, arguments);
-      if(creando && code){
-        const con = window.acgolfTorneo.con !== false;
-        modos[code] = con;
-        initSupabase().rpc('fijar_modo_partida', { p_code: code, p_con_marcador: con }).then(({ error }) => { if(error) console.error('Modo torneo', error); });
-      }
-      return r;
-    };
-  }
-  // En el formulario completo de «Configurar partida», otra fila con las dos opciones
-  (function filaFormulario(){
-    const fila = document.getElementById('scoringTypeRow');
-    const sec = fila && fila.closest('section');
-    if(!sec || document.getElementById('torneoRow')) return;
-    const nueva = document.createElement('section');
-    nueva.innerHTML = '<div class="eyebrow">Modo torneo</div><div class="pill-row" id="torneoRow">'
-      + '<div class="pill-opt selected" data-con="1">Con marcador</div><div class="pill-opt" data-con="0">Sin marcador</div></div>';
-    sec.parentNode.insertBefore(nueva, sec.nextSibling);
-    nueva.querySelectorAll('.pill-opt').forEach(p => p.addEventListener('click', () => {
-      window.acgolfTorneo.con = p.dataset.con === '1';
-      nueva.querySelectorAll('.pill-opt').forEach(x => x.classList.toggle('selected', x === p));
-    }));
-  })();
 
   const yo = () => window.miPerfil && window.miPerfil.player_name;
   const grupoEst = () => (est || []).find(g => +g.grupo === +activeGroup);
@@ -233,10 +204,9 @@
     const terminada = (typeof roundMarkedFinished !== 'undefined' && roundMarkedFinished) || (typeof isRoundFinished === 'function' && isRoundFinished(matchGroups));
     if(!currentRoundCode || !terminada || !yo()){ sec.style.display = 'none'; return; }
     sec.style.display = '';
-    if(currentRoundCode in modos && !conMarcadorEn(currentRoundCode)){
-      sec.innerHTML = '<div class="eyebrow">Entrega de tarjetas</div><p class="fm-p">Partida sin marcador: no hay que entregar tarjetas y no cuenta para la liga.</p>';
-      return;
-    }
+    if(!(currentRoundCode in modos)){ sec.style.display = 'none'; cargar(true); return; }
+    if(!conMarcadorEn(currentRoundCode)){ sec.style.display = 'none'; return; } // partida normal: no hay que entregar nada
+
     if(estCode !== currentRoundCode){ sec.innerHTML = '<div class="eyebrow">Entrega de tarjetas</div><p class="fm-p">Comprobando…</p>'; cargar(true); return; }
     const g = grupoEst();
     if(!g){ sec.style.display = 'none'; return; }
@@ -250,7 +220,7 @@
     const misMarcados = g.jugadores.filter(j => +j.marcador_idx === me);
     const yaHecho = mia && mia.entregada && misMarcados.every(j => j.confirmada);
     if(me < 0){ h += '<p class="fm-p">Las entregan los jugadores de este grupo desde su móvil.</p>'; }
-    else if(!mia || mia.marcador_idx == null){ h += '<p class="fm-p">Has jugado sin marcador: esta tarjeta no cuenta para la liga.</p>'; }
+    else if(!mia || mia.marcador_idx == null){ h += '<p class="fm-p">Has jugado sin marcador: en las partidas de una liga creada, la tarjeta solo cuenta con marcador.</p>'; }
     else if(yaHecho){ h += '<div class="fm-ok">✅ Has entregado tu tarjeta' + (misMarcados.length ? ' y confirmado la de ' + misMarcados.map(j => esc(corto(j.nombre))).join(' y ') : '') + '.<br><small>Cuenta para la liga cuando también la confirme tu marcador.</small></div>'; }
     else if(!mia.ok || misMarcados.some(j => !j.ok)){ h += '<p class="fm-p">Para entregar, tus 18 hoyos y los del jugador que marcas tienen que coincidir con lo que apuntó el otro. Revisa los hoyos en naranja.</p>'; }
     else { h += '<button type="button" class="fm-btn" id="mkEntregar">Entregar mi tarjeta</button>'; }
