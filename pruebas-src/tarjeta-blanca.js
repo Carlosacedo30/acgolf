@@ -127,10 +127,27 @@
     });
   }
 
+  // En qué pantalla estamos (para esconder los botones flotantes mientras se anota)
+  function marcarPantalla(){
+    const a = document.querySelector('.screen.active');
+    const n = a ? a.dataset.screen : '';
+    document.documentElement.classList.toggle('tb-s3', n === '3');
+    document.documentElement.classList.toggle('tb-s4', n === '4');
+  }
+  window.tbMarcarPantalla = marcarPantalla;
+  window.tbBloque = bloque;
+  if(typeof goTo === 'function'){
+    const goOrig = goTo;
+    window.goTo = function(){ const r = goOrig.apply(this, arguments); try { marcarPantalla(); } catch(e){} return r; };
+  }
+  // «Guardar y seguir luego» ya no hace falta: cada golpe se guarda al momento
+  const fin = document.getElementById('finalizarRondaBtn');
+  if(fin) fin.textContent = 'Finalizar partida';
+
   const orig = window.renderHoleView;
   window.renderHoleView = function(){
     const r = orig.apply(this, arguments);
-    try { if(colocar()){ pintarCasillas(); pintarTira(); } } catch(e){ console.error(e); }
+    try { marcarPantalla(); if(colocar()){ pintarCasillas(); pintarTira(); } } catch(e){ console.error(e); }
     return r;
   };
 })();

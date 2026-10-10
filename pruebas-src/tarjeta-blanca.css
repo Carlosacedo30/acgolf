@@ -98,14 +98,14 @@ html.tb-on .screen[data-screen="3"] .ch-campo{ color:#4A535C !important; }
 .tb-tira-cab b{ font:800 14px 'Barlow', sans-serif; color:#2A3036; letter-spacing:.5px; }
 .tb-ver{ border:none; background:transparent; color:#2E7D32; font:800 15px 'Barlow', sans-serif; cursor:pointer; padding:4px; min-height:44px; }
 .tb-bloque{ background:#FFFFFF; border:1px solid #DADFE3; border-radius:14px; overflow:hidden; margin-bottom:8px; }
-.tb-r{ display:grid; grid-template-columns:50px repeat(9, minmax(0,1fr)) 38px; align-items:center; text-align:center; }
+.tb-r{ display:grid; grid-template-columns:56px repeat(9, minmax(0,1fr)) 36px; align-items:center; text-align:center; }
 .tb-lbl{ text-align:left; padding-left:8px; }
 .tb-r-h{ background:#2E7D32; color:#FFFFFF; font:800 15px/30px 'Barlow Condensed', 'Barlow', sans-serif; }
 .tb-h{ border:none; background:transparent; color:#FFFFFF; font:inherit; padding:0; min-height:30px; cursor:pointer; }
 .tb-h.actual{ background:#C6F24E; color:#111316; }
 .tb-r-p{ font:700 15px/26px 'Barlow Condensed', 'Barlow', sans-serif; color:#2A3036; }
 .tb-r-g{ padding:3px 0 6px; border-top:1px solid #DADFE3; }
-.tb-r-g .tb-lbl{ font:800 14px 'Barlow', sans-serif; }
+.tb-r-g .tb-lbl{ font:800 13px 'Barlow', sans-serif; }
 .tb-r-g > span{ display:flex; justify-content:center; }
 .tb-r-g > span.tb-lbl{ display:block; }
 .tb-tot{ font:700 15px 'Barlow Condensed', 'Barlow', sans-serif; }
@@ -142,7 +142,16 @@ html.tb-on .np-key.is-par{ background:#C6F24E !important; border-color:#C6F24E !
 html.tb-on .screen[data-screen="3"] .actions .btn.ghost{ color:#111316 !important; border-color:#8A939B !important; background:#FFFFFF !important; }
 html.tb-on .screen[data-screen="3"] .actions .btn.primary{ background:#2E7D32 !important; border-color:#2E7D32 !important; color:#FFFFFF !important; }
 html.tb-on .screen[data-screen="3"] .gps-admin-btn{ color:#2E7D32 !important; border-color:#2E7D32 !important; }
-html.tb-on .screen[data-screen="3"] .marcador-section{ padding-top:44px !important; }
+
 html.tb-on .screen[data-screen="3"] .result-box:not([class*="r-"]){ background:#FFFFFF !important; border:2px solid #DADFE3 !important; color:#9AA3AB !important; }
 html.tb-on .screen[data-screen="3"] .result-box{ box-shadow:none !important; }
 .tb-m.tb-par{ border:1.5px solid #8A939B; }
+
+/* Mientras se anota: fuera los botones flotantes (cuenta, grupo, banda) y el caddie */
+html.tb-on.tb-s3 .cg-mi, html.tb-on.tb-s3 .cg-selgrupo, html.tb-on.tb-s3 .pr-banda,
+html.tb-on.tb-s4 .cg-mi, html.tb-on.tb-s4 .cg-selgrupo, html.tb-on.tb-s4 .pr-banda{ display:none !important; }
+html.tb-on .screen[data-screen="3"] .ch, html.tb-on.tb-s3 .cp-aviso{ display:none !important; }
+/* Guardar ya no hace falta; Finalizar, grande y verde */
+html.tb-on .screen[data-screen="3"] #guardarLuegoBtn{ display:none !important; }
+html.tb-on .screen[data-screen="3"] #finalizarRondaBtn{ flex:1 1 100% !important; width:100%; min-height:60px; display:flex !important; align-items:center; justify-content:center;
+  font:800 20px 'Barlow', sans-serif !important; background:#2E7D32 !important; border-color:#2E7D32 !important; color:#FFFFFF !important; border-radius:16px !important; box-shadow:0 3px 0 #1B5E20 !important; }

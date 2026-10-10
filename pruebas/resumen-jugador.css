@@ -1,0 +1,64 @@
+/* © 2026 Carlos Acedo Domínguez. Resumen de cada jugador al terminar (sustituye al diagnóstico) */
+html.rj-on .screen[data-screen="4"],
+html.rj-on .screen[data-screen="4"] .screen-content{ background:#FFFFFF !important; color:#111316 !important; }
+html.rj-on .screen[data-screen="4"] section{ background:transparent !important; box-shadow:none !important; color:#111316; }
+html.rj-on .screen[data-screen="4"] .app-bar{ background:#FFFFFF !important; border-bottom:1px solid #DADFE3 !important; }
+html.rj-on .screen[data-screen="4"] .app-bar .back{ color:#2E7D32 !important; font-weight:800 !important; }
+html.rj-on .screen[data-screen="4"] .app-bar h1{ color:#111316 !important; }
+html.rj-on .screen[data-screen="4"] .app-bar .meta{ color:#4A535C !important; }
+html.rj-on .screen[data-screen="4"] .score-line,
+html.rj-on .screen[data-screen="4"] .diag-otro,
+html.rj-on .screen[data-screen="4"] #s4PlayerTabSection,
+html.rj-on .screen[data-screen="4"] #s4StatsSection,
+html.rj-on .screen[data-screen="4"] #s4ChartSection,
+html.rj-on .screen[data-screen="4"] #s4QuestionsSection,
+html.rj-on .screen[data-screen="4"] #s4PlanSection,
+html.rj-on .screen[data-screen="4"] section:has(#s4WorstHoles),
+html.rj-on .screen[data-screen="4"] section:has(#s4Pattern),
+html.rj-on .screen[data-screen="4"] .actions{ display:none !important; }
+html.rj-on .screen[data-screen="4"] .home-volver{ background:#FFFFFF !important; color:#2E7D32 !important; border:2px solid #2E7D32 !important; }
+html.rj-on .screen[data-screen="4"] .eyebrow{ color:#4A535C !important; }
+html.rj-on .screen[data-screen="4"] .share-wa{ background:#2E7D32 !important; color:#FFFFFF !important; border-color:#2E7D32 !important; }
+html.rj-on .screen[data-screen="4"] .fm, html.rj-on .screen[data-screen="4"] .fm *{ color:#111316; }
+html.rj-on .screen[data-screen="4"] .fm-tabla{ background:#F2F4F6 !important; }
+
+.rj-box{ padding:10px 12px !important; display:flex; flex-direction:column; gap:10px; font-family:'Barlow', sans-serif; }
+.rj-t{ font:800 15px 'Barlow', sans-serif; color:#4A535C; letter-spacing:.3px; }
+.rj-botones{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
+.rj-jug{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-height:108px; padding:14px; border-radius:18px; border:2px solid #DADFE3; background:#F2F4F6; color:#111316; text-align:left; cursor:pointer; font-family:'Barlow', sans-serif; }
+.rj-jug b{ font-size:20px; font-weight:800; line-height:1.15; }
+.rj-jug span{ font-size:15px; font-weight:600; color:#4A535C; }
+.rj-jug i{ margin-top:auto; font-style:normal; font-weight:800; font-size:15px; color:#2E7D32; }
+.rj-jug:active{ background:#E4F5B5; border-color:#2E7D32; }
+
+.rj-cab{ display:flex; align-items:center; gap:12px; }
+.rj-volver{ min-height:48px; padding:0 14px; border-radius:999px; border:2px solid #2E7D32; background:#FFFFFF; color:#2E7D32; font:800 16px 'Barlow', sans-serif; cursor:pointer; flex-shrink:0; }
+.rj-nom{ font:800 22px/1.15 'Barlow', sans-serif; }
+.rj-sub{ font-size:15px; font-weight:600; color:#4A535C; }
+.rj-cifras{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:6px; }
+.rj-cifras div{ background:#F2F4F6; border:1px solid #DADFE3; border-radius:14px; padding:8px 4px; text-align:center; display:flex; flex-direction:column; }
+.rj-cifras b{ font:800 26px 'Barlow Condensed', 'Barlow', sans-serif; }
+.rj-cifras b.bajo{ color:#D92D20; }
+.rj-cifras span{ font-size:13px; font-weight:700; color:#5C6670; }
+.rj-sec{ display:flex; flex-direction:column; gap:6px; }
+.rj-sec-t{ font:800 15px 'Barlow', sans-serif; color:#2E7D32; text-transform:uppercase; letter-spacing:.5px; padding-top:6px; border-top:1px solid #DADFE3; }
+.rj-sec-t small{ color:#5C6670; font-weight:700; text-transform:none; margin-left:4px; }
+.rj-p{ margin:0; font-size:16px; color:#2A3036; line-height:1.4; }
+.rj-nota{ margin:0; font-size:14px; color:#5C6670; }
+.rj-hcp{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; }
+.rj-hcp b{ font:800 30px 'Barlow Condensed', 'Barlow', sans-serif; }
+.rj-hcp span{ font-size:17px; font-weight:800; color:#4A535C; }
+.rj-hcp.baja span{ color:#2E7D32; }
+.rj-hcp.sube span{ color:#C2410C; }
+.rj-sub2{ font-size:16px; font-weight:800; color:#2E7D32; }
+.rj-med{ display:flex; align-items:center; gap:10px; background:#F2F4F6; border-radius:12px; padding:8px 10px; }
+.rj-med span{ display:flex; flex-direction:column; }
+.rj-med b{ font-size:17px; }
+.rj-med small{ font-size:14px; color:#4A535C; }
+.rj-tabla{ background:#F2F4F6; border:1px solid #DADFE3; border-radius:14px; padding:4px; }
+.rj-fila{ display:grid; grid-template-columns:40px minmax(0, 1fr) auto; gap:8px; align-items:center; min-height:40px; padding:0 10px; border-radius:10px; font-size:17px; }
+.rj-fila b{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rj-fila span:last-child{ font:800 18px 'Barlow Condensed', 'Barlow', sans-serif; }
+.rj-fila.yo{ background:#E4F5B5; }
+.rj-fila.aparte{ border-top:1px dashed #9AA3AB; border-radius:0 0 10px 10px; }
+.rj-otra{ align-self:flex-start; min-height:48px; padding:0 16px; border-radius:999px; border:2px solid #2E7D32; background:#FFFFFF; color:#2E7D32; font:800 16px 'Barlow', sans-serif; }
