@@ -1,0 +1,18 @@
+/* © 2026 Carlos Acedo Domínguez. El tiempo en la convocatoria */
+.tq{ margin:0 0 14px; padding:12px 14px; border-radius:16px; background:#24282D; border:1px solid #33383E; color:#F2F4F5; font-family:'Barlow', sans-serif; }
+.tq-t{ font-size:13px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:#9AA3AB; margin-bottom:8px; }
+.tq-p{ font-size:16px; color:#B9C3CB; }
+.tq-res{ display:flex; align-items:center; gap:12px; }
+.tq-ico{ font-size:44px; line-height:1; }
+.tq-res b{ display:block; font:800 30px/1.05 'Barlow', sans-serif; }
+.tq-res span{ font-size:16px; color:#B9C3CB; font-weight:600; }
+.tq-datos{ display:flex; flex-wrap:wrap; gap:6px 16px; margin-top:8px; font-size:16px; color:#D5DBE0; }
+.tq-datos b{ color:#F2F4F5; }
+.tq-datos small{ color:#9AA3AB; }
+.tq-horas{ display:grid; grid-template-columns:repeat(6, minmax(0, 1fr)); gap:4px; margin-top:10px; text-align:center; }
+.tq-horas div{ background:#1B1E22; border-radius:10px; padding:6px 0; display:flex; flex-direction:column; gap:2px; }
+.tq-horas small{ font-size:13px; color:#9AA3AB; font-weight:700; }
+.tq-horas i{ font-style:normal; font-size:20px; }
+.tq-horas b{ font-size:16px; }
+.tq-cons{ margin-top:10px; font-size:16px; font-weight:700; color:#C6F24E; line-height:1.45; }
+.tq-nota{ margin-top:6px; font-size:13px; color:#9AA3AB; }
