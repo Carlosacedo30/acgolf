@@ -142,7 +142,7 @@
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;
-    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Convocar salida por WhatsApp</button>' : '';
+    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
     if(!lista.length){
       box.innerHTML = nuevoBtn;
       const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
@@ -151,7 +151,7 @@
     const me = convMe();
     const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
     const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    box.innerHTML = '<div class="conv-prox-h">' + icono('calendario') + '<span>Próximas salidas organizadas</span><b>' + lista.length + '</b></div>'
+    box.innerHTML = '<div class="conv-prox-h">' + icono('calendario') + '<span>Partidos con amigos</span><b>' + lista.length + '</b></div>'
       + lista.map((c, i) => {
       const total = c.groups.reduce((a, g) => a + g.length, 0);
       const plazas = c.times.length * CONV_SLOTS;
@@ -162,7 +162,7 @@
       return '<div class="conv-home-card conv-prox' + (i === 0 ? ' primera' : '') + '" role="button" tabindex="0" data-conv-code="' + convEsc(c.code) + '">'
         + '<div class="conv-prox-fecha"><small>' + DIAS[d.getDay()].slice(0, 3) + '</small><b>' + d.getDate() + '</b><small>' + MESES[d.getMonth()] + '</small></div>'
         + '<div class="conv-prox-info">'
-        +   '<span class="conv-home-eyebrow">' + (i === 0 ? 'Próxima salida' : 'Salida organizada') + '</span>'
+        +   '<span class="conv-home-eyebrow">' + (i === 0 ? 'Próximo partido' : 'Partido organizado') + '</span>'
         +   '<div class="conv-prox-campo">' + convEsc(convCourse(c.courseId).name) + '</div>'
         +   '<div class="conv-prox-horas">' + convEsc(horas) + '</div>'
         +   '<div class="conv-prox-pie"><span class="conv-home-cta' + (mySlot >= 0 || c.roundCode ? ' ok' : '') + '">' + cta + ' ›</span><span class="conv-home-count">' + total + '/' + plazas + ' apuntados</span></div>'
@@ -180,7 +180,7 @@
   function renderConv(){
     const body = document.getElementById('convBody'); if(!body) return;
     const isAdmin = !!getAdminKey();
-    if(!conv){ body.innerHTML = '<div class="empty-hint">No hay ninguna salida convocada.</div>'; return; }
+    if(!conv){ body.innerHTML = '<div class="empty-hint">No hay ningún partido organizado.</div>'; return; }
     const me = convMe();
     const course = convCourse(conv.courseId);
     let h = '<div class="conv-when">' + convEsc(convLongDate(conv.date)) + '</div>'
@@ -236,8 +236,8 @@
       + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';
     if(isAdmin){
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
-      h += '<button type="button" class="conv-link" id="convNewBtn">Convocar otra salida</button>';
-      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar esta convocatoria</button>';
+      h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
+      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar este partido</button>';
     }
     h += '</div>';
     body.innerHTML = h;
@@ -341,12 +341,12 @@
   // ---------- Convocar una salida nueva (solo administrador) ----------
   function renderConvNewForm(){
     const body = document.getElementById('convBody'); if(!body) return;
-    body.innerHTML = '<div class="conv-eyebrow">Nueva salida</div>'
+    body.innerHTML = '<div class="conv-eyebrow">Organizar partido con amigos</div>'
       + '<div class="field"><label>Día</label><input type="date" id="convNewDate" value="' + convNextSunday() + '"></div>'
       + '<div class="field"><label>Campo</label><select id="convNewCourse"><option value="hato-verde">Club Hato Verde</option><option value="zaudin">Club Zaudín Golf</option></select></div>'
       + '<div class="field-row"><div class="field"><label>1ª partida</label><input type="time" id="convNewT1" value="' + CONV_DEFAULT_TIMES[0] + '"></div>'
       + '<div class="field"><label>2ª partida</label><input type="time" id="convNewT2" value="' + CONV_DEFAULT_TIMES[1] + '"></div></div>'
-      + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="convNewCreate">Crear convocatoria</button>'
+      + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="convNewCreate">Crear el partido</button>'
       + (conv ? '<button type="button" class="conv-link" id="convNewCancel">Cancelar</button>' : '') + '</div>';
     document.getElementById('convNewCreate').addEventListener('click', convCreate);
     const c = document.getElementById('convNewCancel'); if(c) c.addEventListener('click', renderConv);
@@ -375,10 +375,10 @@
   // Solo el administrador: borra la convocatoria para todos (la partida creada desde ella, si la hay, no se toca)
   async function convDelete(btn){
     if(!conv || btn.dataset.busy) return;
-    if(!confirm('¿Borrar la convocatoria del ' + convLongDate(conv.date) + '?\nDesaparece para todos los jugadores y no se puede deshacer.')) return;
+    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\nDesaparece para todos los jugadores y no se puede deshacer.')) return;
     btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
     const res = await deleteSharedRound(conv.code);
-    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar la convocatoria'); delete btn.dataset.busy; btn.innerHTML = icono('papelera') + ' Borrar esta convocatoria'; return; }
+    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar el partido'); delete btn.dataset.busy; btn.innerHTML = icono('papelera') + ' Borrar este partido'; return; }
     const client = initSupabase();
     if(convChannel && client){ try { client.removeChannel(convChannel); } catch(e){} convChannel = null; }
     convActivas = convActivas.filter(c => c.code !== conv.code);

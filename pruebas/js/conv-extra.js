@@ -101,13 +101,13 @@ function ligaDeConvTexto(code){
     if(p && p.es_admin && !acc.querySelector('#convMail')){
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'conv-btn ghost'; b.id = 'convMail';
-      b.textContent = '✉️ Enviar la convocatoria por mail';
+      b.textContent = '✉️ Enviar el partido por mail';
       const wa = acc.querySelector('#convShareWa');
       if(wa && wa.nextSibling) acc.insertBefore(b, wa.nextSibling); else acc.appendChild(b);
       b.addEventListener('click', async ()=>{
         if(b.dataset.busy) return; b.dataset.busy = '1'; b.textContent = 'Enviando…';
         await acgolfMandarMail('https://carlosacedo30.github.io/acgolf/pruebas/?conv=' + encodeURIComponent(conv.code), 'la convocatoria');
-        delete b.dataset.busy; b.textContent = '✉️ Enviar la convocatoria por mail';
+        delete b.dataset.busy; b.textContent = '✉️ Enviar el partido por mail';
       });
     }
     const code = window.convVolverLiga;

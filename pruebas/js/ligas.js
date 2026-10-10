@@ -409,7 +409,7 @@ async function ligaVer(code){
         const prox = !filas && proxJ === j;
         return '<button type="button" class="lg-cal-f' + (prox ? ' lg-prox' : '') + '" data-n="' + j.n + '"><span>J' + j.n + '</span><b>' + ligaEsc(ligaFechaCortaJ(j.date)) + '</b><small>' + txt + '</small></button>';
       }).join('') + '</div>'
-    + '<div class="lg-aviso">' + (ligaEsAdmin() ? 'Toca una jornada para cambiar su fecha, campo, hora o salida (por un hoyo o al tiro).' : 'Toca una jornada para ver su convocatoria o su partida.') + '</div>'
+    + '<div class="lg-aviso">' + (ligaEsAdmin() ? 'Toca una jornada para cambiar su fecha, campo, hora o salida (por un hoyo o al tiro).' : 'Toca una jornada para ver su partido.') + '</div>'
     + ligaBotonBases('lgBasesVer')
     + '<div class="conv-actions"><button type="button" class="conv-link" id="lgVolver">‹ Todas las ligas</button>'
     + (ligaEsAdmin() ? '<button type="button" class="conv-btn borrar" id="lgBorrar">' + (typeof icono === 'function' ? icono('papelera') : '') + ' Borrar esta liga</button>' : '') + '</div>';
@@ -433,10 +433,10 @@ async function ligaAbrirJornada(l, n, res){
   }
   if(j.date < ligaHoy()){ alert('Esa jornada ya pasó y no se jugó con la app.'); return; }
   const prox = ligaProxima(l);
-  if(prox && prox.n !== n && !ligaEsAdmin()){ alert('La convocatoria de la jornada ' + n + ' se abre cuando se juegue la anterior.'); return; }
+  if(prox && prox.n !== n && !ligaEsAdmin()){ alert('El partido de la jornada ' + n + ' se abre cuando se juegue la anterior.'); return; }
   await ligaCrearConvocatoria(l, j);
   const c = typeof convFetch === 'function' ? await convFetch(code) : null;
-  if(!c){ alert('No se pudo abrir la convocatoria. Revisa la conexión.'); return; }
+  if(!c){ alert('No se pudo abrir el partido. Revisa la conexión.'); return; }
   conv = c;
   if(typeof convWatch === 'function') convWatch();
   try { convActivas = await convFetchActivas(); } catch(e){}
@@ -524,10 +524,10 @@ async function ligaConfigJornada(l, n, res){
               + '<div class="lg-aviso">Todos los grupos salen por el hoyo ' + cfg.hoyoInicio + ', uno cada 10 minutos: ' + ligaHoras(cfg.hora, cfg.grupos.length).map(t => t.replace(/^0/, '')).join(', ') + '.</div>')
         + pintarPartidas()
         + '<div class="lg-aviso lg-guardar-ayuda">' + (c
-            ? 'La convocatoria ya está publicada. Si cambias algo aquí y guardas, se cambia también para todos.'
+            ? 'El partido ya está publicado. Si cambias algo aquí y guardas, se cambia también para todos.'
             : 'Deja aquí la jornada como quieras (fecha, hora, salida y partidas) y después publícala. Los jugadores la verán ya hecha.') + '</div>'
         + '<div class="conv-actions">'
-        + (cfg.date >= ligaHoy() ? '<button type="button" class="conv-btn primary" id="ljAbrir">' + (c ? 'Guardar y ver la convocatoria' : 'Guardar y publicar la convocatoria') + '</button>' : '')
+        + (cfg.date >= ligaHoy() ? '<button type="button" class="conv-btn primary" id="ljAbrir">' + (c ? 'Guardar y ver el partido' : 'Guardar y publicar el partido') + '</button>' : '')
         + '<button type="button" class="conv-btn ghost" id="ljGuardar">Guardar los cambios</button>'
         + '<button type="button" class="conv-link" id="ljVolver">‹ Volver a la liga</button></div>';
     }
