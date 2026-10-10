@@ -1,6 +1,6 @@
 /* © 2026 Carlos Acedo Domínguez. acgolf: la app abre aunque haya poca cobertura.
    Siempre intenta traer lo último de internet; si no hay conexión, usa la copia guardada. */
-const CACHE = 'acgolf-v3';
+const CACHE = 'acgolf-v4';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));

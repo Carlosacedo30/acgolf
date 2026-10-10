@@ -7,3 +7,4 @@
 .ins-txt svg{ vertical-align:-3px; color:#C6F24E; }
 .ins-si{ flex:none; border:none; border-radius:999px; padding:12px 16px; background:#C6F24E; color:#111316; font:900 16px 'Archivo', 'Barlow', sans-serif; cursor:pointer; }
 .ins-no{ flex:none; border:none; background:none; color:#9AA3AB; font-size:20px; padding:6px; cursor:pointer; }
+.ins-no{ min-width:44px; min-height:44px; }

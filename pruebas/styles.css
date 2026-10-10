@@ -62,7 +62,7 @@
   .app-bar.big.with-photo{
     background:
       linear-gradient(180deg, rgba(15,27,46,0.45) 0%, rgba(15,27,46,0.75) 60%, var(--forest-bg) 100%),
-      url('bg-golf.jpg');
+      url('bg-golf.webp');
     background-size:cover; background-position:center 65%;
     padding-top:24px; padding-bottom:20px; min-height:min(150px, 20vh);
     display:flex; flex-direction:column; justify-content:flex-end;
