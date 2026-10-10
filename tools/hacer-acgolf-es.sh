@@ -27,4 +27,8 @@ assert 'instalar.js' in s and '<title>acgolf</title>' in s
 open(p, 'w', encoding='utf-8').write(s)
 PY
 grep -rq "carlosacedo30.github.io/acgolf/pruebas" "$DEST" --include=*.js && { echo "ERROR: quedan direcciones antiguas"; exit 1; }
+# Empaquetar para que cargue rápido con mala cobertura (esbuild se instala la primera vez)
+[ -x tools/node_modules/.bin/esbuild ] || npm install --silent --prefix tools esbuild@0.24.2 >/dev/null
+python3 tools/empaquetar.py "$DEST"
+node --check "$DEST"/app-*.js || { echo "ERROR: el paquete de código no es válido"; exit 1; }
 echo "Web de acgolf.es generada en $DEST"

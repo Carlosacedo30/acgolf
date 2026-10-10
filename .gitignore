@@ -7,3 +7,7 @@
 *.pem
 *.key
 secretos/
+
+# Herramientas instaladas
+tools/node_modules/
+tools/package*.json
