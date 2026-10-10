@@ -73,9 +73,11 @@
         });
       });
     });
+    // En golf no hay empates: con el mismo resultado gana el de hándicap más bajo
+    const hcpDe = s => { const g = matchGroups[s.group] || {}; const idx = s.pIndexes || [s.pIndex]; const v = idx.map(i => parseFloat((g.handicaps || [])[i])).filter(x => !isNaN(x)); return v.length ? v.reduce((a, b) => a + b, 0) : 99; };
     return scoringType === 'stableford'
-      ? combined.sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || b.points - a.points)
-      : combined.sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || a.scoreDiff - b.scoreDiff);
+      ? combined.sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || b.points - a.points || hcpDe(a) - hcpDe(b))
+      : combined.sort((a, b) => (a.holesFilled === 0) - (b.holesFilled === 0) || a.scoreDiff - b.scoreDiff || hcpDe(a) - hcpDe(b));
   }
 
   // Neto de un jugador del grupo activo en un hoyo (null si no está anotado)

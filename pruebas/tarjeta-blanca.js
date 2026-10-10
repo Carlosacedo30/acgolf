@@ -60,8 +60,7 @@
     const alPar = s => s.holesFilled === 0 ? '—' : sf ? s.points : (s.scoreDiff === 0 ? 'PAR' : (s.scoreDiff > 0 ? '+' : '') + s.scoreDiff);
     const filas = lista.slice(0, 12).map((s, k) => {
       const jugado = s.holesFilled > 0;
-      const empate = jugado && lista.filter(o => o.holesFilled > 0 && valor(o) === valor(s)).length > 1;
-      const pos = jugado ? (empate ? 'T' : '') + (lista.findIndex(o => o.holesFilled > 0 && valor(o) === valor(s)) + 1) : '';
+      const pos = jugado ? String(k + 1) : ''; // sin empates: a igual resultado, gana el hándicap más bajo (ya viene ordenado así)
       const g = matchGroups[s.group] || {};
       const hcp = s.pIndexes && s.pIndexes.length > 1 ? '' : (g.handicaps && g.handicaps[s.pIndex] != null ? 'HCP ' + Math.round(g.handicaps[s.pIndex]) : '');
       const elegible = s.group === activeGroup;
