@@ -19,7 +19,11 @@
     const d = v - par;
     return d <= -2 ? 'tb-eagle' : d === -1 ? 'tb-birdie' : d === 0 ? 'tb-par' : d === 1 ? 'tb-bogey' : 'tb-doble';
   };
-  const yoIdx = () => { const yo = window.miPerfil && window.miPerfil.player_name; const i = players.indexOf(yo); return i >= 0 ? i : 0; };
+  const yoIdx = () => {
+    let yo = window.miPerfil && window.miPerfil.player_name;
+    if(!yo){ try { yo = localStorage.getItem('golfAppConvMe'); } catch(e){} } // app sin cuentas: «quién soy»
+    const i = players.indexOf(yo); return i >= 0 ? i : 0;
+  };
 
   // Colocar las piezas: la clasificación arriba del todo; la media tarjeta y la leyenda debajo del hoyo
   function colocar(){
