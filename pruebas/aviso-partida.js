@@ -1,6 +1,6 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // Al crear una partida, la app manda un mail con un enlace que abre esa partida (y deja al jugador ya dentro).
-// De momento solo se envía al administrador, para probar.
+// El correo les llega a todos los del grupo que no lo hayan quitado en «Mi cuenta».
 (function(){
   if(typeof createSharedRound !== 'function' || typeof rememberRoundCode !== 'function') return;
   let creando = false;
@@ -17,9 +17,17 @@
     return r;
   };
 
-  function avisarPorMail(code){
-    if(!window.miPerfil || !window.miPerfil.es_admin) return; // de momento, solo al administrador
-    acgolfMandarMail('https://carlosacedo30.github.io/acgolf/pruebas/?partida=' + encodeURIComponent(code), 'la partida');
+  // Avisa por correo a los demás del grupo (lo manda el servidor, con Brevo)
+  async function avisarPorMail(code){
+    const p = window.miPerfil;
+    if(!p || p.grupo_tipo !== 'liga') return;
+    const client = initSupabase();
+    if(!client || !client.functions) return;
+    try {
+      const { data, error } = await client.functions.invoke('avisar', { body: { code } });
+      if(error) throw error;
+      if(data && data.enviados) aviso('✉️ Avisados por correo ' + data.enviados + (data.enviados === 1 ? ' compañero' : ' compañeros'));
+    } catch(e){ console.error('No se pudo avisar por correo', e); }
   }
 
   // Manda al administrador un mail con un enlace que le deja ya dentro de la app, en esa pantalla.
