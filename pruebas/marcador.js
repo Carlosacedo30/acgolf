@@ -11,6 +11,48 @@
   let elegidos = null, elegidosKey = '';       // marcadores elegidos en pantalla antes de confirmar
   let llegada = { hoyo: null, completo: false }, avanceTimer = null;
 
+  // ---------- Modo torneo: con marcador o sin marcador (se elige al crear la partida) ----------
+  window.acgolfTorneo = { con: true };
+  const modos = {};                       // código de partida → true (con marcador) / false (sin)
+  const conMarcadorEn = code => modos[code] !== false;
+  async function cargarModo(code){
+    if(code in modos) return;
+    try {
+      const { data, error } = await initSupabase().from('modo_partida').select('con_marcador').eq('round_code', code).maybeSingle();
+      if(!error) modos[code] = data ? !!data.con_marcador : true;
+    } catch(e){}
+  }
+  // Al crear la partida se guarda el modo elegido
+  let creando = false;
+  if(typeof createSharedRound === 'function' && typeof rememberRoundCode === 'function'){
+    const crearOrig = createSharedRound;
+    window.createSharedRound = async function(){ creando = true; try { return await crearOrig.apply(this, arguments); } finally { creando = false; } };
+    const recOrig = rememberRoundCode;
+    window.rememberRoundCode = function(code){
+      const r = recOrig.apply(this, arguments);
+      if(creando && code){
+        const con = window.acgolfTorneo.con !== false;
+        modos[code] = con;
+        initSupabase().rpc('fijar_modo_partida', { p_code: code, p_con_marcador: con }).then(({ error }) => { if(error) console.error('Modo torneo', error); });
+      }
+      return r;
+    };
+  }
+  // En el formulario completo de «Configurar partida», otra fila con las dos opciones
+  (function filaFormulario(){
+    const fila = document.getElementById('scoringTypeRow');
+    const sec = fila && fila.closest('section');
+    if(!sec || document.getElementById('torneoRow')) return;
+    const nueva = document.createElement('section');
+    nueva.innerHTML = '<div class="eyebrow">Modo torneo</div><div class="pill-row" id="torneoRow">'
+      + '<div class="pill-opt selected" data-con="1">Con marcador</div><div class="pill-opt" data-con="0">Sin marcador</div></div>';
+    sec.parentNode.insertBefore(nueva, sec.nextSibling);
+    nueva.querySelectorAll('.pill-opt').forEach(p => p.addEventListener('click', () => {
+      window.acgolfTorneo.con = p.dataset.con === '1';
+      nueva.querySelectorAll('.pill-opt').forEach(x => x.classList.toggle('selected', x === p));
+    }));
+  })();
+
   const yo = () => window.miPerfil && window.miPerfil.player_name;
   const grupoEst = () => (est || []).find(g => +g.grupo === +activeGroup);
   const miIdx = () => players.findIndex(n => n === yo());
@@ -30,6 +72,8 @@
     if(!currentRoundCode || cargando) return;
     cargando = true;
     try {
+      await cargarModo(currentRoundCode);
+      if(!conMarcadorEn(currentRoundCode)){ est = []; estCode = currentRoundCode; estJson = '[]'; cargando = false; if(forzar){ repintarHoyo(); pintarEntrega(); } return; }
       const { data, error } = await initSupabase().rpc('estado_marcas', { p_code: currentRoundCode });
       if(error) throw error;
       const json = JSON.stringify(data || []);
@@ -153,6 +197,11 @@
     if(!scores || !currentRoundCode || !yo()) return;
     const me = miIdx();
     if(me < 0) return; // no juego en este grupo: se ve como siempre
+    if(!(currentRoundCode in modos)){ cargar(true); return; }
+    if(!conMarcadorEn(currentRoundCode)){
+      scores.insertAdjacentHTML('beforebegin', '<div class="mk-solo">Partida sin marcador: cada uno apunta sus golpes. No cuenta para la liga.</div>');
+      return;
+    }
     const n = players.filter(Boolean).length;
     if(n < 2){
       scores.insertAdjacentHTML('beforebegin', '<div class="mk-solo">Juegas solo: sin marcador, esta tarjeta no cuenta para la liga.</div>');
@@ -186,6 +235,10 @@
     const terminada = (typeof roundMarkedFinished !== 'undefined' && roundMarkedFinished) || (typeof isRoundFinished === 'function' && isRoundFinished(matchGroups));
     if(!currentRoundCode || !terminada || !yo()){ sec.style.display = 'none'; return; }
     sec.style.display = '';
+    if(currentRoundCode in modos && !conMarcadorEn(currentRoundCode)){
+      sec.innerHTML = '<div class="eyebrow">Entrega de tarjetas</div><p class="fm-p">Partida sin marcador: no hay que entregar tarjetas y no cuenta para la liga.</p>';
+      return;
+    }
     if(estCode !== currentRoundCode){ sec.innerHTML = '<div class="eyebrow">Entrega de tarjetas</div><p class="fm-p">Comprobando…</p>'; cargar(true); return; }
     const g = grupoEst();
     if(!g){ sec.style.display = 'none'; return; }

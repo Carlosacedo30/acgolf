@@ -68,6 +68,7 @@
   function prAbrir(){
     const ov = document.getElementById('prOverlay'); if(!ov) return;
     prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false;
+    if(window.acgolfTorneo) window.acgolfTorneo.con = true;
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
     const yo = prYo();
     prGrupos = [yo ? [yo] : []];
@@ -97,6 +98,8 @@
         + fila('Puntuación', 'punt', PR_PUNT, prPunt)
         + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
         + fila('Modalidad', 'modal', PR_MODAL, prModal)
+        + (window.acgolfTorneo ? fila('Modo torneo', 'torneo', [['1','Con marcador'],['0','Sin marcador']], window.acgolfTorneo.con ? '1' : '0')
+            + '<div class="pr-r-nota" style="margin-top:-2px">' + (window.acgolfTorneo.con ? 'Cada uno apunta sus golpes y los del jugador al que marca. La tarjeta es oficial.' : 'Cada uno apunta sus golpes, sin marcador. La tarjeta no cuenta para la liga.') + '</div>' : '')
         + (MAX_GROUPS > GRUPOS_EN_PESTANAS
             ? '<div class="pr-op-t">Grupos</div><div class="pr-npaso"><button type="button" class="pr-tecla pr-nmas" data-d="-1" aria-label="Un grupo menos"' + (prNGrupos > 1 ? '' : ' disabled') + '>−</button>'
               + '<div class="pr-nnum"><b>' + prNGrupos + '</b><small>hasta ' + (prNGrupos * PR_MAX) + ' jugadores</small></div>'
@@ -154,7 +157,7 @@
       h += '<div class="pr-q">¿Todo bien?</div>'
         + '<div class="pr-resumen">'
         + '<div class="pr-r-campo">' + prEsc(campo ? campo.name : '') + '</div>'
-        + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · ' + prModalTxt(prModal) + ' · hoy</div>'
+        + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · ' + prModalTxt(prModal) + (window.acgolfTorneo ? ' · ' + (window.acgolfTorneo.con ? 'con marcador' : 'sin marcador') : '') + ' · hoy</div>'
         + (llenos.length > GRUPOS_EN_PESTANAS && !prParejas() && !prTodos().some(prEsInv)
             ? llenos.map((g, i) => '<div class="pr-r-linea"><b>Grupo ' + (i + 1) + '</b> ' + g.map(n => { const w = String(n).trim().split(/\s+/); return prEsc(w.length > 2 ? w.slice(0, -1).join(' ') : w.join(' ')); }).join(', ') + '</div>').join('')
             : llenos.map((g, i) => (llenos.length > 1 ? '<div class="pr-r-grupo">Grupo ' + (i + 1) + '</div>' : '')
@@ -241,6 +244,7 @@
       if(k === 'punt') prPunt = v;
       if(k === 'hoyos') prHoyos = Number(v);
       if(k === 'modal') prModal = v;
+      if(k === 'torneo' && window.acgolfTorneo) window.acgolfTorneo.con = v === '1';
       if(k === 'grupos') prCambiarNGrupos(Number(v));
       prPintar();
     }));
