@@ -1,0 +1,6 @@
+-- 2026-10-10 · PRUEBAS / acgolf.es: plantillas de correo (Authentication → Emails), cambiadas en el panel
+-- Ya no dicen «Los Iscariotes» (sirven para todos los grupos) y tienen estilo de aviso de cuenta, sin emojis:
+--   Confirmar cuenta ......... «Confirma tu correo en acgolf»
+--   Contraseña nueva ......... «Tu contraseña nueva de acgolf»
+--   Enlace (partida/convoc.) . «Tu enlace para entrar en acgolf»
+-- Remitente: avisos@acgolf.es (Brevo). Resultado: Gmail los deja en «Notificaciones» en vez de «Promociones».
