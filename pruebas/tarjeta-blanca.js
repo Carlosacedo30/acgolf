@@ -58,22 +58,29 @@
       return w.length > 2 ? w.slice(0, 2).join(' ') : w.join(' ');
     };
     const alPar = s => s.holesFilled === 0 ? '—' : sf ? s.points : (s.scoreDiff === 0 ? 'PAR' : (s.scoreDiff > 0 ? '+' : '') + s.scoreDiff);
+    // Las cervezas: paga la mitad de abajo (si son impares, el del medio se libra)
+    const jugados = lista.filter(s => s.holesFilled > 0);
+    const pagan = jugados.length >= 2 ? Math.floor(jugados.length / 2) : 0;
+    const pagaCerveza = s => pagan > 0 && jugados.indexOf(s) >= jugados.length - pagan;
+    window.tbPaganCervezas = jugados.slice(jugados.length - pagan).map(s => s.name);
     const filas = lista.slice(0, 12).map((s, k) => {
       const jugado = s.holesFilled > 0;
+      const birra = pagaCerveza(s);
       const pos = jugado ? String(k + 1) : ''; // sin empates: a igual resultado, gana el hándicap más bajo (ya viene ordenado así)
       const g = matchGroups[s.group] || {};
       const hcp = s.pIndexes && s.pIndexes.length > 1 ? '' : (g.handicaps && g.handicaps[s.pIndex] != null ? 'HCP ' + Math.round(g.handicaps[s.pIndex]) : '');
       const elegible = s.group === activeGroup;
       const on = elegible && (s.pIndexes ? s.pIndexes.includes(tbDe) : s.pIndex === tbDe);
       const color = !jugado ? '' : sf ? '' : (s.scoreDiff < 0 ? ' bajo' : s.scoreDiff === 0 ? ' par' : '');
-      return '<button type="button" class="tb-cl-fila' + (on ? ' on' : '') + (k === 0 && jugado ? ' lider' : '') + '"' + (elegible ? ' data-p="' + s.pIndex + '"' : ' disabled') + '>'
+      return '<button type="button" class="tb-cl-fila' + (on ? ' on' : '') + (birra ? ' paga' : '') + (k === 0 && jugado ? ' lider' : '') + '"' + (elegible ? ' data-p="' + s.pIndex + '"' : ' disabled') + '>'
         + '<span class="tb-cl-pos">' + pos + '</span>'
-        + '<span class="tb-cl-n"><b>' + esc(nombre(s)) + (variosGrupos ? ' <small>G' + (s.group + 1) + '</small>' : '') + '</b>' + (hcp ? '<small>' + hcp + '</small>' : '') + '</span>'
+        + '<span class="tb-cl-n"><b>' + (birra ? '<em class="tb-birra" aria-label="Paga cerveza">🍺</em>' : '') + esc(nombre(s)) + (hcp ? ' <small class="tb-cl-hcp">' + hcp.replace('HCP ', '') + '</small>' : '') + (variosGrupos ? ' <small>G' + (s.group + 1) + '</small>' : '') + '</b></span>'
         + '<span class="tb-cl-g">' + (jugado ? s.total : '—') + '</span>'
         + '<span class="tb-cl-p' + color + '">' + alPar(s) + '</span>'
         + '<span class="tb-cl-h">' + s.holesFilled + '</span></button>';
     }).join('');
-    box.innerHTML = '<div class="tb-cl"><div class="tb-cl-cab"><span>#</span><span>JUGADOR</span><span>GOLPES</span><span>' + (sf ? 'PUNTOS' : 'AL PAR') + '</span><span>HOYOS</span></div>' + filas + '</div>';
+    box.innerHTML = '<div class="tb-cl"><div class="tb-cl-cab"><span>#</span><span>JUGADOR · HCP</span><span>GOLPES</span><span>' + (sf ? 'PUNTOS' : 'AL PAR') + '</span><span>HOYOS</span></div>' + filas
+      + '</div>';
     box.querySelectorAll('.tb-cl-fila[data-p]').forEach(b => b.addEventListener('click', () => { tbDe = +b.dataset.p; renderHoleView(); }));
   };
 

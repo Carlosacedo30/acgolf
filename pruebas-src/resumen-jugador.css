@@ -62,3 +62,9 @@ html.rj-on .screen[data-screen="4"] .fm-tabla{ background:#F2F4F6 !important; }
 .rj-fila.yo{ background:#E4F5B5; }
 .rj-fila.aparte{ border-top:1px dashed #9AA3AB; border-radius:0 0 10px 10px; }
 .rj-otra{ align-self:flex-start; min-height:48px; padding:0 16px; border-radius:999px; border:2px solid #2E7D32; background:#FFFFFF; color:#2E7D32; font:800 16px 'Barlow', sans-serif; }
+.rj-birra{ background:#FFF4D6; border:2px solid #F0C24B; border-radius:18px; padding:14px; display:flex; flex-direction:column; gap:6px; text-align:center; }
+.rj-birra-t{ font:800 20px 'Barlow', sans-serif; color:#7A5300; }
+.rj-birra-n{ font:800 24px/1.2 'Barlow', sans-serif; color:#111316; }
+.rj-birra-l{ font-size:15px; color:#4A535C; }
+.rj-birra-f{ font-size:15px; font-weight:600; color:#7A5300; }
+.rj-birra-wa{ display:flex; align-items:center; justify-content:center; min-height:50px; border-radius:14px; background:#2E7D32; color:#FFFFFF !important; font:800 17px 'Barlow', sans-serif; text-decoration:none; margin-top:4px; }

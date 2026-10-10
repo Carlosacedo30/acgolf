@@ -62,10 +62,32 @@
     return b;
   }
 
+  // Las cervezas: paga la mitad de abajo de la clasificación (si son impares, el del medio se libra)
+  function cervezas(){
+    if(typeof computeStandings !== 'function' || scoringType === 'matchplay') return '';
+    const jug = computeStandings().filter(s => s.holesFilled > 0);
+    const n = Math.floor(jug.length / 2);
+    if(!n) return '';
+    const pagan = jug.slice(jug.length - n);
+    const libra = jug.length % 2 ? jug[n] : null;
+    const nom = s => String(s.name).includes(' / ') ? nombrePareja(String(s.name).split(' / ')) : corto(s.name);
+    const lista = pagan.map(nom);
+    const y = l => l.length > 1 ? l.slice(0, -1).join(', ') + ' y ' + l[l.length - 1] : l[0];
+    const frases = ['La barra os espera 🍻', 'Que no se calienten 🧊', 'Hoy el green fue cruel, la caña no 😄', 'Pagar también es de caballeros ⛳'];
+    const frase = frases[(new Date().getDate()) % frases.length];
+    const texto = '🍺 *HOY PAGAN LAS CERVEZAS*\n' + lista.map(n => '• ' + n).join('\n')
+      + (libra ? '\n\n😅 Se libra por los pelos: ' + nom(libra) : '') + '\n\n' + frase + '\n' + location.origin + '/';
+    return '<div class="rj-birra"><div class="rj-birra-t">🍺 Hoy pagan las cervezas</div>'
+      + '<div class="rj-birra-n">' + esc(y(lista)) + '</div>'
+      + (libra ? '<div class="rj-birra-l">Se libra por los pelos: <b>' + esc(nom(libra)) + '</b></div>' : '')
+      + '<div class="rj-birra-f">' + esc(frase) + '</div>'
+      + '<a class="rj-birra-wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(texto) + '">Avisar al grupo por WhatsApp</a></div>';
+  }
+
   function botones(){
     const lista = players.map((n, i) => ({ n, i, c: cuentas(i) })).filter(x => x.n);
     const sf = scoringType === 'stableford';
-    return '<div class="rj-t">Toca un jugador para ver su resumen</div><div class="rj-botones">'
+    return cervezas() + '<div class="rj-t">Toca un jugador para ver su resumen</div><div class="rj-botones">'
       + lista.map(x => {
           const dif = x.c.n ? x.c.neto - x.c.par : null;
           const res = !x.c.n ? 'Sin golpes' : sf ? x.c.pts + ' puntos' : x.c.bruto + ' golpes · ' + (dif === 0 ? 'par' : (dif > 0 ? '+' : '') + dif + ' neto');

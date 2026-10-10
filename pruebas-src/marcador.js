@@ -199,13 +199,11 @@
     if(me < 0) return; // no juego en este grupo: se ve como siempre
     if(!(currentRoundCode in modos)){ cargar(true); return; }
     if(!conMarcadorEn(currentRoundCode)){
-      scores.insertAdjacentHTML('beforebegin', '<div class="mk-solo">Partida sin marcador: cada uno apunta sus golpes. No cuenta para la liga.</div>');
-      return;
+      return; // sin marcador: se apunta como siempre
     }
     const n = players.filter(Boolean).length;
     if(n < 2){
-      scores.insertAdjacentHTML('beforebegin', '<div class="mk-solo">Juegas solo: sin marcador, esta tarjeta no cuenta para la liga.</div>');
-      return;
+      return; // juega solo: se apunta como siempre
     }
     if(estCode !== currentRoundCode){ cargar(true); scores.outerHTML = '<div class="mk-p">Cargando marcadores…</div>'; return; }
     const g = grupoEst();

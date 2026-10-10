@@ -155,3 +155,52 @@ html.tb-on .screen[data-screen="3"] .ch, html.tb-on.tb-s3 .cp-aviso{ display:non
 html.tb-on .screen[data-screen="3"] #guardarLuegoBtn{ display:none !important; }
 html.tb-on .screen[data-screen="3"] #finalizarRondaBtn{ flex:1 1 100% !important; width:100%; min-height:60px; display:flex !important; align-items:center; justify-content:center;
   font:800 20px 'Barlow', sans-serif !important; background:#2E7D32 !important; border-color:#2E7D32 !important; color:#FFFFFF !important; border-radius:16px !important; box-shadow:0 3px 0 #1B5E20 !important; }
+
+/* Las cervezas */
+.tb-cl-fila.paga{ background:#FFF4D6; }
+.tb-cl-fila.paga.on{ background:#F3E7A8; }
+.tb-birra{ font-style:normal; margin-right:4px; }
+.tb-cl-birra{ font:700 14px 'Barlow', sans-serif; color:#7A5300; background:#FFF4D6; border-radius:10px; padding:6px 10px; margin:4px 2px 0; text-align:center; }
+
+/* Más compacto: que quepan los 4 jugadores en la pantalla del móvil */
+html.tb-on .screen[data-screen="3"] .app-bar{ padding-top:6px !important; padding-bottom:6px !important; }
+html.tb-on .screen[data-screen="3"] .marcador-section{ padding-top:6px !important; }
+.tb-cl{ padding:4px 3px 3px; }
+.tb-cl-cab{ padding-bottom:2px; font-size:12px; }
+.tb-cl-fila{ min-height:38px; margin-bottom:1px; }
+.tb-cl-n b{ font-size:17px; }
+.tb-cl-n > small{ font-size:12px; line-height:1.1; }
+.tb-cl-g{ font-size:19px; }
+.tb-cl-p{ font-size:20px; }
+html.tb-on .screen[data-screen="3"] #holeViewSection{ padding-top:6px !important; padding-bottom:4px !important; }
+html.tb-on .screen[data-screen="3"] .hole-card-header{ gap:10px !important; margin-bottom:6px; }
+html.tb-on .screen[data-screen="3"] .hole-badge-big{ width:auto !important; height:auto !important; }
+html.tb-on .screen[data-screen="3"] .hole-badge-big .hoyo-num{ font-size:40px !important; }
+html.tb-on .screen[data-screen="3"] .hole-badge-big .hoyo-lbl{ font-size:12px !important; }
+html.tb-on .screen[data-screen="3"] #holeViewSection .hole-meta-item .v{ font-size:26px !important; }
+html.tb-on .screen[data-screen="3"] #holeViewSection .hole-meta-item .k{ font-size:14px !important; }
+html.tb-on .screen[data-screen="3"] .hole-nav-btn{ width:56px !important; height:56px !important; min-width:56px; font-size:34px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-scores{ gap:6px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell{ grid-template-columns:minmax(0, 1fr) 72px 54px !important; grid-template-rows:auto auto !important; row-gap:0 !important; column-gap:8px !important; padding:5px 8px 5px 12px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-n{ grid-row:1 !important; font-size:19px !important; align-self:end; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-tp{ grid-row:2 !important; align-self:start; font-size:15px !important; padding:0 !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-tp b{ font-size:17px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-h, html.tb-on .screen[data-screen="3"] #hvPlayers .hv-pos{ display:none !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box{ grid-row:1 / span 2 !important; width:72px !important; height:56px !important; line-height:56px !important; font-size:34px !important; justify-self:center; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box::placeholder{ font-size:30px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box.tb-eagle, html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box.tb-birdie{ width:56px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .result-box{ grid-row:1 / span 2 !important; width:54px !important; height:56px !important; font-size:18px !important; }
+/* Aún más compacto */
+.tb-cl-fila{ min-height:34px; }
+.tb-cl-hcp{ font-size:13px !important; font-weight:700; color:#5C6670 !important; }
+html.tb-on .screen[data-screen="3"] .hole-nav-btn{ width:52px !important; height:52px !important; min-width:52px; font-size:32px !important; }
+html.tb-on .screen[data-screen="3"] .hole-badge-big .hoyo-num{ font-size:36px !important; }
+html.tb-on .screen[data-screen="3"] #holeViewSection .hole-meta-item .v{ font-size:24px !important; }
+html.tb-on .screen[data-screen="3"] .hole-card-header{ margin-bottom:4px; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell{ padding:4px 8px 4px 12px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box,
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .result-box{ height:50px !important; line-height:50px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box.tb-eagle, html.tb-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box.tb-birdie{ width:50px !important; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-scores{ gap:5px !important; }
+html.tb-on .screen[data-screen="3"] .actions{ padding-top:8px !important; padding-bottom:8px !important; }
+html.tb-on .screen[data-screen="3"] #finalizarRondaBtn{ min-height:52px !important; }
