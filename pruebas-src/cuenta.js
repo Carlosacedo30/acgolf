@@ -464,12 +464,117 @@
     paso1();
   }
 
+  // ---------- Paneles de administración (roles) ----------
+  // super_admin: todos los grupos y usuarios · group_admin: los miembros de su grupo
+  const fecha = d => d ? new Date(d).toLocaleDateString('es-ES', { day:'numeric', month:'short', year:'numeric' }) : '';
+  const ROL = { group_admin: 'Administrador', user: 'Jugador' };
+
+  async function pantallaSuper(perfil, pestana){
+    pestana = pestana || 'grupos';
+    mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1></div><p class="cg-p">Cargando…</p>');
+    const r = await client.rpc(pestana === 'grupos' ? 'sa_grupos' : 'sa_usuarios');
+    if(r.error){ mostrar(cabecera('No se pudo abrir', traducir(r.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>'); $('cgCerrar').onclick = ocultar; return; }
+    const datos = r.data || [];
+    const tabs = '<div class="pa-tabs"><button type="button" data-t="grupos" class="' + (pestana === 'grupos' ? 'on' : '') + '">Grupos</button>'
+      + '<button type="button" data-t="usuarios" class="' + (pestana === 'usuarios' ? 'on' : '') + '">Usuarios</button></div>';
+    let cuerpo = '';
+    if(pestana === 'grupos'){
+      cuerpo = '<div class="pa-lista">' + datos.map(g => '<div class="pa-fila">'
+          + '<div class="pa-fila-t"><b>' + esc(g.nombre) + '</b><span>' + (g.tipo === 'personal' ? 'Espacio personal' : 'Grupo con liga') + ' · ' + g.miembros + ' miembro' + (g.miembros === 1 ? '' : 's') + ' · desde ' + fecha(g.creado) + '</span>'
+          + '<span>Admin: ' + (g.admins.length ? esc(g.admins.join(', ')) : '<i>sin administrador</i>') + '</span></div>'
+          + '<div class="pa-acc"><button type="button" class="pa-b" data-miembros="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Miembros</button>'
+          + (g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="pa-b rojo" data-borrar="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Borrar</button>' : '')
+          + '</div></div>').join('') + '</div>'
+        + '<div class="cg-sep">Crear un grupo nuevo</div>'
+        + '<label class="cg-lbl">Nombre del grupo<input id="paNombre" type="text" maxlength="40"></label>'
+        + '<label class="cg-lbl">Correo de su administrador<small>Opcional. Tiene que tener ya cuenta en acgolf.</small><input id="paAdmin" type="email" autocapitalize="off"></label>'
+        + '<button type="button" class="cg-btn ghost" id="paCrear">Crear el grupo</button>';
+    } else {
+      cuerpo = '<div class="pa-lista">' + datos.map(u => '<div class="pa-fila">'
+          + '<div class="pa-fila-t"><b>' + esc(u.nombre) + (u.super ? ' <em class="pa-super">Super admin</em>' : '') + '</b><span>' + esc(u.email) + '</span>'
+          + (u.grupos.length ? u.grupos.map(g => '<label class="pa-rol">' + esc(g.nombre)
+              + '<select data-u="' + esc(u.id) + '" data-g="' + esc(g.id) + '"><option value="user"' + (g.rol === 'user' ? ' selected' : '') + '>Jugador</option><option value="group_admin"' + (g.rol === 'group_admin' ? ' selected' : '') + '>Administrador</option></select></label>').join('')
+            : '<span><i>Sin grupo todavía</i></span>')
+          + '</div><div class="pa-acc">'
+          + (u.id === (window.miPerfilId || '') ? '' : '<button type="button" class="pa-b" data-super="' + esc(u.id) + '" data-on="' + (u.super ? '1' : '0') + '">' + (u.super ? 'Quitar super' : 'Hacer super') + '</button>')
+          + '</div></div>').join('') + '</div>';
+    }
+    mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1>'
+      + '<p class="cg-sub">' + (pestana === 'grupos' ? datos.length + ' grupos' : datos.length + ' usuarios') + '</p></div>'
+      + tabs + '<div id="cgMsg" class="cg-msg"></div>' + cuerpo
+      + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
+    $('cgCerrar').onclick = ocultar;
+    gate.querySelectorAll('.pa-tabs button').forEach(b => b.onclick = () => pantallaSuper(perfil, b.dataset.t));
+    gate.querySelectorAll('[data-miembros]').forEach(b => b.onclick = () => pantallaMiembros(perfil, b.dataset.miembros, b.dataset.n, true));
+    gate.querySelectorAll('[data-borrar]').forEach(b => b.onclick = async () => {
+      const n = prompt('Para borrar «' + b.dataset.n + '» con todos sus jugadores y partidas, escribe su nombre:');
+      if(n === null) return;
+      if(n.trim().toLowerCase() !== b.dataset.n.trim().toLowerCase()){ msg('El nombre no coincide. No se ha borrado nada.'); return; }
+      const { error } = await client.rpc('sa_borrar_grupo', { p_grupo: b.dataset.borrar });
+      if(error){ msg(traducir(error)); return; }
+      pantallaSuper(perfil, 'grupos');
+    });
+    if($('paCrear')) $('paCrear').onclick = e => ocupado(e.target, async () => {
+      const nombre = $('paNombre').value.trim(); if(!nombre){ msg('Ponle un nombre al grupo.'); return; }
+      const { error } = await client.rpc('sa_crear_grupo', { p_nombre: nombre, p_admin_email: $('paAdmin').value.trim() || null });
+      if(error){ msg(traducir(error)); return; }
+      pantallaSuper(perfil, 'grupos');
+    });
+    gate.querySelectorAll('select[data-u]').forEach(sel => sel.onchange = async () => {
+      sel.disabled = true;
+      const { error } = await client.rpc('sa_cambiar_rol', { p_user: sel.dataset.u, p_rol: sel.value, p_grupo: sel.dataset.g });
+      sel.disabled = false;
+      if(error){ msg(traducir(error)); return; }
+      msg('Rol cambiado.', true);
+    });
+    gate.querySelectorAll('[data-super]').forEach(b => b.onclick = async () => {
+      const quitar = b.dataset.on === '1';
+      if(!confirm(quitar ? '¿Quitarle el super administrador?' : '¿Hacerle super administrador?\nPodrá ver y cambiar todos los grupos y usuarios.')) return;
+      const { error } = await client.rpc('sa_cambiar_rol', { p_user: b.dataset.super, p_rol: quitar ? 'no_super' : 'super_admin' });
+      if(error){ msg(traducir(error)); return; }
+      pantallaSuper(perfil, 'usuarios');
+    });
+  }
+
+  async function pantallaMiembros(perfil, grupoId, grupoNombre, desdeSuper){
+    mostrar(cabecera('Miembros de «' + esc(grupoNombre) + '»', 'Cargando…'));
+    const r = await client.rpc('ga_miembros', { p_grupo: grupoId });
+    if(r.error){ mostrar(cabecera('No se pudo abrir', traducir(r.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver</button>'); $('cgCerrar').onclick = () => desdeSuper ? pantallaSuper(perfil) : panelMiCuenta(perfil); return; }
+    const lista = r.data || [];
+    mostrar('<div class="cg-head"><div class="cg-eyebrow">' + (desdeSuper ? 'Super administrador' : 'Administrador del grupo') + '</div><h1 class="cg-title">' + esc(grupoNombre) + '</h1>'
+      + '<p class="cg-sub">' + lista.length + ' miembro' + (lista.length === 1 ? '' : 's') + '</p></div>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<div class="pa-lista">' + lista.map(m => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(m.nombre) + '</b>'
+          + '<span>' + esc(m.email) + '</span><span>' + ROL[m.rol] + ' · desde ' + fecha(m.desde) + '</span></div>'
+          + '<div class="pa-acc">' + (m.user_id === window.miPerfilId && !desdeSuper ? '<span class="pa-tu">Tú</span>' : '<button type="button" class="pa-b rojo" data-quitar="' + esc(m.user_id) + '" data-n="' + esc(m.nombre) + '">Quitar</button>') + '</div></div>').join('') + '</div>'
+      + '<div class="cg-sep">Añadir a alguien que ya tiene cuenta</div>'
+      + '<label class="cg-lbl">Su correo<small>Si aún no tiene cuenta, mándale el enlace de invitación desde «Mi cuenta».</small><input id="paEmail" type="email" autocapitalize="off" inputmode="email"></label>'
+      + '<button type="button" class="cg-btn ghost" id="paAnadir">Añadir al grupo</button>'
+      + '<button type="button" class="cg-btn" id="cgVolver">Volver</button>');
+    $('cgVolver').onclick = () => desdeSuper ? pantallaSuper(perfil, 'grupos') : panelMiCuenta(perfil);
+    $('paAnadir').onclick = e => ocupado(e.target, async () => {
+      const email = $('paEmail').value.trim(); if(!email){ msg('Escribe su correo.'); return; }
+      const { data, error } = await client.rpc('ga_anadir', { p_grupo: grupoId, p_email: email });
+      if(error){ msg(traducir(error)); return; }
+      await pantallaMiembros(perfil, grupoId, grupoNombre, desdeSuper);
+      msg('Añadido: ' + data, true);
+    });
+    gate.querySelectorAll('[data-quitar]').forEach(b => b.onclick = async () => {
+      if(!confirm('¿Quitar a ' + b.dataset.n + ' del grupo?\nSus partidas jugadas se quedan; él deja de ver el grupo.')) return;
+      const { error } = await client.rpc('ga_quitar', { p_grupo: grupoId, p_user: b.dataset.quitar });
+      if(error){ msg(traducir(error)); return; }
+      pantallaMiembros(perfil, grupoId, grupoNombre, desdeSuper);
+    });
+  }
+
   // ---------- Mi cuenta ----------
   function panelMiCuenta(perfil){
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
       + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
       + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invitar a tu grupo</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
+      + (perfil.es_super ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
+      + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
       + (window.acgolfInstalar ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
@@ -483,6 +588,8 @@
     $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
     if($('cgInstalar')) $('cgInstalar').onclick = () => { ocultar(); window.acgolfInstalar(); };
     if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
+    if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);
+    if($('cgMiembros')) $('cgMiembros').onclick = () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false);
     $('cgClave').onclick = pantallaNuevaClave;
     $('cgSalir').onclick = async () => {
       if(!confirm('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
@@ -573,6 +680,7 @@
     try { localStorage.setItem('acgolfEsAdmin', perfil.es_admin ? '1' : '0'); } catch(e){}
     try { localStorage.setItem('golfAppConvMe', perfil.player_name); } catch(e){} // "quién soy" = el de la cuenta
     window.miPerfil = perfil;
+    window.miPerfilId = session.user && session.user.id;
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }
     botonMiCuenta(perfil);
