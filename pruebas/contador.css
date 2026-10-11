@@ -1,0 +1,13 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Marcador de jugadores (solo super administrador) */
+.ct-caja{ display:flex; align-items:center; gap:14px; width:calc(100% - 32px); max-width:560px; box-sizing:border-box; margin:14px auto 0; padding:12px 16px;
+  border-radius:16px; border:1.5px solid #C6F24E; background:#111316; color:#F2F4F5; cursor:pointer; text-align:left; font-family:'Barlow', system-ui, sans-serif; }
+.ct-num{ font:400 42px/1 'Anton', 'Barlow', sans-serif; color:#C6F24E; min-width:48px; text-align:center; }
+.ct-txt{ display:flex; flex-direction:column; flex:1; min-width:0; }
+.ct-txt b{ font-size:19px; }
+.ct-txt small{ font-size:15px; color:#9AA3AB; margin-top:2px; }
+.ct-flecha{ font-size:28px; color:#9AA3AB; }
+.ct-fila{ display:flex; justify-content:space-between; gap:12px; padding:12px 2px; border-bottom:1px solid rgba(255,255,255,.1); font-size:18px; }
+.ct-fila b{ font-size:20px; color:#C6F24E; }
+.ct-sub{ font-weight:800; font-size:18px; margin:18px 0 2px; }
+.ct-nota{ font-size:15px; color:#9AA3AB; margin:14px 0 4px; }
