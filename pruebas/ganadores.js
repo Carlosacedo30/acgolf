@@ -24,9 +24,9 @@
     const lunes = masDias(base, -7 * atras);
     const hayAntes = masDias(lunes, -7) >= PRIMER_LUNES;
     return '<div class="liga-month gn-pasador">'
-      + '<button type="button" class="hole-nav-btn" id="gnAntes" aria-label="Semana anterior"' + (hayAntes && !cargando ? '' : ' disabled') + '>‹</button>'
+      + '<button type="button" class="hole-nav-btn" id="gnAntes" aria-label="Semana anterior"' + (hayAntes && !cargando ? '' : ' disabled') + '><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg></button>'
       + '<div class="liga-month-txt"><div class="liga-month-label">' + titulo(atras) + '</div><div class="liga-month-sub">' + rango(lunes) + '</div></div>'
-      + '<button type="button" class="hole-nav-btn" id="gnDespues" aria-label="Semana siguiente"' + (atras > 0 && !cargando ? '' : ' disabled') + '>›</button></div>'
+      + '<button type="button" class="hole-nav-btn" id="gnDespues" aria-label="Semana siguiente"' + (atras > 0 && !cargando ? '' : ' disabled') + '><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg></button></div>'
       + (atras > 0 ? '<button type="button" class="nv-hoy" id="gnHoy">Volver a esta semana</button>' : '');
   }
 
@@ -43,6 +43,8 @@
       el.innerHTML = '<div class="eyebrow" style="margin:0 0 8px;">Ganadores de la semana</div><div class="empty-hint">No hubo tarjetas de la liga esa semana.</div>';
     }
     el.insertAdjacentHTML('afterbegin', pasador());
+    const top = el.querySelector('.premio.top .premio-titulo');
+    if(top && atras === 0) top.textContent = 'Va ganando esta semana';
     const fechas = el.querySelector('.premios-fechas'); if(fechas) fechas.textContent = (p && p.tarjetas ? p.tarjetas : 0) + ' tarjetas';
     const ir = n => { if(cargando) return; atras = Math.max(0, n); cargar(); };
     const a = el.querySelector('#gnAntes'), d = el.querySelector('#gnDespues'), h = el.querySelector('#gnHoy');

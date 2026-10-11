@@ -24,9 +24,14 @@
 
   // Pasador de meses de la liga: nombres claros y «Volver a este mes»
   const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const FLECHA_I = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>';
+  const FLECHA_D = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>';
   function pasadorLiga(){
     const lab = $('ligaMonthLabel'), sub = $('ligaMonthSub'), caja = document.querySelector('.liga-month');
     if(!lab || !caja || typeof ligaMonth === 'undefined') return;
+    const pa = $('ligaPrevMonth'), si = $('ligaNextMonth');
+    if(pa && !pa.querySelector('svg')) pa.innerHTML = FLECHA_I;
+    if(si && !si.querySelector('svg')) si.innerHTML = FLECHA_D;
     const hoy = new Date(), dif = (hoy.getFullYear() * 12 + hoy.getMonth()) - (ligaMonth.y * 12 + ligaMonth.m);
     const nombre = MESES[ligaMonth.m].charAt(0).toUpperCase() + MESES[ligaMonth.m].slice(1) + ' ' + ligaMonth.y;
     const titulo = dif <= 0 ? 'Este mes' : dif === 1 ? 'El mes pasado' : nombre;
