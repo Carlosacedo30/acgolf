@@ -19,3 +19,5 @@ body.nv-dentro .cg-barra{ display:none !important; }
 .liga-month-sub{ font-size:16px !important; font-weight:600; color:#9AA3AB !important; }
 .nv-hoy{ display:block; margin:0 auto 14px; min-height:48px; padding:0 22px; border-radius:999px; border:2px solid #C6F24E; background:transparent; color:#C6F24E; font:800 18px 'Barlow', sans-serif; cursor:pointer; }
 .nv-hoy[hidden]{ display:none; }
+/* Sevilla–Betis terminado: fuera del Inicio */
+#hmDerbi{ display:none !important; }
