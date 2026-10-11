@@ -1,0 +1,8 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Aviso dentro de la partida: quién falta por cerrar la tarjeta */
+.ft-aviso{ margin:10px 16px; padding:12px 14px; border-radius:14px; background:#FFF4D6; border:2px solid #E0A800; color:#3A2A00;
+  font:600 17px/1.4 'Barlow', system-ui, sans-serif; }
+.ft-aviso[hidden]{ display:none; }
+.ft-aviso b{ display:block; font-size:18px; font-weight:800; margin-bottom:2px; }
+.ft-aviso i{ font-style:normal; color:#7A5A00; }
+.ft-aviso.ok{ background:#E9F8DC; border-color:#4C9A2A; color:#1E4D0F; }
