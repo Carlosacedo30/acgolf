@@ -18,6 +18,7 @@
   function enInicio(){
     const act = document.querySelector('.screen.active');
     if(act && act.dataset.screen !== '0') return false;
+    if(act && act.dataset.foco) return false; // Ganadores, Medallas o Últimas partidas abiertos desde el Inicio
     return !SECCIONES.some(s => { const o = document.querySelector(s); return o && !o.hidden && o.style.display !== 'none'; });
   }
 

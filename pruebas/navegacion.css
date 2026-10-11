@@ -21,3 +21,17 @@ body.nv-dentro .cg-barra{ display:none !important; }
 .nv-hoy[hidden]{ display:none; }
 /* Sevilla–Betis terminado: fuera del Inicio */
 #hmDerbi{ display:none !important; }
+/* Clasificación: cada jugador en su tarjeta, el líder en verde */
+.screen[data-screen="6"] .leaderboard-row{ background:#1B1E22 !important; border:0 !important; border-radius:16px !important; padding:14px !important; margin-bottom:8px !important; box-shadow:none !important; gap:12px; }
+.screen[data-screen="6"] .leaderboard-pos{ width:32px !important; height:32px !important; background:transparent !important; box-shadow:none !important; color:#C6F24E !important; font:400 24px 'Anton', sans-serif !important; }
+.screen[data-screen="6"] .leaderboard-name{ font-size:19px !important; font-weight:800 !important; color:#F2F4F5 !important; }
+.screen[data-screen="6"] .leaderboard-holes{ font-size:15px !important; font-weight:600; color:#9AA3AB !important; }
+.screen[data-screen="6"] .leaderboard-score{ font:400 26px 'Anton', sans-serif !important; color:#F2F4F5 !important; }
+.screen[data-screen="6"] .leaderboard-row.p1{ background:#C6F24E !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 *{ color:#111316 !important; }
+.screen[data-screen="6"] .leader-tag{ font-size:13px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+/* Ganadores: el pasador encima de los premios */
+.gn-pasador{ margin:0 0 12px; }
+#premiosHome .nv-hoy{ margin-top:-4px; }
+.gn-pasador .liga-month-label{ font-size:24px !important; }
+#premiosHome .premios-grupo{ color:#F2F4F5 !important; }
