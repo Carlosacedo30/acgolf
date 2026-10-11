@@ -5,9 +5,7 @@
 .screen[data-screen="5"] > .actions, .screen[data-screen="6"] > .actions{ display:none !important; }
 .screen[data-screen="5"] .app-bar .back-home, .screen[data-screen="6"] .app-bar .back-home{ display:none !important; }
 /* El botón se queda pegado arriba al bajar por la página */
-.pantalla-volver{ position:sticky; top:calc(env(safe-area-inset-top, 0px) + 8px); z-index:60; box-shadow:0 6px 18px rgba(0,0,0,.35); }
-/* Nombre y grupo, solo en el Inicio */
-body.nv-dentro .cg-barra{ display:none !important; }
+.pantalla-volver{ position:sticky; top:var(--nv-barra); z-index:60; box-shadow:0 6px 18px rgba(0,0,0,.35); }
 .screen[data-screen="5"] .app-bar, .screen[data-screen="6"] .app-bar{ padding-top:calc(env(safe-area-inset-top, 0px) + 16px); }
 /* Ryder: el botón de volver encima de su contenido */
 .ry-ov > .pantalla-volver{ max-width:520px; margin:0 auto 4px; width:100%; box-sizing:border-box; }
@@ -81,3 +79,27 @@ html[data-tema] .screen[data-screen="6"] .leaderboard-row .leaderboard-pos, html
 /* Sin caja alrededor: las tarjetas van sueltas, como en la propuesta */
 html .screen[data-screen="6"] .screen-content > section, html[data-tema] .screen[data-screen="6"] .screen-content > section{ background:transparent !important; box-shadow:none !important; border:0 !important; }
 html .screen[data-screen="0"][data-foco="premios"] #premiosHome, html[data-tema] .screen[data-screen="0"][data-foco="premios"] #premiosHome{ background:transparent !important; box-shadow:none !important; border:0 !important; }
+
+/* ===== Coherencia en toda la app ===== */
+:root{ --nv-barra: calc(env(safe-area-inset-top, 0px) + 64px); }
+/* Nombre y grupo SIEMPRE fijos arriba, en todas las pantallas (también dentro de la partida) */
+.cg-barra{ top:0 !important; padding:calc(env(safe-area-inset-top, 0px) + 8px) 10px 10px !important; z-index:950 !important; }
+body.nv-dentro .cg-barra{ background:rgba(11,13,16,.96); border-bottom:1px solid rgba(255,255,255,.08); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+html.tb-on .cg-mi, html.tb-on .cg-selgrupo{ display:inline-flex !important; }
+/* Nada se esconde debajo de la barra */
+.screen:not([data-screen="0"]) .app-bar{ padding-top:var(--nv-barra) !important; }
+.modal-overlay{ padding-top:calc(var(--nv-barra) + 6px) !important; }
+.derbi-overlay{ padding-top:var(--nv-barra) !important; }
+.ry-ov{ z-index:800 !important; padding-top:calc(var(--nv-barra) + 6px) !important; }
+/* Un único botón de volver, con el mismo aspecto en todas partes */
+.app-bar .back-btn, .nv-volver{ display:flex !important; align-items:center; width:100%; box-sizing:border-box; min-height:56px; margin:0 0 12px !important; padding:0 18px !important;
+  border:2px solid #C6F24E !important; border-radius:999px !important; background:#1B1E22 !important; color:#F2F4F5 !important;
+  font:800 18px 'Barlow', sans-serif !important; letter-spacing:.03em; text-transform:uppercase; text-align:left; cursor:pointer; }
+.nv-volver{ position:sticky; top:0; z-index:5; }
+/* Las ✕ y los «Cerrar» se sustituyen por ese botón */
+.nv-con-volver .conv-close, .nv-con-volver .av-x, .nv-con-volver #normasCerrar, .nv-con-volver #leaguePlayersClose, .nv-con-volver #ctCerrar{ display:none !important; }
+/* Dentro de la partida también se ven el nombre y el grupo */
+html.tb-on.tb-s3 .cg-mi, html.tb-on.tb-s3 .cg-selgrupo, html.tb-on.tb-s4 .cg-mi, html.tb-on.tb-s4 .cg-selgrupo{ display:inline-flex !important; }
+/* Ganadores, Medallas y Últimas partidas (se abren dentro del Inicio): empiezan bajo la barra */
+.screen[data-screen="0"][data-foco] .screen-content{ padding-top:var(--nv-barra) !important; }
+html body .screen:not([data-screen="0"]) .app-bar, html[data-tema] body .screen:not([data-screen="0"]) .app-bar{ padding-top:var(--nv-barra) !important; }

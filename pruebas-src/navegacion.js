@@ -54,7 +54,38 @@
     const h = document.querySelector('.screen[data-screen="6"] .app-bar h1');
     if(h && h.textContent !== 'Clasificación de la liga') h.textContent = 'Clasificación de la liga';
   }
+  // Ventanas que se abren encima: su ✕ o «Cerrar» pasa a ser el mismo botón «‹ Volver» de toda la app, arriba
+  const CIERRES = '.conv-close, .av-x, #normasCerrar, #leaguePlayersClose';
+  function unificarVentanas(){
+    document.querySelectorAll('.modal-overlay:not([hidden]), .av-ov').forEach(ov => {
+      if(ov.querySelector('.pantalla-volver') || ov.querySelector('.nv-volver')) return; // ya tiene su botón
+      const cierre = ov.querySelector(CIERRES);
+      const caja = ov.querySelector('.modal-card, .av-caja');
+      if(!cierre || !caja) return;
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'nv-volver';
+      b.textContent = '‹ Volver';
+      b.onclick = () => cierre.click();
+      caja.insertBefore(b, caja.firstChild);
+      ov.classList.add('nv-con-volver');
+    });
+  }
+  // Mi cuenta: el mismo botón arriba («‹ Volver a la app»)
+  function unificarCuenta(){
+    const gate = document.getElementById('cuentaGate');
+    if(!gate || gate.hidden) return;
+    const cerrar = gate.querySelector('#cgCerrar'), card = gate.querySelector('.cg-card');
+    if(!cerrar || !card || card.querySelector('.nv-volver')) return;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'nv-volver';
+    b.textContent = '‹ Volver a la app';
+    b.onclick = () => cerrar.click();
+    card.insertBefore(b, card.firstChild);
+    cerrar.style.display = 'none';
+  }
   function repasar(){
+    unificarVentanas();
+    unificarCuenta();
     subirDerbi();
     tituloLiga();
     document.body.classList.toggle('nv-dentro', !enInicio());
