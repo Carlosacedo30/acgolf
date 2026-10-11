@@ -4,7 +4,7 @@
 // y esta semana. Al tocarlo, el detalle por grupo.
 (function(){
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  let datos = null;
+  let datos = null, patros = [];
 
   async function cargar(){
     const client = typeof initSupabase === 'function' ? initSupabase() : null;
@@ -12,7 +12,9 @@
     try {
       const { data, error } = await client.rpc('contador_app');
       if(error || !data) return;
-      datos = data; pintar();
+      datos = data;
+      try { const r = await client.rpc('contador_patro'); patros = (r && r.data) || []; } catch(e){ patros = []; }
+      pintar();
     } catch(e){}
   }
   function pintar(){
@@ -42,6 +44,11 @@
       + '<div class="ct-sub">Por grupo</div>'
       + (datos.grupos || []).map(g => fila(g.nombre, g.jugadores)).join('')
       + (datos.solo_personal ? fila('Sin grupo (solo sus partidas)', datos.solo_personal) : '')
+      + '<div class="ct-sub">Patrocinadores · este mes</div>'
+      + (patros.length ? patros.map(p => '<div class="ct-patro"><b>' + esc(p.patrocinador) + '</b>'
+          + fila('Veces que se ha visto', p.vistas_mes) + fila('Toques para ir a su web', p.toques_mes) + fila('Jugadores distintos que tocaron', p.jugadores_toque_mes)
+          + '<small>Desde el principio: ' + p.vistas + ' vistas y ' + p.toques + ' toques.</small></div>').join('')
+        : '<p class="ct-nota">Todavía no hay datos: se empiezan a contar desde hoy.</p>')
       + '<p class="ct-nota">Solo lo ves tú. Cada jugador cuenta una sola vez: en el grupo que tiene abierto (o en el primero al que se unió).</p>'
       + '<button type="button" class="av-btn" id="ctCerrar">Cerrar</button></div>';
     document.body.appendChild(ov);

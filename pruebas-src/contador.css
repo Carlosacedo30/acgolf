@@ -11,3 +11,6 @@
 .ct-fila b{ font-size:20px; color:#C6F24E; }
 .ct-sub{ font-weight:800; font-size:18px; margin:18px 0 2px; }
 .ct-nota{ font-size:15px; color:#9AA3AB; margin:14px 0 4px; }
+.ct-patro{ margin-top:8px; }
+.ct-patro > b{ display:block; font-size:18px; margin-top:6px; }
+.ct-patro small{ display:block; font-size:14px; color:#9AA3AB; margin-top:6px; }
