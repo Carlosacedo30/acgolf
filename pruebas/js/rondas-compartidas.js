@@ -8,6 +8,7 @@
   let realtimeChannel = null;
   let suppressRemoteEcho = false;
   let saveTimer = null;
+  let misGolpesHasta = 0; // hasta cuándo manda lo que se acaba de anotar en este móvil
 
   function initSupabase(){
     if(!sb && window.supabase && window.supabase.createClient){
@@ -266,9 +267,15 @@
     if(realtimeChannel){ client.removeChannel(realtimeChannel); realtimeChannel = null; }
     realtimeChannel = client.channel('round-' + id)
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rounds', filter: 'id=eq.' + id }, payload => {
-        if(suppressRemoteEcho) return;
         const row = payload.new;
         if(!row || !row.match_groups) return;
+        // Mientras este móvil está guardando, sus golpes mandan: de lo recibido solo se toman los OTROS grupos
+        if(suppressRemoteEcho || Date.now() < misGolpesHasta){
+          const nuevos = normalizeMatchGroups(row.match_groups);
+          nuevos.forEach((g, i) => { if(i !== activeGroup && matchGroups[i]) matchGroups[i] = g; });
+          if(typeof renderHoleView === 'function') renderHoleView();
+          return;
+        }
         matchGroups = normalizeMatchGroups(row.match_groups);
         if(row.scoring_type) scoringType = row.scoring_type;
         if(row.round_name) { roundName = row.round_name; updateS3Title(); }
@@ -315,16 +322,25 @@
     if(!currentRoundId) return;
     const client = initSupabase();
     if(!client) return;
+    misGolpesHasta = Date.now() + 3000;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async ()=>{
       suppressRemoteEcho = true;
+      misGolpesHasta = Date.now() + 3000;
       try {
-        await client.from('rounds').update({
-          match_groups: matchGroups,
-          updated_at: new Date().toISOString(),
-        }).eq('id', currentRoundId);
+        // Solo los golpes de MI grupo: así dos grupos anotando a la vez no se borran el uno al otro
+        const { error } = await client.rpc('guardar_golpes_grupo', {
+          p_id: currentRoundId, p_grupo: activeGroup, p_scores: matchGroups[activeGroup].scores || {},
+        });
+        if(error) throw error;
       } catch(e){
-        console.error('No se pudo guardar la partida', e);
+        console.error('No se pudo guardar solo el grupo; se guarda la partida entera', e);
+        try {
+          await client.from('rounds').update({
+            match_groups: matchGroups,
+            updated_at: new Date().toISOString(),
+          }).eq('id', currentRoundId);
+        } catch(e2){ console.error('No se pudo guardar la partida', e2); }
       }
       setTimeout(()=>{ suppressRemoteEcho = false; }, 400);
     }, 600);
