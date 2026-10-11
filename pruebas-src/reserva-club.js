@@ -1,5 +1,5 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
-// --- Pedir la reserva al club desde un partido organizado (solo el administrador) ---
+// --- Pedir la reserva al club desde un partido organizado (solo administradores de grupos con liga) ---
 // En «Organizar partido con amigos» sale el botón «Pedir reserva al club»: abre el correo del móvil
 // con el mensaje ya escrito (día, horas y jugadores apuntados). El administrador solo pulsa «Enviar».
 (function(){
@@ -40,7 +40,8 @@
     const ov = document.getElementById('convOverlay');
     if(!ov || ov.hidden || typeof conv === 'undefined' || !conv) return;
     const p = window.miPerfil;
-    if(!p || !p.es_admin) return;
+    // En «Mis partidas» (espacio personal) todos son administradores de lo suyo: ahí no sale.
+    if(!p || !p.es_admin || p.grupo_tipo !== 'liga') return;
     const acc = ov.querySelector('.conv-actions');
     if(!acc || acc.querySelector('#convReserva')) return;
     const campo = convCourse(conv.courseId);
