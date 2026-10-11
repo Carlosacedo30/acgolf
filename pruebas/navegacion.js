@@ -83,7 +83,17 @@
     card.insertBefore(b, card.firstChild);
     cerrar.style.display = 'none';
   }
+  // Nombre y grupo van dentro de la pantalla que se ve: arriba del todo y se desplazan con ella (no bajan al bajar)
+  function colocarBarra(){
+    const barra = document.querySelector('.cg-barra');
+    if(barra && !barra.id) barra.id = 'cgBarra';
+    // si hay una sección abierta encima (Reglas, Mi hándicap, Ryder…), la barra va dentro de ella
+    const sec = document.querySelector('.ry-ov:not([hidden])') || (() => { const o = document.querySelector('.derbi-overlay:not([hidden])'); return o && o.querySelector('.derbi-card'); })();
+    const sc = sec || document.querySelector('.screen.active .screen-content');
+    if(barra && sc && barra.parentElement !== sc) sc.insertBefore(barra, sc.firstChild);
+  }
   function repasar(){
+    colocarBarra();
     unificarVentanas();
     unificarCuenta();
     subirDerbi();

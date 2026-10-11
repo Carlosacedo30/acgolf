@@ -108,3 +108,18 @@ html body .screen:not([data-screen="0"]) .app-bar, html[data-tema] body .screen:
 .ry-ov > .pantalla-volver{ box-shadow:0 -10px 0 #0B0D10, 0 6px 18px rgba(0,0,0,.35) !important; }
 .ry-ov > .pantalla-volver{ z-index:70 !important; }
 .ry-ov > .ry-caja{ z-index:0; }
+
+/* ===== Nombre y grupo: arriba de cada pantalla, se van con ella al desplazar (no bajan) ===== */
+.screen-content{ position:relative; }
+.cg-barra{ position:absolute !important; top:0 !important; left:0 !important; right:0 !important; z-index:40 !important; background:none !important; border:0 !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+/* Las ventanas que se abren encima ya no necesitan dejar hueco arriba */
+.modal-overlay{ padding-top:calc(env(safe-area-inset-top, 0px) + 16px) !important; }
+.derbi-overlay{ padding-top:0 !important; }
+.ry-ov{ padding-top:calc(env(safe-area-inset-top, 0px) + 14px) !important; }
+/* Botones de volver pegados arriba al bajar */
+.pantalla-volver{ top:calc(env(safe-area-inset-top, 0px) + 8px) !important; }
+.derbi-overlay .pantalla-volver{ top:calc(env(safe-area-inset-top, 0px) + 8px) !important; }
+html .screen[data-foco] .cg-barra{ display:flex !important; }
+.derbi-card{ position:relative; }
+.ry-ov{ padding-top:calc(var(--nv-barra) + 4px) !important; }
+html body .screen[data-screen="0"][data-foco] .screen-content > #cgBarra.cg-barra{ display:flex !important; }
