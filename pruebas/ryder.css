@@ -9,7 +9,7 @@ body.ry-abierta{ overflow:hidden; }
 .ry-caja{ display:flow-root; position:relative; max-width:520px; margin:0 auto; color:#F2F4F5; font-family:'Barlow', system-ui, sans-serif; }
 .ry-x{ position:absolute; top:0; right:0; z-index:2; width:46px; height:46px; border-radius:50%; border:0; background:rgba(255,255,255,.1); color:#F2F4F5; font-size:22px; cursor:pointer; }
 .ry-cargando{ padding:60px 0; text-align:center; font-size:19px; color:#9AA3AB; }
-.ry-tit{ font:400 30px/1.1 'Anton', 'Barlow', sans-serif; letter-spacing:.01em; margin:4px 54px 14px 2px; }
+.ry-tit{ font:400 30px/1.1 'Anton', 'Barlow', sans-serif; letter-spacing:.01em; margin:14px 2px 14px; }
 .ry-p{ font-size:18px; line-height:1.45; color:#C9CFD5; margin:8px 0 14px; }
 .ry-centro{ text-align:center; }
 .ry-nota{ font-size:15px; line-height:1.45; color:#9AA3AB; margin:14px 2px 0; }
@@ -25,7 +25,7 @@ body.ry-abierta{ overflow:hidden; }
 .ry-volver{ border:0; background:none; color:#C6F24E; font:700 18px 'Barlow', sans-serif; padding:10px 0; cursor:pointer; }
 
 /* Cabecera del marcador: los dos equipos */
-.ry-cab{ border-radius:20px; overflow:hidden; margin:52px 0 16px; background:#16191D; border:1px solid rgba(255,255,255,.08); }
+.ry-cab{ border-radius:20px; overflow:hidden; margin:12px 0 16px; background:#16191D; border:1px solid rgba(255,255,255,.08); }
 .ry-cab-t{ padding:14px 16px 10px; text-align:center; font:400 24px/1.1 'Anton', 'Barlow', sans-serif; letter-spacing:.02em; }
 .ry-cab-t small{ display:block; font:600 15px 'Barlow', sans-serif; color:#9AA3AB; margin-top:6px; letter-spacing:0; }
 .ry-pts{ display:grid; grid-template-columns:1fr auto auto 1fr; align-items:stretch; }

@@ -183,7 +183,7 @@
     if(!ov){
       ov = document.createElement('div');
       ov.id = 'ryOverlay'; ov.className = 'ry-ov'; ov.hidden = true;
-      ov.innerHTML = '<div class="ry-caja"><button type="button" class="ry-x" id="ryCerrar" aria-label="Cerrar">✕</button><div id="ryBody"></div></div>';
+      ov.innerHTML = '<button type="button" class="home-volver pantalla-volver" id="ryCerrar">‹ Volver al inicio</button><div class="ry-caja"><div id="ryBody"></div></div>';
       document.body.appendChild(ov);
       $('ryCerrar').onclick = cerrar;
     }
