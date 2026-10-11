@@ -103,3 +103,8 @@ html.tb-on.tb-s3 .cg-mi, html.tb-on.tb-s3 .cg-selgrupo, html.tb-on.tb-s4 .cg-mi,
 /* Ganadores, Medallas y Últimas partidas (se abren dentro del Inicio): empiezan bajo la barra */
 .screen[data-screen="0"][data-foco] .screen-content{ padding-top:var(--nv-barra) !important; }
 html body .screen:not([data-screen="0"]) .app-bar, html[data-tema] body .screen:not([data-screen="0"]) .app-bar{ padding-top:var(--nv-barra) !important; }
+.ry-ov > .pantalla-volver{ top:0 !important; }
+.pantalla-volver, .nv-volver{ background:#1B1E22 !important; }
+.ry-ov > .pantalla-volver{ box-shadow:0 -10px 0 #0B0D10, 0 6px 18px rgba(0,0,0,.35) !important; }
+.ry-ov > .pantalla-volver{ z-index:70 !important; }
+.ry-ov > .ry-caja{ z-index:0; }

@@ -41,7 +41,7 @@
 
   let ryder = null;       // la Ryder que se está viendo
   let canal = null;
-  let vista = 'marcador'; // 'marcador' | 'duelo' | 'crear'
+  let vista = 'marcador'; // 'marcador' | 'duelo' | 'crear' | 'info'
   let dueloIdx = -1, hoyoSel = 0, cuentas = null; // anotando un hoyo: golpes de cada bola
   let borrador = null;    // creando una Ryder nueva
 
@@ -200,6 +200,7 @@
   function cerrar(){ ventana().hidden = true; document.body.classList.remove('ry-abierta'); }
   function pintar(){
     if(vista === 'crear') return pintarCrear();
+    if(vista === 'info') return pintarInfo();
     if(vista === 'duelo' && ryder && ryder.duelos[dueloIdx]) return pintarDuelo();
     vista = 'marcador'; pintarMarcador();
   }
@@ -210,8 +211,10 @@
     if(!ryder){
       body.innerHTML = '<div class="ry-tit">Ryder Cup</div>'
         + '<p class="ry-p">Dos equipos, partidos a match play con hándicap en tres modalidades: foursome, fourball e individuales. Ganar un partido da 1 punto al equipo; empatarlo, medio punto a cada uno.</p>'
+        + '<button type="button" class="ry-info-btn" id="ryInfo"><span aria-hidden="true">i</span>Cómo se juega: modalidades, puntos y quién sale primero</button>'
         + (admin() ? '<button type="button" class="ry-btn" id="ryNueva">Crear una Ryder</button>' : '<p class="ry-p">Todavía no hay ninguna Ryder. La organiza el administrador del grupo.</p>');
       if($('ryNueva')) $('ryNueva').onclick = empezarCrear;
+      $('ryInfo').onclick = verInfo;
       return;
     }
     const m = ryder.meta, p = puntos(ryder), total = ryder.duelos.length;
@@ -223,6 +226,7 @@
       + '<div class="ry-pts"><div class="ry-eq a">' + esc(m.nombreA) + '</div><div class="ry-num a">' + pts(p.A) + '</div><div class="ry-num b">' + pts(p.B) + '</div><div class="ry-eq b">' + esc(m.nombreB) + '</div></div>'
       + '<div class="ry-prev"><span>' + pts(p.pa) + '</span> Previsto <span>' + pts(p.pb) + '</span></div>'
       + '<div class="ry-meta">' + (ganado === 'A' ? '🏆 ¡Ganan los ' + esc(m.nombreA) + '!' : ganado === 'B' ? '🏆 ¡Ganan los ' + esc(m.nombreB) + '!' : ganado === '=' ? 'Empate final' : 'Para ganar: ' + pts(paraGanar) + ' puntos de ' + total) + '</div></div>';
+    h += '<button type="button" class="ry-info-btn" id="ryInfo"><span aria-hidden="true">i</span>Cómo se juega: modalidades, puntos y quién sale primero</button>';
     ORDEN_MODOS.forEach(t => {
       const idx = ryder.duelos.map((d, i) => i).filter(i => ryder.duelos[i].tipo === t);
       if(!idx.length) return;
@@ -247,6 +251,60 @@
     if($('ryMio')) $('ryMio').onclick = () => abrirDuelo(mio);
     if($('ryNueva')) $('ryNueva').onclick = empezarCrear;
     if($('ryBorrar')) $('ryBorrar').onclick = borrar;
+    if($('ryInfo')) $('ryInfo').onclick = verInfo;
+  }
+
+  // ---------- Cómo se juega (información completa) ----------
+  function verInfo(){ vista = 'info'; pintar(); const ov = $('ryOverlay'); if(ov) ov.scrollTop = 0; }
+  function pintarInfo(){
+    const sec = (t, html) => '<details class="ry-det"><summary>' + t + '</summary><div class="ry-det-c">' + html + '</div></details>';
+    $('ryBody').innerHTML = '<button type="button" class="ry-volver" id="ryVolver">‹ ' + (ryder ? 'Marcador' : 'Atrás') + '</button>'
+      + '<div class="ry-tit">Cómo se juega la Ryder</div>'
+      + '<p class="ry-p">Toca cada apartado para abrirlo.</p>'
+      + sec('Qué es y cómo se gana',
+          '<p>Dos equipos se enfrentan en varios partidos. Cada partido es un duelo: un jugador o una pareja de cada equipo.</p>'
+        + '<ul><li><b>Ganar un partido</b> da <b>1 punto</b> a su equipo.</li><li><b>Empatar</b> da <b>½ punto</b> a cada equipo.</li><li>Gana la Ryder el equipo que suma <b>más de la mitad</b> de los puntos en juego. La app te dice arriba cuántos hacen falta.</li></ul>'
+        + '<p>«<b>Previsto</b>» es cómo acabaría si todos los partidos terminaran como van ahora mismo.</p>')
+      + sec('Match play: se juega hoyo a hoyo',
+          '<p>No se suman los golpes de toda la vuelta: <b>cada hoyo es una pequeña batalla</b>.</p>'
+        + '<ul><li>Gana el hoyo quien lo termina en <b>menos golpes netos</b> (descontando los golpes de hándicap que recibe en ese hoyo).</li><li>Si hacen los mismos, el hoyo queda <b>empatado</b> y nadie suma.</li>'
+        + '<li>«<b>2 arriba</b>» quiere decir que un lado lleva dos hoyos ganados más que el otro. «<b>Igualados</b>», que van empatados.</li>'
+        + '<li>El partido <b>acaba antes</b> cuando uno lleva más hoyos de ventaja que hoyos quedan: por ejemplo, «<b>3 y 2</b>» es que ganó con 3 de ventaja y quedaban 2 hoyos.</li>'
+        + '<li>Si tras el 18 siguen igualados, el partido es <b>empate</b> (½ punto para cada equipo).</li></ul>'
+        + '<p><b>Dar por buenos golpes o hoyos.</b> En match play puedes concederle al rival un golpe (por ejemplo, un putt cortito), un hoyo o incluso el partido. Lo concedido no se puede retirar.</p>')
+      + sec('Foursome: una bola por pareja, golpes alternos',
+          '<ul><li>Cada pareja juega <b>una sola bola</b> y los dos compañeros <b>se van turnando</b> los golpes hasta meterla.</li>'
+        + '<li><b>Quién sale en cada hoyo:</b> antes de empezar, la pareja decide quién da la salida en los <b>hoyos impares</b> (1, 3, 5…) y el otro la da en los <b>pares</b> (2, 4, 6…). Así durante todo el partido, aunque el hoyo anterior lo terminara cualquiera.</li>'
+        + '<li>Después de la salida, se sigue alternando: si salió Pepe, el segundo golpe lo da Juan, el tercero Pepe…</li>'
+        + '<li>Los golpes de castigo <b>no cambian el turno</b>.</li>'
+        + '<li>En la app se apunta <b>un número por pareja</b>: los golpes que ha necesitado la bola.</li>'
+        + '<li>Hándicap: la <b>mitad de la suma</b> de los hándicaps de la pareja.</li></ul>')
+      + sec('Fourball: cada uno su bola, cuenta la mejor',
+          '<ul><li>Los cuatro juegan <b>su propia bola</b> todo el hoyo.</li><li>En cada hoyo cuenta el <b>mejor resultado neto</b> de cada pareja, y ese es el que se compara con el mejor de la otra pareja.</li>'
+        + '<li>Dentro de la pareja podéis jugar en el orden que más os convenga.</li>'
+        + '<li>Si un jugador ya no puede mejorar lo de su compañero, puede <b>levantar la bola</b> para no perder tiempo.</li>'
+        + '<li>En la app se apuntan <b>los golpes de los cuatro</b>; la app elige sola la mejor de cada pareja.</li>'
+        + '<li>Hándicap: el <b>90 %</b> del de cada jugador.</li></ul>')
+      + sec('Individuales: uno contra uno',
+          '<ul><li>Un jugador de cada equipo, cada uno con su bola, hoyo a hoyo.</li><li>En la app se apuntan los golpes de los dos.</li><li>Hándicap: el <b>100 %</b> de la diferencia.</li></ul>')
+      + sec('Quién sale primero en el tee',
+          '<ul><li><b>Hoyo 1:</b> se sortea (por ejemplo, con una moneda) qué lado sale primero.</li>'
+        + '<li><b>Desde el hoyo 2:</b> sale primero <b>el lado que ganó el hoyo anterior</b> (se dice que «tiene el honor»).</li>'
+        + '<li>Si el hoyo anterior quedó <b>empatado</b>, sale primero el mismo lado que salió primero en ese hoyo.</li>'
+        + '<li>En <b>foursome</b>, del lado que tiene el honor sale el compañero al que le toca ese hoyo (impares o pares).</li>'
+        + '<li><b>Después de la salida</b> juega primero la bola que está <b>más lejos</b> del hoyo.</li>'
+        + '<li>Si alguien juega cuando no le tocaba, no hay castigo, pero el rival puede pedirle que <b>repita ese golpe</b> en su turno.</li></ul>')
+      + sec('Los golpes de hándicap',
+          '<ul><li>En cada partido, quien tiene el hándicap de juego <b>más bajo juega sin golpes</b>. Los demás reciben la diferencia.</li>'
+        + '<li>Esos golpes se reciben en los <b>hoyos más difíciles</b> del campo (los de dificultad 1, 2, 3…). Si recibes 5 golpes, los recibes en los hoyos de dificultad 1 a 5.</li>'
+        + '<li>No hay que calcular nada: al anotar cada hoyo, la app avisa de <b>quién recibe golpe</b> en ese hoyo y cuenta el resultado neto sola.</li></ul>')
+      + sec('Cómo se anota en la app',
+          '<ul><li>Toca tu partido en el marcador (o «Anotar mi partido»).</li><li>Elige el hoyo arriba y pon los golpes con los botones <b>−</b> y <b>+</b>. Empiezan en el par del hoyo.</li>'
+        + '<li>Pulsa «<b>Guardar hoyo</b>» y pasa solo al siguiente.</li><li>Lo puede anotar cualquiera de los jugadores del partido; el marcador se actualiza en todos los móviles.</li>'
+        + '<li>Si te equivocas, vuelve a ese hoyo y cámbialo, o pulsa «Borrar este hoyo».</li></ul>')
+      + '<button type="button" class="ry-btn" id="ryInfoVolver">' + (ryder ? 'Volver al marcador' : 'Volver') + '</button>';
+    const volver = () => { vista = 'marcador'; pintar(); };
+    $('ryVolver').onclick = volver; $('ryInfoVolver').onclick = volver;
   }
 
   async function borrar(){
