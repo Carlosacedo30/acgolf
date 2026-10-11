@@ -16,7 +16,7 @@
 .av-xl.av-ini{ font-size:48px; width:132px; height:132px; }
 .resumen-avatar.av-foto{ overflow:hidden; padding:0; }
 .resumen-avatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
-.cg-mi.av-con{ display:inline-flex; align-items:center; padding:5px 13px 5px 6px; }
+.cg-mi.av-con{ padding:0 14px 0 5px; }
 .cg-mi .av{ margin-right:.4em; }
 
 /* Ventana para elegir (letra grande: jugadores con gafas de cerca) */

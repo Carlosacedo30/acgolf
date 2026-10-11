@@ -808,17 +808,20 @@
   }
 
   function botonMiCuenta(perfil){
+    // Barra centrada arriba: mi nombre y mi grupo, uno al lado del otro
+    const barra = document.createElement('div');
+    barra.className = 'cg-barra';
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'cg-mi'; b.setAttribute('aria-label', 'Mi cuenta');
     b.textContent = '👤 ' + String(perfil.player_name).split(' ')[0];
     b.onclick = () => panelMiCuenta(perfil);
-    document.body.appendChild(b);
-    if(window.acgolfAvatares) window.acgolfAvatares.recargar();
     const sg = document.createElement('button');
     sg.type = 'button'; sg.className = 'cg-selgrupo'; sg.setAttribute('aria-label', 'Cambiar de grupo');
     sg.textContent = (perfil.grupo_tipo === 'personal' ? '⛳ ' : '🏆 ') + (perfil.grupo || 'Mi grupo') + ' ▾';
     sg.onclick = () => pantallaMisGrupos(perfil);
-    document.body.appendChild(sg);
+    barra.appendChild(b); barra.appendChild(sg);
+    document.body.appendChild(barra);
+    if(window.acgolfAvatares) window.acgolfAvatares.recargar();
   }
 
   // ---------- Arranque ----------
