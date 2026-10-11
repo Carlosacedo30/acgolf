@@ -42,9 +42,12 @@
       el.style.display = '';
       el.innerHTML = '<div class="eyebrow" style="margin:0 0 8px;">Ganadores de la semana</div><div class="empty-hint">No hubo tarjetas de la liga esa semana.</div>';
     }
-    el.insertAdjacentHTML('afterbegin', pasador());
+    el.insertAdjacentHTML('afterbegin', '<h1 class="nv-tit">Ganadores de la semana</h1>' + pasador());
     const top = el.querySelector('.premio.top .premio-titulo');
-    if(top && atras === 0) top.textContent = 'Va ganando esta semana';
+    if(top) top.textContent = atras === 0 ? 'Va ganando' : 'Ganador de la semana';
+    const det = el.querySelector('.premio.top .premio-detalle');
+    if(det && p && p.iscariote) det.textContent = p.iscariote.neto + ' netos';
+    clasifSemana(el, masDias(base, -7 * atras));
     const fechas = el.querySelector('.premios-fechas'); if(fechas) fechas.textContent = (p && p.tarjetas ? p.tarjetas : 0) + ' tarjetas';
     const ir = n => { if(cargando) return; atras = Math.max(0, n); cargar(); };
     const a = el.querySelector('#gnAntes'), d = el.querySelector('#gnDespues'), h = el.querySelector('#gnHoy');
@@ -52,6 +55,32 @@
     if(d) d.onclick = () => ir(atras - 1);
     if(h) h.onclick = () => ir(0);
   };
+
+  // Clasificación de esa semana (de la liga: mejor neto de cada uno), debajo del ganador
+  const corto = n => { const w = String(n || '').trim().split(/\s+/); return w.length > 2 ? w.slice(0, 2).join(' ') : w.join(' '); };
+  const escH = t => String(t == null ? '' : t).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const semCache = {};
+  async function clasifSemana(el, lunes){
+    if(typeof fetchLigaMes !== 'function') return;
+    let filas = semCache[lunes];
+    if(!filas){
+      const meses = [deIso(lunes), deIso(masDias(lunes, 6))];
+      filas = [];
+      for(const d of meses){
+        try {
+          const datos = await fetchLigaMes(d.getFullYear(), d.getMonth());
+          const sem = ((datos && datos.semanas) || []).find(x => String(x.desde).slice(0, 10) === lunes);
+          if(sem && sem.clasificacion && sem.clasificacion.length){ filas = sem.clasificacion; break; }
+        } catch(e){}
+      }
+      semCache[lunes] = filas;
+    }
+    if(!filas.length || masDias(base, -7 * atras) !== lunes) return;
+    const viejo = el.querySelector('.gn-lista'); if(viejo) viejo.remove();
+    const html = '<div class="gn-lista">' + filas.map(f => '<div class="gn-fila"><span class="gn-pos">' + escH(f.pos) + '</span><span class="gn-nom">' + escH(corto(f.jugador)) + '</span><span class="gn-neto">' + escH(f.neto) + ' netos</span></div>').join('') + '</div>';
+    const top = el.querySelector('.premio.top');
+    if(top) top.insertAdjacentHTML('afterend', html);
+  }
 
   function cargar(){
     const client = initSupabase(); if(!client || !base) return;

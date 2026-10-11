@@ -56,3 +56,28 @@ html .liga-month .hole-nav-btn:disabled, html[data-tema] .liga-month .hole-nav-b
 #premiosHome .premio.top .premio-quien{ font:400 32px/1.05 'Anton', sans-serif !important; margin:4px 0 2px; }
 #premiosHome .premio.top .premio-detalle{ font-size:17px !important; font-weight:700; }
 #premiosHome .premios-lista{ display:flex; flex-direction:column; gap:8px; }
+/* ===== Clasificación y Ganadores: como la primera propuesta ===== */
+.screen[data-screen="6"] .app-bar .meta{ display:none !important; }
+.screen[data-screen="6"] .app-bar h1, .nv-tit{ font:400 34px/1.05 'Anton', sans-serif !important; letter-spacing:.01em !important; text-transform:none !important; color:#F2F4F5 !important; margin:0 0 14px !important; }
+.screen[data-screen="6"] .leaderboard-row.p1{ background:#1B1E22 !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 *{ color:inherit !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-name{ color:#F2F4F5 !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-holes{ color:#9AA3AB !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-score{ color:#F2F4F5 !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-pos{ color:#C6F24E !important; }
+.screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-pos svg{ display:none; }
+.screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-pos::after{ content:'1'; }
+.screen[data-screen="6"] .leader-tag{ display:none !important; }
+.screen[data-screen="6"] .liga-pts{ font:600 14px 'Barlow', sans-serif; color:#9AA3AB !important; margin-left:3px; }
+#premiosHome .premios-head{ display:none !important; }
+.gn-lista{ display:flex; flex-direction:column; gap:8px; margin:8px 0; }
+.gn-fila{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:16px; background:#1B1E22; color:#F2F4F5; font-family:'Barlow', sans-serif; }
+.gn-pos{ width:28px; text-align:center; font:400 24px 'Anton', sans-serif; color:#C6F24E; }
+.gn-nom{ flex:1; min-width:0; font-size:19px; font-weight:800; }
+.gn-neto{ font-size:17px; font-weight:700; color:#9AA3AB; }
+html[data-tema] .screen[data-screen="6"] .leaderboard-row.p1, html .screen[data-screen="6"] .leaderboard-row.p1{ box-shadow:none !important; border:0 !important; background:#1B1E22 !important; }
+html[data-tema] .screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-pos, html .screen[data-screen="6"] .leaderboard-row.p1 .leaderboard-pos{ background:transparent !important; box-shadow:none !important; width:32px !important; height:32px !important; }
+html[data-tema] .screen[data-screen="6"] .leaderboard-row .leaderboard-pos, html .screen[data-screen="6"] .leaderboard-row .leaderboard-pos{ background:transparent !important; box-shadow:none !important; border:0 !important; }
+/* Sin caja alrededor: las tarjetas van sueltas, como en la propuesta */
+html .screen[data-screen="6"] .screen-content > section, html[data-tema] .screen[data-screen="6"] .screen-content > section{ background:transparent !important; box-shadow:none !important; border:0 !important; }
+html .screen[data-screen="0"][data-foco="premios"] #premiosHome, html[data-tema] .screen[data-screen="0"][data-foco="premios"] #premiosHome{ background:transparent !important; box-shadow:none !important; border:0 !important; }

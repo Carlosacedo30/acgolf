@@ -49,8 +49,14 @@
     hoyBtn.hidden = dif <= 0;
   }
 
+  // Clasificación: título como en la propuesta
+  function tituloLiga(){
+    const h = document.querySelector('.screen[data-screen="6"] .app-bar h1');
+    if(h && h.textContent !== 'Clasificación de la liga') h.textContent = 'Clasificación de la liga';
+  }
   function repasar(){
     subirDerbi();
+    tituloLiga();
     document.body.classList.toggle('nv-dentro', !enInicio());
     pasadorLiga();
   }
