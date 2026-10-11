@@ -1,0 +1,22 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Inicio: CREAR PARTIDA protagonista y el próximo partido en tarjeta discreta */
+#prAbrirBtn.pr-abrir{ min-height:84px !important; font-size:clamp(22px, 7.5vw, 30px) !important; letter-spacing:.05em; box-shadow:0 10px 28px rgba(198,242,78,.22) !important; margin-bottom:14px !important; }
+#convHome{ display:flex; flex-direction:column; gap:10px; margin-bottom:14px; }
+.ip-card{ border-radius:20px; background:#1B1E22; border:1px solid rgba(255,255,255,.08); padding:14px 14px 14px 16px; display:flex; flex-direction:column; gap:10px; color:#F2F4F5; font-family:'Barlow', system-ui, sans-serif; }
+.ip-card.hoy{ border-color:#C6F24E; }
+.ip-fila{ display:flex; align-items:center; gap:12px; }
+.ip-info{ flex:1; min-width:0; cursor:pointer; }
+.ip-eti{ font-size:13px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#9AA3AB; }
+.ip-card.hoy .ip-eti{ color:#C6F24E; }
+.ip-cuando{ font-size:19px; font-weight:800; margin-top:2px; }
+.ip-pie{ font-size:15px; color:#9AA3AB; margin-top:1px; }
+.ip-apuntar{ flex:none; min-height:48px; padding:0 16px; border-radius:999px; border:2px solid #C6F24E; background:transparent; color:#C6F24E; font:800 17px 'Barlow', sans-serif; cursor:pointer; }
+.ip-ok{ flex:none; color:#C6F24E; font:800 17px 'Barlow', sans-serif; }
+.ip-horas{ display:grid; grid-template-columns:repeat(auto-fit, minmax(84px, 1fr)); gap:8px; }
+.ip-hora{ min-height:48px; border-radius:14px; border:2px solid #3A3F46; background:transparent; color:#F2F4F5; font:800 18px 'Barlow', sans-serif; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.ip-hora small{ font-size:12px; color:#9AA3AB; font-weight:700; }
+.ip-hora.sel{ border-color:#C6F24E; color:#C6F24E; }
+.ip-hora.no{ color:#9AA3AB; font-size:16px; }
+.ip-hora:disabled{ opacity:.45; }
+.ip-cambiar{ align-self:flex-start; min-height:40px; padding:0; border:0; background:transparent; color:#9AA3AB; font:700 15px 'Barlow', sans-serif; text-decoration:underline; cursor:pointer; }
+.ip-nuevo .conv-home-new{ width:100%; }
