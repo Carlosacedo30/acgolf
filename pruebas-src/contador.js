@@ -41,8 +41,8 @@
       + (datos.sin_terminar ? fila('Cuentas a medio crear', datos.sin_terminar) : '')
       + '<div class="ct-sub">Por grupo</div>'
       + (datos.grupos || []).map(g => fila(g.nombre, g.jugadores)).join('')
-      + (datos.solo_personal ? fila('Solo con sus partidas (sin grupo)', datos.solo_personal) : '')
-      + '<p class="ct-nota">Solo lo ves tú. Un jugador cuenta en cada grupo en el que está.</p>'
+      + (datos.solo_personal ? fila('Sin grupo (solo sus partidas)', datos.solo_personal) : '')
+      + '<p class="ct-nota">Solo lo ves tú. Cada jugador cuenta una sola vez: en el grupo que tiene abierto (o en el primero al que se unió).</p>'
       + '<button type="button" class="av-btn" id="ctCerrar">Cerrar</button></div>';
     document.body.appendChild(ov);
     const cerrar = () => ov.remove();
