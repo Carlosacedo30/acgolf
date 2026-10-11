@@ -645,6 +645,7 @@
   /* Premios de la semana (Inicio) */
   .premios-card{ background:linear-gradient(160deg, var(--gold-soft-bg), #15294D 70%); }
   .premios-fechas{ font-size:12px; color:#9FACC2; margin-top:2px; }
+  .premios-grupo{ font-family:'Anton', sans-serif; font-size:20px; letter-spacing:.02em; color:var(--gold-fg); margin-top:4px; line-height:1.1; }
   .premios-lista{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
   .premio{ display:flex; gap:12px; align-items:flex-start; padding:10px 12px; border-radius:var(--r-md, 12px); background:#15294D; box-shadow:0 1px 2px rgba(23,33,46,0.05); }
   .premio.top{ border:1.5px solid var(--gold-bd); }
@@ -924,6 +925,7 @@
   /* 4. Ganadores y premio de la semana en claro */
   .screen[data-screen="0"] .premios-card{ background:#FFFFFF; }
   .screen[data-screen="0"] .premios-fechas{ color:#5A6478; }
+  .screen[data-screen="0"] .premios-grupo{ color:#15294D; }
   .screen[data-screen="0"] .premio{ background:#F7F5EF; box-shadow:none; }
   .screen[data-screen="0"] .premio.top{ border-color:#D4AF37; }
   .screen[data-screen="0"] .sponsor-card{ background:#FFFFFF; align-items:stretch; text-align:left; gap:0; }

@@ -16,6 +16,10 @@
     return n > 0 ? '+' + n : String(n);
   }
 
+  function premiosEsc(t){
+    return String(t).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+  }
+
   // Lista de premios lista para pintar o para compartir (solo los que tienen ganador)
   function premiosLista(p){
     const out = [];
@@ -35,7 +39,7 @@
 
   function premiosTextoWhatsApp(p){
     const lista = premiosLista(p);
-    return '🏆 *PREMIOS DE LA SEMANA* · ' + premiosFecha(p.desde) + ' – ' + premiosFecha(p.hasta) + '\n'
+    return '🏆 *PREMIOS DE LA SEMANA*' + (p.grupo ? ' · *' + p.grupo + '*' : '') + '\n📅 ' + premiosFecha(p.desde) + ' – ' + premiosFecha(p.hasta) + '\n'
       + lista.map(x => '\n' + x.wa + ' *' + x.titulo + '*\n' + x.quien + ' — ' + x.detalle + (x.regalo ? '\n🎁 ' + x.regalo : '')).join('\n')
       + '\n\n⛳ ' + p.tarjetas + ' tarjetas jugadas. ¡A por la próxima semana!'
       + ((typeof PATROCINADOR !== 'undefined' && PATROCINADOR) ? '\n\n🤝 Premios patrocinados por *' + PATROCINADOR.nombre + '* 👉 ' + PATROCINADOR.web : '')
@@ -52,6 +56,7 @@
     el.innerHTML =
       '<div class="premios-head">'
       + '<div><div class="eyebrow" style="margin:0;">' + icono('trofeo') + ' Ganadores de la semana</div>'
+      + (p.grupo ? '<div class="premios-grupo">' + premiosEsc(p.grupo) + '</div>' : '')
       + '<div class="premios-fechas">' + premiosFecha(p.desde) + ' – ' + premiosFecha(p.hasta) + ' · ' + p.tarjetas + ' tarjetas</div></div>'
       + '</div>'
       + '<div class="premios-lista">' + lista.map((x, i) =>
