@@ -9,19 +9,30 @@
   };
   const yaPedida = c => { try { return localStorage.getItem('acgolfReserva_' + c) === '1'; } catch(e){ return false; } };
   const marcarPedida = c => { try { localStorage.setItem('acgolfReserva_' + c, '1'); } catch(e){} };
+  // Teléfono del administrador para que el club confirme (se pregunta una vez y el móvil lo recuerda)
+  const telGuardado = () => { try { return localStorage.getItem('acgolfTelReservas') || ''; } catch(e){ return ''; } };
+  function pedirTel(){
+    const t = prompt('¿A qué teléfono puede llamarte el club para confirmar la reserva?\n(Solo se pregunta una vez; el móvil lo recuerda.)', telGuardado());
+    if(t === null) return null;
+    const limpio = t.trim();
+    try { localStorage.setItem('acgolfTelReservas', limpio); } catch(e){}
+    return limpio;
+  }
 
-  function mensaje(c, campo){
+  function mensaje(c, campo, tel){
     const salidas = c.times.map((t, i) => ({ etq: convEtq(c, i), jug: c.groups[i] || [] })).filter(s => s.jug.length);
     const total = salidas.reduce((n, s) => n + s.jug.length, 0);
     const grupo = (window.miPerfil && window.miPerfil.grupo) || 'Los Iscariotes';
     const yo = (window.miPerfil && window.miPerfil.player_name) || '';
     const asunto = 'Reserva de salida · ' + convLongDate(c.date) + ' · ' + total + ' jugadores';
-    const cuerpo = 'Buenos días:\n\n'
+    const cuerpo = 'Hola, buenos días, equipo de ' + campo.name + ':\n\n'
+      + 'Os escribimos desde el grupo de golf «' + grupo + '», ¡esperamos que estéis muy bien!\n\n'
       + 'Queríamos reservar salida en ' + campo.name + ' para el ' + convLongDate(c.date).toLowerCase().replace(',', '')
       + (typeof convAlTiro === 'function' && convAlTiro(c) ? ', salida al tiro a las ' + convTime(c.times[0]) : '') + ':\n\n'
       + salidas.map(s => '· ' + s.etq + ' — ' + s.jug.length + (s.jug.length === 1 ? ' jugador: ' : ' jugadores: ') + s.jug.join(', ')).join('\n')
-      + '\n\nSomos el grupo «' + grupo + '». En total, ' + total + (total === 1 ? ' jugador.' : ' jugadores.')
-      + '\n\n¿Nos podéis confirmar la reserva, por favor?\n\nMuchas gracias. Un saludo,\n' + yo;
+      + '\n\nEn total, ' + total + (total === 1 ? ' jugador.' : ' jugadores.')
+      + '\n\nPara confirmar la reserva, podéis llamarme' + (tel ? ' al ' + tel : '') + ' o responder a este correo.'
+      + '\n\nMuchas gracias de antemano. Un saludo muy cordial,\n' + yo;
     return { asunto, cuerpo, total };
   }
 
@@ -41,8 +52,10 @@
     a.textContent = pedida ? '✓ Reserva pedida al club (volver a pedir)' : '📧 Pedir reserva al club';
     const codigo = conv.code;
     a.addEventListener('click', ev => {
-      const m = mensaje(conv, campo);
-      if(!m.total){ ev.preventDefault(); alert('Todavía no hay nadie apuntado. Pide la reserva cuando estén los jugadores.'); return; }
+      if(!(conv.groups || []).some(g => g && g.length)){ ev.preventDefault(); alert('Todavía no hay nadie apuntado. Pide la reserva cuando estén los jugadores.'); return; }
+      let tel = telGuardado();
+      if(!tel){ tel = pedirTel(); if(tel === null){ ev.preventDefault(); return; } }
+      const m = mensaje(conv, campo, tel);
       if(!confirm('Se abrirá tu correo con el mensaje para ' + campo.name + ' (' + correo + '):\n\n' + m.cuerpo + '\n\nRevísalo y pulsa «Enviar».')){ ev.preventDefault(); return; }
       a.href = 'mailto:' + correo + '?subject=' + encodeURIComponent(m.asunto) + '&body=' + encodeURIComponent(m.cuerpo);
       marcarPedida(codigo);
