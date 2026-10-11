@@ -113,8 +113,22 @@
     return !m.hecho && /^los iscariotes$/i.test(String(perfil && perfil.grupo || '').trim());
   }
 
+  // Pantalla de la liga con el nombre del grupo (y su campeón de la semana)
+  function nombreLiga(grupo){
+    window.acgolfGrupo = grupo;
+    const pant = document.querySelector('.screen[data-screen="6"] .app-bar');
+    if(!pant) return;
+    const h = pant.querySelector('h1');
+    if(h) h.textContent = 'Liga de ' + grupo;
+    const meta = pant.querySelector('.meta');
+    const camp = (typeof premiosCampeon === 'function') ? premiosCampeon(grupo) : 'Campeón';
+    if(meta) meta.textContent = camp + ' cada semana · campeón del mes por puntos';
+    if(typeof renderPremios === 'function') renderPremios();
+  }
+
   // Pinta la portada del grupo en la pantalla de inicio
   function aplicar(perfil){
+    if(perfil && perfil.grupo_tipo !== 'personal' && perfil.grupo) nombreLiga(perfil.grupo);
     if(!perfil || esPortadaOriginal(perfil)) return;
     const cab = document.querySelector('.home-cab');
     if(!cab) return;

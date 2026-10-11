@@ -20,10 +20,20 @@
     return String(t).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
   }
 
+  // Nombre del campeón según el grupo: "Los Iscariotes" → Iscariote, "Cajapollos" → Cajapollo.
+  // Si el nombre es de varias palabras, "Campeón".
+  function premiosCampeon(grupo){
+    const n = String(grupo || 'Los Iscariotes').trim().replace(/^(los|las|el|la)\s+/i, '');
+    if(!n || /\s/.test(n)) return 'Campeón';
+    const uno = n.replace(/s$/i, '');
+    return uno.charAt(0).toUpperCase() + uno.slice(1);
+  }
+  window.premiosCampeon = premiosCampeon;
+
   // Lista de premios lista para pintar o para compartir (solo los que tienen ganador)
   function premiosLista(p){
     const out = [];
-    if(p.iscariote) out.push({ ico:'corona', wa:'👑', titulo:'Iscariote de la semana', quien:p.iscariote.jugador,
+    if(p.iscariote) out.push({ ico:'corona', wa:'👑', titulo: premiosCampeon(p.grupo) + ' de la semana', quien:p.iscariote.jugador,
       detalle: p.iscariote.neto + ' netos (' + p.iscariote.bruto + ' golpes − ' + p.iscariote.hcp + ' de hándicap)',
       regalo: (typeof PATROCINADOR !== 'undefined' && PATROCINADOR) ? PATROCINADOR.premioIscariote : '' });
     if(p.mejora) out.push({ ico:'sube', wa:'📈', titulo:'El que más mejora', quien:p.mejora.jugador,
