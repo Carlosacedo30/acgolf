@@ -56,7 +56,7 @@
       '<b>«Crear partida»</b>: el botón grande, para empezar a jugar.',
       'Debajo, los <b>partidos organizados</b> con amigos, para apuntarte.',
       '<b>«Clasificación liga»</b>, <b>«Ganadores de la semana»</b>, <b>«Medallas nuevas»</b>, <b>«Mi hándicap»</b>, <b>«¿Cómo jugué?»</b> y <b>«Últimas partidas»</b>: toda la información de la liga.',
-      '<b>«Ryder Cup»</b> y <b>«Ligas»</b>: los torneos especiales del grupo.',
+      '<b>«Ryder Cup»</b>: el torneo por equipos del grupo.',
       '<b>«Reglas de golf»</b>, <b>«Consejos de golf»</b> e <b>«Historia del golf»</b>: para consultar y aprender.',
       'Desde cualquier pantalla, el botón <b>«‹ Volver al inicio»</b> te devuelve aquí.' ]},
 
@@ -100,7 +100,7 @@
       'Si a alguien le falta algún hoyo, la app te avisa para que lo revises.',
       'Arriba de la tarjeta ves quién <b>falta por cerrarla</b> y cuántos hoyos lleva.',
       'Las partidas normales <b>cuentan solas para la liga</b>: no hay que firmar ni entregar nada.' ]},
-    { ico:'grupo', t:'Partidas de una liga (con marcador)', sub:'Solo en las jornadas de «Ligas»', pasos:[
+    { ico:'grupo', t:'Partidas de una liga (con marcador)', sub:'Solo en las jornadas de una liga', pasos:[
       'Antes de empezar, el grupo elige <b>quién marca a quién</b>. Toca para cambiarlo y pulsa <b>«Empezar a jugar»</b>.',
       'Cada uno apunta en su móvil <b>sus golpes y los del jugador al que marca</b>.',
       'En cada hoyo verás <b>✅ Coincide</b> o <b>⚠️ No coincide</b>. Si no coincide, hablad y corregid el hoyo.',
@@ -127,10 +127,10 @@
     { ico:'medalla', t:'Medallas', sub:'Logros que vas ganando', pasos:[
       'Se ganan solas con tus tarjetas de la liga: no hay que apuntar nada.',
       'Las nuevas de la semana salen en <b>«Medallas nuevas»</b>. Toda tu vitrina está en la clasificación de la liga, tocando tu nombre.' ]},
-    { ico:'ryder', t:'Ryder Cup y Ligas', sub:'Torneos especiales del grupo', pasos:[
-      'Los crea el administrador. Tú solo tienes que entrar en <b>«Ryder Cup»</b> o en <b>«Ligas»</b> desde el Inicio.',
+    { ico:'ryder', t:'Ryder Cup y ligas', sub:'Torneos especiales del grupo', pasos:[
+      'Los organiza el administrador del grupo. Tú solo tienes que apuntarte y jugar.',
       'En la <b>Ryder Cup</b> ves los dos equipos, el marcador y tu partido. Dentro tienes <b>«Qué es y cómo se gana»</b> explicado fácil.',
-      'En <b>Ligas</b> ves el calendario de jornadas, la clasificación por puntos y el partido de cada jornada.' ]},
+      'En una <b>liga</b>, cada jornada te sale en el Inicio como un partido más, con tu hora y tu grupo ya puestos.' ]},
 
     { sec:'Tu cuenta' },
     { ico:'persona', t:'Mi cuenta', sub:'Toca tu nombre arriba', pasos:[
@@ -185,7 +185,7 @@
 
     { sec:'Torneos' },
     { ico:'calendario', t:'Crear una liga', sub:'Varias jornadas con clasificación', pasos:[
-      'En el Inicio pulsa <b>«Ligas»</b> y luego <b>«＋ Crear liga»</b>.',
+      'En el Inicio pulsa <b>«Ligas»</b> (solo lo ven los administradores) y luego <b>«＋ Crear liga»</b>.',
       'Ponle <b>nombre</b> y toca los <b>jugadores</b>.',
       'Elige cuántas <b>jornadas</b>, si se juega en <b>sábado o domingo</b>, <b>cada semana o cada 15 días</b>, el <b>campo</b> y la <b>primera hora</b>.',
       'Elige la salida: <b>por un hoyo</b> (una partida cada 10 minutos) o <b>al tiro</b> (todos a la vez, cada grupo en un hoyo).',
