@@ -2,7 +2,7 @@
 // --- Modalidad «Scramble» por parejas (versión de pruebas y acgolf.es) ---
 // · Salen los dos, la pareja elige la mejor bola y los dos juegan desde ahí: un solo resultado por pareja.
 // · Siempre por puntos (Stableford).
-// · La app iguala las parejas por hándicap: junta al de menos hándicap con el de más, el segundo con el penúltimo…
+// · Las parejas las elige quien crea la partida, como en el Foursome: 1º y 2º = Pareja A, 3º y 4º = Pareja B.
 // · Golpes de la pareja (recomendación oficial para scramble de 2): 35 % del hándicap de juego más bajo
 //   + 15 % del más alto, desde amarillas.
 // Por dentro funciona como el Foursome (una «persona» por pareja), así que se anota con la pantalla de siempre.
@@ -76,45 +76,10 @@
     });
   };
 
-  // 4) Crear partida rápida
-  let variante = 0;      // «Cambiar parejas»: otra combinación igualada
-  let firma = '';        // jugadores con los que se hicieron las parejas
-  function igualarParejas(){
-    const todos = prTodos().slice().sort((a, b) => prHcp(a) - prHcp(b) || String(a).localeCompare(String(b), 'es'));
-    const m = Math.floor(todos.length / 2);
-    const bajos = todos.slice(0, m), altos = todos.slice(m).reverse(); // altos[0] = el de más hándicap
-    const parejas = bajos.map((n, i) => [n, altos[(i + variante) % m]]);
-    const grupos = [];
-    for(let i = 0; i < parejas.length; i += 2) grupos.push(parejas.slice(i, i + 2).reduce((a, p) => a.concat(p), []));
-    prGrupos = grupos.length ? grupos : [[]];
-    prNGrupos = prGrupos.length;
-    prGrupo = 0;
-    prElegidos = prGrupos[0];
-  }
-  const firmaDe = () => prTodos().slice().sort().join('|');
-
-  const errorBase = prErrorParejas;
-  window.prErrorParejas = function(){
-    if(!esScramble()) return errorBase.apply(this, arguments);
-    const n = prTodos().length;
-    if(n < 2) return 'Scramble: hacen falta al menos 2 jugadores.';
-    if(n % 2) return 'Scramble por parejas: tiene que ser un número par de jugadores (llevas ' + n + ').';
-    return '';
-  };
-  const cuadroBase = prCuadroParejas;
-  window.prCuadroParejas = function(lista){
-    if(!esScramble()) return cuadroBase.apply(this, arguments);
-    return '<div class="pr-ayuda">Elige a todos los que juegan. En el siguiente paso la app forma las parejas igualadas por hándicap.</div>';
-  };
-
+  // 4) Crear partida rápida: se eligen las parejas como en el Foursome (mismas reglas y mismo cuadro)
   const pintarBase = prPintar;
   window.prPintar = function(){
-    if(esScramble()){
-      prPunt = 'stableford';
-      if(prPaso === 4 && !prErrorParejas() && (firma !== firmaDe() || prGrupos.some(g => g.length % 2))){
-        variante = 0; igualarParejas(); firma = firmaDe();
-      }
-    } else firma = '';
+    if(esScramble()) prPunt = 'stableford';
     pintarBase.apply(this, arguments);
     if(!esScramble()) return;
     const body = document.getElementById('prBody'); if(!body) return;
@@ -139,21 +104,13 @@
       res.querySelectorAll('.pr-r-grupo, .pr-r-pareja, .pr-r-jug, .pr-r-barra, .pr-r-linea').forEach(e => e.remove());
       const parejas = [];
       prGrupos.forEach(g => { for(let i = 0; i < g.length; i += 2) parejas.push(g.slice(i, i + 2)); });
-      const html = '<div class="sc-titulo">Parejas igualadas por hándicap</div>'
+      const html = '<div class="sc-titulo">Parejas</div>'
         + parejas.map(p => '<div class="sc-pareja"><div class="sc-nombres">'
           + p.map(n => '<span>' + esc(n) + ' <small>(' + esc(String(hcpJuegoDe(prHcp(n), campo))) + ')</small></span>').join('')
           + '</div><div class="sc-golpes"><b>' + golpesPareja(p.map(prHcp), campo) + '</b><small>golpes</small></div></div>').join('')
-        + (parejas.length > 1 ? '<button type="button" class="pr-mas sc-cambiar" id="scCambiar">⇄ Cambiar parejas</button>' : '')
         + '<div class="pr-r-nota">Entre paréntesis, el hándicap de juego de cada uno desde amarillas. Golpes de la pareja: 35 % del más bajo + 15 % del más alto. A igualdad de puntos gana la pareja con menos golpes.</div>';
       const sub = res.querySelector('.pr-r-sub');
       if(sub) sub.insertAdjacentHTML('afterend', html); else res.insertAdjacentHTML('beforeend', html);
-      const cb = document.getElementById('scCambiar');
-      if(cb) cb.addEventListener('click', ()=>{
-        const m = Math.floor(prTodos().length / 2);
-        variante = (variante + 1) % Math.max(1, m);
-        igualarParejas(); firma = firmaDe();
-        prPintar();
-      });
     }
   };
 })();
