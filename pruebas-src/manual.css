@@ -1,0 +1,16 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Manual de la app: mismo aspecto que «Reglas de golf», con dos pestañas grandes y pasos numerados */
+.mn-tabs{ display:flex; gap:8px; margin:14px 14px 4px; padding:5px; border-radius:18px; background:#0B1830; box-shadow:inset 0 0 0 2px #2A4373; }
+.mn-tab{ flex:1; min-height:52px; border:none; border-radius:14px; background:transparent; color:#C9D3E4;
+  font:800 17px 'Barlow', sans-serif; cursor:pointer; touch-action:manipulation; }
+.mn-tab.sel{ background:#D4AF37; color:#111316; }
+.mn-nota{ margin:10px 4px 2px; padding:14px 16px; border-radius:16px; background:rgba(212,175,55,.12);
+  box-shadow:inset 0 0 0 2px rgba(212,175,55,.45); font:500 16.5px/1.45 'Barlow', sans-serif; color:#F6F1E4; }
+.mn-nota b{ color:#FFFFFF; font-weight:800; }
+ol.mn-pasos{ list-style:decimal !important; padding-left:44px; }
+ol.mn-pasos li{ padding-left:4px; }
+#hmManual svg{ width:24px; height:24px; }
+html[data-tema="grafito"] .mn-tabs{ background:#111316; box-shadow:inset 0 0 0 2px #2C3137; }
+html[data-tema="grafito"] .mn-tab{ color:#9AA3AB; }
+html[data-tema="grafito"] .mn-tab.sel{ background:var(--mn-acento, #C6F24E); color:#111316; }
+html[data-tema="grafito"] .mn-nota{ background:#1B1E22; box-shadow:inset 0 0 0 2px var(--mn-acento, #C6F24E); }

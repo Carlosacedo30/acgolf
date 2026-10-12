@@ -51,6 +51,10 @@ for a, b in cambios:
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
+# «Ligas» lo ven todos los jugadores con cuenta (también en acgolf.es, que no está en /pruebas/)
+sed -i 's#const enPruebas = /\\/pruebas\\//.test(location.pathname);#const enPruebas = true;#' pruebas/js/ligas.js
+grep -q "const enPruebas = true;" pruebas/js/ligas.js || { echo "ERROR: no se cambió quién ve Ligas"; exit 1; }
+
 # El patrocinador de Los Iscariotes se puede quitar en los demás grupos (portada.js lo pone a null)
 sed -i "s#^  const PATROCINADOR = {#  let PATROCINADOR = {#" pruebas/js/patrocinador.js
 grep -q "let PATROCINADOR = {" pruebas/js/patrocinador.js || { echo "ERROR: no se cambió el patrocinador"; exit 1; }
@@ -61,14 +65,14 @@ import re
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>\n<script>window.acgolfBarras = true; /* elegir barra de salida de cada jugador */</script>', 1)
-s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=13">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=1">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=1">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=13">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=1">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=1">\n<link rel="stylesheet" href="manual.css?v=1">\n</head>', 1)
 s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="portada.js?v=5"></script>\n<script src="cuenta.js?v=13"></script>', s, count=1)
 # La pantalla blanca y el resumen tienen que ir DESPUÉS del marcador: se quitan de su sitio y se ponen tras él
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=1"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=1"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
-assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s
+s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=1"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'
 t = open(m, encoding='utf-8').read().replace('"App de Golf"', '"App de Golf · PRUEBAS"').replace('"App Golf"', '"Golf PRUEBAS"')

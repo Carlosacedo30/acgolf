@@ -1,6 +1,6 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // --- Navegación unificada ---
-// Todas las secciones (Liga, Mi hándicap, Reglas, Sevilla–Betis, Consejos, Ryder Cup) se dejan igual:
+// Todas las secciones (Liga, Mi hándicap, Reglas, Sevilla–Betis, Consejos, Ryder Cup, Manual) se dejan igual:
 // un solo botón «‹ Volver al inicio», arriba y siempre visible al bajar. Fuera las ✕, el «‹ Inicio» pequeño
 // y los botones repetidos de abajo. El nombre y el grupo de arriba solo se ven en el Inicio.
 // La clasificación de la liga pasa los meses con el mismo pasador en todas partes: «Este mes», «El mes pasado»…
@@ -14,7 +14,7 @@
   }
 
   // ¿Estamos en el Inicio? (sin ninguna sección ni ventana grande abierta)
-  const SECCIONES = ['#hcpOverlay', '#reglasOverlay', '#derbiOverlay', '#ryOverlay', '#convOverlay', '#prOverlay', '#greensMapaOverlay', '#medallasOverlay'];
+  const SECCIONES = ['#hcpOverlay', '#reglasOverlay', '#derbiOverlay', '#ryOverlay', '#convOverlay', '#prOverlay', '#greensMapaOverlay', '#medallasOverlay', '#manualOverlay'];
   function enInicio(){
     const act = document.querySelector('.screen.active');
     if(act && act.dataset.screen !== '0') return false;
