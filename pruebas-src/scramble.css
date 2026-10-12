@@ -1,0 +1,13 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Scramble: parejas igualadas en «Crear partida» */
+.pr-tecla:disabled{ opacity:.35; cursor:default; }
+.sc-titulo{ font:800 14px 'Barlow', sans-serif; text-transform:uppercase; letter-spacing:.06em; color:#D4AF37; margin-top:12px; }
+.sc-pareja{ display:flex; align-items:center; gap:12px; padding:10px 0; border-top:1px solid #2A4373; }
+.sc-nombres{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; font-size:19px; font-weight:700; color:#F6F1E4; }
+.sc-nombres small{ font-size:15px; font-weight:600; color:#C9D3E4; }
+.sc-golpes{ display:flex; flex-direction:column; align-items:center; min-width:64px; }
+.sc-golpes b{ font-size:30px; line-height:1; color:#E8C45A; }
+.sc-golpes small{ font-size:15px; font-weight:600; color:#C9D3E4; }
+.sc-cambiar{ margin-top:8px; }
+html[data-tema="grafito"] .sc-titulo, html[data-tema="grafito"] .sc-golpes b{ color:#C6F24E !important; }
+html[data-tema="grafito"] .sc-pareja{ border-top-color:#33383E; }
