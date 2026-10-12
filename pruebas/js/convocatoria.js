@@ -40,12 +40,12 @@
       times: slots.map(g => g.time),
       groups: slots.map(g => Array.isArray(g.players) ? g.players.slice() : []),
       hoyos: slots.map(g => Number(g.hoyo) || null), // salida al tiro: hoyo por el que sale cada grupo
-      date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null,
+      date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null, organiza: meta.organiza || null,
     };
   }
   function convToGroups(c){
     return c.times.map((t, i) => Object.assign({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }, (c.hoyos && c.hoyos[i]) ? { hoyo: c.hoyos[i] } : {}))
-      .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode } }]);
+      .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode, organiza: c.organiza || null } }]);
   }
 
   async function convFetch(code){
@@ -234,9 +234,10 @@
     // Acciones
     h += '<div class="conv-actions">'
       + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';
+    const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
+    if((isAdmin || organizo) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    if(isAdmin || window.miPerfilId) h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
     if(isAdmin){
-      if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
-      h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
       h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar este partido</button>';
     }
     h += '</div>';
@@ -357,7 +358,7 @@
     const courseId = document.getElementById('convNewCourse').value;
     const times = [document.getElementById('convNewT1').value, document.getElementById('convNewT2').value].filter(Boolean);
     if(!date || !times.length){ alert('Pon el día y al menos una hora.'); return; }
-    const fresh = { date, courseId, times, groups: times.map(() => []), roundCode: null };
+    const fresh = { date, courseId, times, groups: times.map(() => []), roundCode: null, organiza: window.miPerfilId || null };
     const btn = document.getElementById('convNewCreate'); btn.textContent = 'Creando…';
     try {
       const { data, error } = await client.from('rounds').insert({

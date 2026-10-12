@@ -23,7 +23,9 @@
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;
-    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
+    // Cualquier jugador con cuenta puede organizar un partido con sus amigos
+    const puedeOrganizar = isAdmin || !!window.miPerfilId;
+    const nuevoBtn = puedeOrganizar ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
     const me = convMe();
     const hoy = convIsoToday();
     box.innerHTML = lista.map(c => {
@@ -76,4 +78,12 @@
 
   ordenar();
   try { renderConvHome(); } catch(e){}
+  // La cuenta llega un poco después de pintar el Inicio: en cuanto llega, se vuelve a pintar con el botón
+  if(!window.miPerfilId){
+    let n = 0;
+    const t = setInterval(() => {
+      if(window.miPerfilId){ clearInterval(t); try { renderConvHome(); } catch(e){} }
+      else if(++n > 60) clearInterval(t);
+    }, 500);
+  }
 })();
