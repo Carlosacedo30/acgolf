@@ -177,3 +177,8 @@ html.con-marca[data-tema="grafito"] .portada.portada-v2.home-cab{
 .pa-rol select{ min-height:40px; border-radius:8px; border:1.5px solid #4A5058; background:#1B1E22; color:#F2F4F5; font:700 15px 'Barlow', sans-serif; padding:0 8px; }
 .pa-super{ font-style:normal; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; background:#C6F24E; color:#111316; border-radius:999px; padding:2px 8px; vertical-align:2px; }
 .pa-tu{ font:700 14px 'Barlow', sans-serif; color:#9AA3AB; padding:12px 6px; }
+/* Patrocinador en todos los grupos: logo de Bolarecuperada con enlace a su web y, si lo hay, el patrocinador del grupo al lado */
+html.con-marca .home-patro img{ border-radius:6px; }
+.pg-patro-fila{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px 10px; padding-top:10px; }
+.pg-patro-fila .home-patro{ padding:0; min-height:44px; }
+.pg-patro-propio{ background:#F2F4F5; color:#111316; border-radius:8px; padding:5px 10px; font:800 15px 'Archivo', 'Barlow', sans-serif; }

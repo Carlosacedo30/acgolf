@@ -163,14 +163,26 @@
     // El patrocinador de Los Iscariotes no sale en los demás grupos (ni en Inicio, ni en premios, ni en WhatsApp)
     try { if(typeof PATROCINADOR !== 'undefined') PATROCINADOR = null; } catch(e){}
     const sh = document.getElementById('sponsorHome'); if(sh){ sh.innerHTML = ''; sh.style.display = 'none'; }
+    // El logo de Bolarecuperada (con enlace a su web) sale en TODOS los grupos.
+    // Si el grupo tiene además su propio patrocinador, se pone al lado del logo.
     const pat = document.querySelector('.home-patro');
     if(pat){
+      pat.style.display = '';
+      const viejo = document.querySelector('.pg-patro-propio');
+      if(viejo) viejo.remove();
       if(m.patrocinador && !personal){
-        const d = document.createElement('div');
-        d.className = 'home-patro pg-patro';
-        d.innerHTML = '<span>Patrocina</span><b>' + esc(m.patrocinador) + '</b>';
-        pat.replaceWith(d);
-      } else pat.style.display = 'none';
+        let fila = pat.parentNode;
+        if(!fila.classList.contains('pg-patro-fila')){
+          fila = document.createElement('div');
+          fila.className = 'pg-patro-fila';
+          pat.replaceWith(fila);
+          fila.appendChild(pat);
+        }
+        const b = document.createElement('b');
+        b.className = 'pg-patro-propio';
+        b.textContent = m.patrocinador;
+        fila.appendChild(b);
+      }
     }
     document.title = (personal ? 'Mi golf' : nombre) + ' · acgolf';
   }
