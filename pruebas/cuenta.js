@@ -594,7 +594,6 @@
           + '</div><div class="pa-acc">'
           + (u.sin_nombre && u.id !== (window.miPerfilId || '') ? '<button type="button" class="pa-b" data-reenviar="' + esc(u.email) + '" data-conf="' + (u.confirmado ? '1' : '0') + '">Reenviar correo</button>'
               + '<button type="button" class="pa-b rojo" data-borrar-u="' + esc(u.id) + '" data-e="' + esc(u.email) + '">Borrar</button>' : '')
-          + (u.id === (window.miPerfilId || '') || u.sin_nombre ? '' : '<button type="button" class="pa-b" data-super="' + esc(u.id) + '" data-on="' + (u.super ? '1' : '0') + '">' + (u.super ? 'Quitar super' : 'Hacer super') + '</button>')
           + '</div></div>').join('') + '</div>';
     }
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1>'
