@@ -427,7 +427,7 @@
   // Sale solo la primera vez que el administrador entra en un grupo nuevo (y desde «Mi cuenta» cuando quiera cambiarla).
   // ---------- Planes del grupo (tras crear el grupo con el código de administrador) ----------
   // ACGolf Par 0-11 · Birdie 12-30 · Eagle 31-50 · Club 51 o más. El pago es SIMULADO hasta tener pasarela.
-  const RANGO_PLAN = p => p.hasta == null ? 'De ' + p.desde + ' jugadores en adelante' : 'De ' + p.desde + ' a ' + p.hasta + ' jugadores';
+  const RANGO_PLAN = p => p.max == null ? 'Jugadores sin límite' : 'De 0 a ' + p.max + ' jugadores';
   const MAX_PLAN = p => p.max == null ? 'jugadores sin límite' : 'hasta ' + p.max + ' jugadores';
   function pantallaPlanes(info, elegido){
     const planes = info.planes || [];
