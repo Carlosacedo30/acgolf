@@ -56,3 +56,65 @@
 .sl-error{ margin:0; color:#A12B2B; font-size:15px; font-weight:600; }
 .sl-prev{ display:flex; justify-content:center; }
 .sl-cab h2{ text-transform:none !important; letter-spacing:0 !important; }
+
+/* ===== Pared de casa club con más detalle (v2) ===== */
+.sl-pared{ position:relative; border-radius:14px; box-shadow:0 10px 30px rgba(0,0,0,.35);
+  background:
+    radial-gradient(ellipse 30% 340px at 28% 120px, rgba(255,214,140,.28), rgba(255,214,140,0) 72%),
+    radial-gradient(ellipse 30% 340px at 72% 120px, rgba(255,214,140,.28), rgba(255,214,140,0) 72%),
+    linear-gradient(90deg, rgba(0,0,0,.38), rgba(0,0,0,0) 14%, rgba(0,0,0,0) 86%, rgba(0,0,0,.38)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='52' viewBox='0 0 36 52'%3E%3Cg fill='none' stroke='%23305a46' stroke-width='1.1' opacity='.55'%3E%3Cpath d='M18 4c5 6 9 11 9 22s-4 16-9 22c-5-6-9-11-9-22s4-16 9-22z'/%3E%3Cpath d='M18 14c2.5 3 4 6 4 12s-1.5 9-4 12c-2.5-3-4-6-4-12s1.5-9 4-12z'/%3E%3Ccircle cx='0' cy='0' r='2'/%3E%3Ccircle cx='36' cy='0' r='2'/%3E%3Ccircle cx='0' cy='52' r='2'/%3E%3Ccircle cx='36' cy='52' r='2'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(180deg, #1d3a2d, #183326 60%, #142b20);
+}
+/* Moldura de caoba con relieve */
+.sl-moldura{ height:30px; border:0; box-shadow:0 6px 10px rgba(0,0,0,.5);
+  background:
+    linear-gradient(180deg, #1e0f07 0, #4a2814 14%, #7a4a26 22%, #3b2010 34%, #24130a 46%, #5e381c 58%, #8a5a30 64%, #4a2814 74%, #1c0d05 100%);
+}
+/* Lámparas de latón con su brazo y su luz */
+.sl-lamparas{ padding:0 14% 0; margin-top:-2px; position:relative; z-index:1; }
+.sl-lamparas i{ width:86px; height:12px; border:0; border-radius:6px 6px 8px 8px;
+  background:linear-gradient(180deg, #f2dc9a 0, #c9a24e 35%, #8e6a26 75%, #5e4515 100%);
+  box-shadow:0 2px 3px rgba(0,0,0,.5), 0 10px 30px 6px rgba(255,214,140,.35); }
+.sl-lamparas i::after{ top:-14px; height:14px; width:5px; margin-left:-2.5px; background:linear-gradient(90deg,#6e5219,#d8b465,#6e5219); }
+.sl-lamparas i::before{ content:''; position:absolute; left:6px; right:6px; top:12px; height:3px; border-radius:0 0 4px 4px; background:rgba(255,236,190,.95); box-shadow:0 0 10px 3px rgba(255,220,150,.75); }
+.sl-lamparas{ padding-top:14px; }
+/* Título grabado */
+.sl-cab h2{ font-family:Georgia, 'Times New Roman', serif !important; font-weight:700; letter-spacing:.02em !important; color:#E9D7A6; text-shadow:0 1px 0 rgba(0,0,0,.6), 0 0 18px rgba(255,214,140,.15); }
+/* Marco de madera con veta, filete dorado, paspartú y cristal */
+.sl-marco{ padding:6px; border:0; border-radius:1px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.035) 0 1px, rgba(0,0,0,0) 1px 3px, rgba(0,0,0,.07) 3px 4px, rgba(0,0,0,0) 4px 7px),
+    linear-gradient(135deg, #5c341a, #2e170a 45%, #4a2812 70%, #2a1408);
+  box-shadow: inset 1px 1px 0 rgba(255,210,160,.35), inset -1px -1px 0 rgba(0,0,0,.6), inset 0 0 0 3px rgba(0,0,0,.18),
+              0 12px 18px -4px rgba(0,0,0,.65), 0 3px 4px rgba(0,0,0,.4); }
+.sl-paspartu{ padding:2px; background:linear-gradient(135deg,#f3d98e,#a9822f 50%,#e9c977); }
+.sl-paspartu > .sl-foto{ outline:7px solid #F2EBDA; outline-offset:0; margin:7px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15); }
+.sl-paspartu{ position:relative; }
+.sl-paspartu::before{ content:''; position:absolute; inset:2px; background:#F2EBDA; box-shadow:inset 1px 1px 3px rgba(0,0,0,.25); }
+.sl-foto{ position:relative; z-index:1; box-shadow:0 0 0 1px #d8cfb8, inset 0 1px 3px rgba(0,0,0,.35); }
+.sl-paspartu::after{ content:''; position:absolute; inset:2px; z-index:2; pointer-events:none;
+  background:linear-gradient(125deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.06) 28%, rgba(255,255,255,0) 42%, rgba(255,255,255,0) 78%, rgba(255,255,255,.08) 100%); }
+.sl-paspartu > .sl-foto{ outline:0; }
+.sl-vacio{ background:#EDE5D1; }
+/* Placa de latón grabada con tornillos */
+.sl-placa{ border-radius:2px; padding:4px 10px; color:#3a2a0e;
+  background:
+    radial-gradient(circle at 5px 50%, #6b521e 0 1.6px, #fff3cc 1.7px 2.2px, transparent 2.4px),
+    radial-gradient(circle at calc(100% - 5px) 50%, #6b521e 0 1.6px, #fff3cc 1.7px 2.2px, transparent 2.4px),
+    linear-gradient(180deg, #f0d891 0, #d2ad5a 40%, #b38c3c 70%, #caa553 100%);
+  box-shadow: inset 0 1px 0 rgba(255,248,220,.8), inset 0 -1px 0 rgba(90,60,10,.5), 0 3px 5px rgba(0,0,0,.45); }
+.sl-placa b, .sl-placa span{ text-shadow:0 1px 0 rgba(255,244,210,.55); }
+.sl-placa b{ font-family:Georgia, 'Times New Roman', serif; letter-spacing:.1em; }
+/* Zócalo de caoba con moldura y paneles en relieve */
+.sl-zocalo{ position:relative; border-top:0; padding:22px 14px 18px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, rgba(0,0,0,0) 1px 4px, rgba(0,0,0,.06) 4px 5px, rgba(0,0,0,0) 5px 9px),
+    linear-gradient(180deg, #3b200f, #2a160a); }
+.sl-zocalo::before{ content:''; position:absolute; left:0; right:0; top:0; height:14px;
+  background:linear-gradient(180deg, #1c0d05, #7a4a26 30%, #a86d3c 42%, #4a2814 70%, #1c0d05);
+  box-shadow:0 -6px 10px rgba(0,0,0,.35); }
+.sl-zocalo i{ height:58px; border:0; border-radius:2px;
+  background:linear-gradient(135deg, #4a2914, #2e170a);
+  box-shadow: inset 2px 2px 0 rgba(255,200,150,.18), inset -2px -2px 0 rgba(0,0,0,.55), inset 0 0 0 6px #351c0d, inset 7px 7px 0 rgba(255,200,150,.10), inset -7px -7px 0 rgba(0,0,0,.35); }
+.sl-grande{ background:#1b3528; box-shadow:inset 0 0 40px rgba(0,0,0,.5); }
