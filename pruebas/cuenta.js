@@ -819,6 +819,7 @@
       + '<div id="cgMsg" class="cg-msg"></div>'
       + (window.acgolfAvatares ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
+      + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgCorreoLibre">✉️ Enviar un correo desde avisos@acgolf.es</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgPruebaCorreo">✉️ Mandarme un correo de prueba</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPlan">Plan del grupo</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
@@ -851,6 +852,7 @@
     if($('cgInstalar')) $('cgInstalar').onclick = () => { ocultar(); window.acgolfInstalar(); };
     if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
     if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);
+    if($('cgCorreoLibre')) $('cgCorreoLibre').onclick = () => pantallaCorreoLibre(perfil);
     if($('cgPruebaCorreo')) $('cgPruebaCorreo').onclick = e => ocupado(e.target, async () => {
       const { data, error } = await client.functions.invoke('avisar', { body: { prueba: true } });
       if(error || !data || !data.enviados){ msg('No se pudo mandar. ' + ((data && data.error) || (error && error.message) || '')); return; }
@@ -914,6 +916,32 @@
         + data.map(b => '<div>' + esc(b.jugador || 'Sin jugador') + ' · ' + esc(b.email) + '</div>').join('')
         + '<small>Bórralas en Supabase → Authentication → Users.</small>';
       const ref = $('cgCerrar'); if(ref) ref.parentNode.insertBefore(box, ref);
+    });
+  }
+
+  // Correo libre desde avisos@acgolf.es (solo el super administrador). Las respuestas llegan a avisos@acgolf.es.
+  function pantallaCorreoLibre(perfil){
+    mostrar(cabecera('Enviar un correo', 'Sale desde avisos@acgolf.es. Si te contestan, la respuesta te llega a tu correo.')
+      + '<label class="cg-lbl">Para<small>El correo de la persona</small><input id="clPara" type="email" autocomplete="off" inputmode="email"></label>'
+      + '<label class="cg-lbl">Asunto<input id="clAsunto" type="text" maxlength="150"></label>'
+      + '<label class="cg-lbl">Texto<small>Escríbelo o pégalo tal cual</small><textarea id="clTexto" rows="10" maxlength="5000" style="font:500 18px/1.4 \'Barlow\', sans-serif;padding:14px;border-radius:12px;border:2px solid #4A6AA3;background:#15294D;color:#F6F1E4;width:100%;box-sizing:border-box;"></textarea></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="clEnviar">Enviar el correo</button>'
+      + '<button type="button" class="cg-link" id="clVolver">Volver</button>');
+    $('clVolver').onclick = () => panelMiCuenta(perfil);
+    $('clEnviar').onclick = e => ocupado(e.target, async () => {
+      const para = $('clPara').value.trim(), asunto = $('clAsunto').value.trim(), texto = $('clTexto').value.trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(para)){ msg('Escribe bien el correo del destinatario.'); return; }
+      if(!asunto){ msg('Pon un asunto.'); return; }
+      if(!texto){ msg('Escribe el texto.'); return; }
+      if(!confirm('¿Enviar este correo a ' + para + '?\n\nSale desde avisos@acgolf.es.')) return;
+      const { data, error } = await client.functions.invoke('avisar', { body: { libre: true, para, asunto, texto } });
+      if(error || !data || !data.enviados){ msg('No se pudo enviar. ' + ((data && data.error) || (error && error.message) || '')); return; }
+      mostrar(cabecera('Correo enviado', 'Se ha enviado a ' + esc(data.a) + ' desde avisos@acgolf.es.')
+        + '<button type="button" class="cg-btn" id="clOtro">Enviar otro</button>'
+        + '<button type="button" class="cg-link" id="clVolver">Volver a Mi cuenta</button>');
+      $('clOtro').onclick = () => pantallaCorreoLibre(perfil);
+      $('clVolver').onclick = () => panelMiCuenta(perfil);
     });
   }
 

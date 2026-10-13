@@ -50,8 +50,34 @@ Deno.serve(async (req) => {
   const { data: u, error: eu } = await admin.auth.getUser(token);
   if (eu || !u?.user) return res({ error: "Tienes que entrar con tu cuenta" }, 401);
 
-  let code = "", prueba = false;
-  try { const b = await req.json(); code = String(b.code || "").trim().toUpperCase(); prueba = b.prueba === true; } catch { /* sin cuerpo */ }
+  let code = "", prueba = false, libre: any = null;
+  try {
+    const b = await req.json(); code = String(b.code || "").trim().toUpperCase(); prueba = b.prueba === true;
+    if (b.libre === true) libre = { para: String(b.para || "").trim().toLowerCase(), asunto: String(b.asunto || "").trim(), texto: String(b.texto || "").trim() };
+  } catch { /* sin cuerpo */ }
+
+  // Correo libre desde avisos@acgolf.es: solo el super administrador (Panel de super administrador → «Enviar un correo»)
+  if (libre) {
+    const { data: s } = await admin.from("super_admins").select("user_id").eq("user_id", u.user.id).maybeSingle();
+    if (!s) return res({ error: "Solo el super administrador" }, 403);
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(libre.para)) return res({ error: "El correo del destinatario no es válido" }, 400);
+    if (!libre.asunto || libre.asunto.length > 150) return res({ error: "Pon un asunto (como mucho 150 letras)" }, 400);
+    if (!libre.texto || libre.texto.length > 5000) return res({ error: "Escribe el texto (como mucho 5000 letras)" }, 400);
+    const cuerpo = esc(libre.texto).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" style="color:#4A6A00;font-weight:bold">$1</a>').replace(/\n/g, "<br>");
+    const html = `<!doctype html><html><body style="margin:0;background:#f2f4f5;font-family:Arial,Helvetica,sans-serif;color:#111316">
+<div style="max-width:560px;margin:0 auto;padding:24px 16px">
+<div style="background:#111316;border-radius:16px 16px 0 0;padding:18px 22px;color:#C6F24E;font-weight:bold;font-size:20px;letter-spacing:1px">acgolf</div>
+<div style="background:#ffffff;border-radius:0 0 16px 16px;padding:24px 22px;font-size:17px;line-height:1.55">${cuerpo}</div>
+<p style="font-size:13px;color:#5b636b;margin:14px 4px">acgolf · Golf entre amigos · <a href="https://acgolf.es" style="color:#5b636b">acgolf.es</a></p>
+</div></body></html>`;
+    const r = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "api-key": brevo, "Content-Type": "application/json", accept: "application/json" },
+      body: JSON.stringify({ sender: { name: "acgolf", email: "avisos@acgolf.es" }, replyTo: { email: "avisos@acgolf.es", name: "acgolf" },
+        to: [{ email: libre.para }], subject: libre.asunto, htmlContent: html, textContent: libre.texto, tags: ["correo-libre"] }),
+    });
+    return res(r.ok ? { enviados: 1, a: libre.para } : { error: "Brevo " + r.status + ": " + (await r.text()).slice(0, 200) }, r.ok ? 200 : 502);
+  }
 
   // Correo de prueba: solo el super administrador, y solo a sí mismo
   if (prueba) {
