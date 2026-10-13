@@ -1,0 +1,24 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Patrocinador: bienvenida al abrir y franja fija abajo */
+.pd-bienv{ position:fixed; inset:0; z-index:100000; background:#111316; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px;
+  color:#F4F5F2; padding:24px; transition:opacity .45s ease; cursor:pointer; }
+.pd-bienv.fuera{ opacity:0; pointer-events:none; }
+.pd-bienv-ac{ font:800 38px 'Barlow', sans-serif; letter-spacing:.02em; }
+.pd-bienv-k{ font:800 15px 'Barlow', sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#C6F24E; }
+.pd-bienv-logo{ background:#F2F4F5; border-radius:22px; padding:24px 28px; box-shadow:0 12px 40px rgba(0,0,0,.5); }
+.pd-bienv-logo img{ display:block; width:min(64vw, 260px); height:auto; }
+.pd-bienv-t{ font:700 18px 'Barlow', sans-serif; color:#C9CED3; }
+
+.pd-franja{ position:fixed; left:0; right:0; bottom:0; z-index:40; display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap;
+  min-height:56px; padding:8px 16px calc(env(safe-area-inset-bottom, 0px) + 8px); background:#F2F4F5; border-top:3px solid #C6F24E;
+  text-decoration:none; box-shadow:0 -6px 18px rgba(0,0,0,.35); }
+.pd-franja[hidden]{ display:none; }
+.pd-franja span{ font:800 13px 'Barlow', sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#3B4450; }
+.pd-franja img{ display:block; height:34px; width:auto; }
+.pd-franja b{ font:800 15px 'Barlow', sans-serif; color:#3B4450; }
+body.pd-con-franja{ padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 72px); }
+/* La línea pequeña de «Patrocina» ya no hace falta */
+body.pd-con-franja .home-patro, body.pd-con-franja .pg-patro-fila{ display:none !important; }
+/* Lo que va pegado abajo se sube por encima de la franja */
+body.pd-con-franja .ay-aviso{ bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); }
+body.pd-con-franja .pr-banda{ bottom:calc(env(safe-area-inset-bottom, 0px) + 72px); }
