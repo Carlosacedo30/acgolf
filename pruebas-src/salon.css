@@ -1,0 +1,58 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Salón de campeones: pared de club con 12 cuadros (pantalla de la Liga) */
+#salonSection{ padding-left:0 !important; padding-right:0 !important; }
+.sl-pared{ border-radius:18px; overflow:hidden; color:#F4EFE3; font-family:inherit;
+  background:
+    radial-gradient(ellipse 34% 320px at 27% 210px, rgba(255,206,130,.20), rgba(255,206,130,0) 75%),
+    radial-gradient(ellipse 34% 320px at 73% 210px, rgba(255,206,130,.20), rgba(255,206,130,0) 75%),
+    #1F3B30; }
+.sl-moldura{ height:16px; background:#3A2314; border-bottom:3px solid #5C3A22; box-shadow:0 4px 8px rgba(0,0,0,.35); }
+.sl-cab{ padding:14px 14px 4px; display:flex; flex-direction:column; gap:8px; }
+.sl-cab h2{ margin:0; font:700 28px/1.1 Georgia, 'Times New Roman', serif; color:#F4EFE3; }
+.sl-cab p{ margin:0; font-size:15px; line-height:1.35; color:#D3DCD5; }
+.sl-anio{ display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,.25); border:1px solid rgba(244,239,227,.18); border-radius:14px; padding:4px; }
+.sl-anio span{ font-size:18px; font-weight:700; }
+.sl-anio button{ width:48px; height:48px; border:0; background:transparent; color:#F4EFE3; font-size:26px; cursor:pointer; }
+.sl-anio button:disabled{ opacity:.3; cursor:default; }
+.sl-lamparas{ display:flex; justify-content:space-around; padding:10px 15% 0; }
+.sl-lamparas i{ display:block; width:76px; height:10px; background:#B08A3E; border-radius:5px; border-bottom:2px solid #7A5C22; position:relative; }
+.sl-lamparas i::after{ content:''; position:absolute; left:50%; top:10px; width:4px; height:12px; margin-left:-2px; background:#8E6E2E; }
+.sl-cuadros{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px 12px; padding:18px 14px 22px; }
+.sl-cuadro{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:0; border:0; background:none; color:inherit; font:inherit; cursor:pointer; min-width:0; }
+.sl-marco{ width:100%; box-sizing:border-box; padding:5px; background:#3A2314; border:1px solid #6B4528; border-radius:2px; box-shadow:0 6px 12px rgba(0,0,0,.45); }
+.sl-paspartu{ padding:7px; background:#F4EFE3; }
+.sl-foto{ aspect-ratio:1 / 1; overflow:hidden; background:#2E6B4F; display:flex; align-items:center; justify-content:center; }
+.sl-foto img{ width:100%; height:100%; object-fit:cover; display:block; }
+.sl-sinfoto{ color:#F4EFE3; font-size:26px; display:flex; align-items:center; justify-content:center; }
+.sl-sinfoto svg{ width:34px; height:34px; }
+.sl-sinfoto .av{ margin:0 !important; }
+.sl-juego{ width:100%; height:100%; background:#E7EDE4; color:#0F3D2E; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
+.sl-juego svg{ width:28px; height:28px; }
+.sl-juego span{ font-size:11px; font-weight:700; background:#C6E63B; padding:2px 6px; border-radius:999px; }
+.sl-vacio{ width:100%; height:100%; box-sizing:border-box; background:#F4EFE3; border:1.5px dashed #B9B2A2; color:#6B6457; font-size:12px; display:flex; align-items:center; justify-content:center; text-align:center; }
+.sl-placa{ width:100%; box-sizing:border-box; background:#C9A85A; color:#2A1E0E; border-radius:2px; padding:3px 4px; text-align:center; display:flex; flex-direction:column; box-shadow:0 3px 6px rgba(0,0,0,.35); }
+.sl-placa b{ font-size:11px; letter-spacing:.06em; text-transform:uppercase; }
+.sl-placa span{ font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sl-zocalo{ background:#3A2314; border-top:4px solid #5C3A22; padding:12px 14px 16px; display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; }
+.sl-zocalo i{ display:block; height:44px; border:2px solid #5C3A22; border-radius:2px; background:#432918; }
+
+/* Ventana para ver o editar un cuadro */
+.sl-velo{ position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,.55); display:flex; align-items:flex-end; justify-content:center; }
+.sl-hoja{ width:100%; max-width:480px; max-height:92vh; overflow-y:auto; box-sizing:border-box; background:#FFFFFF; color:#0F3D2E; border-radius:20px 20px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:10px; }
+.sl-hoja h3{ margin:0; font:700 24px Georgia, 'Times New Roman', serif; color:#0F3D2E; }
+.sl-grande{ align-self:center; width:200px; display:flex; flex-direction:column; gap:8px; padding:16px 22px; background:#1F3B30; border-radius:14px; box-sizing:content-box; }
+.sl-grande .sl-placa b{ font-size:13px; }
+.sl-grande .sl-placa span{ font-size:16px; font-weight:700; }
+.sl-grande .sl-sinfoto{ font-size:44px; }
+.sl-grande .sl-sinfoto svg{ width:64px; height:64px; }
+.sl-lab{ font-size:15px; font-weight:700; margin-top:4px; }
+.sl-sel{ min-height:50px; border-radius:12px; border:1px solid #C9CFC8; background:#FFFFFF; color:#0F3D2E; font-size:17px; padding:0 12px; font-family:inherit; }
+.sl-nota{ margin:0; font-size:14px; color:#4A5A52; }
+.sl-dos{ display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px; }
+.sl-btn{ min-height:50px; border-radius:12px; border:1.5px solid #0F3D2E; background:#FFFFFF; color:#0F3D2E; font-size:16px; font-weight:700; font-family:inherit; display:flex; align-items:center; justify-content:center; text-align:center; cursor:pointer; padding:0 8px; }
+.sl-prin{ background:#0F3D2E; color:#FFFFFF; margin-top:6px; }
+.sl-prin:disabled{ opacity:.6; }
+.sl-enlace{ min-height:44px; border:0; background:none; color:#0F3D2E; font-size:16px; font-weight:600; font-family:inherit; cursor:pointer; }
+.sl-error{ margin:0; color:#A12B2B; font-size:15px; font-weight:600; }
+.sl-prev{ display:flex; justify-content:center; }
+.sl-cab h2{ text-transform:none !important; letter-spacing:0 !important; }
