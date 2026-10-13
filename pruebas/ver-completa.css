@@ -1,0 +1,6 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Botón «Ver completa» de la clasificación de la liga y de los ganadores de la semana */
+.vc-btn{ display:block; width:100%; min-height:52px; margin:12px 0 4px; padding:0 18px; border-radius:14px;
+  border:2px solid #0F3D2E; background:#FFFFFF; color:#0F3D2E; font:800 18px 'Barlow', sans-serif; cursor:pointer; }
+html[data-tema="grafito"] .vc-btn{ border-color:#C6F24E !important; background:transparent !important; color:#C6F24E !important; }
+#ligaStandings > [hidden], #premiosHome [hidden]{ display:none !important; }
