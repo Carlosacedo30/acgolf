@@ -4,7 +4,7 @@
 // Datos de Open-Meteo (gratis, sin clave). El pronóstico solo existe para los próximos 16 días.
 (function(){
   if(typeof renderConv !== 'function') return;
-  const CAMPOS = { 'hato-verde': [37.565, -6.035], 'zaudin': [37.378, -6.045] };
+  const CAMPOS = { 'hato-verde': [37.565, -6.035], 'zaudin': [37.378, -6.045], 'la-penaza': [41.701, -1.056] };
   const cache = {};   // 'campo|fecha' → datos (o promesa)
 
   // Código del tiempo → dibujo y palabra

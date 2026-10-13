@@ -106,7 +106,8 @@
     if(prPaso === 1){
       h += '<div class="pr-q">¿Dónde jugáis?</div>'
         + '<button type="button" class="pr-campo" data-campo="hato-verde">Hato Verde</button>'
-        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>';
+        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>'
+        + '<button type="button" class="pr-campo" data-campo="la-penaza">La Peñaza</button>';
     }
 
     if(prPaso === 2){

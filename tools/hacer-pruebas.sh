@@ -92,6 +92,31 @@ s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
+# Campo nuevo solo en acgolf.es: Real Club de Golf La Peñaza (Zaragoza). Tarjeta de 1golf.eu; rating y slope
+# sacados de la tabla oficial de hándicap de juego del club (blancas y amarillas de caballeros, azules y rojas de damas).
+python3 - <<'PY'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:60])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+cambia('pruebas/js/data.js', """    { id:'la-cartuja',""", """    { id:'la-penaza', name:'Real Club de Golf La Peñaza', location:'Zaragoza',
+      par:[4,4,3,4,5,3,5,4,4, 4,5,3,4,4,3,5,4,4],
+      hcp:[12,8,14,2,18,10,6,16,4, 11,9,15,1,7,5,13,3,17],
+      // Rating / slope de la tabla de hándicap de juego del club: blancas y amarillas de caballeros; azules y rojas, de damas
+      tees:{
+        blancas:  { rating:72.3, slope:132 },
+        amarillas:{ rating:71.1, slope:129 },
+        azules:   { rating:73.4, slope:124 },
+        rojas:    { rating:72.3, slope:121 },
+      } },
+    { id:'la-cartuja',""")
+cambia('pruebas/js/partida-rapida.js', """        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>';""",
+       """        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>'
+        + '<button type="button" class="pr-campo" data-campo="la-penaza">La Peñaza</button>';""")
+cambia('pruebas/js/convocatoria.js', """<option value="zaudin">Club Zaudín Golf</option>""", """<option value="zaudin">Club Zaudín Golf</option><option value="la-penaza">R.C. de Golf La Peñaza</option>""")
+cambia('pruebas/js/tiempo.js', """'zaudin': [37.378, -6.045] };""", """'zaudin': [37.378, -6.045], 'la-penaza': [41.701, -1.056] };""")
+PY
+
 # index.html: almacén separado, cuentas y banda de "VERSIÓN DE PRUEBAS"
 python3 - <<'EOF'
 import re

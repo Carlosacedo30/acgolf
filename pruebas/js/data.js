@@ -48,6 +48,16 @@
         azules:   { rating:67.5, slope:115 },
         rojas:    { rating:66.0, slope:113 },
       } },
+    { id:'la-penaza', name:'Real Club de Golf La Peñaza', location:'Zaragoza',
+      par:[4,4,3,4,5,3,5,4,4, 4,5,3,4,4,3,5,4,4],
+      hcp:[12,8,14,2,18,10,6,16,4, 11,9,15,1,7,5,13,3,17],
+      // Rating / slope de la tabla de hándicap de juego del club: blancas y amarillas de caballeros; azules y rojas, de damas
+      tees:{
+        blancas:  { rating:72.3, slope:132 },
+        amarillas:{ rating:71.1, slope:129 },
+        azules:   { rating:73.4, slope:124 },
+        rojas:    { rating:72.3, slope:121 },
+      } },
     { id:'la-cartuja', name:'Instalaciones Deportivas La Cartuja', location:'Sevilla', holes9:true,
       par:[4,3,3,3,3,3,4,3,3],
       hcp:[3,5,13,12,10,15,2,11,9] },

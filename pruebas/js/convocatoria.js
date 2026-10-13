@@ -344,7 +344,7 @@
     const body = document.getElementById('convBody'); if(!body) return;
     body.innerHTML = '<div class="conv-eyebrow">Organizar partido con amigos</div>'
       + '<div class="field"><label>Día</label><input type="date" id="convNewDate" value="' + convNextSunday() + '"></div>'
-      + '<div class="field"><label>Campo</label><select id="convNewCourse"><option value="hato-verde">Club Hato Verde</option><option value="zaudin">Club Zaudín Golf</option></select></div>'
+      + '<div class="field"><label>Campo</label><select id="convNewCourse"><option value="hato-verde">Club Hato Verde</option><option value="zaudin">Club Zaudín Golf</option><option value="la-penaza">R.C. de Golf La Peñaza</option></select></div>'
       + '<div id="convHoras"><div class="field conv-hora-fila"><label>Hora de salida</label><input type="time" class="conv-hora" value="' + CONV_DEFAULT_TIMES[0] + '"></div></div>'
       + '<div class="field conv-mas"><label for="convMasN">Añadir más partidas</label><select id="convMasN"><option value="0">Ninguna más</option><option value="1">1 partida más</option><option value="2">2 partidas más</option><option value="3">3 partidas más</option><option value="4">4 partidas más</option><option value="5">5 partidas más</option><option value="6">6 partidas más</option><option value="7">7 partidas más</option></select><small>Cada una sale 10 minutos después de la anterior. Puedes cambiar las horas.</small></div>'
       + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="convNewCreate">Crear el partido</button>'
