@@ -22,3 +22,4 @@
 .pl-pasarela{ display:flex; flex-direction:column; gap:6px; padding:16px; border-radius:16px; border:2px dashed #5A6068; color:#D5D9DD; }
 .pl-pasarela b{ font:800 18px 'Barlow', sans-serif; color:#F4F5F2; }
 .pl-pasarela span{ font:500 16px/1.4 'Barlow', sans-serif; }
+.pl-precio.gratis{ font:800 16px 'Barlow', sans-serif; color:#C6F24E; }

@@ -439,10 +439,10 @@
             + '<input type="radio" name="plPlan" value="' + esc(p.id) + '"' + (p.id === sel ? ' checked' : '') + (pequeno ? ' disabled' : '') + '>'
             + '<span class="pl-clip" aria-hidden="true"></span>'
             + '<span class="pl-txt"><b>' + esc(p.nombre) + '</b><small>' + RANGO_PLAN(p) + '</small></span>'
-            + '<span class="pl-precio">Precio<br>por definir</span></label>';
+            + '<span class="pl-precio gratis">Gratis</span></label>';
         }).join('') + '</div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
-      + '<button type="button" class="cg-btn" id="plSeguir">Continuar al pago</button>'
+      + '<button type="button" class="cg-btn" id="plSeguir">Continuar</button>'
       + '<button type="button" class="cg-link" id="plSalir">Salir de mi cuenta</button>');
     $('plSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
     $('plSeguir').onclick = e => ocupado(e.target, async () => {
@@ -456,11 +456,11 @@
 
   function pantallaPago(info){
     const p = (info.planes || []).find(x => x.id === info.plan) || {};
-    mostrar(cabecera('Pago del plan', 'Grupo «' + esc(info.grupo) + '»')
-      + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>' + RANGO_PLAN(p) + '</span><em>Precio por definir</em></div>'
-      + '<div class="pl-pasarela"><b>Pasarela de pago</b><span>Aquí irá el pago seguro con tarjeta. Todavía no está conectada: de momento el pago es de prueba y no se cobra nada.</span></div>'
+    mostrar(cabecera('Activar el plan', 'Grupo «' + esc(info.grupo) + '»')
+      + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>' + RANGO_PLAN(p) + '</span><em>Gratis</em></div>'
+      + '<div class="pl-pasarela"><b>Sin pagos</b><span>De momento todos los planes son gratis. No tienes que pagar nada.</span></div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
-      + '<button type="button" class="cg-btn" id="plPagar">Confirmar pago (prueba)</button>'
+      + '<button type="button" class="cg-btn" id="plPagar">Activar el plan</button>'
       + '<button type="button" class="cg-link" id="plCambiar">Cambiar de plan</button>');
     $('plCambiar').onclick = () => pantallaPlanes(info, info.plan);
     $('plPagar').onclick = e => ocupado(e.target, async () => {
@@ -472,7 +472,7 @@
 
   function pantallaPagoHecho(info){
     const p = (info.planes || []).find(x => x.id === info.plan) || {};
-    mostrar(cabecera('¡Pago confirmado!', 'Tu grupo «' + esc(info.grupo) + '» ya está activo.')
+    mostrar(cabecera('¡Plan activado!', 'Tu grupo «' + esc(info.grupo) + '» ya está activo.')
       + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>Tu grupo admite ' + MAX_PLAN(p) + '.</span></div>'
       + '<p class="cg-p">Ahora entra en la app, prepara la portada de tu grupo e invita a los demás con el enlace.</p>'
       + '<button type="button" class="cg-btn" id="plEntrar">Entrar en la app</button>');
