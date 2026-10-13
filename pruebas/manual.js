@@ -257,7 +257,11 @@
         + '<button type="button" role="tab" class="mn-tab' + (pestana === 'admin' ? ' sel' : '') + '" data-p="admin" aria-selected="' + (pestana === 'admin') + '">Administrador</button>'
         + '</div>' : '')
       + '<div class="rg-lista mn-lista">' + lista(pestana === 'admin' ? ADMIN.concat(esSuper() ? SUPER : []) : JUGADOR) + '</div>'
-      + '<div class="rg-pie">¿Dudas que no están aquí? Pregunta al administrador de tu grupo.</div>';
+      + '<div class="rg-pie">¿Dudas que no están aquí? Pregunta al administrador de tu grupo o escribe a soporte.</div>'
+      + (window.acgolfAyuda ? '<a class="ay-soporte" href="' + window.acgolfAyuda.correoSoporte() + '">✉️ Escribir a soporte</a>'
+          + '<button type="button" class="ay-visto' + (window.acgolfAyuda.visto() ? ' hecho' : '') + '" id="mnVisto">' + (window.acgolfAyuda.visto() ? '✓ Visto' : 'Visto: no volver a avisar') + '</button>' : '');
+    const v = $('mnVisto');
+    if(v) v.onclick = async () => { await window.acgolfAyuda.marcarVisto(); v.classList.add('hecho'); v.textContent = '✓ Visto'; };
     body.querySelectorAll('.mn-tab').forEach(b => b.addEventListener('click', () => {
       pestana = b.dataset.p; pintar();
       const card = document.querySelector('#manualOverlay .reglas-card'); if(card) card.scrollTop = 0;

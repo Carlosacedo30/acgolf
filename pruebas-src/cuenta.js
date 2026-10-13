@@ -826,6 +826,7 @@
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
       + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
       + '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
+      + '<a class="cg-btn ghost" id="cgSoporte" href="mailto:avisos@acgolf.es?subject=' + encodeURIComponent('Ayuda con acgolf' + (perfil.grupo ? ' (' + perfil.grupo + ')' : '')) + '" style="text-align:center;text-decoration:none;box-sizing:border-box;">✉️ Escribir a soporte</a>'
       + '<button type="button" class="cg-btn danger" id="cgBorrar">Borrar mi cuenta</button>'
       + '<p class="cg-legal"><a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a><br>Aceptadas el ' + esc(new Date(perfil.privacidad_aceptada_en).toLocaleDateString('es-ES')) + '</p>'
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');

@@ -345,10 +345,22 @@
     body.innerHTML = '<div class="conv-eyebrow">Organizar partido con amigos</div>'
       + '<div class="field"><label>Día</label><input type="date" id="convNewDate" value="' + convNextSunday() + '"></div>'
       + '<div class="field"><label>Campo</label><select id="convNewCourse"><option value="hato-verde">Club Hato Verde</option><option value="zaudin">Club Zaudín Golf</option></select></div>'
-      + '<div class="field-row"><div class="field"><label>1ª partida</label><input type="time" id="convNewT1" value="' + CONV_DEFAULT_TIMES[0] + '"></div>'
-      + '<div class="field"><label>2ª partida</label><input type="time" id="convNewT2" value="' + CONV_DEFAULT_TIMES[1] + '"></div></div>'
+      + '<div id="convHoras"><div class="field conv-hora-fila"><label>Hora de salida</label><input type="time" class="conv-hora" value="' + CONV_DEFAULT_TIMES[0] + '"></div></div>'
+      + '<div class="field conv-mas"><label for="convMasN">Añadir más partidas</label><select id="convMasN"><option value="0">Ninguna más</option><option value="1">1 partida más</option><option value="2">2 partidas más</option><option value="3">3 partidas más</option><option value="4">4 partidas más</option><option value="5">5 partidas más</option><option value="6">6 partidas más</option><option value="7">7 partidas más</option></select><small>Cada una sale 10 minutos después de la anterior. Puedes cambiar las horas.</small></div>'
       + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="convNewCreate">Crear el partido</button>'
       + (conv ? '<button type="button" class="conv-link" id="convNewCancel">Cancelar</button>' : '') + '</div>';
+    const masHora = (t, n) => { const [h, m] = String(t || '08:40').split(':').map(Number); const x = h * 60 + m + n; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); };
+    document.getElementById('convMasN').addEventListener('change', e => {
+      const caja = document.getElementById('convHoras');
+      const filas = [...caja.querySelectorAll('.conv-hora-fila')];
+      const quiero = 1 + Number(e.target.value || 0);
+      filas.slice(quiero).forEach(f => f.remove());
+      for(let i = filas.length; i < quiero; i++){
+        const prev = caja.querySelectorAll('.conv-hora'); const t = masHora(prev[prev.length - 1].value, 10);
+        caja.insertAdjacentHTML('beforeend', '<div class="field conv-hora-fila"><label>' + (i + 1) + 'ª partida</label><input type="time" class="conv-hora" value="' + t + '"></div>');
+      }
+      const l = caja.querySelector('.conv-hora-fila label'); if(l) l.textContent = quiero > 1 ? '1ª partida' : 'Hora de salida';
+    });
     document.getElementById('convNewCreate').addEventListener('click', convCreate);
     const c = document.getElementById('convNewCancel'); if(c) c.addEventListener('click', renderConv);
   }
@@ -356,7 +368,7 @@
     const client = initSupabase(); if(!client) return;
     const date = document.getElementById('convNewDate').value;
     const courseId = document.getElementById('convNewCourse').value;
-    const times = [document.getElementById('convNewT1').value, document.getElementById('convNewT2').value].filter(Boolean);
+    const times = [...document.querySelectorAll('#convHoras .conv-hora')].map(i => i.value).filter(Boolean);
     if(!date || !times.length){ alert('Pon el día y al menos una hora.'); return; }
     const fresh = { date, courseId, times, groups: times.map(() => []), roundCode: null, organiza: window.miPerfilId || null };
     const btn = document.getElementById('convNewCreate'); btn.textContent = 'Creando…';
