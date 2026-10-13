@@ -36,10 +36,16 @@
     const ov = document.createElement('div');
     ov.className = 'av-ov';
     const fila = (t, n) => '<div class="ct-fila"><span>' + esc(t) + '</span><b>' + n + '</b></div>';
+    // Fila que se despliega con los nombres: quién, su grupo y cuándo
+    const quien = (t, n, lista) => '<details class="ct-quien"><summary class="ct-fila"><span>' + esc(t) + ' <i>· ver quién</i></span><b>' + n + '</b></summary>'
+      + (lista.length ? lista.map(([j, g, h]) => '<div class="ct-q"><span>' + esc(j) + '<small>' + esc(g || '') + '</small></span><em>' + esc(h || '') + '</em></div>').join('') : '<p class="ct-nota">Nadie todavía.</p>')
+      + '</details>';
     ov.innerHTML = '<div class="av-caja" style="text-align:left">'
       + '<button type="button" class="av-x" aria-label="Cerrar">✕</button>'
       + '<div class="av-tit" style="text-align:left;margin-left:0">Jugadores en acgolf</div>'
-      + fila('Con cuenta', datos.jugadores) + fila('Han usado la app hoy', datos.hoy) + fila('Esta semana', datos.semana)
+      + fila('Con cuenta', datos.jugadores)
+      + quien('Han usado la app hoy', datos.hoy, (datos.hoy_lista || []).map(x => [x.jugador, x.grupo, x.hora]))
+      + quien('Esta semana', datos.semana, (datos.semana_lista || []).map(x => [x.jugador, x.grupo, x.dia]))
       + (datos.sin_terminar ? fila('Cuentas a medio crear', datos.sin_terminar) : '')
       + '<div class="ct-sub">Por grupo</div>'
       + (datos.grupos || []).map(g => fila(g.nombre, g.jugadores)).join('')

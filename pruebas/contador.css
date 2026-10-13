@@ -14,3 +14,13 @@
 .ct-patro{ margin-top:8px; }
 .ct-patro > b{ display:block; font-size:18px; margin-top:6px; }
 .ct-patro small{ display:block; font-size:14px; color:#9AA3AB; margin-top:6px; }
+
+/* Quién ha usado la app (se despliega al tocar) */
+.ct-quien summary{ list-style:none; cursor:pointer; }
+.ct-quien summary::-webkit-details-marker{ display:none; }
+.ct-quien summary i{ font-style:normal; font-weight:600; opacity:.7; }
+.ct-quien[open] summary i{ display:none; }
+.ct-q{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 4px 8px 14px; border-bottom:1px solid rgba(128,128,128,.2); }
+.ct-q span{ display:flex; flex-direction:column; font-weight:700; font-size:16px; }
+.ct-q small{ font-weight:500; font-size:13px; opacity:.7; }
+.ct-q em{ font-style:normal; font-weight:700; font-size:15px; opacity:.85; white-space:nowrap; }
