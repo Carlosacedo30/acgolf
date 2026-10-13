@@ -151,10 +151,11 @@
   const ADMIN = [
     { nota:'Como administrador puedes hacer todo lo del manual del jugador y, además, lo de aquí. En «Mi cuenta», debajo de tu correo, pone <b>Administrador</b>.' },
     { sec:'Montar el grupo' },
-    { ico:'escudo', t:'Crear un grupo nuevo', sub:'Con el código de administrador', pasos:[
-      'Para crear un grupo hace falta un <b>código de administrador</b> (empieza por ADM-). Ponte en contacto con acgolf para pedirlo.',
-      'Abre el enlace con el código, o ve a <b>«Mis grupos» → «Tengo un código de administrador»</b> y escríbelo.',
-      'Pon el <b>nombre del grupo</b> y pulsa <b>«Crear el grupo»</b>. Quedas como su administrador.',
+    { ico:'escudo', t:'Crear un grupo nuevo', sub:'Eliges el plan y lo creas', pasos:[
+      'Ve a <b>«Mis grupos» → «Crear un grupo con liga»</b> (si aún no tienes grupo, pulsa <b>«Crear mi grupo»</b>).',
+      'Elige el <b>plan</b> según cuántos jugadores vais a ser: <b>Par</b> hasta 11, <b>Birdie</b> hasta 30, <b>Eagle</b> hasta 50 o <b>Club</b> sin límite. Ahora mismo son gratis.',
+      'Pulsa <b>«Activar el plan»</b>, pon el <b>nombre del grupo</b> y pulsa <b>«Crear el grupo»</b>. Quedas como su administrador.',
+      'Para cambiar de plan más adelante: «Mi cuenta» → <b>«Plan del grupo»</b>.',
       'La app te guía en unos pasos: <b>campo</b> donde soléis jugar, <b>colores</b> de la app, <b>escudo</b> con las iniciales y <b>patrocinador</b> (opcional).',
       'Pulsa <b>«Guardar la portada»</b>. Se puede cambiar cuando quieras desde «Mi cuenta» → <b>«Cambiar la portada del grupo»</b>.' ]},
     { ico:'enlace', t:'Invitar a los jugadores', sub:'Un enlace para todo el grupo', pasos:[

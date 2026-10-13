@@ -278,8 +278,7 @@
 
   // Crear un grupo: el super administrador lo crea directamente; los demás necesitan su código
   function botonNuevoGrupo(email, perfil){
-    if(perfil && perfil.es_super) pantallaCrearGrupo(email, true);
-    else pantallaCodigoAdmin(email, perfil || null, '');
+    empezarGrupoNuevo(email, perfil || null);   // sin código: se elige plan, se activa y se crea el grupo
   }
 
   // Cuenta nueva sin invitación: empezar gratis (espacio personal), Los Iscariotes o crear un grupo
@@ -293,7 +292,7 @@
       + '<div class="cg-sep">¿Juegas con un grupo de amigos?</div>'
       + '<p class="cg-p" style="font-size:14px;">Si te han mandado un enlace de invitación, ábrelo desde el mensaje y entrarás en tu grupo.</p>'
       + '<button type="button" class="cg-btn ghost" id="cgIscariotes">Soy de Los Iscariotes</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Tengo un código de administrador</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear mi grupo</button>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
     $('cgIscariotes').onclick = () => pantallaCompletar(email, true);
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
@@ -325,7 +324,7 @@
       + '<div class="cg-sep">Unirme a otro grupo</div>'
       + '<label class="cg-lbl">Código de invitación<small>Viene al final del enlace que te mandaron</small><input id="cgCodigo" type="text" autocapitalize="characters" maxlength="12"></label>'
       + '<button type="button" class="cg-btn ghost" id="cgUnirme">Unirme</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">' + (perfil.es_super ? 'Crear un grupo con liga' : 'Tengo un código de administrador') + '</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo con liga</button>'
       + (tienePersonal ? '' : '<button type="button" class="cg-btn ghost" id="cgPersonal">Empezar mi espacio personal</button>')
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
@@ -425,38 +424,46 @@
 
   // ---------- Asistente: montar la portada del grupo ----------
   // Sale solo la primera vez que el administrador entra en un grupo nuevo (y desde «Mi cuenta» cuando quiera cambiarla).
-  // ---------- Planes del grupo (tras crear el grupo con el código de administrador) ----------
-  // ACGolf Par 0-11 · Birdie 12-30 · Eagle 31-50 · Club 51 o más. El pago es SIMULADO hasta tener pasarela.
+  // ---------- Planes del grupo ----------
+  // Crear grupo: elegir plan → activarlo → «Crear tu grupo». ACGolf Par 11 · Birdie 30 · Eagle 50 · Club sin límite. Gratis por ahora.
   const RANGO_PLAN = p => p.max == null ? 'Jugadores sin límite' : 'De 0 a ' + p.max + ' jugadores';
   const MAX_PLAN = p => p.max == null ? 'jugadores sin límite' : 'hasta ' + p.max + ' jugadores';
+  // info: lo que da mi_plan (cambiar el plan de mi grupo) o { nuevo:true, email, perfil, planes } (crear un grupo)
   function pantallaPlanes(info, elegido){
     const planes = info.planes || [];
     const sel = elegido || info.plan || '';
-    mostrar(cabecera('Elige el plan de tu grupo', 'Según cuántos jugadores vais a ser en «' + esc(info.grupo) + '». Podrás cambiar a uno más grande cuando queráis.')
+    const sub = info.nuevo ? 'Según cuántos jugadores vais a ser. Podréis cambiar a uno más grande cuando queráis.'
+      : 'Según cuántos jugadores vais a ser en «' + esc(info.grupo) + '». Podéis cambiar a uno más grande cuando queráis.';
+    mostrar(cabecera(info.nuevo ? 'Crea tu grupo: elige el plan' : 'Plan del grupo', sub)
       + '<div class="pl-lista" role="radiogroup" aria-label="Planes">' + planes.map(p => {
-          const pequeno = p.max != null && info.usados > p.max;
+          const pequeno = p.max != null && (info.usados || 0) > p.max;
           return '<label class="pl-op' + (pequeno ? ' off' : '') + '">'
             + '<input type="radio" name="plPlan" value="' + esc(p.id) + '"' + (p.id === sel ? ' checked' : '') + (pequeno ? ' disabled' : '') + '>'
             + '<span class="pl-clip" aria-hidden="true"></span>'
             + '<span class="pl-txt"><b>' + esc(p.nombre) + '</b><small>' + RANGO_PLAN(p) + '</small></span>'
             + '<span class="pl-precio gratis">Gratis</span></label>';
         }).join('') + '</div>'
+      + (!info.nuevo && info.plan && info.estado === 'activo' ? '<p class="cg-p" style="font-size:16px;">Ahora tenéis ' + esc((planes.find(x => x.id === info.plan) || {}).nombre || '') + ' · ' + esc(info.usados) + ' jugadores con cuenta.</p>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="plSeguir">Continuar</button>'
-      + '<button type="button" class="cg-link" id="plSalir">Salir de mi cuenta</button>');
-    $('plSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
+      + (info.nuevo || info.estado === 'activo' ? '<button type="button" class="cg-link" id="plVolver">Volver</button>'
+          : '<button type="button" class="cg-link" id="plSalir">Salir de mi cuenta</button>'));
+    if($('plSalir')) $('plSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
+    if($('plVolver')) $('plVolver').onclick = () => info.nuevo ? (info.perfil ? pantallaMisGrupos(info.perfil) : pantallaBienvenida(info.email)) : (window.miPerfil ? panelMiCuenta(window.miPerfil) : ocultar());
     $('plSeguir').onclick = e => ocupado(e.target, async () => {
       const r = document.querySelector('input[name="plPlan"]:checked');
       if(!r){ msg('Elige un plan tocando en él.'); return; }
+      if(info.nuevo){ pantallaPago(Object.assign({}, info, { plan: r.value })); return; }
       const { data, error } = await client.rpc('elegir_plan', { p_plan: r.value });
       if(error){ msg(traducir(error)); return; }
+      if(data.estado === 'activo'){ pantallaPagoHecho(data); return; }   // mismo plan que ya tenía
       pantallaPago(data);
     });
   }
 
   function pantallaPago(info){
     const p = (info.planes || []).find(x => x.id === info.plan) || {};
-    mostrar(cabecera('Activar el plan', 'Grupo «' + esc(info.grupo) + '»')
+    mostrar(cabecera('Activar el plan', info.nuevo ? 'Para tu grupo nuevo' : 'Grupo «' + esc(info.grupo) + '»')
       + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>' + RANGO_PLAN(p) + '</span><em>Gratis</em></div>'
       + '<div class="pl-pasarela"><b>Sin pagos</b><span>De momento todos los planes son gratis. No tienes que pagar nada.</span></div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
@@ -464,18 +471,52 @@
       + '<button type="button" class="cg-link" id="plCambiar">Cambiar de plan</button>');
     $('plCambiar').onclick = () => pantallaPlanes(info, info.plan);
     $('plPagar').onclick = e => ocupado(e.target, async () => {
+      if(info.nuevo){ pantallaCrearGrupoPlan(info); return; }   // grupo nuevo: el plan queda activo al crear el grupo
       const { data, error } = await client.rpc('confirmar_pago_simulado');
       if(error){ msg(traducir(error)); return; }
       pantallaPagoHecho(data);
     });
   }
 
+  // Tras activar el plan: crear el grupo (sin código de administrador)
+  function pantallaCrearGrupoPlan(info){
+    const p = (info.planes || []).find(x => x.id === info.plan) || {};
+    const sinCuenta = !info.perfil;
+    mostrar(cabecera('Crear tu grupo', 'Tendréis vuestra propia liga, hándicaps, medallas y caddie. Solo lo veréis los de vuestro grupo.')
+      + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + ' activado</b><span>Tu grupo admitirá ' + MAX_PLAN(p) + '.</span></div>'
+      + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Cajapollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name" value="' + esc(info.perfil ? info.perfil.player_name || '' : '') + '"></label>'
+      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      + (sinCuenta ? aceptoHtml : '') + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgCrearGrupo">Crear el grupo</button>'
+      + '<button type="button" class="cg-link" id="plCambiar">Cambiar de plan</button>');
+    $('plCambiar').onclick = () => pantallaPlanes(info, info.plan);
+    $('cgCrearGrupo').onclick = e => ocupado(e.target, async () => {
+      const grupo = $('cgGrupo').value.trim(), nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
+      if(!grupo){ msg('Ponle un nombre al grupo.'); return; }
+      if(!nombre){ msg('Escribe tu nombre.'); return; }
+      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
+      if($('cgAcepto') && !$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      const { error } = await client.rpc('crear_grupo_con_plan', { p_plan: info.plan, p_nombre: grupo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error){ msg(traducir(error)); return; }
+      olvidarCodigoAdmin();
+      location.reload();
+    });
+  }
+
+  async function empezarGrupoNuevo(email, perfil){
+    mostrar(cabecera('Crear tu grupo', 'Cargando…'));
+    let planes = [];
+    try { const r = await client.rpc('planes_acgolf'); if(!r.error) planes = r.data || []; } catch(e){}
+    if(!planes.length){ mostrar(cabecera('Sin conexión', 'No se han podido cargar los planes.') + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
+    pantallaPlanes({ nuevo: true, email, perfil, planes, usados: 0 });
+  }
+
   function pantallaPagoHecho(info){
     const p = (info.planes || []).find(x => x.id === info.plan) || {};
-    mostrar(cabecera('¡Plan activado!', 'Tu grupo «' + esc(info.grupo) + '» ya está activo.')
+    mostrar(cabecera('¡Plan activado!', 'Tu grupo «' + esc(info.grupo) + '» tiene ' + esc(p.nombre || '') + '.')
       + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>Tu grupo admite ' + MAX_PLAN(p) + '.</span></div>'
-      + '<p class="cg-p">Ahora entra en la app, prepara la portada de tu grupo e invita a los demás con el enlace.</p>'
-      + '<button type="button" class="cg-btn" id="plEntrar">Entrar en la app</button>');
+      + '<button type="button" class="cg-btn" id="plEntrar">Volver a la app</button>');
     $('plEntrar').onclick = () => location.reload();
   }
   window.acgolfPlanes = {
@@ -776,6 +817,7 @@
       + (window.acgolfAvatares ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgPruebaCorreo">✉️ Mandarme un correo de prueba</button>' : '')
+      + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPlan">Plan del grupo</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
@@ -790,6 +832,7 @@
     $('cgCerrar').onclick = ocultar;
     if($('cgAvatar')) $('cgAvatar').onclick = () => { ocultar(); window.acgolfAvatares.editar(perfil); };
     $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
+    if($('cgPlan')) $('cgPlan').onclick = () => window.acgolfPlanes.abrir();
     const cc = $('cgCorreos');
     if(cc){
       client.rpc('mis_correos').then(r => { if(!r.error){ cc.checked = r.data !== false; cc.disabled = false; } });
