@@ -36,11 +36,15 @@
     if(!el) return;
     const lista = el.querySelector('.premios-lista');
     if(!lista){ quitar('semanaVerCompleta'); return; }
-    const resto = [...lista.querySelectorAll('.premio:not(.top)'), ...el.querySelectorAll('.gn-lista')];
-    if(!resto.length){ quitar('semanaVerCompleta'); return; }
-    resto.forEach(r => mostrar(r, abierto.semana));
-    const filas = el.querySelectorAll('.gn-lista .gn-fila').length;
-    boton('semanaVerCompleta', lista, abierto.semana, filas, 'semana');
+    // Los premios (ganador, el que más mejora…) se ven siempre;
+    // la clasificación del resto de jugadores va debajo y se despliega con el botón
+    lista.querySelectorAll('.premio').forEach(r => mostrar(r, true));
+    const gn = el.querySelector('.gn-lista');
+    if(!gn){ quitar('semanaVerCompleta'); return; }
+    if(lista.nextElementSibling !== gn) lista.insertAdjacentElement('afterend', gn);
+    mostrar(gn, abierto.semana);
+    const filas = gn.querySelectorAll('.gn-fila').length;
+    boton('semanaVerCompleta', gn, abierto.semana, filas, 'semana');
   }
 
   let ocupado = false;
