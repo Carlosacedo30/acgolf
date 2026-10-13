@@ -425,6 +425,63 @@
 
   // ---------- Asistente: montar la portada del grupo ----------
   // Sale solo la primera vez que el administrador entra en un grupo nuevo (y desde «Mi cuenta» cuando quiera cambiarla).
+  // ---------- Planes del grupo (tras crear el grupo con el código de administrador) ----------
+  // ACGolf Par 0-11 · Birdie 12-30 · Eagle 31-50 · Club 51 o más. El pago es SIMULADO hasta tener pasarela.
+  const RANGO_PLAN = p => p.hasta == null ? p.desde + ' jugadores o más' : (p.desde === 0 ? 'Hasta ' + p.hasta + ' jugadores' : 'De ' + p.desde + ' a ' + p.hasta + ' jugadores');
+  const MAX_PLAN = p => p.max == null ? 'jugadores sin límite' : 'hasta ' + p.max + ' jugadores';
+  function pantallaPlanes(info, elegido){
+    const planes = info.planes || [];
+    const sel = elegido || info.plan || '';
+    mostrar(cabecera('Elige el plan de tu grupo', 'Según cuántos jugadores vais a ser en «' + esc(info.grupo) + '». Podrás cambiar a uno más grande cuando queráis.')
+      + '<div class="pl-lista" role="radiogroup" aria-label="Planes">' + planes.map(p => {
+          const pequeno = p.max != null && info.usados > p.max;
+          return '<label class="pl-op' + (pequeno ? ' off' : '') + '">'
+            + '<input type="radio" name="plPlan" value="' + esc(p.id) + '"' + (p.id === sel ? ' checked' : '') + (pequeno ? ' disabled' : '') + '>'
+            + '<span class="pl-clip" aria-hidden="true"></span>'
+            + '<span class="pl-txt"><b>' + esc(p.nombre) + '</b><small>' + RANGO_PLAN(p) + '</small></span>'
+            + '<span class="pl-precio">Precio<br>por definir</span></label>';
+        }).join('') + '</div>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="plSeguir">Continuar al pago</button>'
+      + '<button type="button" class="cg-link" id="plSalir">Salir de mi cuenta</button>');
+    $('plSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
+    $('plSeguir').onclick = e => ocupado(e.target, async () => {
+      const r = document.querySelector('input[name="plPlan"]:checked');
+      if(!r){ msg('Elige un plan tocando en él.'); return; }
+      const { data, error } = await client.rpc('elegir_plan', { p_plan: r.value });
+      if(error){ msg(traducir(error)); return; }
+      pantallaPago(data);
+    });
+  }
+
+  function pantallaPago(info){
+    const p = (info.planes || []).find(x => x.id === info.plan) || {};
+    mostrar(cabecera('Pago del plan', 'Grupo «' + esc(info.grupo) + '»')
+      + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>' + RANGO_PLAN(p) + '</span><em>Precio por definir</em></div>'
+      + '<div class="pl-pasarela"><b>Pasarela de pago</b><span>Aquí irá el pago seguro con tarjeta. Todavía no está conectada: de momento el pago es de prueba y no se cobra nada.</span></div>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="plPagar">Confirmar pago (prueba)</button>'
+      + '<button type="button" class="cg-link" id="plCambiar">Cambiar de plan</button>');
+    $('plCambiar').onclick = () => pantallaPlanes(info, info.plan);
+    $('plPagar').onclick = e => ocupado(e.target, async () => {
+      const { data, error } = await client.rpc('confirmar_pago_simulado');
+      if(error){ msg(traducir(error)); return; }
+      pantallaPagoHecho(data);
+    });
+  }
+
+  function pantallaPagoHecho(info){
+    const p = (info.planes || []).find(x => x.id === info.plan) || {};
+    mostrar(cabecera('¡Pago confirmado!', 'Tu grupo «' + esc(info.grupo) + '» ya está activo.')
+      + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + '</b><span>Tu grupo admite ' + MAX_PLAN(p) + '.</span></div>'
+      + '<p class="cg-p">Ahora entra en la app, prepara la portada de tu grupo e invita a los demás con el enlace.</p>'
+      + '<button type="button" class="cg-btn" id="plEntrar">Entrar en la app</button>');
+    $('plEntrar').onclick = () => location.reload();
+  }
+  window.acgolfPlanes = {
+    abrir: async () => { try { const r = await client.rpc('mi_plan'); if(!r.error && r.data && r.data.es_admin) pantallaPlanes(r.data); } catch(e){} }
+  };
+
   function asistentePortada(perfil, desdeCuenta){
     const P = window.acgolfPortada;
     if(!P){ ocultar(); return; }
@@ -853,6 +910,12 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }
     botonMiCuenta(perfil);
+    // Grupo nuevo: el administrador elige su plan y paga antes de entrar
+    if(perfil.es_admin && perfil.grupo_tipo === 'liga'){
+      let plan = null;
+      try { const r = await client.rpc('mi_plan'); if(!r.error) plan = r.data; } catch(e){}
+      if(plan && (plan.estado === 'elegir' || plan.estado === 'pendiente_pago')){ pantallaPlanes(plan); return; }
+    }
     const P = window.acgolfPortada;
     if(P){
       const pintar = () => P.aplicar(perfil);

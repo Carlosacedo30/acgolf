@@ -1,0 +1,24 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Planes del grupo: tarjetas con su botón redondo para elegir, y pantalla de pago */
+.pl-lista{ display:flex; flex-direction:column; gap:10px; margin:4px 0 6px; }
+.pl-op{ position:relative; display:flex; align-items:center; gap:14px; min-height:76px; padding:14px 16px; border-radius:16px; cursor:pointer;
+  background:#1B1F24; border:2px solid #33383E; color:#F4F5F2; transition:border-color .15s, background .15s; }
+.pl-op input{ position:absolute; opacity:0; width:1px; height:1px; }
+.pl-clip{ flex:none; width:28px; height:28px; border-radius:50%; border:3px solid #8A9199; display:flex; align-items:center; justify-content:center; }
+.pl-clip::after{ content:''; width:12px; height:12px; border-radius:50%; background:transparent; }
+.pl-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.pl-txt b{ font:800 21px 'Barlow', sans-serif; }
+.pl-txt small{ font:600 16px 'Barlow', sans-serif; color:#B7BDC4; }
+.pl-precio{ flex:none; text-align:right; font:600 13px/1.25 'Barlow', sans-serif; color:#8A9199; }
+.pl-op:has(input:checked){ border-color:#C6F24E; background:#22281C; }
+.pl-op:has(input:checked) .pl-clip{ border-color:#C6F24E; }
+.pl-op:has(input:checked) .pl-clip::after{ background:#C6F24E; }
+.pl-op:has(input:focus-visible){ outline:3px solid #C6F24E; outline-offset:2px; }
+.pl-op.off{ opacity:.45; cursor:not-allowed; }
+.pl-resumen{ display:flex; flex-direction:column; gap:4px; padding:16px; border-radius:16px; background:#22281C; border:2px solid #C6F24E; color:#F4F5F2; }
+.pl-resumen b{ font:800 24px 'Barlow', sans-serif; color:#C6F24E; }
+.pl-resumen span{ font:600 18px 'Barlow', sans-serif; }
+.pl-resumen em{ font:600 16px 'Barlow', sans-serif; font-style:normal; color:#B7BDC4; }
+.pl-pasarela{ display:flex; flex-direction:column; gap:6px; padding:16px; border-radius:16px; border:2px dashed #5A6068; color:#D5D9DD; }
+.pl-pasarela b{ font:800 18px 'Barlow', sans-serif; color:#F4F5F2; }
+.pl-pasarela span{ font:500 16px/1.4 'Barlow', sans-serif; }
