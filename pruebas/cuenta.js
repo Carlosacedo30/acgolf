@@ -600,8 +600,12 @@
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1>'
       + '<p class="cg-sub">' + (pestana === 'grupos' ? datos.length + ' grupos' : pestana === 'codigos' ? 'Códigos de administrador' : datos.length + ' usuarios') + '</p></div>'
       + tabs + '<div id="cgMsg" class="cg-msg"></div>' + cuerpo
+      + '<div class="cg-sep">Campos</div>'
+      + '<p class="cg-p" style="font-size:16px;">Los greens son del campo, no del grupo: si mueves uno, cambia para <b>todos los grupos</b> que juegan allí.</p>'
+      + '<button type="button" class="cg-btn ghost" id="paGreens">⛳ Greens en el mapa</button>'
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
+    $('paGreens').onclick = () => { ocultar(); if(typeof gmAbrir === 'function') gmAbrir(); };
     gate.querySelectorAll('.pa-tabs button').forEach(b => b.onclick = () => pantallaSuper(perfil, b.dataset.t));
     gate.querySelectorAll('[data-miembros]').forEach(b => b.onclick = () => pantallaMiembros(perfil, b.dataset.miembros, b.dataset.n, true));
     gate.querySelectorAll('[data-borrar]').forEach(b => b.onclick = async () => {
@@ -845,6 +849,7 @@
     try { localStorage.setItem('acgolfEsAdmin', perfil.es_admin ? '1' : '0'); } catch(e){}
     try { localStorage.setItem('golfAppConvMe', perfil.player_name); } catch(e){} // "quién soy" = el de la cuenta
     window.miPerfil = perfil;
+    document.documentElement.classList.toggle('es-super', !!perfil.es_super); // los greens solo los toca el super administrador
     window.miPerfilId = session.user && session.user.id;
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }

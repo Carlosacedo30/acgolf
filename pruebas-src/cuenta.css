@@ -182,3 +182,6 @@ html.con-marca .home-patro img{ border-radius:6px; }
 .pg-patro-fila{ display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:4px 10px; padding-top:10px; }
 .pg-patro-fila .home-patro{ padding:0; min-height:44px; }
 .pg-patro-propio{ background:#F2F4F5; color:#111316; border-radius:8px; padding:5px 10px; font:800 15px 'Archivo', 'Barlow', sans-serif; }
+/* Greens: ya no salen en la portada de ningún grupo (están en el Panel de super administrador); en el campo, solo el super administrador puede guardar un green */
+#greensMapaBtn{ display:none !important; }
+html:not(.es-super) #holeSetGreenBtn{ display:none !important; }
