@@ -626,8 +626,11 @@
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
           + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
-          + '<p class="cg-p" style="font-size:16px;margin-top:4px;">Este enlace también lo tienes siempre en «Mi cuenta».</p>';
+          + (window.acgolfQR ? '<div class="qr-caja"><b>Código QR de tu grupo</b><img id="cgQR" alt="Código QR para unirse a «' + esc(inv.grupo) + '»"><small>Ya está hecho: imprímelo o enséñalo en el móvil. Al escanearlo entran directamente en el grupo.</small>'
+              + '<a class="cg-btn ghost" id="cgQRBajar" download="QR-' + esc(String(inv.grupo).replace(/[^\wÀ-ÿ]+/g, '-')) + '.png">Descargar el QR</a></div>' : '')
+          + '<p class="cg-p" style="font-size:16px;margin-top:4px;">El enlace y el QR también los tienes siempre en «Mi cuenta».</p>';
         $('cgCopiar').onclick = async () => { try { await navigator.clipboard.writeText(enlace); msg('Enlace copiado.', true); } catch(e){ prompt('Copia el enlace:', enlace); } };
+        if(window.acgolfQR && $('cgQR')){ try { const png = window.acgolfQR.lamina(enlace, inv.grupo); $('cgQR').src = png; $('cgQRBajar').href = png; } catch(e){ const c = box.querySelector('.qr-caja'); if(c) c.remove(); } }
       } catch(e){ const box = $('cgInvita'); if(box) box.remove(); }
     }
 
