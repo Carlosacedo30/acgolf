@@ -222,7 +222,7 @@
   async function pantallaCodigoAdmin(email, perfil, codigo){
     const volver = () => { olvidarCodigoAdmin(); perfil ? pantallaMisGrupos(perfil) : pantallaBienvenida(email); };
     if(!codigo){
-      mostrar(cabecera('Código de administrador', 'Para crear un grupo hace falta un código. Te lo manda Carlos, el administrador de acgolf.')
+      mostrar(cabecera('Código de administrador', 'Para crear un grupo hace falta un código. Ponte en contacto con acgolf para pedirlo.')
         + '<label class="cg-lbl">Tu código<small>Empieza por ADM-</small><input id="caCodigo" type="text" autocapitalize="characters" maxlength="40" placeholder="ADM-"></label>'
         + '<div id="cgMsg" class="cg-msg"></div>'
         + '<button type="button" class="cg-btn" id="caSeguir">Seguir</button>'
@@ -241,7 +241,7 @@
     let info = null;
     try { const r = await client.rpc('info_codigo_admin', { p_codigo: codigo }); if(r.error) throw r.error; info = r.data; } catch(e){}
     if(!info || !info.valido){
-      const porque = !info ? 'Ese código no existe. Revisa que esté bien escrito.' : info.usado ? 'Ese código ya se ha usado. Pide otro a Carlos.' : 'Ese código ha caducado. Pide otro a Carlos.';
+      const porque = !info ? 'Ese código no existe. Revisa que esté bien escrito.' : info.usado ? 'Ese código ya se ha usado. Ponte en contacto con acgolf para pedir otro.' : 'Ese código ha caducado. Ponte en contacto con acgolf para pedir otro.';
       mostrar(cabecera('Ese código no vale', porque)
         + '<button type="button" class="cg-btn" id="caOtro">Escribir otro código</button>'
         + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
