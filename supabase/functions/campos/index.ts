@@ -16,9 +16,14 @@
 import { createClient } from "npm:@supabase/supabase-js@2.117.2";
 
 const API = "https://api.golfcourseapi.com/v1";
-const RUTA_FICHA = (id: number) => `${API}/courses/${id}`;
+const RUTA_FICHA = (id: string) => `${API}/courses/${encodeURIComponent(id)}`;
+// El número de cada campo en GolfCourseAPI lleva letras y números (p. ej. «nc7f4bv6»)
+const idDe = (v: unknown): string | null => {
+  const s = typeof v === "number" ? String(v) : typeof v === "string" ? v.trim() : "";
+  return /^[A-Za-z0-9_-]{1,40}$/.test(s) ? s : null;
+};
 const DIAS_CACHE = 30;
-const MAX_FICHAS = 3; // fichas extra por búsqueda como mucho (cada una gasta una consulta)
+const MAX_FICHAS = 5; // fichas por búsqueda como mucho (cada una gasta una consulta)
 const ORIGENES = ["https://acgolf.es", "https://carlosacedo30.github.io"];
 
 let CORS: Record<string, string> = {
@@ -82,7 +87,7 @@ function barrasDe(tees: any): Barra[] {
 }
 
 function aFila(c: any) {
-  const id = num(c?.id);
+  const id = idDe(c?.id);
   if (id === null) return null;
   const club = txt(c.club_name);
   const curso = txt(c.course_name);
@@ -95,7 +100,7 @@ function aFila(c: any) {
   return {
     id: `gca:${id}`,
     fuente: "golfcourseapi",
-    externo_id: id,
+    externo_id: null,
     club,
     nombre,
     direccion: txt(loc.address),
@@ -187,13 +192,16 @@ Deno.serve(async (req) => {
     const cuerpo = await pedir(`${API}/search?search_query=${encodeURIComponent(texto)}`, clave);
     const lista: any[] = Array.isArray(cuerpo?.courses) ? cuerpo.courses : [];
     console.log("búsqueda", texto, "→", lista.length, "campos");
+    // Primero los campos de España (son los que se juegan); las fichas se piden a esos antes
+    const deEspana = (x: any) => (/spain|españa/i.test(String(x?.location?.country || "")) ? 1 : 0);
+    lista.sort((a, b) => deEspana(b) - deEspana(a));
 
     // Completar las barras que falten, con pocas fichas para no gastar
     let fichas = 0;
     for (let i = 0; i < lista.length && fichas < MAX_FICHAS; i++) {
       const c = lista[i];
       if (c?.tees && (Array.isArray(c.tees.male) || Array.isArray(c.tees.female))) continue;
-      const id = num(c?.id);
+      const id = idDe(c?.id);
       if (id === null) continue;
       const { data: ok } = await admin.rpc("campos_api_sumar", { p_limite: limite });
       if (!ok) break;
@@ -201,6 +209,7 @@ Deno.serve(async (req) => {
       const f = await pedir(RUTA_FICHA(id), clave);
       const det = f?.course ?? f;
       if (det?.tees) lista[i] = { ...c, ...det };
+      else console.error("ficha sin barras", id, JSON.stringify(f).slice(0, 400));
     }
 
     const filas = lista.map(aFila).filter((f): f is NonNullable<ReturnType<typeof aFila>> => f !== null);
