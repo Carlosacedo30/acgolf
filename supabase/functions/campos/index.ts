@@ -120,6 +120,11 @@ async function pedir(url: string, clave: string) {
   const reloj = setTimeout(() => ctl.abort(), 9000);
   try {
     const r = await fetch(url, { headers: { Authorization: `Key ${clave}`, Accept: "application/json" }, signal: ctl.signal });
+    if (!r.ok) {
+      // Para poder ver en los registros de Supabase qué contestó GolfCourseAPI (nunca se apunta la clave)
+      let trozo = ""; try { trozo = (await r.clone().text()).slice(0, 200); } catch { /* sin texto */ }
+      console.error("GolfCourseAPI respondió", r.status, new URL(url).pathname, trozo);
+    }
     if (r.status === 401 || r.status === 403) throw new ErrorApi(502, "La clave de GolfCourseAPI no es válida.");
     if (r.status === 429) throw new ErrorApi(503, "Hoy ya no quedan búsquedas nuevas. Prueba mañana o busca entre los campos ya guardados.");
     if (r.status === 404) return null;
@@ -128,6 +133,7 @@ async function pedir(url: string, clave: string) {
   } catch (e) {
     if (e instanceof ErrorApi) throw e;
     if ((e as Error).name === "AbortError") throw new ErrorApi(504, "El servicio de campos tarda demasiado. Inténtalo otra vez.");
+    console.error("No se pudo conectar con GolfCourseAPI", String(e));
     throw new ErrorApi(502, "No se pudo conectar con el servicio de campos.");
   } finally {
     clearTimeout(reloj);
@@ -142,7 +148,7 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return res({ error: "Solo POST" }, 405);
 
   const url = Deno.env.get("SUPABASE_URL")!;
-  const clave = Deno.env.get("GOLFCOURSE_API_KEY");
+  const clave = (Deno.env.get("GOLFCOURSE_API_KEY") || "").trim().replace(/^key\s+/i, "").replace(/\s+/g, "") || undefined;
   const limite = Math.max(1, parseInt(Deno.env.get("CAMPOS_LIMITE_DIA") || "30", 10) || 30);
   const admin = createClient(url, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 
@@ -179,6 +185,7 @@ Deno.serve(async (req) => {
 
     const cuerpo = await pedir(`${API}/search?search_query=${encodeURIComponent(texto)}`, clave);
     const lista: any[] = Array.isArray(cuerpo?.courses) ? cuerpo.courses : [];
+    console.log("búsqueda", texto, "→", lista.length, "campos");
 
     // Completar las barras que falten, con pocas fichas para no gastar
     let fichas = 0;
