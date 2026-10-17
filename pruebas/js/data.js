@@ -60,7 +60,12 @@
       } },
     { id:'la-cartuja', name:'Instalaciones Deportivas La Cartuja', location:'Sevilla', holes9:true,
       par:[4,3,3,3,3,3,4,3,3],
-      hcp:[3,5,13,12,10,15,2,11,9] },
+      hcp:[3,5,13,12,10,15,2,11,9],
+      // Rating / slope de 9 hoyos de la tabla del club (amarillas de caballeros, rojas de damas)
+      tees:{
+        amarillas:{ rating:25.4, slope:138 },
+        rojas:    { rating:26.3, slope:146 },
+      } },
     { id:'zaudin', name:'Club Zaudín Golf', location:'Tomares, Sevilla',
       par:[4,4,3,5,4,4,4,5,3, 4,3,5,4,4,4,3,4,4],
       hcp:[16,6,2,14,4,10,12,18,8, 5,7,15,9,11,13,17,1,3],

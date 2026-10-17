@@ -56,8 +56,9 @@
     const c = curso || (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
     const d = c && dificultadCampo(c, barra || BARRA_DEFECTO);
     if(!d || !Array.isArray(c.par)) return v;
-    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0);
-    return Math.round(v * d.slope / 113 + (d.rating - par));
+    const vueltas = c.holes9 && c.par.length === 9 ? 2 : 1; // 9 hoyos: se juegan dos vueltas
+    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0) * vueltas;
+    return Math.round(v * d.slope / 113 + (d.rating * vueltas - par));
   }
   // Hándicap con el que se juega de verdad: el del campo (según su barra) y, encima, el porcentaje de la modalidad
   function ajusteHcp(h, barra){

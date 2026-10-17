@@ -136,10 +136,25 @@ cambia('pruebas/js/scorecard.js', """hcps.push((course.hcp && course.hcp[def.off
         hcps.push((course.hcp && course.hcp[ih] !== undefined) ? course.hcp[ih] : (i + 1));""")
 # Una partida de un campo de 9 hoyos que otro móvil no conoce: se reconoce por traer 9 pares
 cambia('pruebas/js/rondas-compartidas.js', """        holes9: false,""", """        holes9: !!(data.course_par && data.course_par.length === 9),""")
+# La Cartuja: rating y slope oficiales de 9 hoyos (par 29), sacados de la tabla de hándicap de juego
+# del club (Escuela Golf La Cartuja): amarillas de caballeros y rojas de damas. Reproducen la tabla exacta.
+cambia('pruebas/js/data.js', """      hcp:[3,5,13,12,10,15,2,11,9] },""", """      hcp:[3,5,13,12,10,15,2,11,9],
+      // Rating / slope de 9 hoyos de la tabla del club (amarillas de caballeros, rojas de damas)
+      tees:{
+        amarillas:{ rating:25.4, slope:138 },
+        rojas:    { rating:26.3, slope:146 },
+      } },""")
+# Campos de 9 hoyos (se juegan dos vueltas): rating y par de las dos vueltas (regla de la Federación
+# para juntar dos recorridos de 9 hoyos: rating × 2, mismo slope, par × 2)
+cambia('pruebas/js/players.js', """    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0);
+    return Math.round(v * d.slope / 113 + (d.rating - par));""", """    const vueltas = c.holes9 && c.par.length === 9 ? 2 : 1; // 9 hoyos: se juegan dos vueltas
+    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0) * vueltas;
+    return Math.round(v * d.slope / 113 + (d.rating * vueltas - par));""")
+
 # Que los móviles descarguen de nuevo los archivos cambiados (no la copia guardada)
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
-for f in ('data', 'scorecard', 'rondas-compartidas'):
+for f in ('data', 'scorecard', 'rondas-compartidas', 'players'):
     s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\1-9h"', s); assert n == 1, f
 open(p, 'w', encoding='utf-8').write(s)
 PY
