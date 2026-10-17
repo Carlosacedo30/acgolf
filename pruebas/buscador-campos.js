@@ -286,8 +286,8 @@
       + '<button type="button" class="' + (st.modo === 'cerca' ? 'on' : '') + '" data-modo="cerca" aria-pressed="' + (st.modo === 'cerca') + '">Cerca de un sitio</button></div>'
       + '<form id="bcForm" class="bc-form" novalidate>';
     if(st.modo === 'texto'){
-      h += '<label class="bc-lbl" for="bcTexto">Escribe el nombre del campo o la ciudad</label>'
-        + '<input id="bcTexto" class="bc-input" type="search" inputmode="search" autocomplete="off" maxlength="60" placeholder="Ej.: Zaudín, Marbella, Valderrama" value="' + esc(st.texto) + '">';
+      h += '<label class="bc-lbl" for="bcTexto">Escribe el nombre del campo</label>'
+        + '<input id="bcTexto" class="bc-input" type="search" inputmode="search" autocomplete="off" maxlength="60" placeholder="Ej.: Valderrama, Guadalmina, Zaudín" value="' + esc(st.texto) + '">';
     } else {
       const p = st.punto;
       h += '<button type="button" class="bc-btn sec" data-accion="gps">' + ICO.diana + '<span>' + (p && p.origen === 'gps' ? 'Ubicación lista · volver a localizar' : 'Usar mi ubicación') + '</span></button>'
@@ -319,7 +319,7 @@
     if(!st.resultados.length){
       h += '<p class="bc-vacio">No se ha encontrado ningún campo.' + (st.modo === 'cerca'
         ? ' En «Cerca de un sitio» salen los campos que ya se han buscado alguna vez por nombre o ciudad: prueba a buscar antes la ciudad o la provincia.'
-        : ' Prueba con otro nombre o con la ciudad.') + '</p>';
+        : ' La búsqueda va por el <b>nombre del campo</b>, no por la ciudad: prueba con una palabra del nombre, por ejemplo «Guadalmina», «Valderrama» o «Montecastillo».') + '</p>';
       return h;
     }
     if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno con ese slope. Cambia el filtro.</p>';

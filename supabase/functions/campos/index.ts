@@ -172,8 +172,9 @@ Deno.serve(async (req) => {
   };
 
   // ¿Se buscó esto hace poco? Entonces no se gasta consulta
-  const { data: prev } = await admin.from("campos_busquedas").select("hecha_en").eq("termino", termino).maybeSingle();
-  const reciente = prev && Date.now() - new Date(prev.hecha_en).getTime() < DIAS_CACHE * 864e5;
+  const { data: prev } = await admin.from("campos_busquedas").select("hecha_en, resultados").eq("termino", termino).maybeSingle();
+  // Solo cuenta como «ya buscado» si aquella vez salieron campos
+  const reciente = prev && prev.resultados > 0 && Date.now() - new Date(prev.hecha_en).getTime() < DIAS_CACHE * 864e5;
   if (reciente || !clave) {
     const campos = await guardados();
     return res({ campos, origen: "guardados", aviso: !clave ? "Falta configurar la clave de GolfCourseAPI: solo se ven los campos ya guardados." : null });
@@ -203,13 +204,22 @@ Deno.serve(async (req) => {
     }
 
     const filas = lista.map(aFila).filter((f): f is NonNullable<ReturnType<typeof aFila>> => f !== null);
+    if (filas.length < lista.length) {
+      // Algún campo no se pudo leer: se apunta cómo venía (sin datos privados) para poder arreglarlo
+      const malo = lista.find((x) => aFila(x) === null);
+      console.error("campo descartado", JSON.stringify(malo).slice(0, 600));
+    }
     if (filas.length) {
       const { error } = await admin.from("campos_golf").upsert(filas, { onConflict: "id" });
       if (error) console.error("guardar campos", error);
     }
-    await admin.from("campos_busquedas").upsert({ termino, resultados: filas.length, hecha_en: new Date().toISOString() });
+    if (filas.length) await admin.from("campos_busquedas").upsert({ termino, resultados: filas.length, hecha_en: new Date().toISOString() });
 
-    return res({ campos: await guardados(), origen: "api" });
+    // Lo que ha devuelto la API va siempre (aunque el texto no esté en el nombre guardado), más lo ya guardado
+    const ya = await guardados();
+    const ids = new Set(filas.map((f) => f.id));
+    const campos = filas.map(({ externo_id: _e, actualizado_en: _a, ...resto }) => resto).concat(ya.filter((g: any) => !ids.has(g.id)));
+    return res({ campos, origen: "api" });
   } catch (e) {
     const err = e instanceof ErrorApi ? e : new ErrorApi(500, "Algo ha fallado al buscar campos.");
     if (!(e instanceof ErrorApi)) console.error(e);
