@@ -163,7 +163,7 @@
       if(k && !tees[k] && b.rating != null && b.slope != null) tees[k] = { rating: Number(b.rating), slope: Number(b.slope) };
     }));
     const curso = { id, name: c.nombre, location: ubicacion(c) || '', par: base.par_hoyos.map(Number), hcp: base.hcp_hoyos.map(Number), externo: true };
-    if(curso.par.length === 9) curso.holes9 = true;
+    if(curso.par.length === 9){ curso.holes9 = true; if(typeof hcpNueveA18 === 'function') curso.hcp = hcpNueveA18(curso.hcp); } // 9 hoyos: se juegan dos vueltas
     if(Object.keys(tees).length) curso.tees = tees;
     lista.push(curso);
     return curso;

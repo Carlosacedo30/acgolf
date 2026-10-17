@@ -73,6 +73,16 @@
       } },
   ];
 
+  // Campos de 9 hoyos: dificultad de 18 valores (1.ª vuelta impares, 2.ª vuelta pares) para que
+  // los golpes de regalo de las dos vueltas sumen justo el hándicap
+  function hcpNueveA18(hcp){
+    if(!Array.isArray(hcp) || hcp.length !== 9) return hcp;
+    const orden = hcp.map((v, i) => [Number(v), i]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const rango = Array(9); orden.forEach((x, r) => { rango[x[1]] = r + 1; });
+    return rango.map(r => 2 * r - 1).concat(rango.map(r => 2 * r));
+  }
+  COURSES.forEach(c => { if(c.holes9) c.hcp = hcpNueveA18(c.hcp); });
+
   let selectedCourse = null;
   let players = ['Jugador 1'];
   let currentCoursePar = 0;

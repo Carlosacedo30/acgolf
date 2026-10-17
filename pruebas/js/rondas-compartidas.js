@@ -220,7 +220,7 @@
         name: data.course_name,
         par: (data.course_par && data.course_par.length) ? data.course_par : Array(18).fill(4),
         hcp: data.course_hcp || null,
-        holes9: false,
+        holes9: !!(data.course_par && data.course_par.length === 9),
       } : selectedCourse);
       activeGroup = 0;
       diagAnswers = {};

@@ -54,7 +54,8 @@
         cell.dataset.par = par;
         pars.push(par);
         nineTotal += par;
-        hcps.push((course.hcp && course.hcp[def.offset + i] !== undefined) ? course.hcp[def.offset + i] : (i + 1));
+        const ih = (course.holes9 && course.hcp && course.hcp.length === 18 ? def.startHole - 1 : def.offset) + i; // 9 hoyos: la 2.ª vuelta usa su propia dificultad
+        hcps.push((course.hcp && course.hcp[ih] !== undefined) ? course.hcp[ih] : (i + 1));
       });
       const totalCell = document.getElementById(def.totalId);
       if(totalCell) totalCell.textContent = nineTotal;
