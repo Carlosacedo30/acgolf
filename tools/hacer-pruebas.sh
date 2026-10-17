@@ -181,7 +181,7 @@ cambia('pruebas/js/players.js', """    const par = c.par.reduce((a, b) => a + (N
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
 for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida'):
-    s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\1-9h"', s); assert n == 1, f
+    s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\g<1>09"', s); assert n == 1, f
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
