@@ -147,6 +147,18 @@ cambia('pruebas/js/data.js', """      hcp:[3,5,13,12,10,15,2,11,9] },""", """   
         amarillas:{ rating:25.4, slope:138 },
         rojas:    { rating:26.3, slope:146 },
       } },""")
+# Real Club de Golf de Sevilla: rating y slope de la tabla de equivalencias del club (Sistema Mundial de Hándicap).
+# Colores por metros (tarjeta de la RFEG): blancas = barra 62, amarillas = barra 56 (caballeros);
+# azules = barra 56 de damas y rojas = barra 53 de damas (confirmado por Carlos).
+cambia('pruebas/js/data.js', """      hcp:[14,2,12,6,18,4,8,16,10, 11,9,15,17,5,1,13,7,3] },""", """      hcp:[14,2,12,6,18,4,8,16,10, 11,9,15,17,5,1,13,7,3],
+      // Rating / slope de la tabla del club: blancas (62) y amarillas (56) de caballeros; azules (56) y rojas (53) de damas
+      tees:{
+        blancas:  { rating:73.2, slope:135 },
+        amarillas:{ rating:70.5, slope:126 },
+        azules:   { rating:76.1, slope:136 },
+        rojas:    { rating:74.2, slope:129 },
+      } },""")
+
 # Real Club Pineda: rating y slope por barra (1golf.eu y offcourse.co coinciden):
 # blancas y amarillas de caballeros, azules y rojas de damas
 cambia('pruebas/js/data.js', """      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5] },""", """      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5],
