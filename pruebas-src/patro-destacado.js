@@ -55,7 +55,8 @@
   }
 
   function arrancar(){
-    bienvenida();
+    // la bienvenida sale cuando termina la presentación con video (si la hay)
+    (window.acgolfIntro || Promise.resolve()).then(bienvenida);
     repasar();
     setInterval(repasar, 1000);
   }
