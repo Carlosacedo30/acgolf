@@ -128,7 +128,7 @@
   function camposAcgolf(){
     let lista = [];
     try { if(typeof COURSES !== 'undefined' && Array.isArray(COURSES)) lista = COURSES; } catch(e){}
-    return lista.map(c => {
+    return lista.filter(c => !c.externo).map(c => {
       const barras = c.tees ? Object.keys(c.tees).map(k => ({
         genero:'m', nombre: k.charAt(0).toUpperCase() + k.slice(1),
         rating: numero(c.tees[k].rating), slope: numero(c.tees[k].slope),
@@ -139,6 +139,42 @@
       return { id: 'acgolf:' + c.id, fuente:'acgolf', nombre: c.name, club: null, ciudad: c.location || null,
                region: null, pais: 'España', lat: co ? co[0] : null, lon: co ? co[1] : null, barras };
     });
+  }
+
+  // ---------- Pasar un campo del buscador a la lista de campos de la app (para poder jugarlo) ----------
+  // Hace falta el par y la dificultad de cada hoyo. Las barras se reconocen por su color.
+  const COLORES = { blancas:['blanca','blancas','white'], amarillas:['amarilla','amarillas','yellow'], azules:['azul','azules','blue'], rojas:['roja','rojas','red'] };
+  const colorDe = nombre => { const t = sinAcentos(nombre); return Object.keys(COLORES).find(k => COLORES[k].some(w => t.split(/[^a-z]+/).includes(w))) || null; };
+  const parValido = a => Array.isArray(a) && (a.length === 9 || a.length === 18) && a.every(p => Number.isInteger(+p) && +p >= 3 && +p <= 6);
+  const hcpValido = (a, n) => Array.isArray(a) && a.length === n && new Set(a.map(Number)).size === n && a.every(x => Number.isInteger(+x) && +x >= 1 && +x <= 18);
+  function listaCursos(){ try { if(typeof COURSES !== 'undefined' && Array.isArray(COURSES)) return COURSES; } catch(e){} return null; }
+  function aCursoApp(c){
+    const lista = listaCursos(); if(!lista || !c) return null;
+    if(c.fuente === 'acgolf') return lista.find(x => 'acgolf:' + x.id === c.id) || null;
+    const id = 'gca-' + String(c.id).replace(/^gca:/, '').replace(/[^0-9a-z-]/gi, '');
+    const ya = lista.find(x => x.id === id); if(ya) return ya;
+    const bs = Array.isArray(c.barras) ? c.barras : [];
+    const base = bs.find(b => b.genero === 'm' && parValido(b.par_hoyos) && hcpValido(b.hcp_hoyos, b.par_hoyos.length))
+              || bs.find(b => parValido(b.par_hoyos) && hcpValido(b.hcp_hoyos, b.par_hoyos.length));
+    if(!base) return null;
+    const tees = {};
+    ['m', 'f'].forEach(g => barrasDe(c, g).forEach(b => {
+      const k = colorDe(b.nombre);
+      if(k && !tees[k] && b.rating != null && b.slope != null) tees[k] = { rating: Number(b.rating), slope: Number(b.slope) };
+    }));
+    const curso = { id, name: c.nombre, location: ubicacion(c) || '', par: base.par_hoyos.map(Number), hcp: base.hcp_hoyos.map(Number), externo: true };
+    if(curso.par.length === 9) curso.holes9 = true;
+    if(Object.keys(tees).length) curso.tees = tees;
+    lista.push(curso);
+    return curso;
+  }
+  function jugarAqui(id){
+    const c = buscarCampo(id); if(!c || !st.alElegir) return;
+    const curso = aCursoApp(c);
+    if(!curso){ aviso('Este campo no trae el par y la dificultad de cada hoyo. Mándame su tarjeta y lo añado a acgolf.'); return; }
+    const avisar = st.alElegir;
+    cerrar();
+    avisar(curso);
   }
 
   // ---------- Servidor ----------
@@ -170,6 +206,7 @@
     punto: null,            // { lat, lon, origen:'gps'|'manual' } para calcular distancias
     fase: 'inicio',         // inicio · cargando · error · listo
     error: '', aviso: '', resultados: [], ficha: null, pidiendo: 0, ultimoQuitado: null,
+    alElegir: null,         // si viene de «Crear partida»: a quién avisar del campo elegido
   };
 
   function ov(){
@@ -179,7 +216,7 @@
     o.id = 'bcOv'; o.className = 'bc-ov'; o.hidden = true;
     o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); o.setAttribute('aria-label', 'Campos de golf');
     o.innerHTML = '<button type="button" class="home-volver pantalla-volver" id="bcCerrar">‹ Volver al inicio</button>'
-      + '<div class="bc-caja"><div id="bcBody"></div></div><div id="bcCapa"></div><div class="bc-aviso" id="bcToast" role="status" aria-live="polite"></div>';
+      + '<div class="bc-caja"><div id="bcBody"></div></div><div id="bcCapa"></div>';
     document.body.appendChild(o);
     o.addEventListener('click', alPulsar);
     o.addEventListener('change', alCambiar);
@@ -188,8 +225,9 @@
     return o;
   }
 
-  function abrir(pestana){
+  function abrir(pestana, alElegir){
     const o = ov();
+    st.alElegir = typeof alElegir === 'function' ? alElegir : null;
     st.pestana = pestana || (Favoritos.leer().length ? 'favoritos' : 'buscar');
     o.hidden = false;
     document.documentElement.classList.add('bc-abierto');
@@ -200,15 +238,19 @@
     const o = $('bcOv'); if(!o) return;
     cerrarCapa();
     o.hidden = true;
+    st.alElegir = null;
     document.documentElement.classList.remove('bc-abierto');
     ponerBoton();
   }
+  // Abre el buscador para elegir dónde jugar (desde «Crear partida»)
+  function elegir(alElegir, pestana){ abrir(pestana || (Favoritos.leer().length ? 'favoritos' : 'buscar'), alElegir); }
 
   // ---------- Pintar ----------
   function pintar(){
     const body = $('bcBody'); if(!body) return;
     const nFav = Favoritos.leer().length;
-    let h = '<h2 class="bc-titulo">Campos de golf</h2>'
+    const cerrarBtn = $('bcCerrar'); if(cerrarBtn) cerrarBtn.textContent = st.alElegir ? '‹ Volver a crear partida' : '‹ Volver al inicio';
+    let h = '<h2 class="bc-titulo">' + (st.alElegir ? 'Elige dónde jugáis' : 'Campos de golf') + '</h2>'
       + '<div class="bc-pestanas" role="tablist">'
       + '<button type="button" role="tab" class="bc-pest' + (st.pestana === 'buscar' ? ' on' : '') + '" aria-selected="' + (st.pestana === 'buscar') + '" data-pest="buscar">Buscar</button>'
       + '<button type="button" role="tab" class="bc-pest' + (st.pestana === 'favoritos' ? ' on' : '') + '" aria-selected="' + (st.pestana === 'favoritos') + '" data-pest="favoritos">Favoritos <b>' + nFav + '/' + MAX_FAV + '</b></button>'
@@ -310,7 +352,9 @@
       + (nv ? '<span class="bc-nivel ' + nv.cls + '">' + esc(nv.txt) + '</span>' : '<span class="bc-nivel sin">Sin datos de ' + (st.genero === 'f' ? 'damas' : 'caballeros') + '</span>')
       + '</span>'
       + (c.fuente === 'acgolf' ? '<span class="bc-fuente">Datos oficiales de acgolf</span>' : '')
-      + '</button><div class="bc-acciones">';
+      + '</button>'
+      + (st.alElegir ? '<div class="bc-acciones"><button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button></div>' : '')
+      + '<div class="bc-acciones">';
     if(donde === 'favorito'){
       h += '<button type="button" class="bc-btn sec" data-ficha="' + esc(c.id) + '">Ver ficha</button>'
         + '<button type="button" class="bc-btn quitar" data-quitar="' + esc(c.id) + '">' + ICO.papelera + '<span>Quitar</span></button>';
@@ -344,6 +388,7 @@
       + '<p class="bc-nota">Rating: golpes que haría un jugador de hándicap 0. Slope: lo difícil que es para el aficionado (113 = normal).'
       + (c.fuente === 'acgolf' ? ' Datos de la tarjeta oficial guardada en acgolf.' : ' Datos de GolfCourseAPI: pueden no estar al día; manda la tabla oficial del club.') + '</p>'
       + '<div class="bc-ficha-acc">'
+      + (st.alElegir ? '<button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button>' : '')
       + '<button type="button" class="bc-btn fav' + (fav ? ' on' : '') + '" data-fav="' + esc(c.id) + '" aria-pressed="' + fav + '">' + (fav ? ICO.estrellaLlena : ICO.estrella) + '<span>' + (fav ? 'Quitar de favoritos' : 'Añadir a favoritos') + '</span></button>'
       + (mapa ? '<a class="bc-btn sec" href="' + esc(mapa) + '" target="_blank" rel="noopener">' + ICO.pin + '<span>Cómo llegar</span></a>' : '')
       + '<button type="button" class="bc-btn sec" data-accion="cerrar-capa">Cerrar</button></div></div>';
@@ -361,8 +406,19 @@
   }
 
   function quitarAviso(){ const t = $('bcToast'); if(t) t.classList.remove('on'); clearTimeout(aviso._t); }
+  // El aviso va fuera de la pantalla del buscador: así también se ve desde «Crear partida»
+  function cajaAviso(){
+    let t = $('bcToast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'bcToast'; t.className = 'bc-aviso'; t.setAttribute('role', 'status'); t.setAttribute('aria-live', 'polite');
+      t.addEventListener('click', alPulsar);
+      document.body.appendChild(t);
+    }
+    return t;
+  }
   function aviso(texto, deshacer){
-    const t = $('bcToast'); if(!t) return;
+    const t = cajaAviso();
     t.innerHTML = '<span>' + esc(texto) + '</span>' + (deshacer ? '<button type="button" data-accion="deshacer">Deshacer</button>' : '');
     t.classList.add('on');
     clearTimeout(aviso._t);
@@ -476,6 +532,7 @@
     if(d.modo){ leerFormulario(); if(st.modo !== d.modo){ st.modo = d.modo; st.fase = 'inicio'; st.resultados = []; st.aviso = ''; } return pintar(); }
     if(d.genero){ leerFormulario(); st.genero = d.genero; return pintar(); }
     if(d.atajo){ leerFormulario(); const a = ATAJOS.find(x => x.id === d.atajo); if(a){ st.min = a.min; st.max = a.max; } return pintar(); }
+    if(d.jugar) return jugarAqui(d.jugar);
     if(d.fav) return alternarFavorito(d.fav);
     if(d.ficha) return abrirFicha(d.ficha);
     if(d.quitar){ st.ultimoQuitado = Favoritos.quitar(d.quitar); aviso('Quitado de favoritos', true); return repintarTodo(); }
@@ -534,9 +591,52 @@
     bandera: svg('<path d="M6 21V3.5"/><path d="M6 4h11l-2.5 3.5L17 11H6"/><path d="M3.5 21h7"/>', 'ico bc-ico'),
   };
 
+  // ---------- En «Crear partida» (paso 1: ¿Dónde jugáis?) ----------
+  // Debajo de los campos de siempre salen los favoritos y «Buscar otro campo».
+  function elegirEnCrearPartida(curso){
+    try {
+      // Variables de partida-rapida.js (están a la vista de los demás archivos de la app)
+      prCampo = curso.id; prPaso = 2;   // eslint-disable-line no-undef
+      if(typeof prPintar === 'function') prPintar();
+      const ov = $('prOverlay'); if(ov) ov.hidden = false;
+    } catch(e){ console.error(e); aviso('No se pudo elegir el campo.'); }
+  }
+  function ponerEnCrearPartida(){
+    const body = $('prBody'); if(!body || $('bcPr')) return;
+    const campos = body.querySelectorAll(':scope > .pr-campo'); if(!campos.length) return;
+    const ultimo = campos[campos.length - 1];
+    const propios = new Set([...campos].map(b => 'acgolf:' + b.dataset.campo));
+    const favs = Favoritos.leer().filter(f => !propios.has(f.id));
+    const caja = document.createElement('div');
+    caja.id = 'bcPr'; caja.className = 'bc-pr';
+    caja.innerHTML = (favs.length ? '<div class="bc-pr-t">' + ICO.estrellaLlena + '<span>Tus campos favoritos</span></div>'
+        + favs.map(f => '<button type="button" class="pr-campo bc-pr-fav" data-bcfav="' + esc(f.id) + '">' + esc(f.nombre) + '</button>').join('') : '')
+      + '<button type="button" class="pr-campo bc-pr-buscar">' + ICO.lupa + '<span>Buscar otro campo</span></button>';
+    ultimo.insertAdjacentElement('afterend', caja);
+    caja.addEventListener('click', e => {
+      const b = e.target.closest('button'); if(!b) return;
+      if(b.dataset.bcfav){
+        const f = Favoritos.leer().find(x => x.id === b.dataset.bcfav);
+        const curso = aCursoApp(f);
+        if(curso) return elegirEnCrearPartida(curso);
+        aviso('Este campo no trae el par y la dificultad de cada hoyo. Mándame su tarjeta y lo añado a acgolf.');
+        return;
+      }
+      elegir(elegirEnCrearPartida, 'buscar');
+    });
+  }
+  // La pantalla de «Crear partida» se repinta en cada paso: se vuelve a poner cuando hace falta
+  function vigilarCrearPartida(){
+    const body = $('prBody');
+    if(!body){ setTimeout(vigilarCrearPartida, 800); return; }
+    new MutationObserver(() => ponerEnCrearPartida()).observe(body, { childList: true });
+    ponerEnCrearPartida();
+  }
+
   // Otra pestaña o ventana cambió los favoritos: se repinta
   window.addEventListener('storage', e => { if(e.key === CLAVE_FAV){ ponerBoton(); const o = $('bcOv'); if(o && !o.hidden) repintarTodo(); } });
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ponerBoton); else ponerBoton();
-  window.acgolfCampos = { abrir, cerrar, Favoritos, _util: { distanciaKm, pasaFiltro, resumen, nivel, juntar, camposAcgolf, sinAcentos } };
+  function arrancar(){ ponerBoton(); vigilarCrearPartida(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
+  window.acgolfCampos = { abrir, cerrar, elegir, Favoritos, _util: { aCursoApp, distanciaKm, pasaFiltro, resumen, nivel, juntar, camposAcgolf, sinAcentos } };
 })();

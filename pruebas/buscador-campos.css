@@ -108,3 +108,12 @@ html.bc-abierto, html.bc-abierto body{ overflow:hidden; }
 /* Botón del Inicio */
 .home-menu-btn.hm-campos .bc-insignia{ font-style:normal; font-weight:800; font-size:.85em; background:#C6F24E; color:#111316; border-radius:12px; padding:1px 8px; margin-left:6px; }
 .bc-ficha > .bc-btn{ width:100%; margin-top:4px; }
+
+/* Botón «Jugar aquí» (modo elegir campo desde Crear partida) */
+.bc-btn.lima{ background:#C6F24E; border-color:#C6F24E; color:#111316; }
+.bc-acciones + .bc-acciones{ margin-top:-6px; }
+/* En «Crear partida»: favoritos y «Buscar otro campo» debajo de los campos de siempre */
+.bc-pr{ display:contents; }
+.bc-pr-t{ display:flex; align-items:center; gap:8px; margin:14px 2px 2px; font-weight:800; font-size:16px; opacity:.85; }
+.bc-pr-t .bc-ico{ width:18px; height:18px; color:#C6F24E; }
+.pr-campo.bc-pr-buscar{ display:flex; align-items:center; justify-content:center; gap:8px; }

@@ -40,7 +40,21 @@ const txt = (v: unknown): string | null => {
   return s ? s.slice(0, 200) : null;
 };
 
-type Barra = { genero: "m" | "f"; nombre: string; rating: number | null; slope: number | null; par: number | null; hoyos: number | null; metros: number | null };
+type Barra = { genero: "m" | "f"; nombre: string; rating: number | null; slope: number | null; par: number | null; hoyos: number | null; metros: number | null; par_hoyos?: number[]; hcp_hoyos?: number[] };
+
+// Par y dificultad (hándicap) de cada hoyo, solo si vienen completos y tienen sentido (9 o 18 hoyos)
+function hoyosDe(lista: unknown): { par_hoyos?: number[]; hcp_hoyos?: number[] } {
+  if (!Array.isArray(lista) || (lista.length !== 9 && lista.length !== 18)) return {};
+  const par = lista.map((h: any) => num(h?.par));
+  if (par.some((p) => p === null || p < 3 || p > 6)) return {};
+  const out: { par_hoyos?: number[]; hcp_hoyos?: number[] } = { par_hoyos: par as number[] };
+  const hcp = lista.map((h: any) => num(h?.handicap));
+  const n = lista.length;
+  // La dificultad vale si es 1..n sin repetir (o 1..18 repartida en 9 hoyos)
+  const enteros = hcp.every((x) => x !== null && Number.isInteger(x) && x >= 1 && x <= 18);
+  if (enteros && new Set(hcp).size === n && (n === 18 ? Math.max(...(hcp as number[])) === 18 : true)) out.hcp_hoyos = hcp as number[];
+  return out;
+}
 
 function barrasDe(tees: any): Barra[] {
   const out: Barra[] = [];
@@ -58,6 +72,7 @@ function barrasDe(tees: any): Barra[] {
         par: num(t.par_total),
         hoyos: num(t.number_of_holes),
         metros: num(t.total_meters) ?? (num(t.total_yards) !== null ? Math.round(num(t.total_yards)! * 0.9144) : null),
+        ...hoyosDe(t.holes),
       });
     }
   };
