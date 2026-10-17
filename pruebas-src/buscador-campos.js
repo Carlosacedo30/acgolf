@@ -24,7 +24,7 @@
 
   // ---------- Utilidades ----------
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const sinAcentos = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const sinAcentos = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const coma = (n, dec) => n == null || !isFinite(n) ? '—' : Number(n).toFixed(dec).replace('.', ',');
   const $ = id => document.getElementById(id);
   const numero = v => { const n = typeof v === 'string' ? parseFloat(v.replace(',', '.')) : Number(v); return isFinite(n) ? n : null; };

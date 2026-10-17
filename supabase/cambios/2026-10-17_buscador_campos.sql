@@ -7,7 +7,7 @@
 
 -- Quitar acentos para buscar «zaudin» y encontrar «Zaudín» (translate es inmutable; unaccent no)
 create or replace function public.sin_acentos(t text)
-returns text language sql immutable parallel safe as $$
+returns text language sql immutable parallel safe set search_path = '' as $$
   select lower(translate(coalesce(t, ''), 'ÁÀÄÂáàäâÉÈËÊéèëêÍÌÏÎíìïîÓÒÖÔóòöôÚÙÜÛúùüûÑñÇç', 'AAAAaaaaEEEEeeeeIIIIiiiiOOOOooooUUUUuuuuNnCc'))
 $$;
 
