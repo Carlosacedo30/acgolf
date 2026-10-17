@@ -62,7 +62,7 @@
       buildPlayerRows(def.grid, pars, def.startHole, hcps);
     });
     const nineSum = course.par.reduce((a, b) => a + b, 0);
-    currentCoursePar = course.holes9 ? nineSum * 2 : nineSum;
+    currentCoursePar = course.holes9 && !course.nueve ? nineSum * 2 : nineSum;
     const parSummaryLbl = document.getElementById('parSummaryLbl');
     if(parSummaryLbl) parSummaryLbl.textContent = 'Par total del campo: ' + currentCoursePar;
     recalcResultados();

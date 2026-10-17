@@ -4,7 +4,8 @@
   function strokesForHole(handicap, strokeIndex){
     if(isNaN(handicap) || handicap <= 0) return 0;
     const h = Math.round(handicap);
-    return Math.floor(h / 18) + ((h % 18) >= strokeIndex ? 1 : 0);
+    const base = (typeof hoyosPartida === 'function') ? hoyosPartida() : 18; // 9 hoyos: los golpes se reparten en 9
+    return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);
   }
 
   // Define quiénes juegan esta ronda (1 a 4 jugadores) y sus hándicaps
@@ -56,9 +57,10 @@
     const c = curso || (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
     const d = c && dificultadCampo(c, barra || BARRA_DEFECTO);
     if(!d || !Array.isArray(c.par)) return v;
-    const vueltas = c.holes9 && c.par.length === 9 ? 2 : 1; // 9 hoyos: se juegan dos vueltas
+    const vueltas = c.holes9 && c.par.length === 9 && !c.nueve ? 2 : 1; // 9 hoyos: se juegan dos vueltas
+    const mitad = c.nueve ? 0.5 : 1; // partida de 9 hoyos: medio hándicap (regla de la Federación para 9 hoyos)
     const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0) * vueltas;
-    return Math.round(v * d.slope / 113 + (d.rating * vueltas - par));
+    return Math.round(v * mitad * d.slope / 113 + (d.rating * vueltas - par));
   }
   // Hándicap con el que se juega de verdad: el del campo (según su barra) y, encima, el porcentaje de la modalidad
   function ajusteHcp(h, barra){

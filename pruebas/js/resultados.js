@@ -107,7 +107,7 @@
         const netDiffStr = s.total > 0 ? (netDiff >= 0 ? '+' + netDiff : netDiff) : '—';
         const hcp = Math.round(hcpJuego(pIndex));
         const cls = s.total > 0 ? (netDiff > 0 ? 'over' : netDiff < 0 ? 'under' : 'par') : '';
-        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/18 hoyos · Recibe ' + hcp + ' golpes</div></div>'
+        return '<div class="sum-player"><div class="sum-head"><div class="club">' + name + '</div><div class="date">' + s.holesFilled + '/' + hoyosPartida() + ' hoyos · Recibe ' + hcp + ' golpes</div></div>'
           + '<div class="sum-tiles">'
           + '<div class="sum-tile main"><div class="v">' + (s.total > 0 ? s.total : '—') + '</div><div class="k">Golpes</div></div>'
           + '<div class="sum-tile"><div class="v">' + (s.total > 0 ? s.net : '—') + '</div><div class="k">Neto</div></div>'
@@ -139,7 +139,7 @@
     const winnerSection = document.getElementById('roundWinnerSection');
     const winnerBox = document.getElementById('roundWinner');
     if(winnerSection && winnerBox){
-      const roundDone = players.length > 0 && summaries.every(s => s.holesFilled >= 18);
+      const roundDone = players.length > 0 && summaries.every(s => s.holesFilled >= hoyosPartida());
       if(roundDone && esParejas()){
         // Por parejas: gana la pareja que va primera en la clasificación de su modalidad
         const st = computeStandings().filter(x => x.holesFilled > 0);
@@ -181,7 +181,7 @@
         : desempateHcp(players.filter((name, i) => summaries[i].holesFilled > 0 && summaries[i].net === minNet));
       const lines = esParejas()
         ? computeStandings().map((x, i) => (i + 1) + 'º ' + x.name.replace(' / ', ' y ') + ': ' + formatStandingScore(x))
-        : players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')' + (summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : ''));
+        : players.map((name, i) => name + ': ' + summaries[i].total + ' golpes (neto ' + summaries[i].net + ')' + (summaries[i].holesFilled < hoyosPartida() ? ' · ' + summaries[i].holesFilled + '/' + hoyosPartida() + ' hoyos' : ''));
       const text = '⛳ ' + (roundName ? roundName + ' · ' : '') + 'Ronda terminada en ' + (selectedCourse ? selectedCourse.name : 'el campo') + '\n'
         + lines.join('\n') + (winners.length ? '\n🏆 ' + winners.join(' y ') + ' — ' + WINNER_MESSAGE : '');
       shareResultLink.href = 'https://wa.me/?text=' + encodeURIComponent(text);

@@ -128,7 +128,7 @@
   function camposAcgolf(){
     let lista = [];
     try { if(typeof COURSES !== 'undefined' && Array.isArray(COURSES)) lista = COURSES; } catch(e){}
-    return lista.filter(c => !c.externo).map(c => {
+    return lista.filter(c => !c.externo && !c.nueve).map(c => {
       const barras = c.tees ? Object.keys(c.tees).map(k => ({
         genero:'m', nombre: k.charAt(0).toUpperCase() + k.slice(1),
         rating: numero(c.tees[k].rating), slope: numero(c.tees[k].slope),
@@ -597,6 +597,7 @@
     try {
       // Variables de partida-rapida.js (están a la vista de los demás archivos de la app)
       prCampo = curso.id; prPaso = 2;   // eslint-disable-line no-undef
+      prHoyos = curso.id === 'la-cartuja' ? 9 : 18; // La Cartuja se juega normalmente a 9 hoyos
       if(typeof prPintar === 'function') prPintar();
       const ov = $('prOverlay'); if(ov) ov.hidden = false;
     } catch(e){ console.error(e); aviso('No se pudo elegir el campo.'); }

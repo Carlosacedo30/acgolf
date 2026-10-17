@@ -38,6 +38,7 @@
       if(g && g.modo && g.modo !== 'individual') out.modo = g.modo; // modalidad por parejas
       if(g && Array.isArray(g.parejas)) out.parejas = g.parejas;   // foursome: quién forma cada pareja
       if(g && Array.isArray(g.barras)) out.barras = g.barras;     // barra de salida de cada jugador
+      if(g && g.nueve) out.nueve = true;                          // partida de 9 hoyos
       if(g && Number(g.hoyoSalida) > 1 && Number(g.hoyoSalida) <= 18) out.hoyoSalida = Number(g.hoyoSalida); // salida al tiro
       return out;
     });
@@ -221,6 +222,7 @@
         par: (data.course_par && data.course_par.length) ? data.course_par : Array(18).fill(4),
         hcp: data.course_hcp || null,
         holes9: !!(data.course_par && data.course_par.length === 9),
+        nueve: /-9$/.test(String(data.course_id || '')), // partida de 9 hoyos (una vuelta)
       } : selectedCourse);
       activeGroup = 0;
       diagAnswers = {};
@@ -356,7 +358,7 @@
       const scores = group.scores && group.scores[pIndex];
       if(!scores) return false;
       const filled = Object.keys(scores).filter(h => scores[h] !== '' && scores[h] != null).length;
-      return filled >= 18;
+      return filled >= (group.nueve ? 9 : 18);
     })) && hasAnyPlayer;
   }
 

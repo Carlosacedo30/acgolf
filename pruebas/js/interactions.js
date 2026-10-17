@@ -93,10 +93,10 @@
   if(incompleteRoundContinue) incompleteRoundContinue.addEventListener('click', ()=>{ incompleteRoundOverlay.style.display = 'none'; roundMarkedFinished = true; goTo(4); });
   const finalizarRondaBtn = document.getElementById('finalizarRondaBtn');
   if(finalizarRondaBtn) finalizarRondaBtn.addEventListener('click', ()=>{
-    const missing = getPlayerHolesFilled().filter(s => s.filled < 18);
+    const missing = getPlayerHolesFilled().filter(s => s.filled < hoyosPartida());
     if(missing.length && incompleteRoundOverlay && incompleteRoundText){
       incompleteRoundText.textContent = 'Todavía les faltan hoyos por anotar:\n'
-        + missing.map(s => '• ' + s.name + ': ' + s.filled + '/18 hoyos').join('\n');
+        + missing.map(s => '• ' + s.name + ': ' + s.filled + '/' + hoyosPartida() + ' hoyos').join('\n');
       incompleteRoundOverlay.style.display = '';
       return;
     }

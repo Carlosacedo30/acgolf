@@ -57,13 +57,14 @@
   const PR_BARRA_TXT = { blancas:'Blancas', amarillas:'Amarillas', azules:'Azules', rojas:'Rojas' };
   const prBarrasOn = () => !!window.acgolfBarras && !prParejas() && typeof BARRAS_SALIDA !== 'undefined';
   const prBarra = n => (typeof BARRAS_SALIDA !== 'undefined' && BARRAS_SALIDA.includes(prBarras[n])) ? prBarras[n] : 'amarillas';
+  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? cursoNueve(c) : c; }
   function prRecibe(n){
-    const campo = COURSES.find(c => c.id === prCampo);
+    const campo = prCurso();
     return typeof hcpCampo === 'function' ? hcpCampo(prHcp(n), campo, prBarra(n)) : Math.round(prHcp(n));
   }
   function prBarraHtml(n){
     if(!prBarrasOn()) return '';
-    const campo = COURSES.find(c => c.id === prCampo);
+    const campo = prCurso();
     if(!campo || !campo.tees) return '';
     const b = prBarra(n);
     return '<div class="pr-r-barra pr-b-' + b + '"><label>Sale de <select class="pr-barra-sel" data-n="' + prEsc(n) + '">'
@@ -174,7 +175,7 @@
     }
 
     if(prPaso === 4){
-      const campo = COURSES.find(c => c.id === prCampo);
+      const campo = prCurso();
       const llenos = prGrupos.filter(g => g.length);
       h += '<div class="pr-q">¿Todo bien?</div>'
         + '<div class="pr-resumen">'
@@ -202,7 +203,7 @@
   }
 
   function prEnlazar(body){
-    body.querySelectorAll('.pr-campo').forEach(b => b.addEventListener('click', ()=>{ prCampo = b.dataset.campo; prPaso = 2; prPintar(); }));
+    body.querySelectorAll('.pr-campo').forEach(b => b.addEventListener('click', ()=>{ prCampo = b.dataset.campo; prPaso = 2; prHoyos = prCampo === 'la-cartuja' ? 9 : 18; prPintar(); }));
     body.querySelectorAll('.pr-jug').forEach(b => b.addEventListener('click', ()=>{
       const n = b.dataset.n;
       if(prElegidos.includes(n)) prGrupos[prGrupo] = prElegidos = prElegidos.filter(x => x !== n);
@@ -304,7 +305,7 @@
 
   async function prEmpezar(btn){
     if(btn.dataset.busy) return;
-    const campo = COURSES.find(c => c.id === prCampo);
+    const campo = prCurso();
     const llenos = prGrupos.filter(g => g.length);
     if(!campo || !llenos.length) return;
     const malHcp = document.querySelector('#prBody .pr-r-hcp-in.mal');
@@ -332,6 +333,7 @@
       if(prBarrasOn() && nombres.length) g.barras = nombres.map(prBarra); else delete g.barras;
       g.scores = {};
       delete g.modo; delete g.parejas;
+      if(campo.nueve) g.nueve = true; else delete g.nueve; // partida de 9 hoyos
     });
     configGroup = 0;
     if(typeof writeConfigFields === 'function') writeConfigFields(0);

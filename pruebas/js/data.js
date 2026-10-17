@@ -100,7 +100,29 @@
     const rango = Array(9); orden.forEach((x, r) => { rango[x[1]] = r + 1; });
     return rango.map(r => 2 * r - 1).concat(rango.map(r => 2 * r));
   }
-  COURSES.forEach(c => { if(c.holes9) c.hcp = hcpNueveA18(c.hcp); });
+  // Partida de 9 hoyos en cualquier campo («9 hoyos» en Crear partida): una sola vuelta con los 9 primeros hoyos.
+  // Dificultad 1 a 9 en el orden del campo. Medio hándicap (regla de la Federación para 9 hoyos): en los campos
+  // de 18 el rating de 9 hoyos es la mitad del de 18; en los de 9 hoyos ya es el de 9.
+  function cursoNueve(c){
+    if(!c || c.nueve) return c;
+    const id = c.id + '-9';
+    const ya = COURSES.find(x => x.id === id); if(ya) return ya;
+    const hcp9 = (Array.isArray(c.hcp) ? c.hcp : []).slice(0, 9).map(Number);
+    const orden = hcp9.map((v, i) => [isNaN(v) ? 99 : v, i]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const r = Array(9); orden.forEach((x, k) => { r[x[1]] = k + 1; });
+    const de18 = !(c.holes9 && c.par.length === 9);
+    let tees;
+    if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: de18 ? Math.round(t.rating * 5) / 10 : t.rating, slope: t.slope }; }); }
+    const v = { id, name: c.name + ' (9 hoyos)', location: c.location, holes9: true, nueve: true, par: c.par.slice(0, 9), hcp: r };
+    if(tees) v.tees = tees;
+    if(c.externo) v.externo = true;
+    COURSES.push(v);
+    return v;
+  }
+  COURSES.slice().forEach(c => cursoNueve(c));
+  COURSES.forEach(c => { if(c.holes9 && !c.nueve) c.hcp = hcpNueveA18(c.hcp); });
+  // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás
+  function hoyosPartida(){ return (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.nueve) ? 9 : 18; }
 
   let selectedCourse = null;
   let players = ['Jugador 1'];

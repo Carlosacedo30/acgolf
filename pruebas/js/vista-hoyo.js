@@ -179,10 +179,10 @@
   function hoyoSalidaActual(){
     const g = (typeof matchGroups !== 'undefined' && matchGroups[activeGroup]) || {};
     const h = Number(g.hoyoSalida);
-    return h >= 1 && h <= 18 ? h : 1;
+    return h >= 1 && h <= hoyosPartida() ? h : 1;
   }
-  const hoyoSiguiente = h => h % 18 + 1;
-  const hoyoAnterior = h => (h + 16) % 18 + 1;
+  const hoyoSiguiente = h => h % hoyosPartida() + 1;
+  const hoyoAnterior = h => (h + hoyosPartida() - 2) % hoyosPartida() + 1;
   const hoyoUltimo = () => hoyoAnterior(hoyoSalidaActual());
   // Si el grupo sale al tiro y aún no ha apuntado nada, se coloca en su hoyo de salida
   function grupoEmpiezaEnSuHoyo(){
@@ -214,8 +214,8 @@
     const holeNumEl = document.getElementById('hvHoleNum');
     if(!holeNumEl) return; // la pantalla 3 todavía no está en el DOM montado
     if(typeof ensureCaddieLoaded === 'function') ensureCaddieLoaded();
-    if(currentHole < 1) currentHole = hoyoSalidaActual() === 1 ? 1 : 18;
-    if(currentHole > 18) currentHole = hoyoSalidaActual() === 1 ? 18 : 1;
+    if(currentHole < 1) currentHole = hoyoSalidaActual() === 1 ? 1 : hoyosPartida();
+    if(currentHole > hoyosPartida()) currentHole = hoyoSalidaActual() === 1 ? hoyosPartida() : 1;
     if(arrivedHole !== currentHole){
       arrivedHole = currentHole;
       arrivedComplete = isHoleCompleteForMe(currentHole);
@@ -226,7 +226,7 @@
       + (modoPartida() === 'fourball' ? ' · Mejor bola' : modoPartida() === 'foursome' ? ' · Foursome' : '')
       + (hoyoSalidaActual() > 1 ? ' · Salís por el ' + hoyoSalidaActual() : '');
     if(currentHole < 1) currentHole = 1;
-    if(currentHole > 18) currentHole = 18;
+    if(currentHole > hoyosPartida()) currentHole = hoyosPartida();
     const input0 = document.querySelector('.golpes-input[data-hole="' + currentHole + '"]');
     const par = input0 ? parseInt(input0.dataset.par, 10) : null;
     const strokeIndex = input0 ? parseInt(input0.dataset.strokeIndex, 10) : null;
@@ -362,9 +362,9 @@
       leaderboardSection.innerHTML = '<div class="section-sub" style="margin-bottom:8px;">Modalidad: ' + modeLbl + modoTxt + (showGroupTag ? ' · todos los grupos' : '') + '</div>'
         + standings.map((s, i)=>{
             const isLeader = i === 0 && s.holesFilled > 0;
-            const done = s.holesFilled >= 18;
+            const done = s.holesFilled >= hoyosPartida();
             const tag = isLeader ? '<div class="leader-tag">' + (done ? 'Campeón' : 'Líder') + '</div>' : '';
-            const holes = s.holesFilled > 0 ? '<div class="leaderboard-holes">' + (s.holesFilled >= 18 ? '18 hoyos' : 'Hoyo ' + s.holesFilled + ' de 18') + '</div>' : '';
+            const holes = s.holesFilled > 0 ? '<div class="leaderboard-holes">' + (s.holesFilled >= hoyosPartida() ? hoyosPartida() + ' hoyos' : 'Hoyo ' + s.holesFilled + ' de ' + hoyosPartida()) + '</div>' : '';
             return '<div class="leaderboard-row' + (isLeader ? ' p1' : '') + '">'
               + '<div class="leaderboard-pos">' + (isLeader ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 17v4"></path><path d="M7 4h10v5a5 5 0 0 1-10 0z"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path></svg>' : (i + 1)) + '</div>'
               + '<div class="leaderboard-name">' + tag + s.name + (showGroupTag ? ' <span style="color:#9FACC2; font-weight:400;">· G' + (s.group + 1) + '</span>' : '') + holes + '</div>'
@@ -407,13 +407,13 @@
     if(!strip) return;
     const nPlayers = players.filter(Boolean).length || players.length;
     let html = '';
-    for(let h = 1; h <= 18; h++){
+    for(let h = 1; h <= hoyosPartida(); h++){
       const inputs = [...document.querySelectorAll('.golpes-input[data-hole="' + h + '"]')];
       const filled = inputs.filter(i => i.value !== '').length;
       const state = filled === 0 ? '' : (filled >= Math.min(nPlayers, inputs.length) ? ' done' : ' partial');
       const sal = h === hoyoSalidaActual() && h > 1;
       html += '<button type="button" class="hole-chip' + state + (h === currentHole ? ' current' : '') + (sal ? ' salida' : '') + '" data-hole="' + h + '" aria-label="Hoyo ' + h + (sal ? ', hoyo de salida' : '') + '">' + h + '</button>';
-      if(h === 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';
+      if(h === 9 && hoyosPartida() > 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';
     }
     strip.innerHTML = html;
     strip.querySelectorAll('.hole-chip').forEach(chip => chip.addEventListener('click', ()=>{ currentHole = +chip.dataset.hole; renderHoleView(); }));

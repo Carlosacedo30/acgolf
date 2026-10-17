@@ -131,14 +131,37 @@ cambia('pruebas/js/data.js', """  let selectedCourse = null;""", """  // Campos 
     const rango = Array(9); orden.forEach((x, r) => { rango[x[1]] = r + 1; });
     return rango.map(r => 2 * r - 1).concat(rango.map(r => 2 * r));
   }
-  COURSES.forEach(c => { if(c.holes9) c.hcp = hcpNueveA18(c.hcp); });
+  // Partida de 9 hoyos en cualquier campo («9 hoyos» en Crear partida): una sola vuelta con los 9 primeros hoyos.
+  // Dificultad 1 a 9 en el orden del campo. Medio hándicap (regla de la Federación para 9 hoyos): en los campos
+  // de 18 el rating de 9 hoyos es la mitad del de 18; en los de 9 hoyos ya es el de 9.
+  function cursoNueve(c){
+    if(!c || c.nueve) return c;
+    const id = c.id + '-9';
+    const ya = COURSES.find(x => x.id === id); if(ya) return ya;
+    const hcp9 = (Array.isArray(c.hcp) ? c.hcp : []).slice(0, 9).map(Number);
+    const orden = hcp9.map((v, i) => [isNaN(v) ? 99 : v, i]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const r = Array(9); orden.forEach((x, k) => { r[x[1]] = k + 1; });
+    const de18 = !(c.holes9 && c.par.length === 9);
+    let tees;
+    if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: de18 ? Math.round(t.rating * 5) / 10 : t.rating, slope: t.slope }; }); }
+    const v = { id, name: c.name + ' (9 hoyos)', location: c.location, holes9: true, nueve: true, par: c.par.slice(0, 9), hcp: r };
+    if(tees) v.tees = tees;
+    if(c.externo) v.externo = true;
+    COURSES.push(v);
+    return v;
+  }
+  COURSES.slice().forEach(c => cursoNueve(c));
+  COURSES.forEach(c => { if(c.holes9 && !c.nueve) c.hcp = hcpNueveA18(c.hcp); });
+  // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás
+  function hoyosPartida(){ return (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.nueve) ? 9 : 18; }
 
   let selectedCourse = null;""")
 cambia('pruebas/js/scorecard.js', """hcps.push((course.hcp && course.hcp[def.offset + i] !== undefined) ? course.hcp[def.offset + i] : (i + 1));""",
        """const ih = (course.holes9 && course.hcp && course.hcp.length === 18 ? def.startHole - 1 : def.offset) + i; // 9 hoyos: la 2.ª vuelta usa su propia dificultad
         hcps.push((course.hcp && course.hcp[ih] !== undefined) ? course.hcp[ih] : (i + 1));""")
 # Una partida de un campo de 9 hoyos que otro móvil no conoce: se reconoce por traer 9 pares
-cambia('pruebas/js/rondas-compartidas.js', """        holes9: false,""", """        holes9: !!(data.course_par && data.course_par.length === 9),""")
+cambia('pruebas/js/rondas-compartidas.js', """        holes9: false,""", """        holes9: !!(data.course_par && data.course_par.length === 9),
+        nueve: /-9$/.test(String(data.course_id || '')), // partida de 9 hoyos (una vuelta)""")
 # La Cartuja: rating y slope oficiales de 9 hoyos (par 29), sacados de la tabla de hándicap de juego
 # del club (Escuela Golf La Cartuja): amarillas de caballeros y rojas de damas. Reproducen la tabla exacta.
 cambia('pruebas/js/data.js', """      hcp:[3,5,13,12,10,15,2,11,9] },""", """      hcp:[3,5,13,12,10,15,2,11,9],
@@ -173,14 +196,58 @@ cambia('pruebas/js/data.js', """      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,
 # Campos de 9 hoyos (se juegan dos vueltas): rating y par de las dos vueltas (regla de la Federación
 # para juntar dos recorridos de 9 hoyos: rating × 2, mismo slope, par × 2)
 cambia('pruebas/js/players.js', """    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0);
-    return Math.round(v * d.slope / 113 + (d.rating - par));""", """    const vueltas = c.holes9 && c.par.length === 9 ? 2 : 1; // 9 hoyos: se juegan dos vueltas
+    return Math.round(v * d.slope / 113 + (d.rating - par));""", """    const vueltas = c.holes9 && c.par.length === 9 && !c.nueve ? 2 : 1; // 9 hoyos: se juegan dos vueltas
+    const mitad = c.nueve ? 0.5 : 1; // partida de 9 hoyos: medio hándicap (regla de la Federación para 9 hoyos)
     const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0) * vueltas;
-    return Math.round(v * d.slope / 113 + (d.rating * vueltas - par));""")
+    return Math.round(v * mitad * d.slope / 113 + (d.rating * vueltas - par));""")
+
+# --- Partida de 9 hoyos (una vuelta) en cualquier campo ---
+cambia('pruebas/js/players.js', """    return Math.floor(h / 18) + ((h % 18) >= strokeIndex ? 1 : 0);""",
+       """    const base = (typeof hoyosPartida === 'function') ? hoyosPartida() : 18; // 9 hoyos: los golpes se reparten en 9
+    return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);""")
+# Crear partida: La Cartuja viene a 9 hoyos; con «9 hoyos» se juega la versión de una vuelta
+cambia('pruebas/js/partida-rapida.js', """  function prRecibe(n){""", """  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? cursoNueve(c) : c; }
+  function prRecibe(n){""")
+p_ = 'pruebas/js/partida-rapida.js'; t_ = open(p_, encoding='utf-8').read()
+assert t_.count("COURSES.find(c => c.id === prCampo)") == 4
+open(p_, 'w', encoding='utf-8').write(t_.replace("COURSES.find(c => c.id === prCampo)", "prCurso()"))
+cambia('pruebas/js/partida-rapida.js', """prCampo = b.dataset.campo; prPaso = 2; prPintar();""", """prCampo = b.dataset.campo; prPaso = 2; prHoyos = prCampo === 'la-cartuja' ? 9 : 18; prPintar();""")
+cambia('pruebas/js/partida-rapida.js', """      delete g.modo; delete g.parejas;""", """      delete g.modo; delete g.parejas;
+      if(campo.nueve) g.nueve = true; else delete g.nueve; // partida de 9 hoyos""")
+# Partidas guardadas: se recuerda que son de 9 hoyos y terminan en el 9
+cambia('pruebas/js/rondas-compartidas.js', """      if(g && Array.isArray(g.barras)) out.barras = g.barras;     // barra de salida de cada jugador""",
+       """      if(g && Array.isArray(g.barras)) out.barras = g.barras;     // barra de salida de cada jugador
+      if(g && g.nueve) out.nueve = true;                          // partida de 9 hoyos""")
+cambia('pruebas/js/rondas-compartidas.js', """      return filled >= 18;""", """      return filled >= (group.nueve ? 9 : 18);""")
+# Tarjeta: par total de una vuelta
+cambia('pruebas/js/scorecard.js', """    currentCoursePar = course.holes9 ? nineSum * 2 : nineSum;""", """    currentCoursePar = course.holes9 && !course.nueve ? nineSum * 2 : nineSum;""")
+# Pantalla de anotar: pasar de hoyo, fila de hoyos y clasificación hasta el 9
+for a, b in [
+  ("""    return h >= 1 && h <= 18 ? h : 1;""", """    return h >= 1 && h <= hoyosPartida() ? h : 1;"""),
+  ("""  const hoyoSiguiente = h => h % 18 + 1;""", """  const hoyoSiguiente = h => h % hoyosPartida() + 1;"""),
+  ("""  const hoyoAnterior = h => (h + 16) % 18 + 1;""", """  const hoyoAnterior = h => (h + hoyosPartida() - 2) % hoyosPartida() + 1;"""),
+  ("""    if(currentHole < 1) currentHole = hoyoSalidaActual() === 1 ? 1 : 18;""", """    if(currentHole < 1) currentHole = hoyoSalidaActual() === 1 ? 1 : hoyosPartida();"""),
+  ("""    if(currentHole > 18) currentHole = hoyoSalidaActual() === 1 ? 18 : 1;""", """    if(currentHole > hoyosPartida()) currentHole = hoyoSalidaActual() === 1 ? hoyosPartida() : 1;"""),
+  ("""    if(currentHole > 18) currentHole = 18;""", """    if(currentHole > hoyosPartida()) currentHole = hoyosPartida();"""),
+  ("""            const done = s.holesFilled >= 18;""", """            const done = s.holesFilled >= hoyosPartida();"""),
+  ("""(s.holesFilled >= 18 ? '18 hoyos' : 'Hoyo ' + s.holesFilled + ' de 18')""", """(s.holesFilled >= hoyosPartida() ? hoyosPartida() + ' hoyos' : 'Hoyo ' + s.holesFilled + ' de ' + hoyosPartida())"""),
+  ("""    for(let h = 1; h <= 18; h++){
+      const inputs = [...document.querySelectorAll('.golpes-input[data-hole="' + h + '"]')];""", """    for(let h = 1; h <= hoyosPartida(); h++){
+      const inputs = [...document.querySelectorAll('.golpes-input[data-hole="' + h + '"]')];"""),
+  ("""      if(h === 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';""", """      if(h === 9 && hoyosPartida() > 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';"""),
+]:
+    cambia('pruebas/js/vista-hoyo.js', a, b)
+# Resultados y «Finalizar ronda»
+cambia('pruebas/js/resultados.js', """s.holesFilled + '/18 hoyos · Recibe '""", """s.holesFilled + '/' + hoyosPartida() + ' hoyos · Recibe '""")
+cambia('pruebas/js/resultados.js', """summaries.every(s => s.holesFilled >= 18);""", """summaries.every(s => s.holesFilled >= hoyosPartida());""")
+cambia('pruebas/js/resultados.js', """(summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : '')""", """(summaries[i].holesFilled < hoyosPartida() ? ' · ' + summaries[i].holesFilled + '/' + hoyosPartida() + ' hoyos' : '')""")
+cambia('pruebas/js/interactions.js', """    const missing = getPlayerHolesFilled().filter(s => s.filled < 18);""", """    const missing = getPlayerHolesFilled().filter(s => s.filled < hoyosPartida());""")
+cambia('pruebas/js/interactions.js', """s.filled + '/18 hoyos'""", """s.filled + '/' + hoyosPartida() + ' hoyos'""")
 
 # Que los móviles descarguen de nuevo los archivos cambiados (no la copia guardada)
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
-for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida'):
+for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida', 'vista-hoyo', 'resultados', 'interactions'):
     s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\g<1>09"', s); assert n == 1, f
 open(p, 'w', encoding='utf-8').write(s)
 PY
@@ -197,7 +264,7 @@ s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=5"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=1"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=1"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="buscador-campos.js?v=5"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=5"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=1"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=1"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="buscador-campos.js?v=7"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'
