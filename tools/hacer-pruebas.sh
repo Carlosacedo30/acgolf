@@ -112,7 +112,10 @@ cambia('pruebas/js/data.js', """    { id:'la-cartuja',""", """    { id:'la-penaz
     { id:'la-cartuja',""")
 cambia('pruebas/js/partida-rapida.js', """        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>';""",
        """        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>'
-        + '<button type="button" class="pr-campo" data-campo="la-penaza">La Peñaza</button>';""")
+        + '<button type="button" class="pr-campo" data-campo="sevilla-golf">Real Club de Golf Sevilla</button>'
+        + '<button type="button" class="pr-campo" data-campo="rc-pineda">Real Club Pineda</button>'
+        + '<button type="button" class="pr-campo" data-campo="la-cartuja">La Cartuja</button>';""")
+# (La Peñaza y los demás campos de acgolf se eligen con «Buscar otro campo», que también busca en los campos de la app)
 cambia('pruebas/js/convocatoria.js', """<option value="zaudin">Club Zaudín Golf</option>""", """<option value="zaudin">Club Zaudín Golf</option><option value="la-penaza">R.C. de Golf La Peñaza</option>""")
 cambia('pruebas/js/tiempo.js', """'zaudin': [37.378, -6.045] };""", """'zaudin': [37.378, -6.045], 'la-penaza': [41.701, -1.056] };""")
 
@@ -144,6 +147,17 @@ cambia('pruebas/js/data.js', """      hcp:[3,5,13,12,10,15,2,11,9] },""", """   
         amarillas:{ rating:25.4, slope:138 },
         rojas:    { rating:26.3, slope:146 },
       } },""")
+# Real Club Pineda: rating y slope por barra (1golf.eu y offcourse.co coinciden):
+# blancas y amarillas de caballeros, azules y rojas de damas
+cambia('pruebas/js/data.js', """      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5] },""", """      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5],
+      // Rating / slope: blancas y amarillas de caballeros; azules y rojas, de damas
+      tees:{
+        blancas:  { rating:72.3, slope:131 },
+        amarillas:{ rating:71.7, slope:130 },
+        azules:   { rating:73.0, slope:126 },
+        rojas:    { rating:71.8, slope:123 },
+      } },""")
+
 # Campos de 9 hoyos (se juegan dos vueltas): rating y par de las dos vueltas (regla de la Federación
 # para juntar dos recorridos de 9 hoyos: rating × 2, mismo slope, par × 2)
 cambia('pruebas/js/players.js', """    const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0);
@@ -154,7 +168,7 @@ cambia('pruebas/js/players.js', """    const par = c.par.reduce((a, b) => a + (N
 # Que los móviles descarguen de nuevo los archivos cambiados (no la copia guardada)
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
-for f in ('data', 'scorecard', 'rondas-compartidas', 'players'):
+for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida'):
     s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\1-9h"', s); assert n == 1, f
 open(p, 'w', encoding='utf-8').write(s)
 PY
@@ -171,7 +185,7 @@ s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=5"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=1"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=1"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="buscador-campos.js?v=4"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=5"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=1"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=1"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="buscador-campos.js?v=5"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'

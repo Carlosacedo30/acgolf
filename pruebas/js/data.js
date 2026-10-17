@@ -34,7 +34,14 @@
       hcp:[14,2,12,6,18,4,8,16,10, 11,9,15,17,5,1,13,7,3] },
     { id:'rc-pineda', name:'Real Club Pineda', location:'Sevilla',
       par:[4,4,4,5,3,4,4,5,3, 4,4,5,3,4,4,3,5,4],
-      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5] },
+      hcp:[8,4,14,10,12,18,2,6,16, 1,7,13,17,15,3,11,9,5],
+      // Rating / slope: blancas y amarillas de caballeros; azules y rojas, de damas
+      tees:{
+        blancas:  { rating:72.3, slope:131 },
+        amarillas:{ rating:71.7, slope:130 },
+        azules:   { rating:73.0, slope:126 },
+        rojas:    { rating:71.8, slope:123 },
+      } },
     { id:'las-minas', name:'Las Minas Golf', location:'Aznalcázar, Sevilla', holes9:true,
       par:[4,5,3,4,4,4,4,3,5],
       hcp:[9,3,15,7,17,13,5,11,1] },
