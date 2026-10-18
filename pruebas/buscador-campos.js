@@ -315,8 +315,8 @@
   function pintarBuscar(){
     let h = '<div class="bc-seg bc-modo">'
       + '<button type="button" class="' + (st.modo === 'texto' ? 'on' : '') + '" data-modo="texto" aria-pressed="' + (st.modo === 'texto') + '">Nombre o ciudad</button>'
-      + '<button type="button" class="' + (st.modo === 'cerca' ? 'on' : '') + '" data-modo="cerca" aria-pressed="' + (st.modo === 'cerca') + '">Cerca de un sitio</button>'
-      + '<button type="button" class="' + (st.modo === 'cadiz' ? 'on' : '') + '" data-modo="cadiz" aria-pressed="' + (st.modo === 'cadiz') + '">Provincia de Cádiz</button></div>';
+      + '<button type="button" class="' + (st.modo === 'cerca' ? 'on' : '') + '" data-modo="cerca" aria-pressed="' + (st.modo === 'cerca') + '">Cerca de un sitio</button></div>';
+    // (Los campos de Cádiz salen al buscar por nombre o ciudad y en «Cerca de un sitio»; ya no hay botón propio)
     if(st.modo === 'cadiz'){
       h += '<label class="bc-lbl" for="bcMun">Municipio</label><select id="bcMun" class="bc-input"><option value="">Todos los municipios</option>'
         + municipiosCadiz().map(m => '<option' + (m === st.municipio ? ' selected' : '') + '>' + esc(m) + '</option>').join('') + '</select>';

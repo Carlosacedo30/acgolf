@@ -118,7 +118,4 @@ html.bc-abierto, html.bc-abierto body{ overflow:hidden; }
 .bc-pr-t .bc-ico{ width:18px; height:18px; color:#C6F24E; }
 .pr-campo.bc-pr-buscar{ display:flex; align-items:center; justify-content:center; gap:8px; }
 
-/* Tres formas de buscar: nombre, cerca y provincia de Cádiz (la tercera ocupa toda la fila) */
-.bc-seg.bc-modo{ grid-template-columns:1fr 1fr; }
-.bc-seg.bc-modo button[data-modo="cadiz"]{ grid-column:1 / -1; }
 .bc-fuente.bc-orient{ color:#8A5A00; }
