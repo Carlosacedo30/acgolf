@@ -32,12 +32,12 @@
     { id:'sevilla-golf', name:'Real Club de Golf Sevilla', location:'Alcalá de Guadaíra, Sevilla',
       par:[4,4,3,4,5,4,3,4,5, 4,3,4,5,4,4,5,3,4],
       hcp:[14,2,12,6,18,4,8,16,10, 11,9,15,17,5,1,13,7,3],
-      // Rating / slope de la tabla del club: blancas (62) y amarillas (56) de caballeros; azules (56) y rojas (53) de damas
+      // Rating / slope de la tarjeta del club (2026): blancas (62) y amarillas (56) de caballeros; azules (53) y rojas (46) de damas
       tees:{
         blancas:  { rating:73.2, slope:135 },
         amarillas:{ rating:70.5, slope:126 },
-        azules:   { rating:76.1, slope:130 },   // tarjeta del club de enero de 2026 (la tabla de 2023 decía 136)
-        rojas:    { rating:74.2, slope:129 },
+        azules:   { rating:74.2, slope:129 },
+        rojas:    { rating:70.2, slope:117 },
       } },
     { id:'rc-pineda', name:'Real Club Pineda', location:'Sevilla',
       par:[4,4,4,5,3,4,4,5,3, 4,4,5,3,4,4,3,5,4],
