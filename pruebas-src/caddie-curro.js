@@ -151,9 +151,15 @@
     return i;
   }
   function frase(r){
-    const grupo = r.bruto <= -2 ? 'aguila' : r.bruto === -1 ? 'birdie' : r.bruto === 0 ? 'par'
+    let grupo = r.bruto <= -2 ? 'aguila' : r.bruto === -1 ? 'birdie' : r.bruto === 0 ? 'par'
       : r.neto <= 0 ? 'parneto' : r.bruto === 1 ? 'bogey' : r.bruto === 2 ? 'doble' : 'triple';
-    const i = siguienteFrase(grupo, r.h);
+    // Par con golpe de hándicap: se mezclan sus frases con las del par de campo (sorteo según cuántas tiene cada una)
+    let i = -1;
+    if(grupo === 'parneto'){
+      const nG = k => Math.min(FRASES[k].length, GRABADAS[k] || 0);
+      const orden = Math.random() < nG('parneto') / (nG('parneto') + nG('par')) ? ['parneto', 'par'] : ['par', 'parneto'];
+      for(const k of orden){ i = siguienteFrase(k, r.h); if(i >= 0){ grupo = k; break; } }
+    } else i = siguienteFrase(grupo, r.h);
     if(i < 0) return null;
     dichas.push({ h: r.h, k: grupo + '-' + i }); if(dichas.length > 30) dichas = dichas.slice(-30);
     return { animo: ANIMO[grupo], t: FRASES[grupo][i].split('{n}').join(esc(r.n)), grupo, i };
