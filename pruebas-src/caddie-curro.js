@@ -62,40 +62,88 @@
 
   // ---------- Frases ----------
   // r = { n: nombre corto, bruto: golpes − par, neto: golpes − golpes de hándicap − par, h: hoyo }
-  // Elige una frase del grupo y recuerda cuál es, para poner su grabación si existe
-  function sel(grupo, animo, lista, s){ const i = Math.abs(s | 0) % lista.length; return { animo, t: lista[i], grupo, i }; }
+  // ---------- Frases por resultado ({n} = nombre del jugador) ----------
+  // El orden importa: la frase número X usa la grabación voz/curro-<grupo>-X.mp3.
+  // Las frases sin grabar todavía (más allá de GRABADAS) no se usan, para que Curro tenga siempre la misma voz.
+  const FRASES = {
+    aguila: ['¡Mi arma, un ÁGUILA! {n}, eso hay que enmarcarlo y colgarlo en el bar.',
+      '¡Ozú, {n}! ¡Águila! Hoy te llevo la bolsa gratis, quillo.',
+      '¡{n}, águila! Ni en la Ryder se ve esto, mi arma.',
+      '¡Que alguien llame a la tele! {n} ha hecho un águila.',
+      '¡Arsa, arsa y arsa! Águila, {n}. Hoy no te tose nadie.'],
+    birdie: ['¡Te como los huevos, {n}! Birdie de categoría.',
+      '¡Ozú, {n}! Un birdie como la Giralda de grande.',
+      '¡Arsa, birdie! {n}, hoy las cañas las pagas tú, que estás en racha.',
+      '¡{n}, birdie! Eso no lo hace ni el Seve, mi arma.',
+      '¡{n}, birdie! Eso es de primera división, quillo.',
+      '¡Ole, ole y ole! Birdie, {n}. Así me gusta a mí.',
+      '¡Pero qué me estás contando, {n}! ¡Birdie!',
+      'Birdie, {n}. Tú hoy has desayunado bien, ¿eh?'],
+    par: ['¡Qué bueno eres, {n}! Par como un reloj.',
+      'Par, {n}. Así da gusto llevarte la bolsa.',
+      '¡Olé, {n}! Par de libro, sin despeinarte.',
+      '{n}, par. Ni frío ni calor: ¡perfecto!',
+      'Par, {n}. Sin aspavientos, como los buenos.',
+      '¡Eso es, {n}! Par, y a otra cosa, mariposa.',
+      '{n}, par. El campo ni se ha enterado de que has pasado.',
+      'Par, {n}. Más fiable que el reloj de la catedral.',
+      '¡Bien, {n}! Par. Así se juega, con la cabeza.'],
+    parneto: ['Bogey con tu golpe de regalo, {n}: par para ti. ¡Bien jugao!',
+      '{n}, con el golpe que te dan, es tu par. ¡Eso es saber jugar!',
+      '{n}, bogey con golpe: par neto. ¡Eso cuenta igual, mi arma!',
+      'Con tu golpe de ventaja, {n}, eso es un par. ¡Pa la saca!',
+      '{n}, el hándicap está pa usarlo: par neto. ¡Olé!'],
+    bogey: ['Bogey, {n}. Un golpito na más… y aquí no se dan bolas, ¿eh?',
+      '{n}, bogey. Tranquilo, quillo, que el hoyo también tiene su orgullo.',
+      'Bogey. {n}, ni tan mal: el próximo lo bordamos.',
+      'Bogey, {n}. No pasa na, que esto es muy largo.',
+      '{n}, bogey. El hoyo se ha llevado un golpito, nada más.',
+      'Bogey, {n}. Respira, que el siguiente es tuyo.',
+      '{n}, bogey. Con un putt menos era par: ¡que se lo digan al green!',
+      'Bogey. Tranquilo, {n}, que esto no es la tele: aquí se juega por las cañas.'],
+    doble: ['Doble bogey… {n}, ¿sabes por qué el golfista lleva dos pares de pantalones? ¡Por si hace un hoyo en uno! Venga, al siguiente.',
+      '{n}, doble. No se dan bolas, pero hoy te la daba yo de buena gana.',
+      'Doble bogey. Tranquilo, {n}, que el campo también tiene derecho a ganar alguna.',
+      '{n}, doble bogey. Esto en Sevilla lo llamamos «calentar motores».',
+      'Doble bogey, {n}. Dicen que el golf es de caballeros… y de mucha paciencia.',
+      '{n}, doble. Esa bola ha dado más vueltas que la noria de la feria.',
+      'Doble bogey. {n}, ¿te cuento un secreto? En el hoyo siguiente nadie se acuerda.',
+      '{n}, doble. Si quieres te paso la toalla pa secarte las lágrimas.'],
+    triple: ['{n}, ese hoyo lo apuntamos con tinta invisible. ¡Al siguiente!',
+      'Uy, {n}… mi abuela decía: «el golf es un paseo estropeado». Hoy te ha tocado el trozo estropeado.',
+      '{n}, ¿has visto la bola por algún sitio? Yo tampoco. ¡Venga, borrón y cuenta nueva!',
+      'Tranquilo, {n}: hasta el Seve hizo hoyos así. Bueno, el Seve no, pero su primo seguro.',
+      '{n}, ese hoyo se lo dejamos a los conejos. ¡Vámonos!',
+      'Uy, {n}… ¿cuántos han sido? Mejor no me lo digas, que me pongo malo.',
+      '{n}, tranquilo: el golf es como la vida, unos hoyos se ganan y otros se pagan.',
+      '¡Venga, {n}! Que hasta los profesionales tienen días así. Bueno, días no: hoyos.']
+  };
+  const ANIMO = { aguila:'euforico', birdie:'euforico', par:'feliz', parneto:'feliz', bogey:'animo', doble:'guasa', triple:'guasa' };
+
+  // Rotación: va sacando las frases de una «bolsa» barajada y no repite hasta haberlas dicho todas
+  // (y nunca la misma dos veces seguidas). Se acuerda entre partidas en este móvil.
+  const CLAVE_BOLSA = 'acgolfCurroBolsa';
+  let bolsas = {};
+  try { bolsas = JSON.parse(localStorage.getItem(CLAVE_BOLSA) || '{}') || {}; } catch(e){ bolsas = {}; }
+  function siguienteFrase(grupo){
+    const total = Math.min(FRASES[grupo].length, (typeof GRABADAS !== 'undefined' && GRABADAS[grupo]) || FRASES[grupo].length);
+    let b = bolsas[grupo];
+    if(!b || !Array.isArray(b.quedan) || b.total !== total || !b.quedan.length){
+      const ult = b && typeof b.ultima === 'number' ? b.ultima : -1;
+      const q = Array.from({ length: total }, (_, k) => k);
+      for(let k = q.length - 1; k > 0; k--){ const r = Math.floor(Math.random() * (k + 1)); [q[k], q[r]] = [q[r], q[k]]; }
+      if(q.length > 1 && q[0] === ult) q.push(q.shift());
+      b = { total, quedan: q, ultima: ult };
+    }
+    const i = b.quedan.shift(); b.ultima = i; bolsas[grupo] = b;
+    try { localStorage.setItem(CLAVE_BOLSA, JSON.stringify(bolsas)); } catch(e){}
+    return i;
+  }
   function frase(r){
-    const n = esc(r.n), s = r.h * 7 + (r.semilla || 0);
-    if(r.bruto <= -2) return sel('aguila', 'euforico', [
-      '¡Mi arma, un ÁGUILA! ' + n + ', eso hay que enmarcarlo y colgarlo en el bar.',
-      '¡Ozú, ' + n + '! ¡Águila! Hoy te llevo la bolsa gratis, quillo.' ], s);
-    if(r.bruto === -1) return sel('birdie', 'euforico', [
-      '¡Te como los huevos, ' + n + '! Birdie de categoría.',
-      '¡Ozú, ' + n + '! Un birdie como la Giralda de grande.',
-      '¡Arsa, birdie! ' + n + ', hoy las cañas las pagas tú, que estás en racha.',
-      '¡' + n + ', birdie! Eso no lo hace ni el Seve, mi arma.' ], s);
-    if(r.bruto === 0) return sel('par', 'feliz', [
-      '¡Qué bueno eres, ' + n + '! Par como un reloj.',
-      'Par, ' + n + '. Así da gusto llevarte la bolsa.',
-      '¡Olé, ' + n + '! Par de libro, sin despeinarte.',
-      n + ', par. Ni frío ni calor: ¡perfecto!' ], s);
-    if(r.neto <= 0) return sel('parneto', 'feliz', [
-      'Bogey con tu golpe de regalo, ' + n + ': par para ti. ¡Bien jugao!',
-      n + ', con el golpe que te dan, es tu par. ¡Eso es saber jugar!' ], s);
-    if(r.bruto === 1) return sel('bogey', 'animo', [
-      'Bogey, ' + n + '. Un golpito na más… y aquí no se dan bolas, ¿eh?',
-      n + ', bogey. Tranquilo, quillo, que el hoyo también tiene su orgullo.',
-      'Bogey. ' + n + ', ni tan mal: el próximo lo bordamos.' ], s);
-    if(r.bruto === 2) return sel('doble', 'guasa', [
-      'Doble bogey… ' + n + ', ¿sabes por qué el golfista lleva dos pares de pantalones? ¡Por si hace un hoyo en uno! Venga, al siguiente.',
-      n + ', doble. No se dan bolas, pero hoy te la daba yo de buena gana.',
-      'Doble bogey. Tranquilo, ' + n + ', que el campo también tiene derecho a ganar alguna.',
-      n + ', doble bogey. Esto en Sevilla lo llamamos «calentar motores».' ], s);
-    return sel('triple', 'guasa', [
-      n + ', ese hoyo lo apuntamos con tinta invisible. ¡Al siguiente!',
-      'Uy, ' + n + '… mi abuela decía: «el golf es un paseo estropeado». Hoy te ha tocado el trozo estropeado.',
-      n + ', ¿has visto la bola por algún sitio? Yo tampoco. ¡Venga, borrón y cuenta nueva!',
-      'Tranquilo, ' + n + ': hasta el Seve hizo hoyos así. Bueno, el Seve no, pero su primo seguro.' ], s);
+    const grupo = r.bruto <= -2 ? 'aguila' : r.bruto === -1 ? 'birdie' : r.bruto === 0 ? 'par'
+      : r.neto <= 0 ? 'parneto' : r.bruto === 1 ? 'bogey' : r.bruto === 2 ? 'doble' : 'triple';
+    const i = siguienteFrase(grupo);
+    return { animo: ANIMO[grupo], t: FRASES[grupo][i].split('{n}').join(esc(r.n)), grupo, i };
   }
 
   // ---------- La voz (la del propio móvil, en español) ----------
