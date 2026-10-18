@@ -1,0 +1,65 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* «¿Cómo jugué?» desde el Inicio: pestañas Mi partida / Mi evolución / Comparar */
+.cmj-tabs{ display:grid; grid-template-columns:repeat(3,1fr); background:#FFFFFF; border-bottom:1px solid #DADFE3; margin:0 0 4px; position:sticky; top:0; z-index:5; }
+.cmj-tabs button{ appearance:none; background:none; border:0; border-bottom:4px solid transparent; padding:14px 2px 12px; font:800 14px/1.1 'Barlow', system-ui, sans-serif; letter-spacing:.03em; text-transform:uppercase; color:#8A949C; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.cmj-tabs button.on{ color:#0E3324; border-bottom-color:#C6F24E; }
+/* En «Mi evolución» y «Comparar» se esconde el resumen de la partida */
+html.cmj-otra .screen[data-screen="4"] #rjBox,
+html.cmj-otra .screen[data-screen="4"] #s4ShareSection,
+html.cmj-otra .screen[data-screen="4"] .screen-content > section:not(#cmjBox){ display:none !important; }
+html.cmj-on .screen[data-screen="4"] .app-bar h1{ font-size:0 !important; }
+html.cmj-on .screen[data-screen="4"] .app-bar h1::after{ content:'¿Cómo jugué?'; font-size:26px; }
+
+.cmj-box{ font-family:'Barlow', system-ui, sans-serif; color:#14231A; margin:0 14px 8px; }
+.cmj-card{ background:#FFFFFF; border:1px solid #E1E5E8; border-radius:16px; padding:16px; margin:10px 0 0; box-shadow:0 2px 8px rgba(14,51,36,.05); }
+.cmj-vacio{ font:600 17px/1.4 'Barlow', sans-serif; color:#4A535C; text-align:center; padding:22px 16px; }
+.cmj-h{ font:800 14px 'Barlow', sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#5C6670; margin:0 0 10px; }
+.cmj-h2{ margin-top:16px; }
+.cmj-nota{ font:600 15px/1.35 'Barlow', sans-serif; color:#5C6670; margin:10px 0 0; }
+.cmj-nota strong{ color:#14231A; }
+.cmj-box .mal{ color:#E5484D; } .cmj-box .bien{ color:#2E7D32; } .cmj-box .azul{ color:#2F5BD3; }
+.cmj-big{ display:flex; align-items:center; gap:12px; }
+.cmj-big b{ font:400 68px/0.95 'Anton', 'Barlow', sans-serif; }
+.cmj-big span{ font:800 18px/1.2 'Barlow', sans-serif; }
+.cmj-dos{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.cmj-kpi{ background:#F1F3F2; border-radius:14px; padding:12px 8px; text-align:center; }
+.cmj-kpi b{ display:block; font:400 40px/1 'Anton', 'Barlow', sans-serif; }
+.cmj-kpi span{ display:block; font:700 14px/1.2 'Barlow', sans-serif; color:#5C6670; margin-top:6px; }
+.cmj-it{ display:grid; grid-template-columns:40px 1fr; gap:10px; padding:11px 0; border-bottom:1px solid #E7EAED; align-items:center; }
+.cmj-it:last-of-type{ border-bottom:0; }
+.cmj-num{ width:34px; height:34px; border-radius:9px; background:#E5484D; color:#fff; font:400 20px/34px 'Anton', sans-serif; text-align:center; }
+.cmj-it.ok .cmj-num{ background:#2E7D32; }
+.cmj-it b{ display:block; font:800 18px/1.2 'Barlow', sans-serif; }
+.cmj-it span{ display:block; font:600 15px/1.3 'Barlow', sans-serif; color:#5C6670; margin-top:2px; }
+.cmj-pars{ display:grid; grid-template-columns:repeat(3,1fr); border:1px solid #DADFE3; border-radius:12px; overflow:hidden; }
+.cmj-pars div{ text-align:center; padding:10px 4px; border-right:1px solid #DADFE3; }
+.cmj-pars div:last-child{ border-right:0; }
+.cmj-pars small{ display:block; font:700 14px 'Barlow', sans-serif; color:#5C6670; }
+.cmj-pars b{ display:block; font:400 32px/1.1 'Anton', sans-serif; color:#0E3324; }
+.cmj-pars em{ display:block; font:800 14px 'Barlow', sans-serif; font-style:normal; color:#5C6670; }
+.cmj-svg{ width:100%; height:auto; display:block; }
+.cmj-eje{ font:700 12px 'Barlow', sans-serif; fill:#5C6670; }
+.cmj-et{ font:800 16px 'Barlow', sans-serif; }
+.cmj-btn{ display:block; width:100%; margin-top:12px; background:#FFFFFF; border:2px solid #2E7D32; color:#2E7D32; border-radius:14px; padding:13px; font:800 17px 'Barlow', sans-serif; cursor:pointer; }
+.cmj-ley{ display:flex; flex-wrap:wrap; gap:8px 14px; font:700 14px 'Barlow', sans-serif; color:#5C6670; margin-top:10px; }
+.cmj-ley i{ display:inline-block; width:14px; height:14px; border-radius:4px; vertical-align:-2px; margin-right:5px; box-sizing:border-box; }
+.cmj-vs{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; text-align:center; margin-bottom:12px; }
+.cmj-av{ width:56px; height:56px; border-radius:50%; margin:0 auto 6px; display:flex; align-items:center; justify-content:center; font:400 22px 'Anton', sans-serif; color:#fff; }
+.cmj-vs b{ display:block; font:800 16px 'Barlow', sans-serif; }
+.cmj-x{ font:400 26px 'Anton', sans-serif; color:#8A949C; }
+.cmj-sel{ display:block; }
+.cmj-sel span{ display:block; font:800 15px 'Barlow', sans-serif; color:#5C6670; margin-bottom:6px; }
+.cmj-sel select{ width:100%; box-sizing:border-box; border:2px solid #DADFE3; border-radius:12px; padding:12px; font:700 17px 'Barlow', sans-serif; color:#14231A; background:#FFFFFF; }
+.cmj-duo{ display:grid; grid-template-columns:70px 1fr 70px; align-items:center; gap:8px; padding:11px 0; border-bottom:1px solid #E7EAED; }
+.cmj-duo:last-of-type{ border-bottom:0; }
+.cmj-duo .n{ font:400 28px 'Anton', sans-serif; color:#9AA3AB; text-align:center; }
+.cmj-duo .n.win{ color:#2E7D32; } .cmj-duo .n.win2{ color:#2F5BD3; }
+.cmj-duo .l{ text-align:center; font:800 15px/1.2 'Barlow', sans-serif; }
+.cmj-duo .l small{ display:block; font:600 13px 'Barlow', sans-serif; color:#5C6670; }
+.cmj-h2h{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; text-align:center; }
+.cmj-h2h div{ background:#F1F3F2; border-radius:12px; padding:12px 4px; }
+.cmj-h2h b{ display:block; font:400 34px/1 'Anton', sans-serif; }
+.cmj-h2h span{ font:700 14px 'Barlow', sans-serif; color:#5C6670; }
+.cmj-hh{ display:grid; grid-template-columns:repeat(9,1fr); gap:4px; }
+.cmj-hh div{ border-radius:8px; padding:7px 0; text-align:center; background:#F1F3F2; font:800 14px 'Barlow', sans-serif; color:#5C6670; }
+.cmj-hh .yo{ background:#2E7D32; color:#fff; } .cmj-hh .el{ background:#2F5BD3; color:#fff; }
