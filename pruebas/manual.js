@@ -33,11 +33,22 @@
     mapa: '<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3Z"/><path d="M9 3v15"/><path d="M15 6v15"/>',
     pintura: '<circle cx="12" cy="12" r="9"/><circle cx="8" cy="10" r="1.3"/><circle cx="12" cy="7.5" r="1.3"/><circle cx="16" cy="10" r="1.3"/><path d="M12 21a3 3 0 0 1 0-6h2"/>',
     sobre: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+    estrella: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9Z"/>',
+    grafica: '<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>',
     corona: '<path d="m3 8 4 4 5-7 5 7 4-4-2 11H5Z"/>'
   };
   const ico = n => '<svg class="ico rg-ico" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICOS[n] || '') + '</svg>';
 
   // ---------- MANUAL DEL JUGADOR ----------
+  const NOVEDADES = { t:'Novedades de octubre', items:[
+    '<b>«¿Cómo jugué?» con gráficas.</b> Ahora solo sale tu juego, en tres pestañas: <b>Mi partida</b>, <b>Mi evolución</b> (gráficas mes a mes) y <b>Comparar</b> con otro jugador del grupo.',
+    '<b>Campos nuevos.</b> En el botón <b>«Campos de golf»</b> del Inicio están los campos de <b>Sevilla, Huelva y Cádiz</b> con su par, la dificultad de cada hoyo y el slope de cada barra. Puedes jugar en ellos con <b>«Buscar otro campo»</b> al crear la partida.',
+    '<b>Anotar más claro.</b> La tarjeta de arriba sale siempre entera, con un <b>punto verde</b> en los hoyos donde recibes golpe de hándicap.',
+    '<b>Botón «Ir App Hato Verde»</b> en el Inicio (Los Iscariotes y Cajapollos): abre la app del club para reservar.',
+    '<b>Cada grupo con su escudo</b> al organizar un partido.',
+    '<b>Menos correos:</b> el aviso de partida nueva solo llega a los que juegan esa partida.'
+  ]};
+
   const JUGADOR = [
     { sec:'Para empezar' },
     { ico:'llave', t:'Entrar por primera vez', sub:'Crear tu cuenta en 2 minutos', pasos:[
@@ -54,9 +65,11 @@
     { ico:'casa', t:'La pantalla de Inicio', sub:'Qué hay en cada botón', pasos:[
       'Arriba ves <b>tu nombre</b> (toca para abrir «Mi cuenta») y <b>tu grupo</b> (toca para cambiar de grupo si estás en varios).',
       '<b>«Crear partida»</b>: el botón grande, para empezar a jugar.',
+      'En Los Iscariotes y Cajapollos, encima sale <b>«Ir App Hato Verde»</b>: abre la app del club para reservar y ver tu carnet. Si no la tienes, te lleva a instalarla.',
       'Debajo, los <b>partidos organizados</b> con amigos, para apuntarte.',
       '<b>«Clasificación liga»</b>, <b>«Ganadores de la semana»</b>, <b>«Medallas nuevas»</b>, <b>«Mi hándicap»</b>, <b>«¿Cómo jugué?»</b> y <b>«Últimas partidas»</b>: toda la información de la liga.',
       '<b>«Ryder Cup»</b>: el torneo por equipos del grupo.',
+      '<b>«Campos de golf»</b>: buscar campos y guardar tus favoritos.',
       '<b>«Reglas de golf»</b>, <b>«Consejos de golf»</b> e <b>«Historia del golf»</b>: para consultar y aprender.',
       'Desde cualquier pantalla, el botón <b>«‹ Volver al inicio»</b> te devuelve aquí.' ]},
 
@@ -68,29 +81,37 @@
       'Si tocas la tarjeta ves quién va en cada hora y <b>qué tiempo hará</b> en el campo ese día.',
       'El día del partido la tarjeta te dice <b>«Hoy juegas»</b>, tu hora y con quién sales.' ]},
     { ico:'megafono', t:'Organizar un partido con amigos', sub:'Cualquier jugador puede hacerlo', pasos:[
-      'En el Inicio pulsa <b>«Organizar partido con amigos»</b>.',
+      'En el Inicio pulsa <b>«Organizar partido con amigos»</b>. Sale con el <b>escudo de tu grupo</b>.',
       'Elige el <b>día</b>, el <b>campo</b> y las <b>horas</b> de la 1ª y la 2ª partida. Pulsa <b>«Crear el partido»</b>.',
       'Pulsa <b>«Enviar al grupo de WhatsApp»</b>: les llega el enlace y cada uno se apunta desde su móvil.',
       'Cuando estén todos, tú, que lo has organizado, pulsa <b>«Crear la partida con los apuntados»</b>. La partida queda hecha con los jugadores en su hora.' ]},
     { ico:'bandera', t:'Crear una partida', sub:'En 4 toques', pasos:[
       'Pulsa <b>«Crear partida»</b>.',
-      '<b>¿Dónde jugáis?</b> Toca Hato Verde o Zaudín.',
+      '<b>¿Dónde jugáis?</b> Toca Hato Verde o Zaudín. Para otro campo pulsa <b>«Buscar otro campo»</b> o toca uno de tus favoritos.',
       '<b>¿Cómo jugáis?</b> Ya viene puesto lo de la liga: <b>Stroke Play, 18 hoyos, individual</b>. Cámbialo solo si jugáis otra cosa.',
       '<b>¿Quién juega?</b> Toca los nombres. Para alguien de fuera pulsa <b>«Añadir un invitado»</b> y escribe su nombre y su hándicap.',
       'Si alguien sale de otra barra (blancas, azules, rojas), elígela al lado de su nombre. Si no, salen de amarillas.',
-      '<b>¿Todo bien?</b> Pulsa <b>«Empezar partida»</b>. A los demás del grupo les llega un correo con el enlace a la partida.',
+      '<b>¿Todo bien?</b> Pulsa <b>«Empezar partida»</b>. A los jugadores de esa partida les llega un correo con el enlace.',
       'No hace falta escribir el hándicap de los jugadores de la liga: <b>lo pone la app sola</b>.' ]},
+    { ico:'mapa', nuevo:true, t:'Campos de golf', sub:'Buscar campos y guardar favoritos', pasos:[
+      'En el Inicio pulsa <b>«Campos de golf»</b>.',
+      'Escribe el <b>nombre o la ciudad</b>, o pulsa <b>«Cerca de un sitio»</b> y elige a cuántos kilómetros.',
+      'Ya están los campos de <b>Sevilla, Huelva y Cádiz</b>: cada uno con su par, la dificultad de cada hoyo y el <b>rating y slope</b> de cada barra.',
+      'Puedes <b>filtrar</b> por slope (113 es lo normal; más alto, más difícil), por par, por número de hoyos y por barras de caballeros o damas.',
+      'Toca la <b>estrella</b> para guardar un campo en <b>Favoritos</b> (hasta 5). Se ven aunque no haya cobertura.',
+      'Para jugar en uno: al crear la partida pulsa <b>«Buscar otro campo»</b> y toca <b>«Jugar aquí»</b>.',
+      '¿Falta un campo o su tarjeta? Escribe a soporte y lo añadimos.' ]},
 
     { sec:'Durante la partida' },
     { ico:'lapiz', t:'Apuntar los golpes', sub:'Hoyo a hoyo, con números grandes', pasos:[
-      'Arriba ves la <b>clasificación en directo</b> de toda la partida.',
+      'Arriba ves la <b>clasificación en directo</b> y la <b>tarjeta entera</b>. Un <b>punto verde</b> junto al par marca los hoyos donde recibes golpe de hándicap (dos puntos, dos golpes).',
       'Debajo, el hoyo en el que estáis. Cambia de hoyo con las <b>flechas grandes</b>.',
       '<b>Toca la casilla</b> de cada jugador y pulsa el número de golpes en el teclado grande.',
       '¿Te has equivocado? Toca otra vez la casilla y pon el número bueno, o pulsa <b>«Borrar golpes»</b>.',
       'Los colores son como en la tele: <b>círculo rojo</b> birdie, <b>amarillo</b> eagle, <b>cuadro azul</b> bogey y <b>azul oscuro</b> doble bogey o más.',
       'Cada uno puede apuntar desde su móvil: todo se junta solo en la misma partida.',
       'El <b>caddie</b> te va dando ánimos y un consejo para el hoyo siguiente. Nunca riñe.',
-      'Con <b>«Activar GPS»</b> ves la distancia al green.' ]},
+      'En Hato Verde, con <b>«Activar GPS»</b> ves la distancia al green.' ]},
     { ico:'ayuda', t:'Sin cobertura o si sales de la app', sub:'No se pierde nada', pasos:[
       'Si no hay cobertura, <b>sigue apuntando</b>. Sale el aviso «Sin conexión» y todo se sube solo cuando vuelva la cobertura.',
       'Si cierras la app o pulsas <b>«‹ Salir de la partida»</b>, la partida queda guardada.',
@@ -107,11 +128,18 @@
       'Al final pulsa <b>«Entregar mi tarjeta»</b>. Es <b>oficial</b> cuando también la confirma tu marcador.' ]},
 
     { sec:'Después de jugar' },
-    { ico:'resumen', t:'¿Cómo jugué?', sub:'Tu resumen de la partida', pasos:[
+    { ico:'resumen', t:'Resumen al terminar', sub:'Tarjeta, hándicap y cervezas', pasos:[
       'Al terminar sale un botón por jugador. Toca el tuyo.',
       'Ves tu <b>tarjeta entera</b>, si te cambia el <b>hándicap</b>, las <b>medallas</b> que has ganado y cómo vas en la <b>semana</b> y en el <b>mes</b>.',
-      'También sale quién paga <b>las cervezas</b>: la mitad de abajo de la clasificación.',
-      'Más tarde lo puedes volver a ver desde <b>«¿Cómo jugué?»</b> en el Inicio.' ]},
+      'También sale quién paga <b>las cervezas</b>: la mitad de abajo de la clasificación.' ]},
+    { ico:'grafica', nuevo:true, t:'¿Cómo jugué?', sub:'Tu juego con gráficas, para mejorar', pasos:[
+      'En el Inicio pulsa <b>«¿Cómo jugué?»</b>. Sale <b>solo tu juego</b>, con tus últimas 18 tarjetas completas.',
+      '<b>Mi partida:</b> cuántos golpes hiciste <b>mejor o peor que tu media</b> y los <b>golpes perdidos en hoyos desastre</b> (doble bogey o peor). Es lo primero que hay que bajar para bajar hándicap.',
+      'Debajo, <b>qué trabajar</b> (los hoyos que te salieron peor de lo normal), <b>lo que te salió bien</b> y cómo jugaste los <b>par 3, par 4 y par 5</b>. Más abajo sigue tu tarjeta, el hándicap y las medallas.',
+      '<b>Mi evolución:</b> gráficas de barras mes a mes con tus <b>dobles por partida</b> y tus <b>golpes sobre el par</b>. Cuanto más baja la barra, mejor.',
+      'También salen <b>los 3 hoyos que más te cuestan</b>. Con <b>«Ver el detalle hoyo a hoyo»</b> ves todas tus tarjetas en colores: rojo birdie, blanco par, azul claro bogey y azul oscuro doble o más.',
+      '<b>Comparar:</b> elige a un jugador de tu grupo. Se compara <b>con el hándicap descontado</b> y solo en los campos que habéis jugado los dos, para que sea justo.',
+      'Ves también el <b>cara a cara</b> de los días que jugasteis juntos (gana el mejor neto) y <b>quién juega mejor cada hoyo</b>: verde tú, azul él.' ]},
     { ico:'trofeo', t:'La liga y los premios', sub:'Cómo se gana', pasos:[
       'Cuentan las partidas de <b>18 hoyos</b> en Hato Verde o Zaudín apuntadas en la app. Si no está en la app, no cuenta.',
       'La semana va de <b>lunes a domingo</b>. Gana la semana el <b>mejor neto</b>: golpes totales menos tu hándicap.',
@@ -229,6 +257,7 @@
       '<b>Códigos de administrador:</b> crea un código y mándaselo a quien vaya a montar un grupo nuevo. Cada código sirve una vez.',
       'Puedes <b>hacer super administrador</b> a otro usuario o quitárselo.',
       'En el Inicio ves el <b>contador</b> de jugadores con cuenta y cuántos han usado la app hoy y esta semana.',
+      'Al tocar el contador ves también los <b>patrocinadores</b>: cuántas veces se ha visto su logo y <b>quién ha ido a su web</b>, con filtro por periodo y por grupo.',
       '<b>«Mandarme un correo de prueba»</b>: comprueba que los avisos por correo funcionan.' ]}
   ];
 
@@ -238,7 +267,7 @@
       if(x.sec) return '<div class="rg-sec-t">' + x.sec + '</div>';
       if(x.nota) return '<div class="mn-nota">' + x.nota + '</div>';
       return '<details class="rg-item mn-item" name="manual">'
-        + '<summary>' + ico(x.ico) + '<span class="rg-st"><b>' + x.t + '</b><small>' + x.sub + '</small></span><span class="rg-mas" aria-hidden="true"></span></summary>'
+        + '<summary>' + ico(x.ico) + '<span class="rg-st"><b>' + x.t + (x.nuevo ? ' <em class="mn-nuevo">Nuevo</em>' : '') + '</b><small>' + x.sub + '</small></span><span class="rg-mas" aria-hidden="true"></span></summary>'
         + '<ol class="rg-pasos mn-pasos">' + x.pasos.map(p => '<li>' + p + '</li>').join('') + '</ol>'
         + '</details>';
     }).join('');
@@ -256,6 +285,7 @@
         + '<button type="button" role="tab" class="mn-tab' + (pestana === 'jugador' ? ' sel' : '') + '" data-p="jugador" aria-selected="' + (pestana === 'jugador') + '">Jugador</button>'
         + '<button type="button" role="tab" class="mn-tab' + (pestana === 'admin' ? ' sel' : '') + '" data-p="admin" aria-selected="' + (pestana === 'admin') + '">Administrador</button>'
         + '</div>' : '')
+      + (pestana === 'jugador' ? '<div class="mn-novedades" id="mnNovedades"><div class="mn-nov-t">' + ico('estrella').replace('rg-ico', 'mn-nov-ico') + '<span>' + NOVEDADES.t + '</span></div><ul>' + NOVEDADES.items.map(i => '<li>' + i + '</li>').join('') + '</ul></div>' : '')
       + '<div class="rg-lista mn-lista">' + lista(pestana === 'admin' ? ADMIN.concat(esSuper() ? SUPER : []) : JUGADOR) + '</div>'
       + '<div class="rg-pie">¿Dudas que no están aquí? Pregunta al administrador de tu grupo o escribe a soporte.</div>'
       + (window.acgolfAyuda ? '<a class="ay-soporte" href="' + window.acgolfAyuda.correoSoporte() + '">✉️ Escribir a soporte</a>'
