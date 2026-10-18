@@ -1,0 +1,11 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Botón «Ir App Hato Verde» (encima de Crear partida, solo Los Iscariotes y Cajapollos) */
+.ih-btn{ display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; min-height:72px; margin:0 0 12px; padding:10px 16px 10px 10px;
+  border-radius:18px; background:#FFFFFF; border:1.5px solid #1F5130; color:#123321; text-decoration:none; font-family:'Barlow', system-ui, sans-serif;
+  box-shadow:0 4px 14px rgba(18,51,33,.10); -webkit-tap-highlight-color:transparent; }
+.ih-btn:active{ transform:scale(.98); }
+.ih-logo{ flex:none; width:78px; height:52px; border-radius:12px; background:#F2F4F1; display:flex; align-items:center; justify-content:center; }
+.ih-logo img{ max-width:70px; max-height:46px; display:block; }
+.ih-txt{ flex:1; min-width:0; display:flex; flex-direction:column; font-weight:800; font-size:clamp(17px, 5vw, 20px); line-height:1.15; }
+.ih-txt small{ font-weight:500; font-size:14px; color:#5B6B60; margin-top:3px; }
+.ih-flecha{ font-size:30px; color:#1F5130; flex:none; }
