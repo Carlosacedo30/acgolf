@@ -24,3 +24,17 @@
 .ct-q span{ display:flex; flex-direction:column; font-weight:700; font-size:16px; }
 .ct-q small{ font-weight:500; font-size:13px; opacity:.7; }
 .ct-q em{ font-style:normal; font-weight:700; font-size:15px; opacity:.85; white-space:nowrap; }
+
+/* Filtro del patrocinador: quién tocó su web (periodo, tipo, grupo) */
+.ct-filtros{ display:flex; gap:6px; margin:10px 0 0; }
+.ct-filtros button{ flex:1; min-height:44px; padding:8px 6px; border-radius:12px; border:1.5px solid rgba(255,255,255,.18); background:transparent;
+  color:#F2F4F5; font:700 16px 'Barlow', system-ui, sans-serif; cursor:pointer; }
+.ct-filtros button.on{ background:#C6F24E; border-color:#C6F24E; color:#111316; }
+.ct-filtros-sel{ align-items:center; }
+.ct-filtros select{ flex:1; min-width:0; min-height:44px; padding:8px 10px; border-radius:12px; border:1.5px solid rgba(255,255,255,.18);
+  background:#1C1F23; color:#F2F4F5; font:600 16px 'Barlow', system-ui, sans-serif; }
+.ct-yo{ display:flex; align-items:center; gap:6px; font-size:15px; white-space:nowrap; color:#C9CFD4; }
+.ct-yo input{ width:22px; height:22px; accent-color:#C6F24E; }
+.ct-resumen{ margin:14px 0 4px; font-size:16px; color:#C9CFD4; }
+.ct-resumen b{ font:400 26px/1 'Anton', 'Barlow', sans-serif; color:#C6F24E; margin-right:2px; }
+#ptLista .ct-q em{ font-size:20px; color:#C6F24E; }

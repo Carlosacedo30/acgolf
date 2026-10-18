@@ -55,12 +55,62 @@
           + fila('Veces que se ha visto', p.vistas_mes) + fila('Toques para ir a su web', p.toques_mes) + fila('Jugadores distintos que tocaron', p.jugadores_toque_mes)
           + '<small>Desde el principio: ' + p.vistas + ' vistas y ' + p.toques + ' toques.</small></div>').join('')
         : '<p class="ct-nota">Todavía no hay datos: se empiezan a contar desde hoy.</p>')
+      + (patros.length ? '<div class="ct-sub">¿Quién ha ido a su web?</div>'
+          + '<div class="ct-filtros" id="ptPeriodo">' + [['hoy','Hoy'],['semana','Semana'],['mes','Mes'],['todo','Todo']].map(([k, t]) => '<button type="button" data-p="' + k + '"' + (k === filtro.periodo ? ' class="on"' : '') + '>' + t + '</button>').join('') + '</div>'
+          + '<div class="ct-filtros" id="ptTipo"><button type="button" data-t="toque"' + (filtro.tipo === 'toque' ? ' class="on"' : '') + '>Tocaron la web</button><button type="button" data-t="vista"' + (filtro.tipo === 'vista' ? ' class="on"' : '') + '>Vieron el logo</button></div>'
+          + '<div class="ct-filtros ct-filtros-sel"><select id="ptGrupo" aria-label="Grupo"><option value="">Todos los grupos</option></select>'
+          + '<label class="ct-yo"><input type="checkbox" id="ptYo"' + (filtro.yo ? ' checked' : '') + '> Contarme a mí</label></div>'
+          + '<div id="ptLista"><p class="ct-nota">Cargando…</p></div>' : '')
       + '<p class="ct-nota">Solo lo ves tú. Cada jugador cuenta una sola vez: en el grupo que tiene abierto (o en el primero al que se unió).</p>'
       + '<button type="button" class="av-btn" id="ctCerrar">Cerrar</button></div>';
     document.body.appendChild(ov);
     const cerrar = () => ov.remove();
     ov.querySelector('.av-x').onclick = cerrar;
     ov.querySelector('#ctCerrar').onclick = cerrar;
+    if(patros.length) montarFiltro(ov);
+  }
+
+  // --- Filtro del patrocinador: quién tocó su web (o vio el logo), por periodo y grupo ---
+  const filtro = { periodo: 'mes', tipo: 'toque', grupo: '', yo: false };
+  let filas = [];
+  async function montarFiltro(ov){
+    const lista = ov.querySelector('#ptLista');
+    const selGrupo = ov.querySelector('#ptGrupo');
+    const marcar = (cont, attr, val) => cont.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset[attr] === val));
+    async function traer(){
+      lista.innerHTML = '<p class="ct-nota">Cargando…</p>';
+      const client = typeof initSupabase === 'function' ? initSupabase() : null;
+      try {
+        const { data, error } = await client.rpc('contador_patro_quien', { p_periodo: filtro.periodo });
+        if(error) throw error;
+        filas = data || [];
+      } catch(e){ lista.innerHTML = '<p class="ct-nota">No se han podido cargar los datos. Inténtalo de nuevo.</p>'; return; }
+      // Grupos que salen en los datos, para el desplegable
+      const grupos = [...new Set(filas.map(f => f.grupo || 'Sin grupo'))].sort((a, b) => a.localeCompare(b, 'es'));
+      if(filtro.grupo && !grupos.includes(filtro.grupo)) filtro.grupo = '';
+      selGrupo.innerHTML = '<option value="">Todos los grupos</option>' + grupos.map(g => '<option' + (g === filtro.grupo ? ' selected' : '') + '>' + esc(g) + '</option>').join('');
+      dibujar();
+    }
+    function dibujar(){
+      const toque = filtro.tipo === 'toque';
+      const vis = filas.filter(f => (toque ? f.toques : f.vistas) > 0)
+        .filter(f => filtro.yo || !f.yo)
+        .filter(f => !filtro.grupo || (f.grupo || 'Sin grupo') === filtro.grupo)
+        .sort((a, b) => toque ? (b.toques - a.toques) : (b.vistas - a.vistas));
+      const total = vis.reduce((s, f) => s + (toque ? f.toques : f.vistas), 0);
+      const nombrePer = { hoy: 'hoy', semana: 'esta semana', mes: 'este mes', todo: 'desde el principio' }[filtro.periodo];
+      if(!vis.length){ lista.innerHTML = '<p class="ct-nota">Nadie ' + (toque ? 'ha tocado la web' : 'ha visto el logo') + ' ' + nombrePer + '.</p>'; return; }
+      lista.innerHTML = '<div class="ct-resumen"><b>' + vis.length + '</b> ' + (vis.length === 1 ? 'jugador' : 'jugadores distintos')
+        + ' · ' + total + ' ' + (toque ? (total === 1 ? 'toque' : 'toques') : (total === 1 ? 'día visto' : 'días vistos')) + ' ' + nombrePer + '</div>'
+        + vis.map(f => '<div class="ct-q"><span>' + esc(f.jugador) + (f.yo ? ' (tú)' : '') + '<small>' + esc(f.grupo || 'Sin grupo')
+          + ' · último: ' + esc((toque ? f.ultimo_toque : f.ultima_vista) || '') + '</small></span><em>' + (toque ? f.toques : f.vistas) + '</em></div>').join('')
+        + (toque ? '' : '<p class="ct-nota">Las vistas cuentan como mucho una vez al día por jugador.</p>');
+    }
+    ov.querySelector('#ptPeriodo').onclick = e => { const b = e.target.closest('button'); if(!b) return; filtro.periodo = b.dataset.p; marcar(e.currentTarget, 'p', filtro.periodo); traer(); };
+    ov.querySelector('#ptTipo').onclick = e => { const b = e.target.closest('button'); if(!b) return; filtro.tipo = b.dataset.t; marcar(e.currentTarget, 't', filtro.tipo); dibujar(); };
+    selGrupo.onchange = () => { filtro.grupo = selGrupo.value; dibujar(); };
+    ov.querySelector('#ptYo').onchange = e => { filtro.yo = e.target.checked; dibujar(); };
+    traer();
   }
 
   (function esperar(n){
