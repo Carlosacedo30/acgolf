@@ -159,7 +159,7 @@
   }
   if('speechSynthesis' in window){ vozElegida = buscarVoz(); speechSynthesis.onvoiceschanged = () => { vozElegida = buscarVoz(); }; }
   // Frases grabadas con la voz de Curro (Higgsfield): voz/curro-<grupo>-<n>.mp3. Si no hay, habla el móvil.
-  const GRABADAS = { aguila: 2, birdie: 4, par: 4, parneto: 2, bogey: 3, doble: 4, triple: 4 };
+  const GRABADAS = { aguila: 2, birdie: 4, par: 9, parneto: 2, bogey: 3, doble: 4, triple: 4 };
   let audio = null;
   function hablarFrase(f){
     if(!vozActiva()) return;
