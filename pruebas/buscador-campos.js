@@ -19,6 +19,11 @@
     { id:'medios',  txt:'Normales (110-125)', min:110,      max:125 },
     { id:'dificil', txt:'Difíciles (>125)',  min:126,       max:SLOPE_MAX },
   ];
+  const PARES = [70, 71, 72, 73];
+  const HOYOS = [9, 18];
+  // Campos de la provincia de Cádiz (campos-cadiz.js): van en la app, sin gastar consultas
+  const camposCadiz = () => (Array.isArray(window.CAMPOS_CADIZ) ? window.CAMPOS_CADIZ : []);
+  const municipiosCadiz = () => [...new Set(camposCadiz().map(c => c.municipio).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'es'));
   // Coordenadas de los campos propios de acgolf (las mismas que usa el tiempo de la app)
   const COORDS_ACGOLF = { 'hato-verde':[37.565, -6.035], 'zaudin':[37.378, -6.045], 'la-penaza':[41.701, -1.056] };
 
@@ -47,6 +52,27 @@
     if(min <= SLOPE_MIN && max >= SLOPE_MAX) return true;
     return barrasDe(campo, genero).some(b => b.slope != null && b.slope >= min && b.slope <= max);
   }
+  // Hoyos del campo (Vista Hermosa es de 9 aunque su tarjeta sea de dos vueltas)
+  function hoyosDe(campo){
+    if(campo && campo.hoyos) return Number(campo.hoyos);
+    const hs = (Array.isArray(campo && campo.barras) ? campo.barras : []).map(b => Number(b.hoyos)).filter(n => n > 0);
+    return hs.length ? Math.max(...hs) : null;
+  }
+  function paresDe(campo){
+    if(campo && campo.par) return [Number(campo.par)];   // el par del campo (no el de una barra suelta)
+    const ps = (Array.isArray(campo && campo.barras) ? campo.barras : []).map(b => Number(b.par)).filter(n => n > 0);
+    if(campo && campo.par) ps.push(Number(campo.par));
+    return ps;
+  }
+  function pasaTodo(campo){
+    if(!pasaFiltro(campo, st.genero, st.min, st.max)) return false;
+    if(st.par && !paresDe(campo).includes(st.par)) return false;
+    if(st.hoyos && hoyosDe(campo) !== st.hoyos) return false;
+    if(st.modo === 'cadiz' && st.municipio && campo.municipio !== st.municipio) return false;
+    return true;
+  }
+  // Los filtros se quedan abiertos mientras se usan (aunque se vuelva a «Todos»)
+  const hayFiltros = () => st.detAbierto || st.min !== SLOPE_MIN || st.max !== SLOPE_MAX || st.genero !== 'm' || st.par || st.hoyos;
   // Rango de rating y slope de las barras que cuentan (las del filtro, o todas las del género)
   function resumen(campo, genero, min, max){
     let bs = barrasDe(campo, genero).filter(b => b.slope != null || b.rating != null);
@@ -203,6 +229,8 @@
   const st = {
     pestana: 'buscar', modo: 'texto', texto: '', lat: '', lon: '', radio: 25,
     genero: 'm', min: SLOPE_MIN, max: SLOPE_MAX,
+    par: 0, hoyos: 0,       // 0 = todos
+    municipio: '',          // solo en «Provincia de Cádiz»
     punto: null,            // { lat, lon, origen:'gps'|'manual' } para calcular distancias
     fase: 'inicio',         // inicio · cargando · error · listo
     error: '', aviso: '', resultados: [], ficha: null, pidiendo: 0, ultimoQuitado: null,
@@ -269,7 +297,11 @@
     ATAJOS.forEach(a => { h += '<button type="button" class="bc-chip' + (atajo && atajo.id === a.id ? ' on' : '') + '" data-atajo="' + a.id + '">' + esc(a.txt) + '</button>'; });
     h += '</div><div class="bc-rango"><label>Desde <select id="bcMin">' + opcionesSlope(st.min) + '</select></label>'
       + '<label>Hasta <select id="bcMax">' + opcionesSlope(st.max) + '</select></label></div>'
-      + '<p class="bc-nota">El slope va de 55 a 155. Un campo normal tiene 113: cuanto más alto, más difícil para el jugador aficionado.</p></div>';
+      + '<p class="bc-nota">El slope va de 55 a 155. Un campo normal tiene 113: cuanto más alto, más difícil para el jugador aficionado.</p>'
+      + '<div class="bc-fila-lbl">Par</div><div class="bc-chips">'
+      + [0].concat(PARES).map(p => '<button type="button" class="bc-chip' + (st.par === p ? ' on' : '') + '" data-par="' + p + '">' + (p ? 'Par ' + p : 'Todos') + '</button>').join('') + '</div>'
+      + '<div class="bc-fila-lbl">Hoyos</div><div class="bc-chips">'
+      + [0].concat(HOYOS).map(n => '<button type="button" class="bc-chip' + (st.hoyos === n ? ' on' : '') + '" data-hoyos="' + n + '">' + (n ? n + ' hoyos' : 'Todos') + '</button>').join('') + '</div></div>';
     return h;
   }
   function opcionesSlope(sel){
@@ -283,8 +315,16 @@
   function pintarBuscar(){
     let h = '<div class="bc-seg bc-modo">'
       + '<button type="button" class="' + (st.modo === 'texto' ? 'on' : '') + '" data-modo="texto" aria-pressed="' + (st.modo === 'texto') + '">Nombre o ciudad</button>'
-      + '<button type="button" class="' + (st.modo === 'cerca' ? 'on' : '') + '" data-modo="cerca" aria-pressed="' + (st.modo === 'cerca') + '">Cerca de un sitio</button></div>'
-      + '<form id="bcForm" class="bc-form" novalidate>';
+      + '<button type="button" class="' + (st.modo === 'cerca' ? 'on' : '') + '" data-modo="cerca" aria-pressed="' + (st.modo === 'cerca') + '">Cerca de un sitio</button>'
+      + '<button type="button" class="' + (st.modo === 'cadiz' ? 'on' : '') + '" data-modo="cadiz" aria-pressed="' + (st.modo === 'cadiz') + '">Provincia de Cádiz</button></div>';
+    if(st.modo === 'cadiz'){
+      h += '<label class="bc-lbl" for="bcMun">Municipio</label><select id="bcMun" class="bc-input"><option value="">Todos los municipios</option>'
+        + municipiosCadiz().map(m => '<option' + (m === st.municipio ? ' selected' : '') + '>' + esc(m) + '</option>').join('') + '</select>';
+      h += '<details class="bc-det"' + (hayFiltros() ? ' open' : '') + '><summary>Filtros' + resumenFiltro() + '</summary>' + pintarFiltros() + '</details>';
+      h += '<div id="bcResultados" aria-live="polite">' + pintarResultados() + '</div>';
+      return h;
+    }
+    h += '<form id="bcForm" class="bc-form" novalidate>';
     if(st.modo === 'texto'){
       h += '<label class="bc-lbl" for="bcTexto">Escribe el nombre del campo</label>'
         + '<input id="bcTexto" class="bc-input" type="search" inputmode="search" autocomplete="off" maxlength="60" placeholder="Ej.: Valderrama, Guadalmina, Zaudín" value="' + esc(st.texto) + '">';
@@ -298,13 +338,15 @@
         + RADIOS.map(r => '<option value="' + r + '"' + (r === st.radio ? ' selected' : '') + '>' + r + ' km</option>').join('') + '</select>';
     }
     h += '<button type="submit" class="bc-btn" ' + (st.fase === 'cargando' ? 'disabled' : '') + '>' + ICO.lupa + '<span>' + (st.fase === 'cargando' ? 'Buscando…' : 'Buscar campos') + '</span></button></form>';
-    h += '<details class="bc-det"' + (st.min !== SLOPE_MIN || st.max !== SLOPE_MAX || st.genero !== 'm' ? ' open' : '') + '><summary>Filtros' + resumenFiltro() + '</summary>' + pintarFiltros() + '</details>';
+    h += '<details class="bc-det"' + (hayFiltros() ? ' open' : '') + '><summary>Filtros' + resumenFiltro() + '</summary>' + pintarFiltros() + '</details>';
     h += '<div id="bcResultados" aria-live="polite">' + pintarResultados() + '</div>';
     return h;
   }
   function resumenFiltro(){
     const partes = [st.genero === 'f' ? 'Damas' : 'Caballeros'];
     if(st.min !== SLOPE_MIN || st.max !== SLOPE_MAX) partes.push('slope ' + st.min + '–' + st.max);
+    if(st.par) partes.push('par ' + st.par);
+    if(st.hoyos) partes.push(st.hoyos + ' hoyos');
     return ' <span>· ' + esc(partes.join(' · ')) + '</span>';
   }
 
@@ -314,7 +356,7 @@
       : 'Toca «Usar mi ubicación» o escribe unas coordenadas, elige la distancia y busca.') + '</p>';
     if(st.fase === 'cargando') return '<div class="bc-cargando"><span class="bc-rueda" aria-hidden="true"></span>Buscando campos…</div>';
     if(st.fase === 'error') return '<div class="bc-error"><p>' + esc(st.error) + '</p><button type="button" class="bc-btn sec" data-accion="reintentar">Intentar otra vez</button></div>';
-    const lista = st.resultados.filter(c => pasaFiltro(c, st.genero, st.min, st.max));
+    const lista = st.resultados.filter(pasaTodo);
     let h = st.aviso ? '<p class="bc-aviso-fijo">' + esc(st.aviso) + '</p>' : '';
     if(!st.resultados.length){
       h += '<p class="bc-vacio">No se ha encontrado ningún campo.' + (st.modo === 'cerca'
@@ -322,7 +364,7 @@
         : ' La búsqueda va por el <b>nombre del campo</b>, no por la ciudad: prueba con una palabra del nombre, por ejemplo «Guadalmina», «Valderrama» o «Montecastillo».') + '</p>';
       return h;
     }
-    if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno con ese slope. Cambia el filtro.</p>';
+    if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno cumple los filtros. Cambia el municipio, el slope, el par o los hoyos.</p>';
     h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (lista.length < st.resultados.length ? ' (de ' + st.resultados.length + ')' : '') + '</p>';
     return h + '<div class="bc-lista">' + lista.map(c => tarjeta(c, 'resultado')).join('') + '</div>';
   }
@@ -349,9 +391,12 @@
       + '<span class="bc-datos">'
       + '<span class="bc-dato"><small>Rating</small><b>' + esc(r.rating || '—') + '</b></span>'
       + '<span class="bc-dato"><small>Slope</small><b>' + esc(r.slope || '—') + '</b></span>'
+      + (c.par ? '<span class="bc-dato"><small>Par</small><b>' + esc(c.par) + '</b></span>' : '')
+      + (hoyosDe(c) === 9 ? '<span class="bc-dato"><small>Hoyos</small><b>9</b></span>' : '')
       + (nv ? '<span class="bc-nivel ' + nv.cls + '">' + esc(nv.txt) + '</span>' : '<span class="bc-nivel sin">Sin datos de ' + (st.genero === 'f' ? 'damas' : 'caballeros') + '</span>')
       + '</span>'
       + (c.fuente === 'acgolf' ? '<span class="bc-fuente">Datos oficiales de acgolf</span>' : '')
+      + (c.orientativo ? '<span class="bc-fuente bc-orient">Datos orientativos: confírmalos con la tarjeta del club</span>' : '')
       + '</button>'
       + (st.alElegir ? '<div class="bc-acciones"><button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button></div>' : '')
       + '<div class="bc-acciones">';
@@ -385,8 +430,11 @@
       + '<h3 id="bcFichaT">' + esc(c.nombre) + '</h3>'
       + '<p class="bc-ubic">' + ICO.pin + esc([ubicacion(c) || 'Ubicación sin datos', dist].filter(Boolean).join(' · ')) + '</p>'
       + tabla('m', 'Barras de caballeros') + tabla('f', 'Barras de damas')
+      + (c.nota || c.orientativo ? '<p class="bc-aviso-fijo">' + esc([c.nota, c.orientativo ? 'Algún dato es orientativo: confírmalo con la tarjeta del club.' : ''].filter(Boolean).join('. ')) + '</p>' : '')
       + '<p class="bc-nota">Rating: golpes que haría un jugador de hándicap 0. Slope: lo difícil que es para el aficionado (113 = normal).'
-      + (c.fuente === 'acgolf' ? ' Datos de la tarjeta oficial guardada en acgolf.' : ' Datos de GolfCourseAPI: pueden no estar al día; manda la tabla oficial del club.') + '</p>'
+      + (c.fuente === 'acgolf' ? ' Datos de la tarjeta oficial guardada en acgolf.'
+        : c.fuente === 'cadiz' ? ' Datos de guías de golf (' + esc(c.fuente_datos && /1golf/.test(c.fuente_datos) ? '1golf.eu' : c.fuente_datos && /18birdies/.test(c.fuente_datos) ? '18birdies' : 'GolfCourseAPI') + '): si cambian, manda la tabla oficial del club.'
+        : ' Datos de GolfCourseAPI: pueden no estar al día; manda la tabla oficial del club.') + '</p>'
       + '<div class="bc-ficha-acc">'
       + (st.alElegir ? '<button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button>' : '')
       + '<button type="button" class="bc-btn fav' + (fav ? ' on' : '') + '" data-fav="' + esc(c.id) + '" aria-pressed="' + fav + '">' + (fav ? ICO.estrellaLlena : ICO.estrella) + '<span>' + (fav ? 'Quitar de favoritos' : 'Añadir a favoritos') + '</span></button>'
@@ -461,7 +509,7 @@
         if(texto.length < 3) throw new Error('Escribe al menos 3 letras.');
         st.fase = 'cargando'; pintar();
         const q = sinAcentos(texto);
-        const propios = camposAcgolf().filter(c => sinAcentos(c.nombre + ' ' + (c.ciudad || '')).includes(q));
+        const propios = camposAcgolf().concat(camposCadiz()).filter(c => sinAcentos(c.nombre + ' ' + (c.club || '') + ' ' + (c.ciudad || '') + ' ' + (c.region || '')).includes(q));
         let remotos = [], avisoServidor = null;
         if(navigator.onLine === false){
           avisoServidor = 'Sin conexión: solo se ven los campos guardados en la app.';
@@ -483,7 +531,7 @@
         }
         st.punto = punto;
         st.fase = 'cargando'; pintar();
-        const propios = camposAcgolf().map(c => ({ ...c, distancia_km: distanciaKm(punto, c) }))
+        const propios = camposAcgolf().concat(camposCadiz()).map(c => ({ ...c, distancia_km: distanciaKm(punto, c) }))
           .filter(c => c.distancia_km != null && c.distancia_km <= st.radio);
         let remotos = [];
         if(navigator.onLine === false) st.aviso = 'Sin conexión: solo se ven los campos guardados en la app.';
@@ -505,7 +553,8 @@
   // Los campos propios de acgolf van primero; si GolfCourseAPI trae el mismo nombre, no se repite
   function juntar(propios, remotos){
     const vistos = new Set(propios.map(c => sinAcentos(c.nombre)));
-    return propios.concat((remotos || []).filter(c => c && c.id && c.nombre && !vistos.has(sinAcentos(c.nombre))));
+    const clubes = new Set(propios.filter(c => c.fuente === 'cadiz' && c.club).map(c => sinAcentos(c.club)));
+    return propios.concat((remotos || []).filter(c => c && c.id && c.nombre && !vistos.has(sinAcentos(c.nombre)) && !(c.club && clubes.has(sinAcentos(c.club)))));
   }
 
   function localizar(){
@@ -529,9 +578,19 @@
     if(b.id === 'bcCerrar') return cerrar();
     const d = b.dataset;
     if(d.pest){ leerFormulario(); st.pestana = d.pest; cerrarCapa(); return pintar(); }
-    if(d.modo){ leerFormulario(); if(st.modo !== d.modo){ st.modo = d.modo; st.fase = 'inicio'; st.resultados = []; st.aviso = ''; } return pintar(); }
-    if(d.genero){ leerFormulario(); st.genero = d.genero; return pintar(); }
-    if(d.atajo){ leerFormulario(); const a = ATAJOS.find(x => x.id === d.atajo); if(a){ st.min = a.min; st.max = a.max; } return pintar(); }
+    if(d.modo){
+      leerFormulario();
+      if(st.modo !== d.modo){ st.modo = d.modo; st.fase = 'inicio'; st.resultados = []; st.aviso = ''; }
+      if(st.modo === 'cadiz'){   // la lista sale enseguida: los datos van en la app
+        st.resultados = camposCadiz().map(c => ({ ...c, distancia_km: st.punto ? distanciaKm(st.punto, c) : null }));
+        st.fase = 'listo';
+      }
+      return pintar();
+    }
+    if(d.par != null){ leerFormulario(); st.detAbierto = true; st.par = Number(d.par) || 0; return pintar(); }
+    if(d.hoyos != null){ leerFormulario(); st.detAbierto = true; st.hoyos = Number(d.hoyos) || 0; return pintar(); }
+    if(d.genero){ leerFormulario(); st.detAbierto = true; st.genero = d.genero; return pintar(); }
+    if(d.atajo){ leerFormulario(); st.detAbierto = true; const a = ATAJOS.find(x => x.id === d.atajo); if(a){ st.min = a.min; st.max = a.max; } return pintar(); }
     if(d.jugar) return jugarAqui(d.jugar);
     if(d.fav) return alternarFavorito(d.fav);
     if(d.ficha) return abrirFicha(d.ficha);
@@ -555,8 +614,9 @@
   }
   function alCambiar(e){
     const t = e.target;
+    if(t.id === 'bcMun'){ st.municipio = t.value; return pintar(); }
     if(t.id === 'bcMin' || t.id === 'bcMax'){
-      leerFormulario();
+      leerFormulario(); st.detAbierto = true;
       let min = Number($('bcMin').value), max = Number($('bcMax').value);
       if(min > max){ if(t.id === 'bcMin') max = min; else min = max; }
       st.min = min; st.max = max;

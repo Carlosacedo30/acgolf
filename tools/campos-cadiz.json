@@ -1,0 +1,1249 @@
+[
+  {
+    "id": "cad:valderrama",
+    "fuente": "cadiz",
+    "nombre": "Real Club Valderrama",
+    "club": "Real Club Valderrama",
+    "municipio": "San Roque",
+    "ciudad": "Sotogrande, San Roque",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.2831,
+    "lon": -5.3274,
+    "hoyos": 18,
+    "par": 71,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Profesional",
+        "rating": 76.1,
+        "slope": 147,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 6392,
+        "par_hoyos": [
+          4,
+          4,
+          3,
+          5,
+          4,
+          3,
+          4,
+          4,
+          4,
+          4,
+          5,
+          3,
+          4,
+          4,
+          3,
+          4,
+          5,
+          4
+        ],
+        "hcp_hoyos": [
+          11,
+          7,
+          17,
+          3,
+          13,
+          15,
+          1,
+          9,
+          5,
+          18,
+          8,
+          2,
+          16,
+          12,
+          14,
+          6,
+          10,
+          4
+        ]
+      },
+      {
+        "genero": "m",
+        "nombre": "Campeonato",
+        "rating": 73.6,
+        "slope": 142,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5921,
+        "par_hoyos": [
+          4,
+          4,
+          3,
+          5,
+          4,
+          3,
+          4,
+          4,
+          4,
+          4,
+          5,
+          3,
+          4,
+          4,
+          3,
+          4,
+          5,
+          4
+        ],
+        "hcp_hoyos": [
+          11,
+          7,
+          17,
+          3,
+          13,
+          15,
+          1,
+          9,
+          5,
+          18,
+          8,
+          2,
+          16,
+          12,
+          14,
+          6,
+          10,
+          4
+        ]
+      },
+      {
+        "genero": "m",
+        "nombre": "Ejecutiva",
+        "rating": 71.4,
+        "slope": 136,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5520,
+        "par_hoyos": [
+          4,
+          4,
+          3,
+          5,
+          4,
+          3,
+          4,
+          4,
+          4,
+          4,
+          5,
+          3,
+          4,
+          4,
+          3,
+          4,
+          5,
+          4
+        ],
+        "hcp_hoyos": [
+          11,
+          7,
+          17,
+          3,
+          13,
+          15,
+          1,
+          9,
+          5,
+          18,
+          8,
+          2,
+          16,
+          12,
+          14,
+          6,
+          10,
+          4
+        ]
+      },
+      {
+        "genero": "m",
+        "nombre": "Prof. damas",
+        "rating": 68.3,
+        "slope": 128,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5322,
+        "par_hoyos": [
+          4,
+          4,
+          3,
+          5,
+          4,
+          3,
+          4,
+          4,
+          4,
+          4,
+          5,
+          3,
+          4,
+          4,
+          3,
+          4,
+          5,
+          4
+        ],
+        "hcp_hoyos": [
+          11,
+          7,
+          17,
+          3,
+          13,
+          15,
+          1,
+          9,
+          5,
+          18,
+          8,
+          2,
+          16,
+          12,
+          14,
+          6,
+          10,
+          4
+        ]
+      },
+      {
+        "genero": "m",
+        "nombre": "Senior",
+        "rating": 68.0,
+        "slope": 116,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5071,
+        "par_hoyos": [
+          4,
+          4,
+          3,
+          5,
+          4,
+          3,
+          4,
+          4,
+          4,
+          4,
+          5,
+          3,
+          4,
+          4,
+          3,
+          4,
+          5,
+          4
+        ],
+        "hcp_hoyos": [
+          11,
+          7,
+          17,
+          3,
+          13,
+          15,
+          1,
+          9,
+          5,
+          18,
+          8,
+          2,
+          16,
+          12,
+          14,
+          6,
+          10,
+          4
+        ]
+      },
+      {
+        "genero": "m",
+        "nombre": "Adelantada",
+        "rating": 67.1,
+        "slope": 115,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 4871,
+        "par_hoyos": [
+          4,
+          4,
+          3,
+          5,
+          4,
+          3,
+          4,
+          4,
+          4,
+          4,
+          5,
+          3,
+          4,
+          4,
+          3,
+          4,
+          5,
+          4
+        ],
+        "hcp_hoyos": [
+          11,
+          7,
+          17,
+          3,
+          13,
+          15,
+          1,
+          9,
+          5,
+          18,
+          8,
+          2,
+          16,
+          12,
+          14,
+          6,
+          10,
+          4
+        ]
+      }
+    ],
+    "fuente_datos": "GolfCourseAPI",
+    "orientativo": false,
+    "nota": "Sin datos fiables de barras de damas"
+  },
+  {
+    "id": "cad:rcg-sotogrande",
+    "fuente": "cadiz",
+    "nombre": "Real Club de Golf Sotogrande",
+    "club": "Real Club de Golf Sotogrande",
+    "municipio": "San Roque",
+    "ciudad": "Sotogrande, San Roque",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.2925,
+    "lon": -5.275,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 75.3,
+        "slope": 142,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6304
+      },
+      {
+        "genero": "m",
+        "nombre": "Azules",
+        "rating": 73.7,
+        "slope": 141,
+        "par": 72,
+        "hoyos": 18,
+        "metros": null
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 71.9,
+        "slope": 138,
+        "par": 72,
+        "hoyos": 18,
+        "metros": null
+      },
+      {
+        "genero": "m",
+        "nombre": "Naranjas",
+        "rating": 69.3,
+        "slope": 137,
+        "par": 72,
+        "hoyos": 18,
+        "metros": null
+      },
+      {
+        "genero": "m",
+        "nombre": "Rojas",
+        "rating": 67.6,
+        "slope": 131,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5147
+      },
+      {
+        "genero": "f",
+        "nombre": "Blancas",
+        "rating": 78.1,
+        "slope": 141,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6304
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 74.7,
+        "slope": 140,
+        "par": 72,
+        "hoyos": 18,
+        "metros": null
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 72.5,
+        "slope": 136,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5147
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/real-club-de-golf-sotogrande/",
+    "orientativo": true,
+    "nota": "Faltan los metros de algunas barras"
+  },
+  {
+    "id": "cad:la-reserva-sotogrande",
+    "fuente": "cadiz",
+    "nombre": "La Reserva Club Sotogrande",
+    "club": "La Reserva Club Sotogrande",
+    "municipio": "San Roque",
+    "ciudad": "Sotogrande, San Roque",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.318,
+    "lon": -5.315,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Negras",
+        "rating": 74.9,
+        "slope": 131,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6721
+      },
+      {
+        "genero": "m",
+        "nombre": "Azules",
+        "rating": 74.0,
+        "slope": 127,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6448
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 73.1,
+        "slope": 123,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6048
+      },
+      {
+        "genero": "m",
+        "nombre": "Verdes",
+        "rating": 72.8,
+        "slope": 125,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5590
+      },
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 70.4,
+        "slope": 121,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5104
+      },
+      {
+        "genero": "f",
+        "nombre": "Amarillas",
+        "rating": 77.1,
+        "slope": 137,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6048
+      },
+      {
+        "genero": "f",
+        "nombre": "Verdes",
+        "rating": 71.7,
+        "slope": 123,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5590
+      },
+      {
+        "genero": "f",
+        "nombre": "Blancas",
+        "rating": 70.2,
+        "slope": 119,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5104
+      }
+    ],
+    "fuente_datos": "https://18birdies.com",
+    "orientativo": true,
+    "nota": "Rating y slope de una fuente no oficial"
+  },
+  {
+    "id": "cad:san-roque-club",
+    "fuente": "cadiz",
+    "nombre": "San Roque Club (Old Course)",
+    "club": "The San Roque Club",
+    "municipio": "San Roque",
+    "ciudad": "San Roque",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.278,
+    "lon": -5.357,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": null,
+        "slope": 142,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6508
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": null,
+        "slope": 136,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6144
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": null,
+        "slope": 131,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5558
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": null,
+        "slope": 130,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5174
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/the-san-roque-club/",
+    "orientativo": true,
+    "nota": "Sin course rating publicado"
+  },
+  {
+    "id": "cad:la-hacienda-links",
+    "fuente": "cadiz",
+    "nombre": "La Hacienda Links (Alcaidesa)",
+    "club": "La Hacienda Alcaidesa Links Golf Resort",
+    "municipio": "La Línea de la Concepción",
+    "ciudad": "Alcaidesa, La Línea de la Concepción",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.235,
+    "lon": -5.315,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 70.8,
+        "slope": 128,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5841
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 69.3,
+        "slope": 124,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5514
+      },
+      {
+        "genero": "m",
+        "nombre": "Plata",
+        "rating": null,
+        "slope": null,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5030
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": null,
+        "slope": null,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4634
+      }
+    ],
+    "fuente_datos": "https://18birdies.com",
+    "orientativo": true,
+    "nota": "Rating y slope de una fuente no oficial"
+  },
+  {
+    "id": "cad:la-hacienda-heathland",
+    "fuente": "cadiz",
+    "nombre": "La Hacienda Heathland (Alcaidesa)",
+    "club": "La Hacienda Alcaidesa Links Golf Resort",
+    "municipio": "La Línea de la Concepción",
+    "ciudad": "Alcaidesa, La Línea de la Concepción",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.238,
+    "lon": -5.32,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 74.0,
+        "slope": 134,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6415
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 72.6,
+        "slope": 130,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6099
+      },
+      {
+        "genero": "m",
+        "nombre": "Rojas",
+        "rating": 70.6,
+        "slope": 123,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5302
+      },
+      {
+        "genero": "f",
+        "nombre": "Plata",
+        "rating": 76.1,
+        "slope": 135,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5703
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 73.5,
+        "slope": 129,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5302
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/la-hacienda-alcaidesa-links-golf-resort/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:montecastillo",
+    "fuente": "cadiz",
+    "nombre": "Montecastillo Golf",
+    "club": "Montecastillo Barceló Golf Club",
+    "municipio": "Jerez de la Frontera",
+    "ciudad": "Jerez de la Frontera",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.7006,
+    "lon": -6.0563,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 74.7,
+        "slope": 138,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6456
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 72.8,
+        "slope": 132,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6043
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 76.0,
+        "slope": 137,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5554
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 74.0,
+        "slope": 132,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5230
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/montecastillo-barcelo-golf-club/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:sherry-golf",
+    "fuente": "cadiz",
+    "nombre": "Sherry Golf Jerez",
+    "club": "Sherry Golf Jerez",
+    "municipio": "Jerez de la Frontera",
+    "ciudad": "Jerez de la Frontera",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.663,
+    "lon": -6.09,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 75.0,
+        "slope": 131,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6572
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 73.1,
+        "slope": 128,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6160
+      },
+      {
+        "genero": "m",
+        "nombre": "Naranjas",
+        "rating": null,
+        "slope": null,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4093
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 75.8,
+        "slope": 131,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5591
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 70.9,
+        "slope": 123,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4870
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/sherry-golf-jerez/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:novo-sancti-petri-a",
+    "fuente": "cadiz",
+    "nombre": "Novo Sancti Petri · Mar y Pinos (A)",
+    "club": "Real Novo Sancti Petri Golf Club",
+    "municipio": "Chiclana de la Frontera",
+    "ciudad": "Novo Sancti Petri, Chiclana de la Frontera",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.361,
+    "lon": -6.165,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 73.1,
+        "slope": 136,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6097
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 69.9,
+        "slope": 128,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5482
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 73.8,
+        "slope": 133,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5206
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 69.6,
+        "slope": 120,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4527
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/real-novo-sancti-petri-iberostar-golf-club/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:novo-sancti-petri-b",
+    "fuente": "cadiz",
+    "nombre": "Novo Sancti Petri · Centro (B)",
+    "club": "Real Novo Sancti Petri Golf Club",
+    "municipio": "Chiclana de la Frontera",
+    "ciudad": "Novo Sancti Petri, Chiclana de la Frontera",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.364,
+    "lon": -6.16,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 72.1,
+        "slope": 138,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5846
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 69.9,
+        "slope": 135,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5427
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 74.0,
+        "slope": 130,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5185
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 69.8,
+        "slope": 126,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4553
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/real-novo-sancti-petri-iberostar-golf-club/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:costa-ballena",
+    "fuente": "cadiz",
+    "nombre": "Costa Ballena Ocean Golf (Olivos + Palmeras)",
+    "club": "Costa Ballena Ocean Golf Club",
+    "municipio": "Rota",
+    "ciudad": "Costa Ballena, Rota",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.716,
+    "lon": -6.41,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": null,
+        "slope": null,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6302
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 71.3,
+        "slope": 128,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6036
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": null,
+        "slope": null,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5315
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 71.7,
+        "slope": 122,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5155
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/costa-ballena-ocean-golf-club/",
+    "orientativo": false,
+    "nota": "Tiene 27 hoyos: también se juega Olivos + Ficus y Palmeras + Ficus (par 70)"
+  },
+  {
+    "id": "cad:benalup-golf",
+    "fuente": "cadiz",
+    "nombre": "Benalup Golf & Country Club",
+    "club": "Fairplay Golf Course",
+    "municipio": "Benalup-Casas Viejas",
+    "ciudad": "Benalup-Casas Viejas",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.342,
+    "lon": -5.815,
+    "hoyos": 18,
+    "par": 73,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Azules",
+        "rating": null,
+        "slope": null,
+        "par": 73,
+        "hoyos": 18,
+        "metros": 6072
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 71.3,
+        "slope": 130,
+        "par": 73,
+        "hoyos": 18,
+        "metros": 5616
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 74.8,
+        "slope": 129,
+        "par": 73,
+        "hoyos": 18,
+        "metros": 5201
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 71.4,
+        "slope": 126,
+        "par": 73,
+        "hoyos": 18,
+        "metros": 4671
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/fairplay-golf-course/",
+    "orientativo": false,
+    "nota": "Ahora se llama Fairplay Golf"
+  },
+  {
+    "id": "cad:villanueva-golf",
+    "fuente": "cadiz",
+    "nombre": "Villanueva Golf",
+    "club": "Villanueva Golf & Croquet",
+    "municipio": "Puerto Real",
+    "ciudad": "Puerto Real",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.55,
+    "lon": -6.13,
+    "hoyos": 18,
+    "par": 71,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 72.0,
+        "slope": 125,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 6071
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 70.1,
+        "slope": 122,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5714
+      },
+      {
+        "genero": "m",
+        "nombre": "Azules",
+        "rating": 67.9,
+        "slope": 117,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5293
+      },
+      {
+        "genero": "m",
+        "nombre": "Rojas",
+        "rating": 66.6,
+        "slope": 115,
+        "par": 71,
+        "hoyos": 18,
+        "metros": null
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 72.6,
+        "slope": 123,
+        "par": 71,
+        "hoyos": 18,
+        "metros": null
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 71.3,
+        "slope": 119,
+        "par": 71,
+        "hoyos": 18,
+        "metros": 5034
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/villanueva-golf-croquet/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:montenmedio",
+    "fuente": "cadiz",
+    "nombre": "Montenmedio Golf & Country Club",
+    "club": "Montenmedio Golf & Country Club",
+    "municipio": "Vejer de la Frontera",
+    "ciudad": "Vejer de la Frontera",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.266,
+    "lon": -5.962,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 73.1,
+        "slope": 132,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6260
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 71.1,
+        "slope": 129,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6115
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 75.0,
+        "slope": 129,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5530
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 73.0,
+        "slope": 126,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5214
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/montenmedio-golf-country-club/",
+    "orientativo": false
+  },
+  {
+    "id": "cad:vista-hermosa",
+    "fuente": "cadiz",
+    "nombre": "Real Club de Golf Vista Hermosa",
+    "club": "Vista Hermosa Club de Golf",
+    "municipio": "El Puerto de Santa María",
+    "ciudad": "El Puerto de Santa María",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.6,
+    "lon": -6.25,
+    "hoyos": 9,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 70.2,
+        "slope": 119,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5606
+      },
+      {
+        "genero": "m",
+        "nombre": "Rojas",
+        "rating": 67.8,
+        "slope": 116,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4966
+      },
+      {
+        "genero": "f",
+        "nombre": "Amarillas",
+        "rating": 71.7,
+        "slope": 125,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5606
+      },
+      {
+        "genero": "f",
+        "nombre": "Rojas",
+        "rating": 69.2,
+        "slope": 117,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4966
+      }
+    ],
+    "fuente_datos": "https://18birdies.com",
+    "orientativo": true,
+    "nota": "Campo de 9 hoyos: la tarjeta es de dos vueltas (18 hoyos, par 72)"
+  },
+  {
+    "id": "cad:arcos-gardens",
+    "fuente": "cadiz",
+    "nombre": "Arcos Gardens Golf",
+    "club": "Arcos Gardens Golf Club & Country Estate",
+    "municipio": "Arcos de la Frontera",
+    "ciudad": "Arcos de la Frontera",
+    "region": "Cádiz",
+    "pais": "España",
+    "lat": 36.752,
+    "lon": -5.77,
+    "hoyos": 18,
+    "par": 72,
+    "barras": [
+      {
+        "genero": "m",
+        "nombre": "Negras",
+        "rating": 75.4,
+        "slope": 133,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6750
+      },
+      {
+        "genero": "m",
+        "nombre": "Blancas",
+        "rating": 72.7,
+        "slope": 131,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 6279
+      },
+      {
+        "genero": "m",
+        "nombre": "Amarillas",
+        "rating": 70.0,
+        "slope": 125,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5781
+      },
+      {
+        "genero": "m",
+        "nombre": "Rojas",
+        "rating": 69.9,
+        "slope": 118,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 4756
+      },
+      {
+        "genero": "f",
+        "nombre": "Azules",
+        "rating": 72.7,
+        "slope": 126,
+        "par": 72,
+        "hoyos": 18,
+        "metros": 5265
+      }
+    ],
+    "fuente_datos": "https://www.1golf.eu/en/club/arcos-gardens-golf-club-country-estate-2/",
+    "orientativo": false
+  }
+]
