@@ -1,0 +1,34 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* «¿Cómo jugué?»: análisis de las últimas tarjetas (mismos colores que la tarjeta al anotar) */
+.ca-box{ margin-top:6px; }
+.ca-svg{ width:100%; height:auto; display:block; margin:6px 0 2px; overflow:visible; }
+.ca-eje{ font:600 10px 'Barlow', system-ui, sans-serif; fill:#5C6670; }
+.ca-et{ font:800 13px 'Barlow', system-ui, sans-serif; }
+.ca-nota{ margin:2px 0 6px; }
+.ca-sub{ font:800 16px 'Barlow', sans-serif; color:#0E3324; margin:14px 0 2px; }
+.ca-kpis{ display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:6px; margin:6px 0 4px; }
+.ca-kpis > div{ background:#F1F3F2; border-radius:12px; padding:8px 6px; text-align:center; }
+.ca-kpis b{ display:block; font:400 24px/1 'Anton', 'Barlow', sans-serif; color:#0E3324; }
+.ca-kpis span{ display:block; font:600 12px/1.15 'Barlow', sans-serif; color:#5C6670; margin-top:4px; }
+.ca-ley{ display:flex; flex-wrap:wrap; gap:6px 14px; font:600 13px 'Barlow', sans-serif; color:#14231A; margin-top:4px; }
+.ca-ley span{ display:inline-flex; align-items:center; gap:5px; }
+.ca-ley i{ width:14px; height:14px; border-radius:3px; display:inline-block; }
+.ca-ley i.par{ background:#FFFFFF; border:1px solid #B8C0C7; }
+.ca-areas{ display:grid; gap:8px; margin-top:6px; }
+.ca-area{ border-radius:14px; padding:10px 12px; background:#F1F3F2; border-left:6px solid #B8C0C7; }
+.ca-area.bien{ border-left-color:#2E7D32; }
+.ca-area.regular{ border-left-color:#F5B83D; }
+.ca-area.mal{ border-left-color:#E5484D; }
+.ca-area-c{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.ca-area-c b{ font:800 17px 'Barlow', sans-serif; color:#14231A; }
+.ca-chip{ font:800 12px 'Barlow', sans-serif; padding:3px 9px; border-radius:999px; background:#FFFFFF; color:#5C6670; white-space:nowrap; }
+.ca-area.bien .ca-chip{ background:#2E7D32; color:#FFFFFF; }
+.ca-area.regular .ca-chip{ background:#F5B83D; color:#14231A; }
+.ca-area.mal .ca-chip{ background:#E5484D; color:#FFFFFF; }
+.ca-area-v{ font:700 15px 'Barlow', sans-serif; color:#0E3324; margin-top:4px; }
+.ca-area-x{ font:500 14px/1.3 'Barlow', sans-serif; color:#5C6670; margin-top:3px; }
+.ca-peores{ display:grid; gap:6px; margin-top:6px; }
+.ca-peores > div{ display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:8px; background:#F1F3F2; border-radius:12px; padding:8px 12px; }
+.ca-peores b{ font:800 16px 'Barlow', sans-serif; color:#14231A; }
+.ca-peores span{ font:600 13px 'Barlow', sans-serif; color:#5C6670; }
+.ca-peores em{ font-style:normal; font:400 20px 'Anton', 'Barlow', sans-serif; color:#2F5BD3; }
