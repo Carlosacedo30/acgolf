@@ -1,7 +1,8 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // --- Curro, el caddie andaluz: sale un momento al apuntar los golpes con un comentario con gracia ---
 // Birdie: «¡Te como los huevos!». Par: «¡Qué bueno eres!». Bogey: «Aquí no se dan bolas».
-// Doble bogey o peor: un chiste para quitar hierro. Sale encima de la pantalla de anotar, unos segundos.
+// Doble bogey o peor: un chiste para quitar hierro. Sale cuando están los golpes de todos en el hoyo:
+// con 3 jugadores o menos, un comentario (el mejor o el peor); con 4 o más, dos (el mejor y el peor).
 // Imágenes hechas con Higgsfield: curro.webp (sonrisa) y curro-risa.webp (carcajada, para birdies y chistes). Habla con la voz del móvil (en español); se puede silenciar.
 // Todo en el móvil: sin internet y sin coste.
 (function(){
@@ -146,9 +147,14 @@
   }
   document.addEventListener('pointerdown', despertar, true);
 
-  // ---------- El aviso ----------
-  let ocultar = null;
-  function mostrar(r){
+  // ---------- El aviso (uno detrás de otro si hay dos comentarios) ----------
+  let ocultar = null, siguiente = null, cola = [];
+  function quitar(){
+    const el = document.getElementById('cuFlash'); if(el) el.classList.remove('ver');
+    callar(); clearTimeout(ocultar); clearTimeout(siguiente);
+    if(cola.length) siguiente = setTimeout(() => pintar(cola.shift()), 700);
+  }
+  function pintar(r){
     const f = frase(r);
     let el = document.getElementById('cuFlash');
     if(!el){
@@ -163,7 +169,7 @@
           b.textContent = on ? '🔊' : '🔇'; b.setAttribute('aria-label', on ? 'Silenciar a Curro' : 'Que hable Curro');
           return;
         }
-        el.classList.remove('ver'); callar();
+        quitar();
       });
       document.body.appendChild(el);
     }
@@ -171,13 +177,21 @@
     el.innerHTML = cara(f.animo) + '<div class="cu-bocadillo"><b>Curro, tu caddie</b><button type="button" class="cu-voz" aria-label="' + (vozActiva() ? 'Silenciar a Curro' : 'Que hable Curro') + '">' + (vozActiva() ? '🔊' : '🔇') + '</button><p>' + f.t + '</p></div>';
     el.classList.remove('ver'); void el.offsetWidth; el.classList.add('ver');
     clearTimeout(ocultar);
-    ocultar = setTimeout(() => el.classList.remove('ver'), Math.min(11000, 4000 + f.t.length * 55));
+    ocultar = setTimeout(quitar, Math.min(11000, 4000 + f.t.length * 55));
     hablarFrase(f);
   }
+  function mostrar(lista){
+    lista = Array.isArray(lista) ? lista : [lista];
+    clearTimeout(siguiente); clearTimeout(ocultar); callar();
+    cola = lista.slice(1);
+    if(lista.length) pintar(lista[0]);
+  }
 
-  // ---------- Al apuntar golpes en la partida ----------
+  // ---------- Cuando están los golpes de TODOS en el hoyo ----------
+  // 3 jugadores o menos: un comentario (el mejor o el peor, el que más «chicha» tenga).
+  // 4 o más: dos comentarios, primero el mejor y luego el peor.
   const yaDicho = {};
-  let pendiente = null, temporizador = null;
+  let hoyoPendiente = null, temporizador = null;
   function datos(p, h){
     const inp = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + p + '"]');
     const g = inp ? parseInt(inp.value, 10) : NaN;
@@ -186,21 +200,35 @@
     const rec = (typeof strokesForHole === 'function' && typeof hcpJuego === 'function' && !isNaN(si)) ? Math.max(0, strokesForHole(hcpJuego(p), si)) : 0;
     return { g, bruto: g - par, neto: g - rec - par };
   }
+  function jugadoresDelHoyo(h){
+    const idx = [...new Set([...document.querySelectorAll('.golpes-input[data-hole="' + h + '"]')].map(x => +x.dataset.playerIndex).filter(n => !isNaN(n)))];
+    const nombres = (typeof players !== 'undefined' && players) ? players : [];
+    return idx.filter(p => !nombres.length || nombres[p]);
+  }
+  function comentarHoyo(h){
+    const js = jugadoresDelHoyo(h); if(!js.length) return;
+    const res = [];
+    for(const p of js){ const d = datos(p, h); if(!d) return; res.push(Object.assign({ p }, d)); }   // falta alguien: aún no
+    const clave = h + ':' + res.map(x => x.p + '=' + x.g).join(',');
+    if(yaDicho[clave]) return; yaDicho[clave] = 1;
+    // Mejor: menos golpes sobre el par (a igualdad, mejor neto). Peor: al revés.
+    const orden = res.slice().sort((a, b) => a.bruto - b.bruto || a.neto - b.neto);
+    const mejor = orden[0], peor = orden[orden.length - 1];
+    const nombres = (typeof players !== 'undefined' && players) ? players : [];
+    const r = x => ({ n: nombreCorto(nombres[x.p] || 'Jugador'), bruto: x.bruto, neto: x.neto, h, semilla: x.p });
+    let lista;
+    if(res.length >= 4 && peor.bruto > mejor.bruto) lista = [r(mejor), r(peor)];
+    else if(mejor.bruto <= -1 || peor.bruto < 2 || mejor.bruto === peor.bruto) lista = [r(mejor)];   // birdie o nada llamativo: el mejor
+    else lista = [r(peor)];                                                                           // nadie brilla y alguien hace doble: el chiste
+    mostrar(lista);
+  }
   function alApuntar(e){
     const inp = e.target;
     if(!inp || !inp.classList || !inp.classList.contains('golpes-input')) return;
-    const p = +inp.dataset.playerIndex, h = +inp.dataset.hole;
-    if(isNaN(p) || isNaN(h)) return;
-    pendiente = { p, h };
+    const h = +inp.dataset.hole; if(isNaN(h)) return;
+    hoyoPendiente = h;
     clearTimeout(temporizador);
-    temporizador = setTimeout(() => {
-      const x = pendiente; pendiente = null; if(!x) return;
-      const d = datos(x.p, x.h); if(!d) return;
-      const clave = x.h + '-' + x.p + '-' + d.g;
-      if(yaDicho[clave]) return; yaDicho[clave] = 1;
-      const nom = (typeof players !== 'undefined' && players) ? players[x.p] : '';
-      mostrar({ n: nombreCorto(nom), bruto: d.bruto, neto: d.neto, h: x.h, semilla: x.p });
-    }, 900);
+    temporizador = setTimeout(() => { const x = hoyoPendiente; hoyoPendiente = null; if(x != null) comentarHoyo(x); }, 900);
   }
   document.addEventListener('change', alApuntar, true);
   document.addEventListener('input', alApuntar, true);
