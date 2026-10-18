@@ -17,9 +17,16 @@
     'los iscariotes': { src: 'logo-iscariotes.svg?v=6', nombre: 'Los Iscariotes' },
     'cajapollos':     { src: 'logo-cajapollos.svg?v=1', nombre: 'Cajapollos' }
   };
+  // Los demás grupos: el escudo que se diseñó al crear el grupo (el mismo de su portada). Las partidas personales, nada.
   function logoDelGrupo(){
-    const g = String(window.acgolfGrupo || (window.miPerfil && window.miPerfil.grupo) || '').trim().toLowerCase();
-    return LOGOS_GRUPO[g] || null;
+    const perfil = window.miPerfil || {};
+    const nombre = String(window.acgolfGrupo || perfil.grupo || '').trim();
+    const propio = LOGOS_GRUPO[nombre.toLowerCase()];
+    if(propio) return propio;
+    const P = window.acgolfPortada;
+    if(!nombre || perfil.grupo_tipo === 'personal' || !P || typeof P.escudo !== 'function') return null;
+    const m = P.marcaDe(perfil);
+    return { svg: P.escudo(m.escudo, m.iniciales, m.color, 44), nombre: nombre };
   }
   window.acgolfLogosGrupo = LOGOS_GRUPO;
 
@@ -36,10 +43,11 @@
     const lista = convActivas;
     // Cualquier jugador con cuenta puede organizar un partido con sus amigos
     const puedeOrganizar = isAdmin || !!window.miPerfilId;
-    // Cada grupo con SU logo (por su nombre). Sin logo propio no se pone ninguno: nada de logos genéricos.
+    // Cada grupo con SU logo (por su nombre). Si no tiene logo propio, su escudo de grupo.
     const logo = logoDelGrupo();
     const nuevoBtn = puedeOrganizar ? '<button type="button" class="conv-home-new' + (logo ? ' con-logo' : '') + '" id="convHomeNew">'
-      + (logo ? '<img class="ip-logo-grupo" src="' + logo.src + '" alt="' + esc(logo.nombre) + '">' : '')
+      + (logo ? (logo.src ? '<img class="ip-logo-grupo" src="' + logo.src + '" alt="' + esc(logo.nombre) + '">'
+                          : '<span class="ip-logo-grupo ip-escudo" role="img" aria-label="Escudo de ' + esc(logo.nombre) + '">' + logo.svg + '</span>') : '')
       + '<span>Organizar partido con amigos</span></button>' : '';
     const me = convMe();
     const hoy = convIsoToday();

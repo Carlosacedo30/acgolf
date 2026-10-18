@@ -26,3 +26,5 @@
 /* «Organizar partido con amigos» con el logo propio del grupo */
 .conv-home-new.con-logo{ display:flex !important; align-items:center; justify-content:center; gap:12px; padding:10px 14px !important; font-size:17px !important; font-weight:700 !important; }
 .ip-logo-grupo{ width:44px; height:44px; border-radius:50%; flex:none; object-fit:contain; background:#fff; box-shadow:0 0 0 2px rgba(255,255,255,.35); }
+.ip-logo-grupo.ip-escudo{ background:transparent; box-shadow:none; border-radius:0; display:flex; align-items:center; justify-content:center; }
+.ip-logo-grupo.ip-escudo svg{ max-width:44px; max-height:44px; }
