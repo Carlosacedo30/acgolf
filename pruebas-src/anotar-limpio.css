@@ -1,0 +1,6 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Tarjeta de arriba al anotar: puntos de golpes de hándicap junto al par */
+.tb-r-p > span.tb-pc{ display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; }
+.tb-pts{ font-style:normal; color:#2E7D32; font-size:20px; font-weight:900; letter-spacing:-1px; line-height:.8; margin-top:1px; }
+.tb-pts-ley{ font:600 13px 'Barlow', sans-serif; color:#5C6670; display:inline-flex; align-items:center; gap:4px; }
+.tb-pts-ley .tb-pts{ font-size:18px; margin:0; }

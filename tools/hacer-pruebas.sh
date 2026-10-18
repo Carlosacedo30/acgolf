@@ -244,6 +244,36 @@ cambia('pruebas/js/resultados.js', """(summaries[i].holesFilled < 18 ? ' · ' + 
 cambia('pruebas/js/interactions.js', """    const missing = getPlayerHolesFilled().filter(s => s.filled < 18);""", """    const missing = getPlayerHolesFilled().filter(s => s.filled < hoyosPartida());""")
 cambia('pruebas/js/interactions.js', """s.filled + '/18 hoyos'""", """s.filled + '/' + hoyosPartida() + ' hoyos'""")
 
+# Pantalla de anotar (18-oct-2026, pedido por Carlos):
+# · tarjeta de arriba siempre completa (ida y vuelta), sin botón de «media»
+# · un punto en cada hoyo donde el jugador recibe golpe de hándicap
+# · distancia al green solo en Hato Verde; fuera la sección «Ver tarjetas completas» de abajo
+cambia('pruebas/js/tarjeta-blanca.js', """  let tbEntera = false;     // ver la tarjeta entera (ida y vuelta)""", """  const tbEntera = true;    // la tarjeta se ve siempre entera (ida y vuelta)""")
+cambia('pruebas/js/tarjeta-blanca.js', """    let hoyos = '', pares = '', marcas = '';
+    for(let h = desde; h < desde + 9; h++){
+      const p = parDe(h), v = golpesDe(h, i);""", """    let hoyos = '', pares = '', marcas = '';
+    // Golpes de hándicap que recibe el jugador en cada hoyo (con el % de la modalidad)
+    let hcpJ = 0; try { hcpJ = typeof hcpJuego === 'function' ? hcpJuego(i) : 0; } catch(e){}
+    const recibe = h => { const si = siDe(h); if(si == null || typeof strokesForHole !== 'function') return 0; try { return Math.max(0, strokesForHole(hcpJ, si)); } catch(e){ return 0; } };
+    for(let h = desde; h < desde + 9; h++){
+      const p = parDe(h), v = golpesDe(h, i), rec = recibe(h);""")
+cambia('pruebas/js/tarjeta-blanca.js', """      pares += '<span>' + (p == null ? '' : p) + '</span>';""", """      pares += '<span class="tb-pc">' + (p == null ? '' : p) + (rec ? '<em class="tb-pts" aria-label="Recibe ' + rec + (rec === 1 ? ' golpe' : ' golpes') + '">' + '•'.repeat(Math.min(rec, 3)) + '</em>' : '') + '</span>';""")
+cambia('pruebas/js/tarjeta-blanca.js', """    t.innerHTML = '<div class="tb-tira-cab"><b>' + esc(nombre).toUpperCase() + ' · ' + (tbEntera ? 'TARJETA ENTERA' : ida ? 'IDA (1 A 9)' : 'VUELTA (10 A 18)') + '</b>'
+      + '<button type="button" class="tb-ver" id="tbVer">' + (tbEntera ? 'Ver solo media ‹' : 'Tarjeta entera ›') + '</button></div>'""", """    t.innerHTML = '<div class="tb-tira-cab"><b>' + esc(nombre).toUpperCase() + ' · TARJETA</b><span class="tb-pts-ley"><em class="tb-pts">•</em> recibe golpe</span></div>'""")
+cambia('pruebas/js/tarjeta-blanca.js', """    document.getElementById('tbVer').addEventListener('click', () => { tbEntera = !tbEntera; pintarTira(); });
+""", "")
+cambia('pruebas/js/tarjeta-blanca.js', """  // ---------- Casillas de golpes pintadas según el resultado ----------""", """  // Distancia al green solo en Hato Verde (el único campo con dibujos y greens guardados); fuera las tarjetas de abajo
+  function limpiar(){
+    const g = document.getElementById('greenArriba');
+    if(g) g.style.display = (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.id === 'hato-verde') ? '' : 'none';
+    const lbl = document.getElementById('toggleGridLbl');
+    const sec = lbl && lbl.closest('section');
+    if(sec) sec.style.display = 'none';
+  }
+
+  // ---------- Casillas de golpes pintadas según el resultado ----------""")
+cambia('pruebas/js/tarjeta-blanca.js', """    try { marcarPantalla(); if(colocar()){ pintarCasillas(); pintarTira(); } } catch(e){ console.error(e); }""", """    try { marcarPantalla(); limpiar(); if(colocar()){ pintarCasillas(); pintarTira(); } } catch(e){ console.error(e); }""")
+
 # Que los móviles descarguen de nuevo los archivos cambiados (no la copia guardada)
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
@@ -258,13 +288,13 @@ import re
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>\n<script>window.acgolfBarras = true; /* elegir barra de salida de cada jugador */</script>', 1)
-s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=15">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=2">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=1">\n<link rel="stylesheet" href="manual.css?v=1">\n<link rel="stylesheet" href="scramble.css?v=1">\n<link rel="stylesheet" href="salon.css?v=2">\n<link rel="stylesheet" href="ver-completa.css?v=1">\n<link rel="stylesheet" href="planes.css?v=2">\n<link rel="stylesheet" href="ayuda.css?v=2">\n<link rel="stylesheet" href="patro-destacado.css?v=1">\n<link rel="stylesheet" href="intro-video.css?v=1">\n<link rel="stylesheet" href="buscador-campos.css?v=3">\n<link rel="stylesheet" href="promo-bolas.css?v=1">\n<link rel="stylesheet" href="ir-hato.css?v=1">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=15">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=2">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=1">\n<link rel="stylesheet" href="manual.css?v=1">\n<link rel="stylesheet" href="scramble.css?v=1">\n<link rel="stylesheet" href="salon.css?v=2">\n<link rel="stylesheet" href="ver-completa.css?v=1">\n<link rel="stylesheet" href="planes.css?v=2">\n<link rel="stylesheet" href="ayuda.css?v=2">\n<link rel="stylesheet" href="patro-destacado.css?v=1">\n<link rel="stylesheet" href="intro-video.css?v=1">\n<link rel="stylesheet" href="buscador-campos.css?v=3">\n<link rel="stylesheet" href="promo-bolas.css?v=1">\n<link rel="stylesheet" href="ir-hato.css?v=1">\n<link rel="stylesheet" href="anotar-limpio.css?v=1">\n</head>', 1)
 s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="portada.js?v=6"></script>\n<script src="cuenta.js?v=24"></script>', s, count=1)
 # La pantalla blanca y el resumen tienen que ir DESPUÉS del marcador: se quitan de su sitio y se ponen tras él
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=2"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=5"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=1"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=1"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=9"></script>\n<script src="promo-bolas.js?v=1"></script>\n<script src="ir-hato.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=3"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=2"></script>\n<script src="enlace-partida.js?v=2"></script>\n<script src="aviso-partida.js?v=3"></script>\n<script src="avatares.js?v=1"></script>\n<script src="reserva-club.js?v=1"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=1"></script>\n<script src="inicio-partido.js?v=2"></script>\n<script src="manual.js?v=5"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=1"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=1"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=9"></script>\n<script src="promo-bolas.js?v=1"></script>\n<script src="ir-hato.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'

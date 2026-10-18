@@ -8,7 +8,7 @@
   document.documentElement.classList.add('tb-on');
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   let tbDe = null;          // jugador (índice en el grupo activo) cuya tarjeta se ve abajo
-  let tbEntera = false;     // ver la tarjeta entera (ida y vuelta)
+  const tbEntera = true;    // la tarjeta se ve siempre entera (ida y vuelta)
 
   const inp = (h, i) => document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + i + '"]');
   const golpesDe = (h, i) => { const x = inp(h, i); const v = x ? parseInt(x.value, 10) : NaN; return isNaN(v) || v <= 0 ? null : v; };
@@ -96,12 +96,15 @@
   function bloque(i, desde, actual){
     let par = 0, golpes = 0, alguno = false;
     let hoyos = '', pares = '', marcas = '';
+    // Golpes de hándicap que recibe el jugador en cada hoyo (con el % de la modalidad)
+    let hcpJ = 0; try { hcpJ = typeof hcpJuego === 'function' ? hcpJuego(i) : 0; } catch(e){}
+    const recibe = h => { const si = siDe(h); if(si == null || typeof strokesForHole !== 'function') return 0; try { return Math.max(0, strokesForHole(hcpJ, si)); } catch(e){ return 0; } };
     for(let h = desde; h < desde + 9; h++){
-      const p = parDe(h), v = golpesDe(h, i);
+      const p = parDe(h), v = golpesDe(h, i), rec = recibe(h);
       par += p || 0;
       if(v != null){ golpes += v; alguno = true; }
       hoyos += '<button type="button" class="tb-h' + (h === actual ? ' actual' : '') + '" data-h="' + h + '" aria-label="Ir al hoyo ' + h + '">' + h + '</button>';
-      pares += '<span>' + (p == null ? '' : p) + '</span>';
+      pares += '<span class="tb-pc">' + (p == null ? '' : p) + (rec ? '<em class="tb-pts" aria-label="Recibe ' + rec + (rec === 1 ? ' golpe' : ' golpes') + '">' + '•'.repeat(Math.min(rec, 3)) + '</em>' : '') + '</span>';
       marcas += '<span><i class="tb-m ' + clase(v, p) + '">' + (v == null ? '' : v) + '</i></span>';
     }
     const nom = desde === 1 ? 'Ida' : 'Vta';
@@ -119,12 +122,19 @@
     if(tbDe == null || !players[tbDe]) tbDe = yoIdx();
     const nombre = String(players[tbDe] || '').includes(' / ') ? nombrePareja(String(players[tbDe]).split(' / ')) : String(players[tbDe] || '').trim().split(/\s+/)[0];
     const ida = currentHole <= 9;
-    t.innerHTML = '<div class="tb-tira-cab"><b>' + esc(nombre).toUpperCase() + ' · ' + (tbEntera ? 'TARJETA ENTERA' : ida ? 'IDA (1 A 9)' : 'VUELTA (10 A 18)') + '</b>'
-      + '<button type="button" class="tb-ver" id="tbVer">' + (tbEntera ? 'Ver solo media ‹' : 'Tarjeta entera ›') + '</button></div>'
+    t.innerHTML = '<div class="tb-tira-cab"><b>' + esc(nombre).toUpperCase() + ' · TARJETA</b><span class="tb-pts-ley"><em class="tb-pts">•</em> recibe golpe</span></div>'
       + (tbEntera ? bloque(tbDe, 1, currentHole) + bloque(tbDe, 10, currentHole) : bloque(tbDe, ida ? 1 : 10, currentHole))
       + (n > 1 ? '<p class="tb-pista">Toca un jugador de la clasificación para ver su tarjeta.</p>' : '');
-    document.getElementById('tbVer').addEventListener('click', () => { tbEntera = !tbEntera; pintarTira(); });
     t.querySelectorAll('.tb-h').forEach(b => b.addEventListener('click', () => { currentHole = +b.dataset.h; renderHoleView(); }));
+  }
+
+  // Distancia al green solo en Hato Verde (el único campo con dibujos y greens guardados); fuera las tarjetas de abajo
+  function limpiar(){
+    const g = document.getElementById('greenArriba');
+    if(g) g.style.display = (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.id === 'hato-verde') ? '' : 'none';
+    const lbl = document.getElementById('toggleGridLbl');
+    const sec = lbl && lbl.closest('section');
+    if(sec) sec.style.display = 'none';
   }
 
   // ---------- Casillas de golpes pintadas según el resultado ----------
@@ -162,7 +172,7 @@
   const orig = window.renderHoleView;
   window.renderHoleView = function(){
     const r = orig.apply(this, arguments);
-    try { marcarPantalla(); if(colocar()){ pintarCasillas(); pintarTira(); } } catch(e){ console.error(e); }
+    try { marcarPantalla(); limpiar(); if(colocar()){ pintarCasillas(); pintarTira(); } } catch(e){ console.error(e); }
     return r;
   };
 })();
