@@ -1,0 +1,25 @@
+# acgolf.es · Reglas para buscadores
+# Se puede encontrar la web en los buscadores (también los de inteligencia artificial),
+# pero no se permite usarla para entrenar modelos de inteligencia artificial.
+# Las partidas, hándicaps y datos de los jugadores están detrás de la cuenta y no se publican.
+
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+Allow: /
+
+# Buscadores de inteligencia artificial: sí (para aparecer en sus respuestas)
+User-agent: OAI-SearchBot
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+Allow: /
+
+# Rastreadores que recogen datos para entrenar: no
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: meta-externalagent
+Disallow: /
+
+Sitemap: https://acgolf.es/sitemap.xml

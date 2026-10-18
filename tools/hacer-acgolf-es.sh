@@ -9,7 +9,7 @@ bash tools/hacer-pruebas.sh >/dev/null
 [ -d "$DEST/.git" ] || { echo "ERROR: no encuentro el repositorio acgolf-app en $DEST"; exit 1; }
 find "$DEST" -mindepth 1 -maxdepth 1 ! -name .git ! -name .github ! -name .gitignore ! -name .gitleaks.toml -exec rm -rf {} +
 cp -R pruebas/. "$DEST/"
-cp acgolf-es/manifest.json acgolf-es/sw.js acgolf-es/instalar.js acgolf-es/instalar.css acgolf-es/instalar.html acgolf-es/icon-*.png acgolf-es/video.mp4 "$DEST/"
+cp acgolf-es/manifest.json acgolf-es/sw.js acgolf-es/instalar.js acgolf-es/instalar.css acgolf-es/instalar.html acgolf-es/icon-*.png acgolf-es/video.mp4 acgolf-es/robots.txt acgolf-es/sitemap.xml "$DEST/"
 echo "acgolf.es" > "$DEST/CNAME"
 touch "$DEST/.nojekyll"
 # Las direcciones de pruebas pasan a ser acgolf.es
