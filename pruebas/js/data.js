@@ -4,28 +4,84 @@
   const COURSES = [
     { id:'isla-canela-links', name:'Isla Canela Links', location:'Ayamonte, Huelva',
       par:[5,4,3,4,4,4,3,5,4, 4,4,3,4,3,5,4,4,5],
-      hcp:[3,1,11,13,7,17,15,5,9, 16,2,14,4,18,8,12,10,6] },
+      hcp:[3,1,11,13,7,17,15,5,9, 16,2,14,4,18,8,12,10,6],
+      // Rating / slope: 18birdies, coincide con la tabla de slope del club (islacanela.es); azules y rojas de damas
+      tees:{
+        blancas:   { rating:73.4, slope:126 },
+        amarillas: { rating:71.0, slope:125 },
+        azules:    { rating:75.2, slope:127 },
+        rojas:     { rating:74.0, slope:125 },
+      } },
     { id:'isla-canela-old', name:'Isla Canela Old Course', location:'Ayamonte, Huelva',
       par:[3,5,4,4,3,4,5,4,4, 4,3,4,5,4,4,3,5,4],
-      hcp:[17,2,5,11,13,12,7,9,15, 10,16,3,6,1,14,18,4,8] },
+      hcp:[17,2,5,11,13,12,7,9,15, 10,16,3,6,1,14,18,4,8],
+      // Rating / slope: 18birdies (orientativo); azules y rojas de damas
+      tees:{
+        blancas:   { rating:73.6, slope:140 },
+        amarillas: { rating:72.3, slope:140 },
+        azules:    { rating:76.1, slope:134 },
+        rojas:     { rating:73.6, slope:129 },
+      } },
     { id:'islantilla', name:'Islantilla Golf Resort (Azul-Amarillo)', location:'Isla Cristina / Lepe, Huelva',
       par:[4,3,4,5,4,4,5,3,4, 5,3,5,3,5,3,4,4,4],
-      hcp:[15,5,9,3,1,7,11,17,13, 3,5,1,15,7,17,13,9,11] },
+      hcp:[15,5,9,3,1,7,11,17,13, 4,6,2,16,8,18,14,10,12],
+      // Rating / slope: 1golf.eu, recorrido Azul + Amarillo; azules = barra azul de caballeros (no hay de damas), rojas de damas
+      tees:{
+        blancas:   { rating:65.7, slope:114 },
+        amarillas: { rating:65.9, slope:114 },
+        azules:    { rating:69.5, slope:125 },
+        rojas:     { rating:70.9, slope:122 },
+      } },
     { id:'rompido-norte', name:'Golf El Rompido — Recorrido Norte', location:'Cartaya, Huelva',
       par:[4,4,3,4,5,3,4,5,4, 4,4,3,4,5,4,3,4,5],
-      hcp:[9,13,17,5,7,15,3,1,11, 10,6,18,8,12,16,4,2,14] },
+      hcp:[9,13,17,5,7,15,3,1,11, 10,6,18,8,12,16,4,2,14],
+      // Rating / slope: 1golf.eu; azules y rojas de damas
+      tees:{
+        blancas:   { rating:72.0, slope:132 },
+        amarillas: { rating:70.1, slope:129 },
+        azules:    { rating:71.6, slope:137 },
+        rojas:     { rating:70.4, slope:129 },
+      } },
     { id:'rompido-sur', name:'Golf El Rompido — Recorrido Sur', location:'Cartaya, Huelva',
       par:[4,3,4,4,5,4,4,3,5, 4,4,5,3,5,4,3,4,4],
-      hcp:[4,14,16,12,8,6,10,18,2, 3,11,9,15,1,13,17,5,7] },
+      hcp:[4,14,16,12,8,6,10,18,2, 3,11,9,15,1,13,17,5,7],
+      // Rating / slope: 1golf.eu; azules y rojas de damas
+      tees:{
+        blancas:   { rating:72.2, slope:134 },
+        amarillas: { rating:70.8, slope:131 },
+        azules:    { rating:71.6, slope:137 },
+        rojas:     { rating:72.4, slope:128 },
+      } },
     { id:'nuevo-portil', name:'Golf Nuevo Portil', location:'Cartaya, Huelva',
       par:[5,3,4,4,4,4,3,4,4, 4,5,4,3,4,5,4,3,4],
-      hcp:[2,12,18,16,4,10,14,6,8, 11,3,9,17,13,1,7,15,5] },
+      hcp:[2,12,18,16,4,10,14,6,8, 11,3,9,17,13,1,7,15,5],
+      // Rating / slope: 1golf.eu; azules y rojas de damas
+      tees:{
+        blancas:   { rating:71.2, slope:129 },
+        amarillas: { rating:69.7, slope:129 },
+        azules:    { rating:73.1, slope:126 },
+        rojas:     { rating:72.0, slope:123 },
+      } },
     { id:'bellavista', name:'Bellavista Huelva Golf Club', location:'Aljaraque, Huelva',
       par:[4,4,3,5,3,4,5,4,3, 4,4,5,3,4,4,4,5,3],
-      hcp:[4,10,18,2,12,8,14,6,16, 13,11,15,9,1,17,3,7,5] },
+      hcp:[4,10,18,2,12,8,14,6,16, 13,11,15,9,1,17,3,7,5],
+      // Rating / slope: 1golf.eu; azules y rojas de damas
+      tees:{
+        blancas:   { rating:71.3, slope:133 },
+        amarillas: { rating:69.7, slope:131 },
+        azules:    { rating:72.9, slope:125 },
+        rojas:     { rating:70.6, slope:125 },
+      } },
     { id:'monacilla', name:'La Monacilla Golf Club', location:'Aljaraque, Huelva',
       par:[4,4,3,5,4,4,5,4,4, 3,4,3,5,3,4,5,4,4],
-      hcp:[16,14,12,8,4,18,6,10,2, 13,9,17,7,15,5,11,1,3] },
+      hcp:[16,14,12,8,4,18,6,10,2, 13,9,17,7,15,5,11,1,3],
+      // Rating / slope: 1golf.eu; azules y rojas de damas
+      tees:{
+        blancas:   { rating:73.9, slope:132 },
+        amarillas: { rating:71.1, slope:129 },
+        azules:    { rating:74.6, slope:127 },
+        rojas:     { rating:71.9, slope:124 },
+      } },
     { id:'corta-atalaya', name:'Corta Atalaya Golf', location:'Minas de Riotinto, Huelva', holes9:true,
       par:[4,3,4,5,4,4,3,3,4],
       hcp:[1,17,5,3,11,9,7,15,13] },
