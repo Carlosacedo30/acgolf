@@ -184,9 +184,13 @@
               || bs.find(b => parValido(b.par_hoyos) && hcpValido(b.hcp_hoyos, b.par_hoyos.length));
     if(!base) return null;
     const tees = {};
-    ['m', 'f'].forEach(g => barrasDe(c, g).forEach(b => {
+    // Como en el resto de la app: blancas y amarillas con valores de caballeros; azules y rojas, de damas (si el campo los tiene)
+    const DAMAS = ['azules', 'rojas'];
+    ['f', 'm'].forEach(g => barrasDe(c, g).forEach(b => {
       const k = colorDe(b.nombre);
-      if(k && !tees[k] && b.rating != null && b.slope != null) tees[k] = { rating: Number(b.rating), slope: Number(b.slope) };
+      if(!k || b.rating == null || b.slope == null) return;
+      if(g === 'f' && !DAMAS.includes(k)) return;   // 1.ª pasada: solo azules y rojas de damas
+      if(!tees[k]) tees[k] = { rating: Number(b.rating), slope: Number(b.slope) };
     }));
     const curso = { id, name: c.nombre, location: ubicacion(c) || '', par: base.par_hoyos.map(Number), hcp: base.hcp_hoyos.map(Number), externo: true };
     if(curso.par.length === 9){ curso.holes9 = true; if(typeof hcpNueveA18 === 'function') curso.hcp = hcpNueveA18(curso.hcp); } // 9 hoyos: se juegan dos vueltas
