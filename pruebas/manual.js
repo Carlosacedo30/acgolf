@@ -46,6 +46,7 @@
     '<b>Anotar más claro.</b> La tarjeta de arriba sale siempre entera, con un <b>punto verde</b> en los hoyos donde recibes golpe de hándicap.',
     '<b>Botón «Ir App Hato Verde»</b> en el Inicio (Los Iscariotes y Cajapollos): abre la app del club para reservar.',
     '<b>Cada grupo con su escudo</b> al organizar un partido.',
+    '<b>Curro, tu caddie andaluz.</b> Al apuntar los golpes sale un momento y te habla: «¡Qué bueno eres!» en un par, «¡Te como los huevos!» en un birdie y un chiste en los dobles bogeys. Con el altavoz 🔊 lo silencias.',
     '<b>Menos correos:</b> el aviso de partida nueva solo llega a los que juegan esa partida.'
   ]};
 
@@ -110,7 +111,7 @@
       '¿Te has equivocado? Toca otra vez la casilla y pon el número bueno, o pulsa <b>«Borrar golpes»</b>.',
       'Los colores son como en la tele: <b>círculo rojo</b> birdie, <b>amarillo</b> eagle, <b>cuadro azul</b> bogey y <b>azul oscuro</b> doble bogey o más.',
       'Cada uno puede apuntar desde su móvil: todo se junta solo en la misma partida.',
-      'El <b>caddie</b> te va dando ánimos y un consejo para el hoyo siguiente. Nunca riñe.',
+      'Al apuntar un golpe sale <b>Curro, tu caddie andaluz</b>, y te dice algo con gracia: te felicita en los pares y birdies y suelta un chiste si sale un doble bogey. Habla en voz alta: con el botón del <b>altavoz</b> 🔊 lo callas.',
       'En Hato Verde, con <b>«Activar GPS»</b> ves la distancia al green.' ]},
     { ico:'ayuda', t:'Sin cobertura o si sales de la app', sub:'No se pierde nada', pasos:[
       'Si no hay cobertura, <b>sigue apuntando</b>. Sale el aviso «Sin conexión» y todo se sube solo cuando vuelva la cobertura.',

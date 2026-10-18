@@ -6,8 +6,8 @@
 // Soporte: abre el correo para escribir a avisos@acgolf.es (nunca un correo personal).
 (function(){
   const CLAVE = 'acgolfManualVisto';
-  const EDICION = '2026-10';
-  const AVISO = { t: 'Novedades en la app', s: 'Campos nuevos, «¿Cómo jugué?» con gráficas y más.' };
+  const EDICION = '2026-10b';
+  const AVISO = { t: 'Novedades en la app', s: 'Curro, el caddie andaluz, «¿Cómo jugué?» con gráficas, campos nuevos y más.' };
   const SOPORTE = 'avisos@acgolf.es';
   const client = (typeof initSupabase === 'function') ? initSupabase() : null;
   const enMovil = () => { try { return localStorage.getItem(CLAVE) === EDICION; } catch(e){ return false; } };
