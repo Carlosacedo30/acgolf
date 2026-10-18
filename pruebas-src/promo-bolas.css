@@ -1,0 +1,22 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Promoción de bolas gratis: tarjeta del Inicio y anuncio completo */
+.pb-tarjeta{ display:flex; align-items:center; gap:14px; width:100%; margin:0 0 14px; padding:12px 14px 12px 12px; box-sizing:border-box;
+  border-radius:20px; border:2px solid #C6F24E; background:#1B1E22; color:#F2F4F5; text-align:left; cursor:pointer;
+  font-family:'Barlow', system-ui, sans-serif; touch-action:manipulation; }
+.pb-tarjeta:active{ transform:scale(0.98); }
+.pb-tarjeta img{ width:64px; height:64px; border-radius:14px; object-fit:cover; flex:none; }
+.pb-txt{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.pb-eti{ font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:#C6F24E; }
+.pb-tit{ font-size:22px; font-weight:800; line-height:1.1; }
+.pb-pie{ font-size:14px; font-weight:600; color:#9AA3AB; }
+.pb-flecha{ font-size:30px; font-weight:700; color:#C6F24E; flex:none; }
+
+.pb-velo{ position:fixed; inset:0; z-index:99000; background:rgba(0,0,0,.78); display:flex; align-items:center; justify-content:center;
+  padding:16px; box-sizing:border-box; transition:opacity .3s ease; }
+.pb-velo.fuera{ opacity:0; pointer-events:none; }
+.pb-caja{ width:100%; max-width:440px; max-height:100%; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+.pb-img{ display:block; width:100%; height:auto; border-radius:18px; box-shadow:0 12px 40px rgba(0,0,0,.5); }
+.pb-ir, .pb-cerrar{ display:flex; align-items:center; justify-content:center; width:100%; min-height:58px; border-radius:999px; box-sizing:border-box;
+  font:900 19px 'Archivo', 'Barlow', sans-serif; letter-spacing:.03em; text-decoration:none; cursor:pointer; touch-action:manipulation; }
+.pb-ir{ background:#C6F24E; color:#111316; border:none; }
+.pb-cerrar{ background:transparent; color:#F2F4F5; border:2px solid rgba(255,255,255,.35); }
