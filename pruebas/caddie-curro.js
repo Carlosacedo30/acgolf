@@ -61,38 +61,40 @@
 
   // ---------- Frases ----------
   // r = { n: nombre corto, bruto: golpes − par, neto: golpes − golpes de hándicap − par, h: hoyo }
+  // Elige una frase del grupo y recuerda cuál es, para poner su grabación si existe
+  function sel(grupo, animo, lista, s){ const i = Math.abs(s | 0) % lista.length; return { animo, t: lista[i], grupo, i }; }
   function frase(r){
     const n = esc(r.n), s = r.h * 7 + (r.semilla || 0);
-    if(r.bruto <= -2) return { animo:'euforico', t: elige([
+    if(r.bruto <= -2) return sel('aguila', 'euforico', [
       '¡Mi arma, un ÁGUILA! ' + n + ', eso hay que enmarcarlo y colgarlo en el bar.',
-      '¡Ozú, ' + n + '! ¡Águila! Hoy te llevo la bolsa gratis, quillo.' ], s) };
-    if(r.bruto === -1) return { animo:'euforico', t: elige([
+      '¡Ozú, ' + n + '! ¡Águila! Hoy te llevo la bolsa gratis, quillo.' ], s);
+    if(r.bruto === -1) return sel('birdie', 'euforico', [
       '¡Te como los huevos, ' + n + '! Birdie de categoría.',
       '¡Ozú, ' + n + '! Un birdie como la Giralda de grande.',
       '¡Arsa, birdie! ' + n + ', hoy las cañas las pagas tú, que estás en racha.',
-      '¡' + n + ', birdie! Eso no lo hace ni el Seve, mi arma.' ], s) };
-    if(r.bruto === 0) return { animo:'feliz', t: elige([
+      '¡' + n + ', birdie! Eso no lo hace ni el Seve, mi arma.' ], s);
+    if(r.bruto === 0) return sel('par', 'feliz', [
       '¡Qué bueno eres, ' + n + '! Par como un reloj.',
       'Par, ' + n + '. Así da gusto llevarte la bolsa.',
       '¡Olé, ' + n + '! Par de libro, sin despeinarte.',
-      n + ', par. Ni frío ni calor: ¡perfecto!' ], s) };
-    if(r.neto <= 0) return { animo:'feliz', t: elige([
+      n + ', par. Ni frío ni calor: ¡perfecto!' ], s);
+    if(r.neto <= 0) return sel('parneto', 'feliz', [
       'Bogey con tu golpe de regalo, ' + n + ': par para ti. ¡Bien jugao!',
-      n + ', con el golpe que te dan, es tu par. ¡Eso es saber jugar!' ], s) };
-    if(r.bruto === 1) return { animo:'animo', t: elige([
+      n + ', con el golpe que te dan, es tu par. ¡Eso es saber jugar!' ], s);
+    if(r.bruto === 1) return sel('bogey', 'animo', [
       'Bogey, ' + n + '. Un golpito na más… y aquí no se dan bolas, ¿eh?',
       n + ', bogey. Tranquilo, quillo, que el hoyo también tiene su orgullo.',
-      'Bogey. ' + n + ', ni tan mal: el próximo lo bordamos.' ], s) };
-    if(r.bruto === 2) return { animo:'guasa', t: elige([
+      'Bogey. ' + n + ', ni tan mal: el próximo lo bordamos.' ], s);
+    if(r.bruto === 2) return sel('doble', 'guasa', [
       'Doble bogey… ' + n + ', ¿sabes por qué el golfista lleva dos pares de pantalones? ¡Por si hace un hoyo en uno! Venga, al siguiente.',
       n + ', doble. No se dan bolas, pero hoy te la daba yo de buena gana.',
       'Doble bogey. Tranquilo, ' + n + ', que el campo también tiene derecho a ganar alguna.',
-      n + ', doble bogey. Esto en Sevilla lo llamamos «calentar motores».' ], s) };
-    return { animo:'guasa', t: elige([
+      n + ', doble bogey. Esto en Sevilla lo llamamos «calentar motores».' ], s);
+    return sel('triple', 'guasa', [
       n + ', ese hoyo lo apuntamos con tinta invisible. ¡Al siguiente!',
       'Uy, ' + n + '… mi abuela decía: «el golf es un paseo estropeado». Hoy te ha tocado el trozo estropeado.',
       n + ', ¿has visto la bola por algún sitio? Yo tampoco. ¡Venga, borrón y cuenta nueva!',
-      'Tranquilo, ' + n + ': hasta el Seve hizo hoyos así. Bueno, el Seve no, pero su primo seguro.' ], s) };
+      'Tranquilo, ' + n + ': hasta el Seve hizo hoyos así. Bueno, el Seve no, pero su primo seguro.' ], s);
   }
 
   // ---------- La voz (la del propio móvil, en español) ----------
@@ -107,6 +109,24 @@
     return v.find(x => /es-ES/i.test(x.lang) && hombre(x)) || v.find(x => /es-ES/i.test(x.lang)) || v[0] || null;
   }
   if('speechSynthesis' in window){ vozElegida = buscarVoz(); speechSynthesis.onvoiceschanged = () => { vozElegida = buscarVoz(); }; }
+  // Frases grabadas con la voz de Curro (Higgsfield): voz/curro-<grupo>-<n>.mp3. Si no hay, habla el móvil.
+  const GRABADAS = { aguila: 2, birdie: 4, par: 4, parneto: 2, bogey: 3, doble: 4, triple: 4 };
+  let audio = null;
+  function hablarFrase(f){
+    if(!vozActiva()) return;
+    const n = GRABADAS[f.grupo];
+    if(n && f.i < n){
+      try {
+        if('speechSynthesis' in window) speechSynthesis.cancel();
+        if(!audio) audio = new Audio();
+        audio.pause(); audio.src = 'voz/curro-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=1';
+        const p = audio.play(); if(p && p.catch) p.catch(() => hablar(f.t));
+        return;
+      } catch(e){}
+    }
+    hablarFrase(f);
+  }
+  function callar(){ try { if(audio) audio.pause(); if('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e){} }
   function hablar(texto){
     if(!vozActiva() || !('speechSynthesis' in window)) return;
     try {
@@ -120,6 +140,8 @@
   // iPhone solo deja hablar después de un toque: el primer toque en la app «despierta» la voz
   function despertar(){
     document.removeEventListener('pointerdown', despertar, true);
+    // El mismo reproductor sirve luego para las grabaciones (en iPhone tiene que estrenarse con un toque)
+    try { if(!audio){ audio = new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='); const p = audio.play(); if(p && p.catch) p.catch(() => {}); } } catch(e){}
     try { if('speechSynthesis' in window && vozActiva()){ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } } catch(e){}
   }
   document.addEventListener('pointerdown', despertar, true);
@@ -137,11 +159,11 @@
           ev.stopPropagation();
           const on = !vozActiva();
           try { localStorage.setItem(CLAVE_VOZ, on ? '1' : '0'); } catch(e){}
-          if(!on && 'speechSynthesis' in window) speechSynthesis.cancel();
+          if(!on) callar();
           b.textContent = on ? '🔊' : '🔇'; b.setAttribute('aria-label', on ? 'Silenciar a Curro' : 'Que hable Curro');
           return;
         }
-        el.classList.remove('ver'); if('speechSynthesis' in window) speechSynthesis.cancel();
+        el.classList.remove('ver'); callar();
       });
       document.body.appendChild(el);
     }
@@ -150,7 +172,7 @@
     el.classList.remove('ver'); void el.offsetWidth; el.classList.add('ver');
     clearTimeout(ocultar);
     ocultar = setTimeout(() => el.classList.remove('ver'), Math.min(11000, 4000 + f.t.length * 55));
-    hablar(f.t);
+    hablarFrase(f);
   }
 
   // ---------- Al apuntar golpes en la partida ----------
