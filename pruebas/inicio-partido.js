@@ -12,6 +12,17 @@
   let abierta = null; // tarjeta con las horas desplegadas
   let guardando = false;
 
+  // Logo propio de cada grupo, por su nombre. Para dar de alta un grupo nuevo: añadir aquí su nombre y su archivo.
+  const LOGOS_GRUPO = {
+    'los iscariotes': { src: 'logo-iscariotes.svg?v=6', nombre: 'Los Iscariotes' },
+    'cajapollos':     { src: 'logo-cajapollos.svg?v=1', nombre: 'Cajapollos' }
+  };
+  function logoDelGrupo(){
+    const g = String(window.acgolfGrupo || (window.miPerfil && window.miPerfil.grupo) || '').trim().toLowerCase();
+    return LOGOS_GRUPO[g] || null;
+  }
+  window.acgolfLogosGrupo = LOGOS_GRUPO;
+
   // CREAR PARTIDA, lo primero del bloque
   function ordenar(){
     const crear = document.getElementById('prAbrirBtn'), conv = document.getElementById('convHome');
@@ -25,7 +36,11 @@
     const lista = convActivas;
     // Cualquier jugador con cuenta puede organizar un partido con sus amigos
     const puedeOrganizar = isAdmin || !!window.miPerfilId;
-    const nuevoBtn = puedeOrganizar ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
+    // Cada grupo con SU logo (por su nombre). Sin logo propio no se pone ninguno: nada de logos genéricos.
+    const logo = logoDelGrupo();
+    const nuevoBtn = puedeOrganizar ? '<button type="button" class="conv-home-new' + (logo ? ' con-logo' : '') + '" id="convHomeNew">'
+      + (logo ? '<img class="ip-logo-grupo" src="' + logo.src + '" alt="' + esc(logo.nombre) + '">' : '')
+      + '<span>Organizar partido con amigos</span></button>' : '';
     const me = convMe();
     const hoy = convIsoToday();
     box.innerHTML = lista.map(c => {

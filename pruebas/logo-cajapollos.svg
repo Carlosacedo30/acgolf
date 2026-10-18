@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-label="Cajapollos Golf">
+  <defs>
+    <path id="cpArcTop" d="M 66 200 A 134 134 0 0 1 334 200"/>
+    <path id="cpArcBot" d="M 40 200 A 160 160 0 0 0 360 200"/>
+    <clipPath id="cpDentro"><circle cx="200" cy="200" r="114"/></clipPath>
+  </defs>
+  <!-- Anillo exterior -->
+  <circle cx="200" cy="200" r="194" fill="#0F2A3A"/>
+  <circle cx="200" cy="200" r="184" fill="none" stroke="#4FD1E8" stroke-width="5"/>
+  <text font-family="'Anton', 'Barlow', Impact, sans-serif" font-size="40" letter-spacing="7" fill="#FFFFFF" text-anchor="middle"><textPath href="#cpArcTop" startOffset="50%">CAJAPOLLOS</textPath></text>
+  <text font-family="'Barlow', Arial, sans-serif" font-weight="800" font-size="27" letter-spacing="9" fill="#4FD1E8" text-anchor="middle"><textPath href="#cpArcBot" startOffset="50%">GOLF · SEVILLA</textPath></text>
+  <circle cx="66" cy="200" r="6" fill="#4FD1E8"/>
+  <circle cx="334" cy="200" r="6" fill="#4FD1E8"/>
+  <!-- Centro -->
+  <circle cx="200" cy="200" r="116" fill="#EAF8FB"/>
+  <circle cx="200" cy="200" r="116" fill="none" stroke="#4FD1E8" stroke-width="4"/>
+  <!-- Green -->
+  <path d="M 60 264 Q 200 236 340 264 L 340 330 L 60 330 Z" fill="#2E9E5B" clip-path="url(#cpDentro)"/>
+  <!-- Bandera -->
+  <line x1="268" y1="258" x2="268" y2="170" stroke="#0F2A3A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 270 172 L 300 182 L 270 193 Z" fill="#E8452C"/>
+  <ellipse cx="268" cy="259" rx="8" ry="3" fill="#0F2A3A"/>
+  <!-- Gallo -->
+  <!-- cola -->
+  <path d="M 150 214 C 118 196 112 160 128 136 C 132 166 146 182 162 192 Z" fill="#0F2A3A"/>
+  <path d="M 152 220 C 116 214 100 186 104 160 C 116 186 134 200 160 204 Z" fill="#4FD1E8"/>
+  <path d="M 156 226 C 126 232 106 216 98 196 C 118 212 138 214 160 212 Z" fill="#1E6F86"/>
+  <!-- cuerpo -->
+  <path d="M 150 214 C 150 184 176 170 200 176 C 214 158 214 140 210 128 C 226 128 238 142 236 160 C 236 176 228 186 226 198 C 226 228 206 248 180 248 C 160 248 150 234 150 214 Z" fill="#F4A62A"/>
+  <!-- ala -->
+  <path d="M 166 214 C 172 196 196 192 210 204 C 204 224 186 234 166 230 Z" fill="#D9821A"/>
+  <path d="M 172 216 C 184 208 196 208 204 212" fill="none" stroke="#F4A62A" stroke-width="3" stroke-linecap="round"/>
+  <!-- cresta -->
+  <path d="M 208 130 C 204 118 212 110 218 118 C 220 106 230 104 232 116 C 238 108 248 114 242 126 C 248 128 246 138 238 138 Z" fill="#E8452C"/>
+  <!-- pico y barbilla -->
+  <path d="M 234 150 L 254 156 L 234 162 Z" fill="#FFC93C"/>
+  <path d="M 232 162 C 240 166 240 178 232 180 C 226 176 226 166 232 162 Z" fill="#E8452C"/>
+  <!-- ojo -->
+  <circle cx="224" cy="147" r="5" fill="#0F2A3A"/>
+  <circle cx="225.5" cy="145.5" r="1.6" fill="#FFFFFF"/>
+  <!-- patas -->
+  <path d="M 180 246 L 178 268 M 196 244 L 198 266" stroke="#FFC93C" stroke-width="5" stroke-linecap="round"/>
+  <path d="M 170 270 L 178 268 L 186 272 M 190 268 L 198 266 L 206 270" fill="none" stroke="#FFC93C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- palo de golf bajo el ala -->
+  <line x1="204" y1="214" x2="244" y2="262" stroke="#0F2A3A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M 240 258 L 256 262 L 252 270 L 238 266 Z" fill="#0F2A3A"/>
+  <!-- bola -->
+  <circle cx="226" cy="268" r="8" fill="#FFFFFF" stroke="#0F2A3A" stroke-width="2"/>
+</svg>
