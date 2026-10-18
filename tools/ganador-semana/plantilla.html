@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<style>
+@font-face{ font-family:Anton; src:url(recursos/anton.woff2); }
+@font-face{ font-family:Barlow; src:url(recursos/barlow-500.woff2); font-weight:500; }
+@font-face{ font-family:Barlow; src:url(recursos/barlow-600.woff2); font-weight:600; }
+@font-face{ font-family:Barlow; src:url(recursos/barlow-800.woff2); font-weight:800; }
+*{ box-sizing:border-box; margin:0; padding:0; }
+:root{ --verde:#0E3324; --verde2:#1F5130; --lima:#C6F24E; --gris:#F1F3F2; --texto:#14231A; --suave:#5E6B63; }
+body{ width:1080px; position:relative; padding-bottom:96px; background:#FFFFFF; font-family:Barlow, sans-serif; color:var(--texto); overflow:hidden; }
+
+.cab{ height:120px; background:#111316; display:flex; align-items:center; justify-content:space-between; padding:0 56px; }
+.marca{ display:flex; align-items:center; gap:18px; color:#fff; }
+.marca img{ width:72px; height:72px; border-radius:18px; }
+.marca b{ font-family:Anton; font-weight:400; font-size:46px; letter-spacing:.02em; }
+.marca small{ display:block; font-weight:600; font-size:20px; color:#9AA3AB; letter-spacing:.08em; text-transform:uppercase; margin-top:-2px; }
+.grupo{ display:flex; align-items:center; gap:16px; color:#fff; font-weight:800; font-size:26px; }
+.grupo img{ width:84px; height:84px; }
+
+.heroe{ background:var(--verde); color:#fff; padding:36px 56px 38px; position:relative; overflow:hidden; }
+.heroe::after{ content:''; position:absolute; right:-120px; top:-120px; width:460px; height:460px; border-radius:50%; border:60px solid rgba(198,242,78,.08); }
+.eti{ display:inline-block; background:var(--lima); color:var(--verde); font-weight:800; font-size:24px; letter-spacing:.14em; text-transform:uppercase; padding:10px 20px; border-radius:999px; }
+.fechas{ font-weight:600; font-size:26px; color:#B9CBBF; margin-top:18px; }
+.nombre{ font-family:Anton; font-weight:400; font-size:88px; line-height:1.0; text-transform:uppercase; margin-top:14px; letter-spacing:.01em; }
+.nombre span{ color:var(--lima); }
+.datos{ display:flex; gap:16px; margin-top:30px; position:relative; z-index:1; }
+.dato{ background:rgba(255,255,255,.08); border:1.5px solid rgba(255,255,255,.14); border-radius:20px; padding:16px 22px; min-width:170px; }
+.dato b{ display:block; font-family:Anton; font-weight:400; font-size:54px; line-height:1; color:#fff; }
+.dato.top b{ color:var(--lima); }
+.dato small{ display:block; font-weight:600; font-size:21px; color:#B9CBBF; margin-top:6px; }
+
+.premio{ margin:26px 56px 0; background:var(--gris); border-radius:26px; padding:24px 30px; display:flex; align-items:center; gap:26px; border-left:12px solid var(--lima); }
+.premio .bolas{ font-family:Anton; font-weight:400; font-size:92px; line-height:1; color:var(--verde); }
+.premio .txt{ flex:1; }
+.premio .txt b{ display:block; font-weight:800; font-size:32px; line-height:1.15; }
+.premio .txt small{ display:block; font-weight:600; font-size:23px; color:var(--suave); margin-top:4px; }
+.premio img{ width:250px; background:#fff; border-radius:16px; padding:8px 12px; }
+
+.clas{ margin:24px 56px 0; padding-bottom:28px; width:690px; }
+.clas h2{ display:flex; justify-content:space-between; align-items:baseline; font-weight:800; font-size:30px; color:var(--verde); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px; }
+.clas h2 span{ font-weight:600; font-size:21px; color:var(--suave); text-transform:none; letter-spacing:0; }
+.fila{ display:grid; grid-template-columns:52px 1fr 86px 86px 76px; align-items:center; padding:0 18px; height:56px; border-radius:14px; font-size:25px; font-weight:600; }
+.fila:nth-child(even){ background:var(--gris); }
+.fila.cabf{ height:36px; font-size:18px; font-weight:800; color:var(--suave); text-transform:uppercase; letter-spacing:.08em; background:none; }
+.fila.uno{ background:var(--verde); color:#fff; font-weight:800; }
+.fila .pos{ font-family:Anton; font-weight:400; font-size:32px; color:var(--verde2); }
+.fila.uno .pos{ color:var(--lima); }
+.fila .num{ text-align:right; }
+.fila .net{ text-align:right; font-weight:800; }
+.fila .pts{ text-align:right; color:var(--suave); }
+.fila.uno .pts{ color:var(--lima); }
+.fila.cabf .num, .fila.cabf .net, .fila.cabf .pts{ text-align:right; }
+
+.qr{ position:absolute; right:56px; bottom:126px; width:260px; background:#fff; border:3px solid var(--lima); border-radius:24px; padding:18px 18px 14px; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,.08); }
+.qr canvas{ width:220px; height:220px; display:block; margin:0 auto; }
+.qr b{ display:block; font-weight:800; font-size:24px; color:var(--verde); margin-bottom:10px; line-height:1.1; }
+.qr small{ display:block; font-weight:600; font-size:19px; color:var(--suave); margin-top:8px; }
+.pie{ position:absolute; left:0; right:0; bottom:0; height:96px; background:#111316; color:#fff; display:flex; align-items:center; justify-content:space-between; padding:0 56px; }
+.pie .web{ font-family:Anton; font-weight:400; font-size:36px; letter-spacing:.03em; }
+.pie .web span{ color:var(--lima); }
+.pie .nota{ font-weight:600; font-size:21px; color:#9AA3AB; text-align:right; line-height:1.3; }
+</style></head>
+<body>
+  <div class="cab">
+    <div class="marca"><img src="recursos/icon-512.png" alt=""><div><b>acgolf</b><small>Golf entre amigos</small></div></div>
+    <div class="grupo"><span id="grupoNombre"></span><img id="grupoLogo" alt=""></div>
+  </div>
+  <div class="heroe">
+    <div class="eti" id="premioNombre"></div>
+    <div class="fechas" id="fechas"></div>
+    <div class="nombre" id="ganador"></div>
+    <div class="datos" id="datos"></div>
+  </div>
+  <div class="premio">
+    <div class="bolas" id="bolas"></div>
+    <div class="txt"><b id="regalo"></b><small>Cortesía de nuestro patrocinador</small></div>
+    <img src="recursos/logo-bolarecuperada.png" alt="Bolarecuperada.com">
+  </div>
+  <div class="clas">
+    <h2>Clasificación de la semana <span id="tarjetas"></span></h2>
+    <div id="filas"></div>
+  </div>
+  <div class="qr"><b>Entra y mira la clasificación</b><canvas id="qr" width="440" height="440"></canvas><small>Escanea con la cámara</small></div>
+  <div class="pie">
+    <div class="web">acgolf<span>.es</span></div>
+    <div class="nota">A igual neto, gana el hándicap más bajo<br>Entra en acgolf.es con tu cuenta</div>
+  </div>
+<script src="recursos/qrcode.js"></script>
+<script src="datos.js"></script>
+<script>
+// Rellena la plantilla con window.DATOS (lo escribe generar.py)
+const D = window.DATOS, $ = id => document.getElementById(id);
+const esc = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Tildes que faltan en los nombres guardados sin acento
+const TILDES = {Perez:'Pérez',Jimenez:'Jiménez',Ramon:'Ramón',Martinez:'Martínez',Gonzalez:'González',Hernandez:'Hernández',Garcia:'García',Dominguez:'Domínguez',Lopez:'López',Benitez:'Benítez',Moises:'Moisés',Jose:'José',Jesus:'Jesús',Sanchez:'Sánchez',Rodriguez:'Rodríguez',Fernandez:'Fernández',Gomez:'Gómez',Diaz:'Díaz',Alvarez:'Álvarez',Ruben:'Rubén',Angel:'Ángel',Andres:'Andrés',Nicolas:'Nicolás',Tomas:'Tomás',Martin:'Martín',Joaquin:'Joaquín',Agustin:'Agustín',Sebastian:'Sebastián',Ines:'Inés',Maria:'María',Lucia:'Lucía'};
+const bonito = n => String(n || '').trim().split(/\s+/).map(p => TILDES[p] || p).join(' ');
+// En la tabla, nombre corto: 4 palabras o más → 3; 3 palabras → 2
+const corto = n => { const w = bonito(n).split(' '); return w.length >= 4 ? w.slice(0, 3).join(' ') : w.length === 3 ? w.slice(0, 2).join(' ') : w.join(' '); };
+$('grupoNombre').textContent = D.grupo;
+if(D.logo) $('grupoLogo').src = 'recursos/' + D.logo; else $('grupoLogo').remove();
+$('premioNombre').textContent = D.premio;
+$('fechas').textContent = D.fechas;
+const w = bonito(D.ganador.jugador).split(' '), corte = w.length > 2 ? 2 : 1;
+$('ganador').innerHTML = esc(w.slice(0, corte).join(' ')) + '<br><span>' + esc(w.slice(corte).join(' ')) + '</span>';
+const vp = D.ganador.neto_vs_par;
+$('datos').innerHTML = [[D.ganador.neto, 'golpes netos', 1], [vp == null ? null : (vp > 0 ? '+' + vp : String(vp).replace('-', '−')), 'al par (neto)'], [D.ganador.bruto, 'golpes brutos'], [D.ganador.hcp, 'hándicap']]
+  .filter(x => x[0] != null).map(x => '<div class="dato' + (x[2] ? ' top' : '') + '"><b>' + esc(x[0]) + '</b><small>' + x[1] + '</small></div>').join('');
+$('bolas').textContent = D.bolas;
+$('regalo').textContent = 'bolas de golf de regalo';
+$('tarjetas').textContent = D.tarjetas ? D.tarjetas + ' tarjetas jugadas' : '';
+$('filas').innerHTML = '<div class="fila cabf"><span></span><span>Jugador</span><span class="num">Bruto</span><span class="net">Neto</span><span class="pts">Ptos</span></div>'
+  + D.clasificacion.map((f, i) => '<div class="fila' + (i === 0 ? ' uno' : '') + '"><span class="pos">' + esc(f.pos) + '</span><span>' + esc(corto(f.jugador)) + '</span><span class="num">' + esc(f.bruto) + '</span><span class="net">' + esc(f.neto) + '</span><span class="pts">' + esc(f.puntos) + '</span></div>').join('');
+// Si la lista es corta, que el QR no tape nada: la página mide lo que haga falta
+const q = qrcode(0, 'H'); q.addData('https://acgolf.es/' + (D.invitacion ? '?unirse=' + D.invitacion : '')); q.make();
+const n = q.getModuleCount(), c = $('qr'), x = c.getContext('2d'), m = c.width / (n + 2);
+x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.fillStyle = '#111316';
+for(let r = 0; r < n; r++) for(let k = 0; k < n; k++) if(q.isDark(r, k)) x.fillRect((k + 1) * m, (r + 1) * m, Math.ceil(m), Math.ceil(m));
+const minimo = document.querySelector('.premio').getBoundingClientRect().bottom + 24 + 440 + 30;
+document.body.style.minHeight = Math.max(1350, minimo + 96) + 'px';
+const ic = new Image(); ic.onload = () => { const s = c.width / 4.6, p = 10, o = (c.width - s) / 2; x.fillStyle = '#fff'; x.fillRect(o - p, o - p, s + 2 * p, s + 2 * p); x.drawImage(ic, o, o, s, s); document.body.dataset.listo = '1'; }; ic.src = 'recursos/icon-512.png';
+</script>
+</body></html>
