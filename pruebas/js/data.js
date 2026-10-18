@@ -36,7 +36,7 @@
       tees:{
         blancas:  { rating:73.2, slope:135 },
         amarillas:{ rating:70.5, slope:126 },
-        azules:   { rating:76.1, slope:136 },
+        azules:   { rating:76.1, slope:130 },   // tarjeta del club de enero de 2026 (la tabla de 2023 decía 136)
         rojas:    { rating:74.2, slope:129 },
       } },
     { id:'rc-pineda', name:'Real Club Pineda', location:'Sevilla',

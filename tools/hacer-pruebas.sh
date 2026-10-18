@@ -178,7 +178,7 @@ cambia('pruebas/js/data.js', """      hcp:[14,2,12,6,18,4,8,16,10, 11,9,15,17,5,
       tees:{
         blancas:  { rating:73.2, slope:135 },
         amarillas:{ rating:70.5, slope:126 },
-        azules:   { rating:76.1, slope:136 },
+        azules:   { rating:76.1, slope:130 },   // tarjeta del club de enero de 2026 (la tabla de 2023 decía 136)
         rojas:    { rating:74.2, slope:129 },
       } },""")
 
