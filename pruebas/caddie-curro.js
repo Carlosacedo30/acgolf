@@ -125,7 +125,10 @@
   const CLAVE_BOLSA = 'acgolfCurroBolsa';
   let bolsas = {};
   try { bolsas = JSON.parse(localStorage.getItem(CLAVE_BOLSA) || '{}') || {}; } catch(e){ bolsas = {}; }
-  function siguienteFrase(grupo){
+  // Nunca la misma frase en 4 hoyos seguidos: se apunta qué dijo en cada hoyo
+  let dichas = [];   // [{ h, k: 'grupo-i' }]
+  const usadaCerca = (k, h) => dichas.some(d => d.k === k && Math.abs(d.h - h) <= 3);
+  function siguienteFrase(grupo, h){
     const total = Math.min(FRASES[grupo].length, (typeof GRABADAS !== 'undefined' && GRABADAS[grupo]) || FRASES[grupo].length);
     let b = bolsas[grupo];
     if(!b || !Array.isArray(b.quedan) || b.total !== total || !b.quedan.length){
@@ -135,14 +138,24 @@
       if(q.length > 1 && q[0] === ult) q.push(q.shift());
       b = { total, quedan: q, ultima: ult };
     }
-    const i = b.quedan.shift(); b.ultima = i; bolsas[grupo] = b;
+    // La primera de la bolsa que no se haya dicho en los últimos 4 hoyos; si no hay ninguna, nada
+    let pos = b.quedan.findIndex(k => !usadaCerca(grupo + '-' + k, h));
+    if(pos < 0 && b.quedan.length < total){
+      // Lo que queda en la bolsa está «quemado»: se baraja una bolsa nueva con todas y se busca otra vez
+      const q = Array.from({ length: total }, (_, k) => k).sort(() => Math.random() - 0.5);
+      b.quedan = q; pos = q.findIndex(k => !usadaCerca(grupo + '-' + k, h));
+    }
+    if(pos < 0){ bolsas[grupo] = b; return -1; }
+    const i = b.quedan.splice(pos, 1)[0]; b.ultima = i; bolsas[grupo] = b;
     try { localStorage.setItem(CLAVE_BOLSA, JSON.stringify(bolsas)); } catch(e){}
     return i;
   }
   function frase(r){
     const grupo = r.bruto <= -2 ? 'aguila' : r.bruto === -1 ? 'birdie' : r.bruto === 0 ? 'par'
       : r.neto <= 0 ? 'parneto' : r.bruto === 1 ? 'bogey' : r.bruto === 2 ? 'doble' : 'triple';
-    const i = siguienteFrase(grupo);
+    const i = siguienteFrase(grupo, r.h);
+    if(i < 0) return null;
+    dichas.push({ h: r.h, k: grupo + '-' + i }); if(dichas.length > 30) dichas = dichas.slice(-30);
     return { animo: ANIMO[grupo], t: FRASES[grupo][i].split('{n}').join(esc(r.n)), grupo, i };
   }
 
@@ -202,8 +215,7 @@
     callar(); clearTimeout(ocultar); clearTimeout(siguiente);
     if(cola.length) siguiente = setTimeout(() => pintar(cola.shift()), 700);
   }
-  function pintar(r){
-    const f = frase(r);
+  function pintar(f){
     let el = document.getElementById('cuFlash');
     if(!el){
       el = document.createElement('div'); el.id = 'cuFlash'; el.setAttribute('role', 'status');
@@ -229,7 +241,8 @@
     hablarFrase(f);
   }
   function mostrar(lista){
-    lista = Array.isArray(lista) ? lista : [lista];
+    lista = (Array.isArray(lista) ? lista : [lista]).map(x => x && x.t ? x : frase(x)).filter(Boolean);
+    if(!lista.length) return;
     clearTimeout(siguiente); clearTimeout(ocultar); callar();
     cola = lista.slice(1);
     if(lista.length) pintar(lista[0]);
@@ -265,9 +278,15 @@
     const nombres = (typeof players !== 'undefined' && players) ? players : [];
     const r = x => ({ n: nombreCorto(nombres[x.p] || 'Jugador'), bruto: x.bruto, neto: x.neto, h, semilla: x.p });
     let lista;
-    if(res.length >= 4 && peor.bruto > mejor.bruto) lista = [r(mejor), r(peor)];
-    else if(mejor.bruto <= -1 || peor.bruto < 2 || mejor.bruto === peor.bruto) lista = [r(mejor)];   // birdie o nada llamativo: el mejor
-    else lista = [r(peor)];                                                                           // nadie brilla y alguien hace doble: el chiste
+    if(res.length >= 4 && peor.bruto > mejor.bruto) lista = [frase(r(mejor)), frase(r(peor))].filter(Boolean);
+    else {
+      // Uno solo: el que más chicha tenga; si a ese no le queda frase sin repetir, se prueba con otro; si no, nada
+      const primero = (mejor.bruto <= -1 || peor.bruto < 2 || mejor.bruto === peor.bruto) ? mejor : peor;
+      const otros = orden.filter(x => x !== primero && (x.bruto !== primero.bruto || x.neto !== primero.neto));
+      let f = frase(r(primero));
+      for(const x of otros){ if(f) break; f = frase(r(x)); }
+      lista = f ? [f] : [];
+    }
     mostrar(lista);
   }
   function alApuntar(e){
