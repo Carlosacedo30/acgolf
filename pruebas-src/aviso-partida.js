@@ -1,6 +1,6 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // Al crear una partida, la app manda un mail con un enlace que abre esa partida (y deja al jugador ya dentro).
-// El correo les llega a todos los del grupo que no lo hayan quitado en «Mi cuenta».
+// El correo les llega solo a los jugadores apuntados en esa partida (menos a quien la crea y a quien lo haya quitado en «Mi cuenta»).
 (function(){
   if(typeof createSharedRound !== 'function' || typeof rememberRoundCode !== 'function') return;
   let creando = false;
@@ -17,7 +17,7 @@
     return r;
   };
 
-  // Avisa por correo a los demás del grupo (lo manda el servidor, con Brevo)
+  // Avisa por correo a los demás jugadores de la partida (lo manda el servidor, con Brevo)
   async function avisarPorMail(code){
     const p = window.miPerfil;
     if(!p || p.grupo_tipo !== 'liga') return;
