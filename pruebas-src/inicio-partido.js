@@ -99,6 +99,31 @@
     const nb = document.getElementById('convHomeNew'); if(nb) nb.addEventListener('click', () => openConv(true));
   };
 
+  // La ventana «Partido con amigos» también lleva el logo del grupo en el que estás (antes salía siempre Los Iscariotes)
+  function logoVentana(){
+    const head = document.querySelector('#convOverlay .conv-head');
+    if(!head) return;
+    const logo = logoDelGrupo();
+    const clave = logo ? (logo.src || logo.svg) : 'ninguno';
+    if(head.dataset.logo === clave) return;
+    head.dataset.logo = clave;
+    const viejo = head.querySelector('img, .conv-escudo');
+    if(viejo) viejo.remove();
+    if(!logo) return;  // partidas personales: sin logo
+    let el;
+    if(logo.src){
+      el = document.createElement('img');
+      el.src = logo.src; el.alt = logo.nombre; el.width = 92; el.height = 92;
+    } else {
+      el = document.createElement('div');
+      el.className = 'conv-escudo'; el.setAttribute('role', 'img'); el.setAttribute('aria-label', 'Escudo de ' + logo.nombre);
+      el.innerHTML = logo.svg.replace(/width="\d+" height="\d+"/, 'width="92" height="92"');
+    }
+    head.insertBefore(el, head.firstChild);
+  }
+  logoVentana();
+  setInterval(logoVentana, 700);
+
   ordenar();
   try { renderConvHome(); } catch(e){}
   // La cuenta llega un poco después de pintar el Inicio: en cuanto llega, se vuelve a pintar con el botón
