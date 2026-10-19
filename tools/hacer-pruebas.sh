@@ -92,6 +92,37 @@ s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
+# Organizar partido: WhatsApp justo debajo de las partidas (antes había que bajar hasta el final),
+# botón para añadir otra partida a un partido ya creado y el nombre del grupo de cada uno en el mensaje
+python3 - <<'PY'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:60])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+f = 'pruebas/js/convocatoria.js'
+cambia(f, """    }).join('') + '</div>';
+
+    if(conv.roundCode){""", """    }).join('') + '</div>';
+    {
+      const organizo1 = !!(conv.organiza && conv.organiza === window.miPerfilId);
+      if((isAdmin || organizo1) && !conv.roundCode && !convAlTiro(conv) && conv.times.length < 12)
+        h += '<button type="button" class="conv-btn conv-mas-partida" id="convAddTee">＋ Añadir otra partida (' + convTime(convHoraMas(conv.times[conv.times.length - 1], 10)) + ')</button>';
+      h += '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';
+    }
+
+    if(conv.roundCode){""")
+cambia(f, """    h += '<div class="conv-actions">'
+      + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';""", """    h += '<div class="conv-actions">';""")
+cambia(f, """    const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));""", """    const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
+    const at = document.getElementById('convAddTee'); if(at) at.addEventListener('click', async ()=>{
+      if(at.dataset.busy) return; at.dataset.busy = '1'; at.textContent = 'Guardando…';
+      await convMutate(c => { const t = convHoraMas(c.times[c.times.length - 1], 10); c.times.push(t); c.groups.push([]); if(c.hoyos) c.hoyos.push(null); return null; });
+    });""")
+cambia(f, """  function convSlotOf(c, name){""", """  function convHoraMas(t, n){ const [h, m] = String(t || '08:40').split(':').map(Number); const x = h * 60 + m + n; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); }
+  function convSlotOf(c, name){""")
+cambia(f, """    const text = '🏌️ *Los Iscariotes* · '""", """    const text = '🏌️ *' + ((window.miPerfil && window.miPerfil.grupo) || 'Los Iscariotes') + '* · '""")
+PY
+
 # Campo nuevo solo en acgolf.es: Real Club de Golf La Peñaza (Zaragoza). Tarjeta de 1golf.eu; rating y slope
 # sacados de la tabla oficial de hándicap de juego del club (blancas y amarillas de caballeros, azules y rojas de damas).
 python3 - <<'PY'
@@ -355,7 +386,7 @@ import re
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>\n<script>window.acgolfBarras = true; /* elegir barra de salida de cada jugador */</script>', 1)
-s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=15">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=2">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=1">\n<link rel="stylesheet" href="manual.css?v=2">\n<link rel="stylesheet" href="scramble.css?v=1">\n<link rel="stylesheet" href="salon.css?v=2">\n<link rel="stylesheet" href="ver-completa.css?v=1">\n<link rel="stylesheet" href="planes.css?v=2">\n<link rel="stylesheet" href="ayuda.css?v=2">\n<link rel="stylesheet" href="patro-destacado.css?v=1">\n<link rel="stylesheet" href="intro-video.css?v=1">\n<link rel="stylesheet" href="buscador-campos.css?v=3">\n<link rel="stylesheet" href="promo-bolas.css?v=1">\n<link rel="stylesheet" href="ir-hato.css?v=1">\n<link rel="stylesheet" href="anotar-limpio.css?v=1">\n<link rel="stylesheet" href="como-jugue.css?v=1">\n<link rel="stylesheet" href="caddie-curro.css?v=1">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=15">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=2">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=2">\n<link rel="stylesheet" href="manual.css?v=2">\n<link rel="stylesheet" href="scramble.css?v=1">\n<link rel="stylesheet" href="salon.css?v=2">\n<link rel="stylesheet" href="ver-completa.css?v=1">\n<link rel="stylesheet" href="planes.css?v=2">\n<link rel="stylesheet" href="ayuda.css?v=2">\n<link rel="stylesheet" href="patro-destacado.css?v=1">\n<link rel="stylesheet" href="intro-video.css?v=1">\n<link rel="stylesheet" href="buscador-campos.css?v=3">\n<link rel="stylesheet" href="promo-bolas.css?v=1">\n<link rel="stylesheet" href="ir-hato.css?v=1">\n<link rel="stylesheet" href="anotar-limpio.css?v=1">\n<link rel="stylesheet" href="como-jugue.css?v=1">\n<link rel="stylesheet" href="caddie-curro.css?v=1">\n</head>', 1)
 s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="portada.js?v=6"></script>\n<script src="cuenta.js?v=24"></script>', s, count=1)
 # La pantalla blanca y el resumen tienen que ir DESPUÉS del marcador: se quitan de su sitio y se ponen tras él
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga

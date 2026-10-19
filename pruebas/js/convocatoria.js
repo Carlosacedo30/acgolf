@@ -114,6 +114,7 @@
     return false;
   }
 
+  function convHoraMas(t, n){ const [h, m] = String(t || '08:40').split(':').map(Number); const x = h * 60 + m + n; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); }
   function convSlotOf(c, name){ return c.groups.findIndex(g => g.includes(name)); }
   // Nombre de cada partida: la hora, o «Hoyo 7» si se sale al tiro
   const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean) && (new Set(c.times).size === 1 || new Set(c.hoyos).size > 1));
@@ -194,6 +195,12 @@
         : '<div class="conv-seat">Libre</div>').join('');
       return '<div class="conv-tee"><div class="conv-tee-h"><span class="conv-tee-time">' + convEtq(conv, i) + '</span><span class="conv-tee-n">' + g.length + '/' + CONV_SLOTS + '</span></div>' + seats + '</div>';
     }).join('') + '</div>';
+    {
+      const organizo1 = !!(conv.organiza && conv.organiza === window.miPerfilId);
+      if((isAdmin || organizo1) && !conv.roundCode && !convAlTiro(conv) && conv.times.length < 12)
+        h += '<button type="button" class="conv-btn conv-mas-partida" id="convAddTee">＋ Añadir otra partida (' + convTime(convHoraMas(conv.times[conv.times.length - 1], 10)) + ')</button>';
+      h += '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';
+    }
 
     if(conv.roundCode){
       h += '<div class="conv-created">' + icono('hecho') + ' Partida creada'
@@ -232,8 +239,7 @@
     h += '</div>';
 
     // Acciones
-    h += '<div class="conv-actions">'
-      + '<a class="conv-btn wa" id="convShareWa" target="_blank" rel="noopener" href="' + convEsc(convWaHref()) + '">Enviar al grupo de WhatsApp</a>';
+    h += '<div class="conv-actions">';
     const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
     if((isAdmin || organizo) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
     if(isAdmin || window.miPerfilId) h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
@@ -273,6 +279,10 @@
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
     const nb = document.getElementById('convNewBtn'); if(nb) nb.addEventListener('click', renderConvNewForm);
     const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
+    const at = document.getElementById('convAddTee'); if(at) at.addEventListener('click', async ()=>{
+      if(at.dataset.busy) return; at.dataset.busy = '1'; at.textContent = 'Guardando…';
+      await convMutate(c => { const t = convHoraMas(c.times[c.times.length - 1], 10); c.times.push(t); c.groups.push([]); if(c.hoyos) c.hoyos.push(null); return null; });
+    });
   }
 
   // ---------- Compartir ----------
@@ -285,7 +295,7 @@
   // Enlace normal (no window.open): en el móvil con la app instalada, window.open se bloquea a menudo
   function convWaHref(){
     const link = APP_URL + '?conv=' + conv.code;
-    const text = '🏌️ *Los Iscariotes* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + (convAlTiro(conv) ? ' · salida al tiro a las ' + convTime(conv.times[0]) : '') + '\n\n'
+    const text = '🏌️ *' + ((window.miPerfil && window.miPerfil.grupo) || 'Los Iscariotes') + '* · ' + convLongDate(conv.date) + ' en ' + convCourse(conv.courseId).name + (convAlTiro(conv) ? ' · salida al tiro a las ' + convTime(conv.times[0]) : '') + '\n\n'
       + convSummaryText() + '\n\n👉 Apúntate tocando tu nombre: ' + link;
     return 'https://wa.me/?text=' + encodeURIComponent(text);
   }

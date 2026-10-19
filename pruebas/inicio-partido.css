@@ -30,3 +30,6 @@
 .ip-logo-grupo.ip-escudo svg{ max-width:44px; max-height:44px; }
 .conv-escudo{ display:flex; justify-content:center; margin:0 auto 6px; }
 .conv-escudo svg{ width:92px; height:92px; }
+/* Organizar partido: «Añadir otra partida» y WhatsApp justo debajo de las partidas */
+#convBody .conv-mas-partida{ display:block; width:100%; margin:10px 0 0; background:transparent !important; border:2px dashed currentColor !important; font-weight:800; }
+#convBody .conv-tees + .conv-mas-partida + .conv-btn.wa, #convBody .conv-tees + .conv-btn.wa{ display:block; margin-top:10px; margin-bottom:6px; text-align:center; }
