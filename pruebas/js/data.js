@@ -376,10 +376,10 @@
     ],
   };
 
-  // Consejos rápidos para un hoyo malo (neto doble bogey o peor), sacados de Consejos de Golf
+  // Consejos rápidos para un hoyo malo (neto doble bogey o peor): textos propios de acgolf
   const BAD_HOLE_TIPS = [
-    'Cuando llegue el error: vuelva inmediatamente al fairway (idealmente a 100 yardas). No cometa dos errores seguidos.',
-    'Maneje la frustración — el 90% de las veces no sale como quiere. Suelte el resultado y siga, con garra, sin forzar.',
-    'Emociones: mantenga la mente estable. No se caiga de la mesa por un mal hoyo.',
-    'No reaccione a cada error. Incluso las malas rondas hacen parte del camino. Disfrute el proceso.',
+    'Un mal hoyo no estropea la vuelta. En el siguiente, el primer objetivo es dejar la bola en la calle.',
+    'Respira hondo antes del próximo golpe y elige el palo que te dé más confianza, no el que más lejos llegue.',
+    'Olvida la tarjeta un rato: piensa solo en el golpe que tienes delante.',
+    'Hasta los profesionales hacen hoyos así. Lo que cuenta es cómo respondes en el siguiente.',
   ];

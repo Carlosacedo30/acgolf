@@ -1,28 +1,28 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Diagnóstico post-ronda: hoyos flojos + una pregunta por hoyo, por jugador ---
   const DIAG_CATEGORIES = ['Drive', 'Approach', 'Aproximación a green', 'Putt'];
-  // Consejos de "Consejos de Golf" del usuario, uno por categoría de fallo
+  // Un consejo por categoría de fallo (textos propios de acgolf, en la línea de «Consejos de golf»)
   const DIAG_TIPS = {
     'Drive': [
-      'Pegar hacia arriba, con ritmo — no se necesita fuerza, se busca un buen contacto.',
-      'Si haces slice: pelota más atrás, siente el swing de adentro hacia afuera. Si sigue, fortalece la mano izquierda en el grip.',
-      'Si haces hook: pelota más adelante, siente el swing más de afuera hacia adentro. Si sigue, debilita la mano izquierda en el grip.',
+      'Swing a tu ritmo: una salida en la calle vale más que diez metros de más.',
+      'Si la bola se va a la derecha, revisa el agarre y deja que los brazos giren al pasar por la bola.',
+      'Si la bola se va a la izquierda, afloja un poco el agarre y termina el swing mirando al objetivo.',
     ],
     'Approach': [
-      'Entre palos: toma el más largo y haz un swing ¾ con compromiso.',
-      'Lie de subida: un palo más, peso en pie derecho, apunta a la derecha, pega hacia arriba.',
-      'Lie de bajada: un palo menos, peso en pie izquierdo, apunta a la izquierda, pega hacia abajo.',
+      'Si dudas entre dos palos, coge el más largo y pega más suave.',
+      'Con la bola más alta que los pies, agarra el palo más corto y apunta algo a la derecha.',
+      'Con la bola más baja que los pies, dobla más las rodillas y apunta algo a la izquierda.',
     ],
     'Aproximación a green': [
-      'Desde 100 yardas o menos: medio tiro, suave, con confianza — evita el hinge, ve muy abajo.',
-      'Alrededor del green: usa PW o hierro 9, es más fácil y consistente.',
-      'Recovery shot: pelota atrás, manos adelante, pega vertical.',
-      'Corregir shank: siente la cadera izquierda yendo hacia atrás en el impacto, creando espacio.',
+      'Para el chip, bola atrás, peso en el pie izquierdo y muñecas firmes, como un putt largo.',
+      'Apunta al centro del green: a la bandera, solo cuando esté fácil.',
+      'Desde el bunker, pega en la arena antes de la bola y termina el swing.',
+      'Si le das con el cuello del palo, sepárate un poco más de la bola.',
     ],
     'Putt': [
-      'Putt largo: enfócate en la velocidad, no solo en la línea.',
-      'Putt de compromiso: golpea con confianza y deja la cabeza quieta.',
-      'Lee las caídas: verde oscuro = pelo en contra, verde claro = pelo a favor.',
+      'En los putts largos, piensa en la distancia más que en la línea.',
+      'En los cortos, apunta y no levantes la cabeza hasta oír la bola en el hoyo.',
+      'Mira la caída desde detrás de la bola y desde el otro lado del hoyo.',
     ],
   };
   let diagAnswers = {}; // diagAnswers["grupo-jugador"][hole] = categoría elegida
