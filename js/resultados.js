@@ -156,7 +156,7 @@
         winnerBox.innerHTML = '<div class="pct">🏆</div><p><strong>' + winners.join(' y ') + '</strong> — ' + WINNER_MESSAGE + ' <span style="color:var(--ink-3, #B9C4D7); font-weight:400;">' + (empatadosNeto > winners.length ? '(empate a ' + minNet + ' netos: gana el hándicap más bajo)' : '(' + (winners.length > 1 ? 'ganan' : 'gana') + ' en neto, ' + minNet + ')') + '</span>.</p>';
         const mentalNote = document.getElementById('roundMentalNote');
         if(mentalNote){
-          mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad.cuandoSiSalga : CONSEJOS_GOLF.mentalidad.cuandoNadaSalga;
+          mentalNote.textContent = minNet < currentCoursePar ? CONSEJOS_GOLF.mentalidad[0].d : CONSEJOS_GOLF.mentalidad[1].d;
         }
         // Ronda completa en Hato Verde: recalcular el hándicap real de la liga con este resultado ya guardado
         // (solo una vez por ronda, no en cada pulsación mientras siga completa) y enseñarlo en pantalla

@@ -198,58 +198,65 @@
   };
 
   // "Consejos de Golf" del usuario: manual de referencia propio, transcrito de su chuleta personal
+  // Consejos de golf de acgolf: textos propios, con consejos generales de golf para aficionados.
   const CONSEJOS_GOLF = {
     antesDeJugar: {
-      titulo: 'Antes de jugar',
-      calentamiento: ['Putting green', 'Approach', 'Bunker', 'Driving range'],
+      calentamiento: [
+        'Cinco minutos de estiramientos suaves: hombros, espalda y caderas.',
+        'Unos putts cortos, de un metro, para coger confianza.',
+        'Algunas aproximaciones con el wedge.',
+        'Hierros medios con medio swing, sin prisa.',
+        'Termina con cuatro o cinco drivers; el último, como si fuera la salida del 1.',
+      ],
       drivingRange: [
-        'Empezar con tiros cortos ¾ de swing.',
-        'Despacio para atrás, iniciar el downswing suave.',
-        'Enfoque en ritmo, buen contacto y un buen finish.',
+        'Elige siempre un objetivo concreto: no tires bolas a ningún sitio.',
+        'Cambia de palo cada pocas bolas, como harías en el campo.',
+        'Pocas bolas bien pensadas valen más que un cubo entero a lo loco.',
       ],
       estrategia: [
-        'Caminar siempre adelante en el grupo, cabeza arriba.',
-        'Mantener un diálogo interno positivo.',
-        'Pateperro a la derecha: pararse a la derecha del tee, apuntar a la izquierda y hacer un swing de afuera hacia adentro (fade).',
-        'Pateperro a la izquierda: pararse a la izquierda del tee, apuntar a la derecha y hacer un swing de adentro hacia afuera (draw).',
-        'Pares 3: tee un poco más alto, pegar hacia arriba, buscando solo buen contacto.',
-        'Cuando llegue el error: vuelva inmediatamente al fairway (idealmente a 100 yardas usando el recovery shot). No cometer dos errores seguidos.',
-        'Emociones: cuando haga triple, doble, birdie o águila, mantenga su mente estable. No se caiga de la mesa.',
+        'Antes de pegar desde el tee, decide dónde quieres dejar la bola, no solo hasta dónde.',
+        'Juega hacia el lado ancho de la calle y aléjate del agua y del fuera de límites.',
+        'Si dudas entre dos palos, coge el más largo y pega más suave.',
+        'Al green, apunta al centro. A la bandera, solo cuando esté fácil.',
+        'Después de un mal golpe, el siguiente es para volver a la calle, sin heroicidades.',
+        'En los par 3, pon siempre la bola en el tee: es el golpe más cómodo del hoyo.',
+        'Bebe agua y come algo a mitad de la vuelta: el cansancio también cuesta golpes.',
       ],
-      cierre: 'Los errores son parte del juego. Acéptelos, suéltelos y siga adelante. No pierda energía mirando atrás. Haga su trabajo tiro a tiro… sin pensar en el resultado.',
+      cierre: 'Cada golpe empieza de cero: el anterior ya no cuenta y el siguiente todavía no ha llegado.',
     },
     ejecucion: {
-      titulo: 'Ejecución de golpes',
-      preShotRoutine: ['Visualízalo', 'Siéntelo', 'Confía'],
-      golpes: [
-        { t: 'Driver', d: 'Pegar hacia arriba, con ritmo. No se necesita fuerza, se busca un buen contacto.' },
-        { t: 'Entre palos', d: 'Tome el palo más largo y haga un swing ¾ con compromiso.' },
-        { t: 'Lie de subida', d: 'Un palo más, peso en pie derecho, apuntar a la derecha, pegar hacia arriba.' },
-        { t: 'Lie de bajada', d: 'Un palo menos, peso en pie izquierdo, apuntar a la izquierda, bola más atrás en el stance, pegar hacia abajo.' },
-        { t: 'Desde 100 yardas o menos', d: 'Evitar hinge e ir muy abajo. Pegar medio tiro, suave, con confianza.' },
-        { t: 'Para salir del rough', d: 'Abra la cara y pegue hacia abajo.' },
-        { t: 'Recovery shot', d: 'Pelota atrás, manos adelante, pegar vertical.' },
-        { t: 'Alrededor del green', d: 'Usar PW o hierro 9. Más fácil y consistente.' },
-        { t: 'Bunker', d: 'Entrar con confianza, abrir el stance, grip a la ebilla, peso al pie izquierdo y acelerar siempre.' },
-        { t: 'Leer caídas', d: 'Encontrar el punto más bajo. Verde oscuro = pelo en contra, verde claro = pelo a favor.' },
-        { t: 'Putt largo', d: 'Enfocarse en la velocidad.' },
-        { t: 'Putt de compromiso', d: 'Golpear con confianza y dejar la cabeza quieta.' },
+      rutina: ['Mira el objetivo desde detrás de la bola', 'Haz un swing de prueba con el mismo ritmo', 'Colócate, respira y pega sin darle más vueltas'],
+      salida: [
+        { t: 'Driver', d: 'Bola a la altura del talón izquierdo y swing a tu ritmo. Mejor en la calle a 180 metros que en los árboles a 220.' },
+        { t: 'Madera o híbrido desde la calle', d: 'Barre la bola sin intentar levantarla: el palo ya tiene el ángulo que hace falta.' },
+        { t: 'Bola más alta que los pies', d: 'Agarra el palo un poco más corto y apunta algo a la derecha, porque la bola tenderá a irse a la izquierda.' },
+        { t: 'Bola más baja que los pies', d: 'Dobla más las rodillas, quédate abajo durante el golpe y apunta algo a la izquierda.' },
+      ],
+      cerca: [
+        { t: 'Chip', d: 'Bola atrás, peso en el pie izquierdo y muñecas firmes, como si fuera un putt largo.' },
+        { t: 'Rough alto', d: 'Coge un palo con más ángulo y sujétalo con más firmeza. Lo importante es salir.' },
+        { t: 'Bunker de green', d: 'Pega en la arena unos centímetros antes de la bola y termina el swing: es la arena la que saca la bola.' },
+        { t: 'Detrás de un árbol', d: 'Saca la bola de lado hacia la calle, con un golpe bajo. Un golpe perdido es mejor que tres.' },
+      ],
+      green: [
+        { t: 'Leer la caída', d: 'Mírala desde detrás de la bola y desde el otro lado del hoyo. Piensa hacia dónde correría el agua.' },
+        { t: 'Putt largo', d: 'Piensa en la distancia más que en la línea: dejarla cerca evita los tres putts.' },
+        { t: 'Putt corto', d: 'Elige la línea, apunta y no levantes la cabeza hasta oír la bola en el hoyo.' },
       ],
     },
     correcciones: {
-      titulo: 'Correcciones de swing',
       lista: [
-        { t: 'Corregir slice', d: 'Pelota más atrás y sentir el swing de adentro hacia afuera. Si sigue, fortalezca la mano izquierda en el grip.' },
-        { t: 'Corregir hook', d: 'Pelota más adelante, sentir el swing más de afuera hacia adentro. Si sigue, debilite la mano izquierda en el grip. Abrir la cara del palo al salir.' },
-        { t: 'Corregir shank', d: 'Sentir la cadera izquierda yendo hacia atrás en el impacto, creando espacio.' },
+        { t: 'Se me va a la derecha', d: 'Revisa el agarre: deberías ver dos nudillos de la mano izquierda. Y deja que los brazos giren al pasar por la bola.' },
+        { t: 'Se me va a la izquierda', d: 'Puede que la cara del palo llegue cerrada. Afloja un poco el agarre y termina el swing mirando al objetivo.' },
+        { t: 'Le doy con el cuello del palo', d: 'Sepárate un poco más de la bola y mantén el peso hacia los talones durante el swing.' },
+        { t: 'La bola sale rasa', d: 'No intentes levantarla: mantén la altura del cuerpo y deja que el palo baje hasta el suelo.' },
       ],
     },
-    mentalidad: {
-      titulo: 'Mentalidad',
-      cerrarBuenaRonda: 'Para cerrar una buena ronda: no se vaya al futuro, maneje la ansiedad, camine un poco más despacio y piense que va en el hoyo 2, empezando la ronda.',
-      cuandoNadaSalga: 'Cuando nada salga: maneje la frustración. En golf, el 90% de las veces no sale como quiere. Suelte el resultado y siga. Juegue con garra, sin forzar. No reaccione a cada error. Incluso las malas rondas hacen parte del camino. Disfrute el proceso.',
-      cuandoSiSalga: 'Cuando sí salga: disfrútelo con humildad. Agradezca el día, pero maneje las expectativas para la próxima ronda. No se confíe ni se relaje. Siga trabajando, siga presente y vuelva a empezar.',
-    },
+    mentalidad: [
+      { t: 'Si la vuelta va bien', d: 'No hagas cuentas. Sigue con tu rutina y juega solo el hoyo que tienes delante.' },
+      { t: 'Si la vuelta va mal', d: 'Ponte un objetivo pequeño, como hacer bogey en el siguiente hoyo, y disfruta del paseo con los amigos.' },
+      { t: 'Al terminar', d: 'Quédate con tres golpes buenos y elige una sola cosa para practicar.' },
+    ],
   };
 
   // Consejos rápidos para un hoyo malo (neto doble bogey o peor), sacados de Consejos de Golf
