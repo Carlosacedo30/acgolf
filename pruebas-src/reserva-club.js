@@ -39,6 +39,7 @@
   function ponerBoton(){
     const ov = document.getElementById('convOverlay');
     if(!ov || ov.hidden || typeof conv === 'undefined' || !conv) return;
+    if(document.getElementById('convNewDate')){ const r = document.getElementById('convReserva'); if(r) r.remove(); return; }   // en el formulario de partido nuevo no sale
     const p = window.miPerfil;
     // En «Mis partidas» (espacio personal) todos son administradores de lo suyo: ahí no sale.
     if(!p || !p.es_admin || p.grupo_tipo !== 'liga') return;
