@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>App de golf gratis para jugar con amigos: tarjeta, hándicap y liga | acgolf</title>
+<meta name="description" content="acgolf es una app de golf gratis para el móvil: apunta la tarjeta hoyo a hoyo, calcula el hándicap y los puntos Stableford, organiza partidos y lleva la liga de tu grupo de amigos. Sin instalar nada.">
+<link rel="canonical" href="https://acgolf.es/app-golf.html">
+<meta name="theme-color" content="#111316">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png?v=2">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="acgolf">
+<meta property="og:title" content="acgolf · App de golf gratis para jugar con amigos">
+<meta property="og:description" content="Tarjeta hoyo a hoyo, hándicap, Stableford, liga del grupo y Curro, el caddie andaluz que comenta cada hoyo.">
+<meta property="og:url" content="https://acgolf.es/app-golf.html">
+<meta property="og:image" content="https://acgolf.es/og-acgolf.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"acgolf","url":"https://acgolf.es/","applicationCategory":"SportsApplication","operatingSystem":"iPhone, Android, ordenador (navegador)","inLanguage":"es","description":"App de golf gratis para jugar con amigos: tarjeta hoyo a hoyo, hándicap de juego, Stableford, liga del grupo y estadísticas.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"image":"https://acgolf.es/icon-512.png"},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"¿acgolf es gratis?","acceptedAnswer":{"@type":"Answer","text":"Sí. acgolf es gratis y no hace falta descargarla de ninguna tienda: se abre en el navegador del móvil, en acgolf.es, y se puede añadir a la pantalla de inicio."}},
+{"@type":"Question","name":"¿Calcula el hándicap de juego y los puntos Stableford?","acceptedAnswer":{"@type":"Answer","text":"Sí. Con tu hándicap y las barras de salida, acgolf calcula los golpes que recibes en cada hoyo, el resultado neto y los puntos Stableford de cada jugador."}},
+{"@type":"Question","name":"¿Pueden apuntar los golpes varios jugadores a la vez?","acceptedAnswer":{"@type":"Answer","text":"Sí. Cada jugador puede seguir la partida desde su móvil y la clasificación se actualiza al momento para todo el grupo."}},
+{"@type":"Question","name":"¿En qué campos de golf funciona?","acceptedAnswer":{"@type":"Answer","text":"Trae los campos de Sevilla, Huelva y Cádiz con sus barras, rating y slope, y un buscador para encontrar otros campos de España."}},
+{"@type":"Question","name":"¿Quién es Curro?","acceptedAnswer":{"@type":"Answer","text":"Curro es el caddie andaluz de acgolf: cuando todos han apuntado el hoyo, sale en pantalla y comenta con gracia el mejor y el peor resultado."}}
+]}]}
+</script>
+<style>
+  :root{ --fondo:#111316; --tarjeta:#1B1E22; --borde:#2A2E33; --texto:#F2F4F5; --suave:#B8C0C7; --lima:#C6F24E; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--fondo); color:var(--texto); font-family:'Archivo', system-ui, sans-serif; font-size:18px; line-height:1.5; }
+  main{ max-width:760px; margin:0 auto; padding:calc(env(safe-area-inset-top, 0px) + 28px) 16px calc(env(safe-area-inset-bottom, 0px) + 48px); }
+  a{ color:var(--lima); }
+  .cab{ text-align:center; }
+  .cab img{ width:92px; height:92px; border-radius:22px; }
+  h1{ margin:14px 0 8px; font-size:clamp(30px, 6vw, 44px); font-weight:900; line-height:1.08; letter-spacing:-.01em; }
+  h1 em{ font-style:normal; color:var(--lima); }
+  .cab p{ margin:0 auto; max-width:560px; color:var(--suave); font-size:19px; }
+  .btn{ display:inline-block; margin:22px 6px 0; padding:16px 26px; border-radius:999px; background:var(--lima); color:#111316; font-weight:900; font-size:19px; text-decoration:none; }
+  .btn.sec{ background:transparent; color:var(--texto); box-shadow:inset 0 0 0 2px var(--borde); }
+  h2{ font-size:28px; font-weight:900; line-height:1.15; margin:52px 0 14px; }
+  .rej{ display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+  .car{ background:var(--tarjeta); border-radius:18px; padding:18px; }
+  .car h3{ margin:0 0 6px; font-size:20px; font-weight:800; }
+  .car p{ margin:0; color:var(--suave); font-size:17px; }
+  .pant{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:8px; }
+  .pant figure{ margin:0; text-align:center; }
+  .pant img{ width:100%; height:auto; border-radius:16px; border:2px solid var(--borde); display:block; }
+  .pant figcaption{ font-size:15px; color:var(--suave); margin-top:6px; }
+  .curro{ display:grid; grid-template-columns:140px 1fr; gap:18px; align-items:center; background:var(--tarjeta); border-radius:20px; padding:18px; }
+  .curro img{ width:140px; height:auto; }
+  .curro p{ margin:0 0 8px; color:var(--suave); }
+  .curro blockquote{ margin:0; padding:10px 14px; border-left:4px solid var(--lima); background:#14171A; border-radius:8px; font-weight:700; }
+  ol.pasos{ margin:0; padding-left:22px; color:var(--suave); }
+  ol.pasos li{ margin:0 0 8px; } ol.pasos b{ color:var(--texto); }
+  .campos{ columns:2 220px; color:var(--suave); font-size:16px; margin:0; padding-left:20px; }
+  details{ background:var(--tarjeta); border-radius:16px; padding:14px 18px; margin-bottom:10px; }
+  summary{ font-weight:800; cursor:pointer; }
+  details p{ margin:10px 0 0; color:var(--suave); }
+  footer{ margin-top:56px; text-align:center; color:var(--suave); font-size:15px; }
+  footer a{ color:var(--suave); }
+  @media (max-width:520px){ .curro{ grid-template-columns:96px 1fr; } .curro img{ width:96px; } .pant{ gap:6px; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="cab">
+    <img src="icon-512.png" alt="Logo de acgolf" width="92" height="92">
+    <h1>La app de golf <em>gratis</em> para jugar con tus amigos</h1>
+    <p>Apunta la tarjeta hoyo a hoyo desde el móvil. acgolf calcula el hándicap, los puntos Stableford y la clasificación del grupo, y lleva vuestra liga de todo el año.</p>
+    <a class="btn" href="https://acgolf.es/">Entrar en acgolf</a>
+    <a class="btn sec" href="instalar.html">Cómo instalarla</a>
+  </header>
+
+  <h2>Todo lo que necesita un grupo de golf</h2>
+  <div class="rej">
+    <div class="car"><h3>Tarjeta en el móvil</h3><p>Golpes hoyo a hoyo, con el par, el índice de dificultad y los golpes de hándicap que recibes en cada hoyo.</p></div>
+    <div class="car"><h3>Hándicap y Stableford</h3><p>Calcula el hándicap de juego según las barras, el resultado neto y los puntos Stableford de cada jugador.</p></div>
+    <div class="car"><h3>Clasificación en directo</h3><p>Cada uno sigue la partida desde su móvil y la clasificación se actualiza al momento.</p></div>
+    <div class="car"><h3>Liga del grupo</h3><p>Ranking de la temporada, ganador de la semana y el historial de todas vuestras partidas.</p></div>
+    <div class="car"><h3>Organizar partidos</h3><p>Elige día, campo y horas de salida, apúntate y avisa a todos por WhatsApp con un botón.</p></div>
+    <div class="car"><h3>¿Cómo jugué?</h3><p>Gráficas sencillas de tu partida y de tu evolución, y comparación con cualquier compañero.</p></div>
+  </div>
+
+  <h2>Así se ve en el móvil</h2>
+  <div class="pant">
+    <figure><img src="pantalla-curro.webp" alt="Pantalla de inicio de acgolf con el grupo y el botón Crear partida" width="585" height="1170" loading="lazy"><figcaption>Inicio del grupo</figcaption></figure>
+    <figure><img src="pantalla-partida.webp" alt="Resumen de una partida de golf con los golpes perdidos por hoyo" width="585" height="1170" loading="lazy"><figcaption>Tu partida</figcaption></figure>
+    <figure><img src="pantalla-evolucion.webp" alt="Gráficas de la evolución de un jugador de golf mes a mes" width="585" height="1170" loading="lazy"><figcaption>Tu evolución</figcaption></figure>
+  </div>
+
+  <h2>Curro, tu caddie andaluz</h2>
+  <div class="curro">
+    <img src="curro.webp" alt="Curro, el caddie andaluz de acgolf, con su gorra verde" width="140" height="135" loading="lazy">
+    <div>
+      <p>Cuando todos han apuntado el hoyo, Curro sale en pantalla y comenta con mucha guasa el mejor y el peor resultado. Habla con voz, y se puede silenciar.</p>
+      <blockquote>«Doble bogey. Esto en Sevilla lo llamamos calentar motores.»</blockquote>
+    </div>
+  </div>
+
+  <h2>Cómo empezar en un minuto</h2>
+  <ol class="pasos">
+    <li><b>Abre acgolf.es</b> en el navegador del móvil. No hay que descargar nada de ninguna tienda.</li>
+    <li><b>Crea tu cuenta</b> con tu correo y elige o crea tu grupo de amigos.</li>
+    <li><b>Pulsa «Crear partida»</b>, elige el campo y los jugadores, y apunta los golpes en cada hoyo.</li>
+    <li>Si quieres, <b>añádela a la pantalla de inicio</b> y se abrirá como cualquier otra aplicación (<a href="instalar.html">ver cómo</a>).</li>
+  </ol>
+
+  <h2>Campos de golf incluidos</h2>
+  <p style="color:var(--suave);margin-top:0">Con sus barras de salida, course rating y slope. Para otros campos de España hay un buscador dentro de la app.</p>
+  <ul class="campos">
+    <li>Club Hato Verde (Sevilla)</li><li>Club Zaudín Golf (Sevilla)</li><li>Real Club de Golf Sevilla</li><li>Real Club Pineda (Sevilla)</li><li>Las Minas Golf (Sevilla)</li><li>La Cartuja (Sevilla)</li>
+    <li>La Monacilla Golf Club (Huelva)</li><li>Corta Atalaya Golf (Huelva)</li><li>Bellavista Huelva Golf Club</li><li>Golf Nuevo Portil (Huelva)</li><li>Golf El Rompido, Norte y Sur (Huelva)</li><li>Islantilla Golf Resort (Huelva)</li><li>Isla Canela, Links y Old Course (Huelva)</li>
+    <li>Real Club Valderrama (Cádiz)</li><li>Real Club de Golf Sotogrande (Cádiz)</li><li>La Reserva Club Sotogrande (Cádiz)</li><li>San Roque Club (Cádiz)</li><li>La Hacienda Alcaidesa, Links y Heathland (Cádiz)</li><li>Montecastillo Golf (Jerez)</li><li>Sherry Golf Jerez</li><li>Real Club de Golf Vista Hermosa (El Puerto)</li><li>Costa Ballena Ocean Golf (Rota)</li><li>Novo Sancti Petri (Chiclana)</li><li>Villanueva Golf (Puerto Real)</li><li>Montenmedio Golf (Vejer)</li><li>Benalup Golf &amp; Country Club</li><li>Arcos Gardens Golf</li>
+  </ul>
+
+  <h2>Preguntas frecuentes</h2>
+  <details><summary>¿acgolf es gratis?</summary><p>Sí. acgolf es gratis y no hace falta descargarla de ninguna tienda: se abre en el navegador del móvil, en acgolf.es, y se puede añadir a la pantalla de inicio.</p></details>
+  <details><summary>¿Calcula el hándicap de juego y los puntos Stableford?</summary><p>Sí. Con tu hándicap y las barras de salida, acgolf calcula los golpes que recibes en cada hoyo, el resultado neto y los puntos Stableford de cada jugador.</p></details>
+  <details><summary>¿Pueden apuntar los golpes varios jugadores a la vez?</summary><p>Sí. Cada jugador puede seguir la partida desde su móvil y la clasificación se actualiza al momento para todo el grupo.</p></details>
+  <details><summary>¿En qué campos de golf funciona?</summary><p>Trae los campos de Sevilla, Huelva y Cádiz con sus barras, rating y slope, y un buscador para encontrar otros campos de España.</p></details>
+  <details><summary>¿Quién es Curro?</summary><p>Curro es el caddie andaluz de acgolf: cuando todos han apuntado el hoyo, sale en pantalla y comenta con gracia el mejor y el peor resultado.</p></details>
+
+  <div style="text-align:center"><a class="btn" href="https://acgolf.es/">Probar acgolf gratis</a></div>
+
+  <footer>
+    <p>acgolf · golf entre amigos</p>
+    <p><a href="privacidad.html">Privacidad</a> · <a href="condiciones.html">Condiciones</a></p>
+  </footer>
+</main>
+</body>
+</html>
