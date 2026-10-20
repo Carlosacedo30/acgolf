@@ -187,7 +187,7 @@
       try {
         if('speechSynthesis' in window) speechSynthesis.cancel();
         if(!audio) audio = new Audio();
-        audio.pause(); audio.src = 'voz/curro-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=2';
+        audio.pause(); audio.src = 'voz/curro-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=3';
         const p = audio.play(); if(p && p.catch) p.catch(() => hablar(f.t));
         return;
       } catch(e){}
