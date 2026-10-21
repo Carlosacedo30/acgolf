@@ -131,7 +131,7 @@ html .liga-month .hole-nav-btn:disabled, html[data-tema] .liga-month .hole-nav-b
 html body .nv-hoy, html[data-tema] body .nv-hoy{ background:#C6F24E !important; color:#0F3D2E !important; border-color:#C6F24E !important; box-shadow:0 4px 12px rgba(0,0,0,.35); }
 html body .vc-btn, html[data-tema] body .vc-btn{ background:#C6F24E !important; color:#0F3D2E !important; border:2px solid #C6F24E !important; box-shadow:0 4px 12px rgba(0,0,0,.35); }
 
-/* Inicio: los botones grandes (Clasificación, Ganadores, Medallas…) con contorno claro para que se vean como botones */
+/* Inicio: los botones grandes (Clasificación, Ganadores, Medallas…) con contorno claro, sin flechita para que se vean como botones */
 html body .home-menu-btn, html[data-tema] body .home-menu-btn{
   position:relative; border:2px solid rgba(198,242,78,.55) !important;
   background:linear-gradient(180deg, #262B31 0%, #1B1E22 100%) !important;
@@ -139,9 +139,5 @@ html body .home-menu-btn, html[data-tema] body .home-menu-btn{
   transition:transform .12s, border-color .12s, background .12s;
 }
 html[data-tema] body .home-menu-btn svg.ico{ box-sizing:content-box; padding:8px; border-radius:50%; background:rgba(198,242,78,.14); box-shadow:0 0 0 1px rgba(198,242,78,.35); }
-html[data-tema] body .home-menu-btn::after{
-  content:'›'; position:absolute; right:10px; top:10px; width:24px; height:24px; border-radius:50%;
-  background:#C6F24E; color:#111316; font:900 19px/22px 'Barlow', sans-serif; text-align:center;
-}
 html[data-tema] body .home-menu-btn:active{ transform:scale(.97); border-color:#C6F24E !important; background:#2A2F35 !important; }
 html[data-tema] body .home-menu-btn.hm-derbi{ border-color:#F2F4F5 !important; }
