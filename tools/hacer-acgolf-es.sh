@@ -19,7 +19,7 @@ import sys
 p = sys.argv[1]
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">', '''<title>acgolf · App de golf gratis para jugar con amigos: tarjeta, hándicap y liga</title>
-<meta name="description" content="App de golf gratis para el móvil: apunta la tarjeta hoyo a hoyo, calcula hándicap y Stableford, organiza partidos y lleva la liga de tu grupo de amigos. Sin descargar nada.">
+<meta name="description" content="App de golf gratis para el móvil: apunta la tarjeta hoyo a hoyo, calcula hándicap y Stableford, organiza partidos y lleva la liga de tu grupo de amigos. Instálala gratis en tu móvil.">
 <link rel="canonical" href="https://acgolf.es/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
