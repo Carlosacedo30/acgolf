@@ -1,12 +1,12 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // --- Presentación con video al abrir la app ---
-// · Una vez cada vez que se abre la app: golpe del jugador → la bola acgolf vuela hasta llenar la pantalla → entra la app.
+// · Una vez cada vez que se abre la app: Curro, el caddie, da la bienvenida enseñando la app en su móvil → entra la app.
 // · Empieza sin sonido (los móviles no dejan que un video suene solo); botón «Con sonido» para verlo otra vez con música.
 // · Botón «Saltar» siempre a la vista.
 // · Si el video no arranca en 3 s, da error o algo se atasca, se quita solo: la app nunca se queda esperando.
 // · Cuando termina, avisa (window.acgolfIntro) para que después salga la bienvenida del patrocinador.
 (function(){
-  const VIDEO = 'https://d2ol7oe51mr4n9.cloudfront.net/user_3KQM5UgzkP4jaWcGUjQhYwnt7eg/63ef40f9-e9ba-4e5c-9a78-e3aa2e4c69b8.mp4';
+  const VIDEO = 'intro-curro.mp4?v=1';
   let avisar;
   window.acgolfIntro = new Promise(r => { avisar = r; });
 
