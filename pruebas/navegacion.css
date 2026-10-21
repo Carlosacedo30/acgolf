@@ -123,3 +123,10 @@ html .screen[data-foco] .cg-barra{ display:flex !important; }
 .derbi-card{ position:relative; }
 .ry-ov{ padding-top:calc(var(--nv-barra) + 4px) !important; }
 html body .screen[data-screen="0"][data-foco] .screen-content > #cgBarra.cg-barra{ display:flex !important; }
+
+/* Clasificación de la liga (y Ganadores): botones resaltados para que se vean bien */
+html .liga-month .hole-nav-btn, html[data-tema] .liga-month .hole-nav-btn{ background:#C6F24E !important; color:#0F3D2E !important; box-shadow:0 0 0 4px rgba(198,242,78,.18), 0 4px 12px rgba(0,0,0,.35) !important; }
+html .liga-month .hole-nav-btn:active, html[data-tema] .liga-month .hole-nav-btn:active{ transform:scale(.94); }
+html .liga-month .hole-nav-btn:disabled, html[data-tema] .liga-month .hole-nav-btn:disabled{ background:transparent !important; color:#5A6068 !important; border:2px solid #3A3F46 !important; box-shadow:none !important; }
+html body .nv-hoy, html[data-tema] body .nv-hoy{ background:#C6F24E !important; color:#0F3D2E !important; border-color:#C6F24E !important; box-shadow:0 4px 12px rgba(0,0,0,.35); }
+html body .vc-btn, html[data-tema] body .vc-btn{ background:#C6F24E !important; color:#0F3D2E !important; border:2px solid #C6F24E !important; box-shadow:0 4px 12px rgba(0,0,0,.35); }
