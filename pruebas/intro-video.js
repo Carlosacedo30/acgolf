@@ -6,7 +6,7 @@
 // · Si el video no arranca en 3 s, da error o algo se atasca, se quita solo: la app nunca se queda esperando.
 // · Cuando termina, avisa (window.acgolfIntro) para que después salga la bienvenida del patrocinador.
 (function(){
-  const VIDEO = 'intro-curro.mp4?v=1';
+  const VIDEO = 'intro-curro.mp4?v=2';
   let avisar;
   window.acgolfIntro = new Promise(r => { avisar = r; });
 
