@@ -39,7 +39,10 @@
     v.addEventListener('ended', () => setTimeout(quitar, 300));
     v.addEventListener('error', quitar);
     setTimeout(() => { if(!arrancado) quitar(); }, 3000);   // no carga: fuera
-    let limite = setTimeout(quitar, 9000);                 // por si se atasca
+    // Límite de seguridad por si se atasca: lo que dure el video + 3 s (16 s si aún no se sabe)
+    const margen = () => ((v.duration && isFinite(v.duration)) ? v.duration * 1000 + 3000 : 16000);
+    let limite = setTimeout(quitar, 16000);
+    v.addEventListener('loadedmetadata', () => { clearTimeout(limite); limite = setTimeout(quitar, margen()); });
 
     el.querySelector('.iv-saltar').addEventListener('click', quitar);
     const son = el.querySelector('.iv-son');
@@ -48,7 +51,7 @@
       try { v.currentTime = 0; } catch(e){}
       const p = v.play(); if(p && p.catch) p.catch(() => {});
       son.hidden = true;
-      clearTimeout(limite); limite = setTimeout(quitar, 9000);
+      clearTimeout(limite); limite = setTimeout(quitar, margen());
     });
 
     const p = v.play();
