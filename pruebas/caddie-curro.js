@@ -214,7 +214,7 @@
       try {
         if('speechSynthesis' in window) speechSynthesis.cancel();
         if(!audio) audio = new Audio();
-        audio.pause(); audio.src = 'voz/' + (f.quien === 'lola' ? 'lola' : 'curro') + '-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=' + (f.quien === 'lola' ? 2 : 3);
+        audio.pause(); audio.src = 'voz/' + (f.quien === 'lola' ? 'lola' : 'curro') + '-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=' + (f.quien === 'lola' ? 3 : 3);
         const p = audio.play(); if(p && p.catch) p.catch(() => hablar(f.t));
         return;
       } catch(e){}
