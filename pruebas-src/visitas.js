@@ -41,18 +41,18 @@
   function apuntar(evento){
     try {
       const client = (typeof initSupabase === 'function') ? initSupabase() : null;
-      if(!client) return;
-      client.from('visitas').insert({ visitante, origen: origenFinal(), evento }).then(() => {}, () => {});
-    } catch(e){}
+      if(!client) return Promise.resolve();
+      return Promise.resolve(client.from('visitas').insert({ visitante, origen: origenFinal(), evento })).then(() => {}, () => {});
+    } catch(e){ return Promise.resolve(); }
   }
   // Cada evento se apunta una sola vez por móvil (la visita, una vez por sesión)
   window.acgolfEvento = function(evento){
     if(evento === 'visita'){
-      try { if(sessionStorage.getItem('acgolfVisitaApuntada')) return; sessionStorage.setItem('acgolfVisitaApuntada', '1'); } catch(e){}
+      try { if(sessionStorage.getItem('acgolfVisitaApuntada')) return Promise.resolve(); sessionStorage.setItem('acgolfVisitaApuntada', '1'); } catch(e){}
     } else {
-      const k = 'acgolfEv_' + evento; if(leer(k)) return; guardar(k, '1');
+      const k = 'acgolfEv_' + evento; if(leer(k)) return Promise.resolve(); guardar(k, '1');
     }
-    apuntar(evento);
+    return apuntar(evento);
   };
   window.acgolfEvento('visita');
   // Si la abren ya instalada en la pantalla de inicio
