@@ -1,0 +1,46 @@
+/* © 2026 Carlos Acedo Domínguez. «Seguir en vivo»: la partida como en la tele (solo mirar) */
+.vv-btn{ background:#E5484D !important; color:#fff !important; }
+.vv-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; background:#E5484D; margin-right:6px; animation:vv-lat 1.2s infinite; }
+@keyframes vv-lat{ 50%{ opacity:.25; } }
+body.vv-abierto{ overflow:hidden; }
+.vv{ position:fixed; inset:0; z-index:9600; background:#0B0D10; color:#F2F4F5; overflow-y:auto; font-family:'Barlow', system-ui, sans-serif;
+  padding:calc(env(safe-area-inset-top, 0px) + 12px) 0 calc(env(safe-area-inset-bottom, 0px) + 20px); }
+.vv[hidden]{ display:none; }
+.vv-top{ display:flex; align-items:center; gap:10px; padding:0 14px 10px; }
+.vv-live{ background:#E5484D; color:#fff; font:800 13px 'Barlow', sans-serif; letter-spacing:.1em; padding:6px 10px; border-radius:7px; display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.vv-live i{ width:8px; height:8px; border-radius:50%; background:#fff; animation:vv-lat 1.2s infinite; }
+.vv-tit{ flex:1; min-width:0; text-align:right; font:700 14px 'Barlow', sans-serif; color:#B8C0C7; }
+.vv-tit b{ display:block; color:#fff; font-size:17px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vv-x{ width:44px; height:44px; border-radius:50%; border:0; background:#1B1E22; color:#fff; font-size:20px; cursor:pointer; flex:0 0 auto; }
+.vv-tab{ margin:8px 12px; background:linear-gradient(#14301F, #0E2216); border:2px solid #2E7D32; border-radius:16px; padding:12px 10px; pointer-events:none; user-select:none; }
+.vv-vacia{ font:700 17px 'Barlow', sans-serif; text-align:center; color:#B8C0C7; }
+.vv-hoyo{ display:flex; justify-content:space-between; font:800 15px 'Barlow', sans-serif; color:#C6F24E; margin-bottom:6px; letter-spacing:.03em; }
+.vv-hoyo span{ color:#B8C0C7; }
+.vv table{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+.vv th{ font:700 12px 'Barlow', sans-serif; color:#8FA59A; padding:2px 0; }
+.vv td{ text-align:center; font:400 23px 'Anton', 'Barlow', sans-serif; padding:5px 0; color:#E9EFEA; transition:background .3s; }
+.vv td.nom{ text-align:left; font:800 18px 'Barlow', sans-serif; width:84px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vv td.tot{ font:400 24px 'Anton', sans-serif; color:#C6F24E; width:46px; }
+.vv td.bajo{ color:#4ADE80; } .vv td.alto{ color:#FF6B6B; } .vv td.vacio{ color:#3D4A42; }
+.vv td.ahora:not(.vacio){ background:#C6F24E; color:#0B0D10; border-radius:7px; }
+.vv-ult{ margin:4px 12px 0; min-height:8px; opacity:0; transform:translateY(10px); transition:opacity .35s, transform .35s; }
+.vv-ult.ver{ opacity:1; transform:none; }
+.vv-com{ display:flex; align-items:flex-end; gap:8px; }
+.vv-com .cu-foto{ width:82px; height:84px; flex:0 0 auto; }
+.vv-com .cu-foto img{ width:100%; height:100%; object-fit:contain; }
+.vv-com .cu-brillo{ display:none; }
+.vv-bur{ flex:1; background:#fff; color:#14231A; border:3px solid #2E7D32; border-radius:16px; padding:8px 12px; margin-bottom:10px; }
+.vv-com.lola .vv-bur{ border-color:#D6457A; }
+.vv-bur b{ display:block; font:800 11px 'Barlow', sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#2E7D32; }
+.vv-com.lola .vv-bur b{ color:#D6457A; }
+.vv-bur p{ margin:2px 0 0; font:800 16px/1.25 'Barlow', sans-serif; }
+.vv-bur .cu-para{ font-style:normal; }
+.vv-car{ display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding:10px 12px 4px; -webkit-overflow-scrolling:touch; }
+.vv-card{ flex:0 0 82%; scroll-snap-align:center; background:#1B1E22; border:1.5px solid #2A2E33; border-radius:16px; padding:14px; position:relative; max-height:230px; overflow:hidden; }
+.vv-card h4{ margin:0 0 6px; font:800 13px 'Barlow', sans-serif; letter-spacing:.07em; text-transform:uppercase; color:#C6F24E; }
+.vv-card p{ margin:0; font:600 16px/1.35 'Barlow', sans-serif; color:#E3ECE6; }
+.vv-card a{ display:inline-block; margin-top:10px; background:#C6F24E; color:#0B0D10; border-radius:10px; padding:8px 14px; font:800 15px 'Barlow', sans-serif; text-decoration:none; }
+.vv-clas{ font-size:15px; pointer-events:none; }
+.vv-pie{ text-align:center; color:#6B7680; font:600 13px 'Barlow', sans-serif; margin:10px 0 0; }
+html.es-invitado #homeVivoBtn{ position:relative; opacity:.8; }
+html.es-invitado #homeVivoBtn::after{ content:' 🔒'; }

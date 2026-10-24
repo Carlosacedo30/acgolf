@@ -244,6 +244,7 @@
   }
   function cerrar(){ const ov = document.getElementById('historiaOverlay'); if(ov) ov.hidden = true; }
   window.historiaGolfAbrir = abrir;
+  window.historiaGolfDatos = HISTORIA; // para el «¿Sabías que…?» de la pantalla En vivo
 
   (function boton(){
     const ancla = document.getElementById('hmReglas');
