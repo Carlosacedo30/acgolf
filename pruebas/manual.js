@@ -85,7 +85,7 @@
       'En el Inicio pulsa <b>«Organizar partido con amigos»</b>. Sale con el <b>escudo de tu grupo</b>.',
       'Elige el <b>día</b>, el <b>campo</b> y las <b>horas</b> de la 1ª y la 2ª partida. Pulsa <b>«Crear el partido»</b>.',
       'Pulsa <b>«Enviar al grupo de WhatsApp»</b>: les llega el enlace y cada uno se apunta desde su móvil.',
-      'Cuando estén todos, tú, que lo has organizado, pulsa <b>«Crear la partida con los apuntados»</b>. La partida queda hecha con los jugadores en su hora.' ]},
+      'Cuando estén todos, quien lo ha organizado o cualquiera de los apuntados pulsa <b>«Crear la partida con los apuntados»</b>. La partida queda hecha con los jugadores en su hora.' ]},
     { ico:'bandera', t:'Crear una partida', sub:'En 4 toques', pasos:[
       'Pulsa <b>«Crear partida»</b>.',
       '<b>¿Dónde jugáis?</b> Toca Hato Verde o Zaudín. Para otro campo pulsa <b>«Buscar otro campo»</b> o toca uno de tus favoritos.',
