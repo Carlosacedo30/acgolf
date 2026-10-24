@@ -35,9 +35,7 @@
   async function abrir(code, btn, textoBtn){
     if(btn){ if(btn.dataset.busy) return; btn.dataset.busy = '1'; btn.textContent = 'Abriendo…'; }
     try {
-      const round = await leerRonda(code);
-      if(round && !juegoYo(round) && !soyAdmin()){ pantalla(code, round); return; }
-      const res = await joinSharedRound(code);
+      const res = await joinSharedRound(code);   // decide la puerta única: marcador si juegas, En vivo si no
       if(res && res.ok) goTo(3); else if(res && res.msg) alert(res.msg);
     } finally { if(btn){ delete btn.dataset.busy; btn.textContent = textoBtn; } }
   }
@@ -179,6 +177,39 @@
     return out.join('');
   }
 
+  // ---------- Puerta única: entrar al marcador SOLO si juegas la partida (o eres administrador) ----------
+  // Sea cual sea el camino (botón, enlace de WhatsApp, código a mano, convocatoria, derbi…), quien no juega
+  // esa partida va a «En vivo» (solo mirar). Las partidas ya terminadas se pueden ver como siempre.
+  let silencioHasta = 0;
+  const alertaOrig = window.alert;
+  window.alert = function(){ if(Date.now() < silencioHasta) return; return alertaOrig.apply(window, arguments); };
+  const terminada = round => {
+    const gs = (round.match_groups || []).filter(g => g && (g.players || []).filter(Boolean).length);
+    return gs.length > 0 && gs.every(g => g.players.every((n, p) => { const sc = (g.scores || {})[p] || {}; return Object.keys(sc).filter(h => +sc[h] > 0).length >= 18; }));
+  };
+  function engancharEntrada(){
+    if(typeof window.joinSharedRound !== 'function' || window.joinSharedRound.__vv) return;
+    const orig = window.joinSharedRound;
+    const nuevo = async function(codeRaw){
+      try {
+        const code = String(codeRaw || '').trim().toUpperCase();
+        if(code && !soyAdmin()){
+          const round = await leerRonda(code);
+          if(round && !juegoYo(round) && !terminada(round)){
+            silencioHasta = Date.now() + 1500;        // que no salga ningún aviso de «no se pudo abrir»
+            pantalla(code, round);
+            return { ok: false, msg: '', enVivo: true };
+          }
+        }
+      } catch(e){}
+      return orig.apply(this, arguments);
+    };
+    nuevo.__vv = true;
+    window.joinSharedRound = nuevo;
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharEntrada); else engancharEntrada();
+  window.addEventListener('load', engancharEntrada);
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharPortada); else engancharPortada();
   window.addEventListener('load', engancharPortada);
   window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar };
