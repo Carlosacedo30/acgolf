@@ -192,8 +192,8 @@ html:not(.es-super) #holeSetGreenBtn{ display:none !important; }
 .cg-prueba button{ background:#C6F24E; color:#111316; border:0; border-radius:12px; padding:10px 14px; font:800 15px 'Barlow', sans-serif; cursor:pointer; white-space:nowrap; }
 .cg-pareja{ display:flex; justify-content:center; align-items:flex-end; gap:6px; margin-bottom:4px; }
 /* Invitado: candados en lo que necesita cuenta y ventana para guardar la cuenta */
-html.es-invitado :is(#hmLiga, #hmDiagnostico, #hmDerbi, #hmLigas, #hmRyder, .cg-selgrupo){ position:relative; opacity:.75; }
-html.es-invitado :is(#hmLiga, #hmDiagnostico, #hmDerbi, #hmLigas, #hmRyder)::after{ content:'🔒'; position:absolute; top:6px; right:8px; font-size:18px; }
+html.es-invitado :is(#hmLiga, #hmDiagnostico, #hmDerbi, #hmLigas, #hmRyder, .cg-selgrupo, #convHomeNew, [data-foco="premios"], [data-foco="medallas"], [data-foco="recientes"]){ position:relative; opacity:.75; }
+html.es-invitado :is(#hmLiga, #hmDiagnostico, #hmDerbi, #hmLigas, #hmRyder, #convHomeNew, [data-foco="premios"], [data-foco="medallas"], [data-foco="recientes"])::after{ content:'🔒'; position:absolute; top:6px; right:8px; font-size:18px; }
 html.es-invitado .cg-selgrupo::after{ content:' 🔒'; }
 html.es-invitado :is(#homeLigaSemana, #homeRecientes){ position:relative; }
 html.es-invitado :is(#homeLigaSemana, #homeRecientes)::after{ content:'🔒 Guarda tu cuenta para verlo'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;

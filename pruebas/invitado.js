@@ -8,12 +8,12 @@
 (function(){
   'use strict';
   const BLOQUEADOS = [
-    { sel: '#hmLiga, #homeLigaSemana', que: 'la clasificación y las medallas' },
+    { sel: '#hmLiga, #homeLigaSemana, [data-foco="premios"], [data-foco="medallas"]', que: 'la clasificación, los ganadores y las medallas' },
     { sel: '#hmDiagnostico', que: '«¿Cómo jugué?» con tus gráficas y tu evolución' },
-    { sel: '#homeRecientes', que: 'el historial de tus partidas' },
+    { sel: '#homeRecientes, [data-foco="recientes"]', que: 'el historial de tus partidas' },
     { sel: '#hmDerbi', que: 'el derbi contra otros jugadores' },
     { sel: '#hmLigas, #hmRyder', que: 'las ligas y la Ryder' },
-    { sel: '.cg-selgrupo', que: 'los grupos y la liga con tus amigos' },
+    { sel: '.cg-selgrupo, #convHomeNew', que: 'los grupos, la liga y organizar partidos con tus amigos' },
   ];
   const esInvitado = () => document.documentElement.classList.contains('es-invitado');
   const CLAVE_PRIMERA = 'acgolfInvitadoPrimeraHecha';
