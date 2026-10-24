@@ -190,3 +190,4 @@ html:not(.es-super) #holeSetGreenBtn{ display:none !important; }
 .cg-prueba{ position:fixed; left:10px; right:10px; bottom:calc(env(safe-area-inset-bottom, 0px) + 74px); z-index:880; display:flex; align-items:center; justify-content:space-between; gap:10px;
   background:#1B1E22; color:#F2F4F5; border:2px solid #C6F24E; border-radius:16px; padding:10px 12px; font:700 15px 'Barlow', sans-serif; box-shadow:0 10px 24px rgba(0,0,0,.35); }
 .cg-prueba button{ background:#C6F24E; color:#111316; border:0; border-radius:12px; padding:10px 14px; font:800 15px 'Barlow', sans-serif; cursor:pointer; white-space:nowrap; }
+.cg-pareja{ display:flex; justify-content:center; align-items:flex-end; gap:6px; margin-bottom:4px; }

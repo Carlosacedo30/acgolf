@@ -155,7 +155,7 @@
   const yaEntroAntes = () => { try { return localStorage.getItem('acgolfYaEntro') === '1'; } catch(e){ return false; } };
   const evento = e => { try { if(window.acgolfEvento) window.acgolfEvento(e); } catch(x){} };
   function pantallaPortada(){
-    mostrar('<div class="cg-head"><img class="cg-curro" src="curro.webp?v=1" alt="Curro, el caddie"><img class="cg-curro" src="lola.webp?v=1" alt="Lola, la caddie">'
+    mostrar('<div class="cg-head"><div class="cg-pareja"><img class="cg-curro" src="curro.webp?v=1" alt="Curro, el caddie"><img class="cg-curro" src="lola.webp?v=1" alt="Lola, la caddie"></div>'
       + '<div class="cg-eyebrow">acgolf · Golf entre amigos</div>'
       + '<h1 class="cg-title">¡Bienvenido!</h1>'
       + '<p class="cg-sub">Apunta tus partidas hoyo a hoyo, lleva tu hándicap y deja que Curro y Lola, tus caddies, te comenten cada hoyo.</p></div>'
