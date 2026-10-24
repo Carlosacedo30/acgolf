@@ -71,11 +71,13 @@
       + '<button type="button" class="cg-link" id="cgIrOlvido">He olvidado mi contraseña</button>'
       + '<div class="cg-sep">¿Es tu primera vez?</div>'
       + '<button type="button" class="cg-btn ghost" id="cgIrCrear">Crear mi cuenta</button>'
+      + '<button type="button" class="cg-link" id="cgIrProbar">⛳ Probar sin registrarme</button>'
       + (window.acgolfInstalar ? '<button type="button" class="cg-link" id="cgInstalar">📲 Instalar la app en el móvil</button>' : ''));
     if($('cgInstalar')) $('cgInstalar').onclick = () => window.acgolfInstalar();
     if(aviso) msg(aviso, true);
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgIrCrear').onclick = () => pantallaCrear();
+    $('cgIrProbar').onclick = () => pantallaProbar();
     $('cgIrOlvido').onclick = () => pantallaOlvido($('cgEmail').value);
     $('cgEntrar').onclick = e => ocupado(e.target, async () => {
       const email = $('cgEmail').value.trim(), password = $('cgPass').value;
@@ -102,6 +104,7 @@
       if(password.length < 8){ msg('La contraseña tiene que tener al menos 8 caracteres.'); return; }
       const { data, error } = await client.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname } });
       if(error){ msg(traducir(error)); return; }
+      evento('registro');
       if(data && data.session){ location.reload(); return; }
       mostrar(cabecera('Mira tu correo', 'Te hemos enviado un mensaje a <b>' + esc(email) + '</b>.')
         + '<p class="cg-p">Ábrelo y pulsa el enlace para confirmar tu cuenta. Si no lo ves, mira en «Correo no deseado».</p>'
@@ -146,6 +149,79 @@
 
   const aceptoHtml = '<label class="cg-acepto"><input type="checkbox" id="cgAcepto"><span>He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a> y las <a href="condiciones.html" target="_blank" rel="noopener">condiciones de uso</a>.</span></label>';
   const leerHcp = id => { const v = parseFloat(String(($(id) || {}).value || '').replace(',', '.')); return isNaN(v) ? null : v; };
+
+
+  // ---------- Probar sin registrarme (cuenta de prueba, sin correo) ----------
+  const yaEntroAntes = () => { try { return localStorage.getItem('acgolfYaEntro') === '1'; } catch(e){ return false; } };
+  const evento = e => { try { if(window.acgolfEvento) window.acgolfEvento(e); } catch(x){} };
+  function pantallaPortada(){
+    mostrar('<div class="cg-head"><img class="cg-curro" src="curro.webp?v=1" alt="Curro, el caddie"><img class="cg-curro" src="lola.webp?v=1" alt="Lola, la caddie">'
+      + '<div class="cg-eyebrow">acgolf · Golf entre amigos</div>'
+      + '<h1 class="cg-title">¡Bienvenido!</h1>'
+      + '<p class="cg-sub">Apunta tus partidas hoyo a hoyo, lleva tu hándicap y deja que Curro y Lola, tus caddies, te comenten cada hoyo.</p></div>'
+      + '<button type="button" class="cg-btn" id="cgProbar">⛳ Probar sin registrarme</button>'
+      + '<p class="cg-p" style="font-size:15px;text-align:center;margin-top:6px;">Gratis. Sin correo ni contraseña. Si te gusta, guardas tu cuenta después.</p>'
+      + '<div class="cg-sep">¿Ya juegas con nosotros?</div>'
+      + '<button type="button" class="cg-btn ghost" id="cgIrEntrar">Entrar con mi cuenta</button>'
+      + '<button type="button" class="cg-link" id="cgIrCrear">Crear mi cuenta</button>'
+      + (window.acgolfInstalar ? '<button type="button" class="cg-link" id="cgInstalar">📲 Instalar la app en el móvil</button>' : ''));
+    if($('cgInstalar')) $('cgInstalar').onclick = () => window.acgolfInstalar();
+    $('cgIrEntrar').onclick = () => pantallaEntrar();
+    $('cgIrCrear').onclick = () => pantallaCrear();
+    $('cgProbar').onclick = () => pantallaProbar();
+  }
+  function pantallaProbar(){
+    mostrar(cabecera('Vamos a probar', 'Solo dos datos para que el caddie sepa a quién comentar.')
+      + '<label class="cg-lbl">Tu nombre<input id="cgNombre" type="text" autocomplete="given-name" maxlength="40"></label>'
+      + '<label class="cg-lbl">Tu hándicap<small>Si no lo sabes, deja 24</small><input id="cgHcp" type="text" inputmode="decimal" value="24"></label>'
+      + aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgEmpezarPrueba">Empezar a probar</button>'
+      + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
+    $('cgVolver').onclick = () => pantallaPortada();
+    $('cgEmpezarPrueba').onclick = e => ocupado(e.target, async () => {
+      const nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
+      if(!nombre){ msg('Escribe tu nombre.'); return; }
+      if(hcp === null){ msg('Escribe tu hándicap (si no lo sabes, pon 24).'); return; }
+      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
+      let { data: ses } = await client.auth.getSession();
+      if(!ses || !ses.session){
+        const { error } = await client.auth.signInAnonymously();
+        if(error){ msg('Ahora mismo no se puede probar sin cuenta. Crea tu cuenta, es un minuto.'); return; }
+      }
+      const { error } = await client.rpc('empezar_personal', { p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
+      if(error && !/Ya tienes tu espacio personal/i.test(String(error.message || ''))){ msg(traducir(error)); return; }
+      evento('prueba');
+      location.reload();
+    });
+  }
+  function pantallaGuardarCuenta(){
+    mostrar(cabecera('Guardar mi cuenta', 'Así no pierdes tus partidas y puedes entrar desde cualquier móvil.')
+      + '<label class="cg-lbl">Tu correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgGuardarCta">Guardar mi cuenta</button>'
+      + '<button type="button" class="cg-link" id="cgLuego">Ahora no</button>');
+    $('cgLuego').onclick = () => ocultar();
+    $('cgGuardarCta').onclick = e => ocupado(e.target, async () => {
+      const email = $('cgEmail').value.trim();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg('Escribe bien tu correo.'); return; }
+      const { error } = await client.auth.updateUser({ email }, { emailRedirectTo: location.origin + location.pathname });
+      if(error){ msg(traducir(error)); return; }
+      try { localStorage.setItem('acgolfFaltaClave', '1'); } catch(x){}
+      evento('registro');
+      mostrar(cabecera('Mira tu correo', 'Te hemos enviado un mensaje a <b>' + esc(email) + '</b>.')
+        + '<p class="cg-p">Pulsa el enlace del mensaje para confirmar tu correo. Después la app te pedirá que inventes una contraseña.</p>'
+        + '<p class="cg-p">Tus partidas se quedan guardadas.</p>'
+        + '<button type="button" class="cg-btn" id="cgOk">Entendido</button>');
+      $('cgOk').onclick = () => ocultar();
+    });
+  }
+  function avisoPrueba(){
+    const a = document.createElement('div');
+    a.className = 'cg-prueba';
+    a.innerHTML = '<span>Estás probando acgolf</span><button type="button">Guardar mi cuenta</button>';
+    a.querySelector('button').onclick = () => pantallaGuardarCuenta();
+    document.body.appendChild(a);
+  }
 
   // Entrar en un grupo con el enlace de invitación
   async function pantallaUnirse(email, codigo){
@@ -972,10 +1048,16 @@
     let session = null;
     try { ({ data:{ session } } = await client.auth.getSession()); } catch(e){}
     if(recuperando && session){ pantallaNuevaClave(); return; }
-    if(!session){ try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){} pantallaEntrar(); return; }
+    if(!session){ try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){} if(yaEntroAntes() || invitacion() || codigoAdmin()) pantallaEntrar(); else pantallaPortada(); return; }
     const { data: perfil, error } = await client.rpc('mi_perfil');
     if(error){ mostrar(cabecera('Sin conexión', traducir(error)) + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
+    if(!perfil && session.user && session.user.is_anonymous){ pantallaProbar(); return; }
     if(!perfil){ pantallaCompletar(session.user && session.user.email); return; }
+    if(!perfil.es_prueba){
+      try { localStorage.setItem('acgolfYaEntro', '1'); } catch(e){}
+      let falta = false; try { falta = localStorage.getItem('acgolfFaltaClave') === '1'; localStorage.removeItem('acgolfFaltaClave'); } catch(e){}
+      if(falta){ pantallaNuevaClave(); return; }
+    }
     if(codigoAdmin()){ pantallaCodigoAdmin(perfil.email, perfil, codigoAdmin()); return; }
     if(invitacion()){ pantallaUnirse(perfil.email, invitacion()); return; }
     const eraAdmin = esAdminGuardado();
@@ -988,6 +1070,7 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }
     botonMiCuenta(perfil);
+    if(perfil.es_prueba) avisoPrueba();
     // Grupo nuevo: el administrador elige su plan y paga antes de entrar
     if(perfil.es_admin && perfil.grupo_tipo === 'liga'){
       let plan = null;

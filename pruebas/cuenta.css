@@ -185,3 +185,8 @@ html.con-marca .home-patro img{ border-radius:6px; }
 /* Greens: ya no salen en la portada de ningún grupo (están en el Panel de super administrador); en el campo, solo el super administrador puede guardar un green */
 #greensMapaBtn{ display:none !important; }
 html:not(.es-super) #holeSetGreenBtn{ display:none !important; }
+/* Portada para quien llega nuevo y aviso de cuenta de prueba */
+.cg-curro{ width:96px; height:auto; margin:0 4px; filter:drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+.cg-prueba{ position:fixed; left:10px; right:10px; bottom:calc(env(safe-area-inset-bottom, 0px) + 74px); z-index:880; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:#1B1E22; color:#F2F4F5; border:2px solid #C6F24E; border-radius:16px; padding:10px 12px; font:700 15px 'Barlow', sans-serif; box-shadow:0 10px 24px rgba(0,0,0,.35); }
+.cg-prueba button{ background:#C6F24E; color:#111316; border:0; border-radius:12px; padding:10px 14px; font:800 15px 'Barlow', sans-serif; cursor:pointer; white-space:nowrap; }
