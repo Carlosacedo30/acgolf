@@ -526,5 +526,5 @@
   window.addEventListener('load', engancharEntrada);
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharPortada); else engancharPortada();
   window.addEventListener('load', engancharPortada);
-  window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar, guion, tabla };
+  window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar, guion, tabla, rellenar };
 })();
