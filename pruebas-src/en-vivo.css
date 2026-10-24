@@ -104,5 +104,6 @@ html.es-invitado #homeVivoBtn::after{ content:' 🔒'; }
 .vv-rsus{ font-size:48px !important; color:#C6F24E; } .vv-rwin{ color:#F2C230; }
 .vv-rcta{ text-align:center; } .vv-rcta h3 b{ font-weight:400; color:#C6F24E; }
 .vv-home-res .home-marcha-t{ color:#C6F24E; }
-html.es-invitado #homeResumenBtn::after{ content:' 🔒'; }
+html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ content:' 🔒'; }
 .vv-bur p strong{ font-weight:800; color:#2E7D32; } .vv-com.lola .vv-bur p strong{ color:#D6457A; }
+#vvExtras .home-marcha{ margin-top:10px; }

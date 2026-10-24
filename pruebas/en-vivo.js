@@ -127,27 +127,42 @@
     const t = document.querySelector('#homeEnMarcha .home-marcha-t'); if(t) t.innerHTML = '<span class="vv-dot"></span> Partida en directo';
     nuevo.addEventListener('click', () => abrir(r.code, nuevo, '👁 Seguir en vivo ›'));
   }
-  // Sin partida en marcha: si una terminó hace menos de 2 horas, la tarjeta del resumen (para todos)
-  async function ofrecerResumen(recent){
-    const box = document.getElementById('homeEnMarcha');
-    if(!box || box.innerHTML.trim()) return;
-    const limite = Date.now() - 12 * 3600 * 1000;
-    const r = (recent || []).find(x => x.finished && x.date && new Date(x.date).getTime() >= limite);
-    if(!r) return;
-    const round = await leerRonda(r.code);
-    if(!round || !terminada(round)) return;
-    const fin = new Date(round.updated_at || round.created_at).getTime();
-    const hasta = fin + HORAS_RESUMEN * 3600 * 1000;
-    if(Date.now() > hasta || box.innerHTML.trim()) return;
-    const hora = new Date(hasta).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-    box.innerHTML = '<div class="home-marcha vv-home-res">'
-      + '<div class="home-marcha-t">🎬 El plató de acgolf</div>'
-      + '<div class="home-marcha-sub">Curro y Lola comentan ' + esc(round.round_name || 'la partida') + ' · hasta las ' + hora + '</div>'
-      + '<button type="button" class="home-big-btn vv-btn" id="homeResumenBtn">▶ Ver el resumen</button></div>';
-    document.getElementById('homeResumenBtn').addEventListener('click', () => {
+  // Debajo de «Partida en marcha»: las demás partidas en directo del grupo (si juegan varios grupos a la vez)
+  // y el resumen de cada partida terminada hace menos de 2 horas (para todos)
+  let extraN = 0;
+  async function extrasPortada(recent){
+    const box = document.getElementById('homeEnMarcha'); if(!box) return;
+    const n = ++extraN;
+    let cont = document.getElementById('vvExtras');
+    if(!cont){ cont = document.createElement('div'); cont.id = 'vvExtras'; box.insertAdjacentElement('afterend', cont); }
+    const ahora = Date.now(), lista = recent || [];
+    const enMarcha = lista.filter(x => x.finished === false && x.date && new Date(x.date).getTime() >= ahora - 6 * 3600 * 1000);
+    const otras = enMarcha.slice(1);                 // la primera ya la enseña «Partida en marcha»
+    const hechas = lista.filter(x => x.finished && x.date && new Date(x.date).getTime() >= ahora - 12 * 3600 * 1000);
+    const resumenes = [];
+    for(const r of hechas){
+      const round = await leerRonda(r.code);
+      if(!round || !terminada(round)) continue;
+      const hasta = new Date(round.updated_at || round.created_at).getTime() + HORAS_RESUMEN * 3600 * 1000;
+      if(Date.now() <= hasta) resumenes.push({ round, hora: new Date(hasta).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) });
+    }
+    if(n !== extraN) return;                        // ya se pintó otra vez mientras tanto
+    const y = norm(yo());
+    cont.innerHTML = otras.map(r => {
+      const juego = soyAdmin() || (!!y && (r.players || []).some(x => norm(x) === y));
+      return '<div class="home-marcha vv-home-otra"><div class="home-marcha-t">' + (juego ? 'Partida en marcha' : '<span class="vv-dot"></span> Partida en directo') + '</div>'
+        + '<div class="home-marcha-sub">' + esc(r.roundName ? r.roundName + ' · ' : '') + esc(r.courseName || 'Campo') + '</div>'
+        + '<div class="home-marcha-chips">' + (r.players || []).map(x => '<span>' + esc(corto(x)) + '</span>').join('') + '</div>'
+        + '<button type="button" class="home-big-btn' + (juego ? '' : ' vv-btn vv-vivo-btn') + '" data-vv-abrir="' + esc(r.code) + '">' + (juego ? 'Continuar partida ›' : '👁 Seguir en vivo ›') + '</button></div>';
+    }).join('') + resumenes.map(x => '<div class="home-marcha vv-home-res">'
+        + '<div class="home-marcha-t">🎬 El plató de acgolf</div>'
+        + '<div class="home-marcha-sub">Curro y Lola comentan ' + esc(x.round.round_name || 'la partida') + ' (' + grupos(x.round).map(g => g.players.filter(Boolean).map(corto).join(', ')).join(' · ') + ') · hasta las ' + x.hora + '</div>'
+        + '<button type="button" class="home-big-btn vv-btn vv-res-btn" data-vv-res="' + esc(x.round.code) + '">▶ Ver el resumen</button></div>').join('');
+    cont.querySelectorAll('[data-vv-abrir]').forEach(b => b.addEventListener('click', () => abrir(b.dataset.vvAbrir, b, b.textContent)));
+    cont.querySelectorAll('[data-vv-res]').forEach(b => b.addEventListener('click', () => {
       if(document.documentElement.classList.contains('es-invitado')) return;
-      pantalla(round.code, round, true);
-    });
+      const x = resumenes.find(z => z.round.code === b.dataset.vvRes); if(x) pantalla(x.round.code, x.round, true);
+    }));
   }
   function engancharPortada(){
     if(typeof window.renderHomeEnMarcha !== 'function' || window.renderHomeEnMarcha.__vv) return;
@@ -157,7 +172,8 @@
       try {
         const limite = Date.now() - 6 * 3600 * 1000;
         const r = (recent || []).find(x => x.finished === false && x.date && new Date(x.date).getTime() >= limite);
-        if(r) ajustarPortada(r); else ofrecerResumen(recent);
+        if(r) ajustarPortada(r);
+        extrasPortada(recent);
       } catch(e){}
       return res;
     };

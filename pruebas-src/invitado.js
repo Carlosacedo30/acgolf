@@ -13,7 +13,7 @@
     { sel: '#homeRecientes, [data-foco="recientes"]', que: 'el historial de tus partidas' },
     { sel: '#hmDerbi', que: 'el derbi contra otros jugadores' },
     { sel: '#hmLigas, #hmRyder', que: 'las ligas y la Ryder' },
-    { sel: '#homeVivoBtn, #homeResumenBtn', que: 'las partidas en directo y los resúmenes de tu grupo' },
+    { sel: '#homeVivoBtn, .vv-vivo-btn, .vv-res-btn', que: 'las partidas en directo y los resúmenes de tu grupo' },
     { sel: '.cg-selgrupo, #convHomeNew', que: 'los grupos, la liga y organizar partidos con tus amigos' },
   ];
   const esInvitado = () => document.documentElement.classList.contains('es-invitado');
