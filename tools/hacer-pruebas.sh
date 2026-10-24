@@ -28,7 +28,7 @@ grep -q "const MAX_GROUPS = 8;" pruebas/js/players.js || { echo "ERROR: no se ca
 sed -i "s#https://carlosacedo30.github.io/acgolf/'#https://carlosacedo30.github.io/acgolf/pruebas/'#" pruebas/js/convocatoria.js
 
 # «Organizar partido con amigos» abierto a todos los jugadores con cuenta:
-# el que lo organiza puede crear la partida con los apuntados; borrar sigue siendo solo del administrador
+# el que lo organiza y cualquiera de los apuntados pueden crear la partida con los apuntados; borrar sigue siendo solo del administrador
 python3 - <<'PY'
 p = 'pruebas/js/convocatoria.js'
 s = open(p, encoding='utf-8').read()
@@ -40,7 +40,9 @@ cambios = [
       if(!conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
       h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
       h += '<button""", """    const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
-    if((isAdmin || organizo) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    const yoMismo = (window.miPerfil && window.miPerfil.player_name) || '';
+    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquiera de los apuntados puede crear la partida
+    if((isAdmin || organizo || apuntado) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
     if(isAdmin || window.miPerfilId) h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
     if(isAdmin){
       h += '<button"""),
@@ -386,8 +388,8 @@ import re
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 s = s.replace('<title>App de Golf</title>', '<title>App de Golf · PRUEBAS</title>\n<meta name="robots" content="noindex">\n<script src="almacen.js?v=1"></script>\n<script>window.acgolfBarras = true; /* elegir barra de salida de cada jugador */</script>', 1)
-s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=16">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=2">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=2">\n<link rel="stylesheet" href="manual.css?v=2">\n<link rel="stylesheet" href="scramble.css?v=1">\n<link rel="stylesheet" href="salon.css?v=2">\n<link rel="stylesheet" href="ver-completa.css?v=1">\n<link rel="stylesheet" href="planes.css?v=2">\n<link rel="stylesheet" href="ayuda.css?v=2">\n<link rel="stylesheet" href="patro-destacado.css?v=1">\n<link rel="stylesheet" href="intro-video.css?v=1">\n<link rel="stylesheet" href="buscador-campos.css?v=3">\n<link rel="stylesheet" href="promo-bolas.css?v=1">\n<link rel="stylesheet" href="ir-hato.css?v=1">\n<link rel="stylesheet" href="anotar-limpio.css?v=1">\n<link rel="stylesheet" href="como-jugue.css?v=1">\n<link rel="stylesheet" href="caddie-curro.css?v=2">\n</head>', 1)
-s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="visitas.js?v=2"></script>\n<script src="portada.js?v=6"></script>\n<script src="cuenta.js?v=26"></script>', s, count=1)
+s = s.replace('</head>', '<link rel="stylesheet" href="cuenta.css?v=18">\n<link rel="stylesheet" href="avatares.css?v=1">\n<link rel="stylesheet" href="ryder.css?v=1">\n<link rel="stylesheet" href="contador.css?v=2">\n<link rel="stylesheet" href="faltan-tarjeta.css?v=1">\n<link rel="stylesheet" href="navegacion.css?v=1">\n<link rel="stylesheet" href="inicio-partido.css?v=2">\n<link rel="stylesheet" href="manual.css?v=2">\n<link rel="stylesheet" href="scramble.css?v=1">\n<link rel="stylesheet" href="salon.css?v=2">\n<link rel="stylesheet" href="ver-completa.css?v=1">\n<link rel="stylesheet" href="planes.css?v=2">\n<link rel="stylesheet" href="ayuda.css?v=2">\n<link rel="stylesheet" href="patro-destacado.css?v=1">\n<link rel="stylesheet" href="intro-video.css?v=1">\n<link rel="stylesheet" href="buscador-campos.css?v=3">\n<link rel="stylesheet" href="promo-bolas.css?v=1">\n<link rel="stylesheet" href="ir-hato.css?v=1">\n<link rel="stylesheet" href="anotar-limpio.css?v=1">\n<link rel="stylesheet" href="como-jugue.css?v=1">\n<link rel="stylesheet" href="caddie-curro.css?v=2">\n</head>', 1)
+s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n<script src="visitas.js?v=2"></script>\n<script src="invitado.js?v=2"></script>\n<script src="portada.js?v=6"></script>\n<script src="cuenta.js?v=27"></script>', s, count=1)
 # La pantalla blanca y el resumen tienen que ir DESPUÉS del marcador: se quitan de su sitio y se ponen tras él
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)

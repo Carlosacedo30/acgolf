@@ -241,7 +241,9 @@
     // Acciones
     h += '<div class="conv-actions">';
     const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
-    if((isAdmin || organizo) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    const yoMismo = (window.miPerfil && window.miPerfil.player_name) || '';
+    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquiera de los apuntados puede crear la partida
+    if((isAdmin || organizo || apuntado) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
     if(isAdmin || window.miPerfilId) h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
     if(isAdmin){
       h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar este partido</button>';

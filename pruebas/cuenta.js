@@ -158,7 +158,7 @@
   function pantallaPortada(){
     mostrar('<div class="cg-head"><div class="cg-pareja"><img class="cg-curro" src="curro.webp?v=1" alt="Curro, el caddie"><img class="cg-curro" src="lola.webp?v=1" alt="Lola, la caddie"></div>'
       + '<div class="cg-eyebrow">acgolf · Golf entre amigos</div>'
-      + '<h1 class="cg-title">¡Bienvenido!</h1>'
+      + '<h1 class="cg-title">Juega gratis, sin registro</h1>'
       + '<p class="cg-sub">Apunta tus partidas hoyo a hoyo, lleva tu hándicap y deja que Curro y Lola, tus caddies, te comenten cada hoyo.</p></div>'
       + '<button type="button" class="cg-btn" id="cgProbar">⛳ Probar sin registrarme</button>'
       + '<p class="cg-p" style="font-size:15px;text-align:center;margin-top:6px;">Gratis. Sin correo ni contraseña. Si te gusta, guardas tu cuenta después.</p>'
@@ -216,6 +216,7 @@
       $('cgOk').onclick = () => ocultar();
     });
   }
+  window.acgolfGuardarCuenta = () => pantallaGuardarCuenta();
   function avisoPrueba(){
     const a = document.createElement('div');
     a.className = 'cg-prueba';
@@ -1071,7 +1072,7 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }
     botonMiCuenta(perfil);
-    if(perfil.es_prueba) avisoPrueba();
+    if(perfil.es_prueba) document.documentElement.classList.add('es-invitado');   // candados (invitado.js), sin avisos fijos
     // Grupo nuevo: el administrador elige su plan y paga antes de entrar
     if(perfil.es_admin && perfil.grupo_tipo === 'liga'){
       let plan = null;

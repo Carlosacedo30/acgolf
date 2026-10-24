@@ -191,3 +191,21 @@ html:not(.es-super) #holeSetGreenBtn{ display:none !important; }
   background:#1B1E22; color:#F2F4F5; border:2px solid #C6F24E; border-radius:16px; padding:10px 12px; font:700 15px 'Barlow', sans-serif; box-shadow:0 10px 24px rgba(0,0,0,.35); }
 .cg-prueba button{ background:#C6F24E; color:#111316; border:0; border-radius:12px; padding:10px 14px; font:800 15px 'Barlow', sans-serif; cursor:pointer; white-space:nowrap; }
 .cg-pareja{ display:flex; justify-content:center; align-items:flex-end; gap:6px; margin-bottom:4px; }
+/* Invitado: candados en lo que necesita cuenta y ventana para guardar la cuenta */
+html.es-invitado :is(#hmLiga, #hmDiagnostico, #hmDerbi, #hmLigas, #hmRyder, .cg-selgrupo, #convHomeNew, [data-foco="premios"], [data-foco="medallas"], [data-foco="recientes"]){ position:relative; opacity:.75; }
+html.es-invitado :is(#hmLiga, #hmDiagnostico, #hmDerbi, #hmLigas, #hmRyder, #convHomeNew, [data-foco="premios"], [data-foco="medallas"], [data-foco="recientes"])::after{ content:'🔒'; position:absolute; top:6px; right:8px; font-size:18px; }
+html.es-invitado .cg-selgrupo::after{ content:' 🔒'; }
+html.es-invitado :is(#homeLigaSemana, #homeRecientes){ position:relative; }
+html.es-invitado :is(#homeLigaSemana, #homeRecientes)::after{ content:'🔒 Guarda tu cuenta para verlo'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; text-align:center;
+  background:rgba(17,19,22,.72); color:#F2F4F5; font:800 17px 'Barlow', sans-serif; border-radius:inherit; backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); }
+.inv-ov{ position:fixed; inset:0; z-index:9700; background:rgba(0,0,0,.55); display:flex; align-items:flex-end; justify-content:center; padding:12px; }
+.inv-ov[hidden]{ display:none; }
+.inv-card{ width:100%; max-width:440px; background:#1B1E22; color:#F2F4F5; border-radius:24px; padding:18px 18px calc(env(safe-area-inset-bottom, 0px) + 18px); text-align:center; font-family:'Barlow', sans-serif; box-shadow:0 -10px 40px rgba(0,0,0,.4); animation:inv-sube .35s ease; }
+@keyframes inv-sube{ from{ transform:translateY(40px); opacity:0; } to{ transform:none; opacity:1; } }
+.inv-pareja{ display:flex; justify-content:center; gap:4px; margin-top:-56px; }
+.inv-pareja img{ width:82px; height:auto; filter:drop-shadow(0 6px 10px rgba(0,0,0,.4)); }
+.inv-card h2{ margin:8px 0 6px; font:800 24px 'Barlow', sans-serif; }
+.inv-card p{ margin:0 0 14px; font:600 17px/1.35 'Barlow', sans-serif; color:#C9D0D6; }
+.inv-si{ width:100%; background:#C6F24E; color:#111316; border:0; border-radius:14px; padding:16px; font:800 19px 'Barlow', sans-serif; cursor:pointer; }
+.inv-no{ width:100%; background:none; border:0; color:#C9D0D6; padding:12px; font:700 17px 'Barlow', sans-serif; cursor:pointer; text-decoration:underline; }
+.inv-card small{ display:block; color:#8A949C; font:600 13px 'Barlow', sans-serif; }
