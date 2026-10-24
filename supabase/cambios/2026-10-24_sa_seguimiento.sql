@@ -1,0 +1,4 @@
+-- Panel de super administrador → «📈 Seguimiento»: función sa_seguimiento(p_dias)
+-- Visitas por red (tabla visitas), pruebas, cuentas nuevas, instalaciones, partidas, grupos,
+-- espectadores en directo, vistas y toques del anuncio, nuevas incorporaciones y actividad por grupo.
+-- Solo el super administrador (es_super_admin()). Aplicada como migraciones sa_seguimiento y sa_seguimiento_anuncio.
