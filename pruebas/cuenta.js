@@ -104,7 +104,7 @@
       if(password.length < 8){ msg('La contraseña tiene que tener al menos 8 caracteres.'); return; }
       const { data, error } = await client.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname } });
       if(error){ msg(traducir(error)); return; }
-      evento('registro');
+      await evento('registro');
       if(data && data.session){ location.reload(); return; }
       mostrar(cabecera('Mira tu correo', 'Te hemos enviado un mensaje a <b>' + esc(email) + '</b>.')
         + '<p class="cg-p">Ábrelo y pulsa el enlace para confirmar tu cuenta. Si no lo ves, mira en «Correo no deseado».</p>'
@@ -153,7 +153,8 @@
 
   // ---------- Probar sin registrarme (cuenta de prueba, sin correo) ----------
   const yaEntroAntes = () => { try { return localStorage.getItem('acgolfYaEntro') === '1'; } catch(e){ return false; } };
-  const evento = e => { try { if(window.acgolfEvento) window.acgolfEvento(e); } catch(x){} };
+  // Apunta el evento y espera como mucho 2 s (para que no se corte al recargar la app)
+  const evento = e => { try { if(window.acgolfEvento) return Promise.race([window.acgolfEvento(e), new Promise(r => setTimeout(r, 2000))]); } catch(x){} return Promise.resolve(); };
   function pantallaPortada(){
     mostrar('<div class="cg-head"><div class="cg-pareja"><img class="cg-curro" src="curro.webp?v=1" alt="Curro, el caddie"><img class="cg-curro" src="lola.webp?v=1" alt="Lola, la caddie"></div>'
       + '<div class="cg-eyebrow">acgolf · Golf entre amigos</div>'
@@ -190,7 +191,7 @@
       }
       const { error } = await client.rpc('empezar_personal', { p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
       if(error && !/Ya tienes tu espacio personal/i.test(String(error.message || ''))){ msg(traducir(error)); return; }
-      evento('prueba');
+      await evento('prueba');
       location.reload();
     });
   }
