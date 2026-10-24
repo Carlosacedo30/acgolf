@@ -1,5 +1,5 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
-// --- Curro, el caddie andaluz: sale un momento al apuntar los golpes con un comentario con gracia ---
+// --- Curro y Lola, los caddies andaluces: sale uno un momento al apuntar los golpes con un comentario con gracia ---
 // Birdie: «¡Te como los huevos!». Par: «¡Qué bueno eres!». Bogey: «Aquí no se dan bolas».
 // Doble bogey o peor: un chiste para quitar hierro. Sale cuando están los golpes de todos en el hoyo:
 // con 3 jugadores o menos, un comentario (el mejor o el peor); con 4 o más, dos (el mejor y el peor).
@@ -12,8 +12,10 @@
   const nombreCorto = n => { const s = String(n || ''); if(s.includes(' / ')) return s.split(' / ').map(x => x.trim().split(/\s+/)[0]).join(' y '); return s.trim().split(/\s+/)[0] || s; };
 
   // ---------- Dibujo de Curro (ánimo: euforico, feliz, animo, guasa) ----------
-  function cara(animo){
-    return '<span class="cu-foto">' + (animo === 'euforico' ? '<i class="cu-brillo b1">✦</i><i class="cu-brillo b2">✦</i><i class="cu-brillo b3">✦</i>' : '') + '<img src="' + (animo === 'euforico' || animo === 'guasa' ? 'curro-risa.webp?v=1' : 'curro.webp?v=1') + '" alt="Curro, el caddie" onerror="this.parentNode.outerHTML=window.acgolfCurro.dibujo(\'' + animo + '\')"></span>';
+  function cara(animo, quien){
+    const lola = quien === 'lola';
+    const img = lola ? 'lola.webp?v=1' : (animo === 'euforico' || animo === 'guasa' ? 'curro-risa.webp?v=1' : 'curro.webp?v=1');
+    return '<span class="cu-foto">' + (animo === 'euforico' ? '<i class="cu-brillo b1">✦</i><i class="cu-brillo b2">✦</i><i class="cu-brillo b3">✦</i>' : '') + '<img src="' + img + '" alt="' + (lola ? 'Lola, la caddie' : 'Curro, el caddie') + '"' + (lola ? '' : ' onerror="this.parentNode.outerHTML=window.acgolfCurro.dibujo(\'' + animo + '\')"') + '></span>';
   }
   function dibujo(animo){
     const ojos = animo === 'euforico' || animo === 'feliz'
@@ -118,6 +120,28 @@
       '{n}, tranquilo: el golf es como la vida, unos hoyos se ganan y otros se pagan.',
       '¡Venga, {n}! Que hasta los profesionales tienen días así. Bueno, días no: hoyos.']
   };
+  // Lola, la caddie (pareja de Curro): voz/lola-<grupo>-<n>.mp3. Sin nombre del jugador en la grabación.
+  const FRASES_LOLA = {
+    aguila: ['¡Águila! Ay, mi alma, esto no lo ha visto Curro en su vida.','¡Pero bueno! ¡Un águila! Esta noche invitas tú a todo el bar.','¡Águila, cariño! Ni con gafas lo hace Curro.','¡Olé, olé y olé! Águila de las que se cuentan en la feria.','¡Madre mía, qué águila! Esto lo cuelgo yo en la nevera.'],
+    birdie: ['¡Birdie! Esto Curro no lo ha visto en su vida.','¡Ay, qué arte! Birdie de los buenos.','¡Birdie, mi niño! Hoy estás que te sales.','¡Toma ya! Birdie, y sin despeinarte.','¡Birdie! Y Curro todavía buscando su bola.','¡Qué bonito, por favor! Un birdie como un clavel.','¡Birdie! Así se juega, con salero.','¡Ole tú! Birdie, y la gente aplaudiendo.'],
+    par: ['Par. Limpito, limpito, como la casa de mi madre.','¡Par! Así me gusta, sin sustos.','Par, y a por el siguiente, que hay prisa.','¡Bien! Par de los que no se notan, pero cuentan.','Par. Ni Curro lo habría hecho mejor. Bueno… Curro no lo habría hecho.','Par, tranquilito y con estilo.','¡Eso es! Par, y con una sonrisa.','Par. El campo y tú, en paz.','¡Par! Más seguro que el agua en el lago.'],
+    parneto: ['Con tu golpe de regalo, eso es par. ¡Bien aprovechado!','Par neto, cariño. El hándicap está para usarlo.','Bogey, pero con tu golpe es par. ¡Eso cuenta, y mucho!','Con el golpe que te dan, par. ¡Así se juega con cabeza!','Par neto. Que no te digan que no sabes jugar.'],
+    bogey: ['Bogey. Tranquilo, que un golpito no es nada.','Bogey, mi alma. El siguiente es tuyo.','Bogey. Peor lo hace Curro, y míralo qué contento.','Uy, bogey. Respira hondo y sonríe.','Bogey. Que esto es muy largo, no te agobies.','Bogey, nada más. El green te tenía manía.','Bogey. Venga, que lo arreglamos en el próximo.','Bogey. Ni frío ni calor: tibio, como el café de Curro.'],
+    doble: ['Doble bogey. Ay, ay, ay… que no se entere tu suegra.','Doble. Hoy el campo se ha levantado con el pie izquierdo.','Doble bogey. Tranquilo, que Curro hace tres de esos antes del desayuno.','Doble. Esa bola tenía ganas de turismo.','Doble bogey. Venga, cara bonita, al siguiente.','Doble. Mejor no lo cuentes en la cena.','Doble bogey. El golf es así: hoy me quieres, mañana no.','Doble. No pasa nada, que la tarjeta no tiene memoria. Bueno… un poquito sí.'],
+    triple: ['Ese hoyo lo borramos y aquí no ha pasado nada.','Uy… ¿cuántos van? No me lo digas, que me da algo.','Ese hoyo se lo regalamos al campo, que es su cumpleaños.','Tranquilo, cariño: hasta los profesionales tienen días así.','Esa bola se ha ido de vacaciones sin avisar.','Mira, ese hoyo lo apuntamos con lápiz y luego lo borramos.','Venga, borrón y cuenta nueva, que quedan muchos hoyos.','Esto no lo vio nadie. Bueno… Curro sí, y se está riendo.']
+  };
+  // Quién comenta: 'turnos' (Curro y Lola se turnan; con dos comentarios, uno cada uno), 'curro' o 'lola'
+  const CLAVE_CADDIE = 'acgolfCaddie';
+  const modoCaddie = () => { try { const v = localStorage.getItem(CLAVE_CADDIE); return v === 'curro' || v === 'lola' ? v : 'turnos'; } catch(e){ return 'turnos'; } };
+  let turno = 0;
+  try { turno = +(localStorage.getItem('acgolfCaddieTurno') || 0) || 0; } catch(e){}
+  function quienHabla(){
+    const m = modoCaddie(); if(m !== 'turnos') return m;
+    turno++; try { localStorage.setItem('acgolfCaddieTurno', String(turno)); } catch(e){}
+    return turno % 2 ? 'curro' : 'lola';
+  }
+  const frasesDe = q => q === 'lola' ? FRASES_LOLA : FRASES;
+  const nombreDe = q => q === 'lola' ? 'Lola' : 'Curro';
   const ANIMO = { aguila:'euforico', birdie:'euforico', par:'feliz', parneto:'feliz', bogey:'animo', doble:'guasa', triple:'guasa' };
 
   // Rotación: va sacando las frases de una «bolsa» barajada y no repite hasta haberlas dicho todas
@@ -128,9 +152,10 @@
   // Nunca la misma frase en 4 hoyos seguidos: se apunta qué dijo en cada hoyo
   let dichas = [];   // [{ h, k: 'grupo-i' }]
   const usadaCerca = (k, h) => dichas.some(d => d.k === k && Math.abs(d.h - h) <= 3);
-  function siguienteFrase(grupo, h){
-    const total = Math.min(FRASES[grupo].length, (typeof GRABADAS !== 'undefined' && GRABADAS[grupo]) || FRASES[grupo].length);
-    let b = bolsas[grupo];
+  function siguienteFrase(grupo, h, quien){
+    const F = frasesDe(quien), pre = quien === 'lola' ? 'lola:' : '';
+    const total = Math.min(F[grupo].length, (quien === 'lola' ? F[grupo].length : ((typeof GRABADAS !== 'undefined' && GRABADAS[grupo]) || F[grupo].length)));
+    let b = bolsas[pre + grupo];
     if(!b || !Array.isArray(b.quedan) || b.total !== total || !b.quedan.length){
       const ult = b && typeof b.ultima === 'number' ? b.ultima : -1;
       const q = Array.from({ length: total }, (_, k) => k);
@@ -139,30 +164,32 @@
       b = { total, quedan: q, ultima: ult };
     }
     // La primera de la bolsa que no se haya dicho en los últimos 4 hoyos; si no hay ninguna, nada
-    let pos = b.quedan.findIndex(k => !usadaCerca(grupo + '-' + k, h));
+    let pos = b.quedan.findIndex(k => !usadaCerca(pre + grupo + '-' + k, h));
     if(pos < 0 && b.quedan.length < total){
       // Lo que queda en la bolsa está «quemado»: se baraja una bolsa nueva con todas y se busca otra vez
       const q = Array.from({ length: total }, (_, k) => k).sort(() => Math.random() - 0.5);
-      b.quedan = q; pos = q.findIndex(k => !usadaCerca(grupo + '-' + k, h));
+      b.quedan = q; pos = q.findIndex(k => !usadaCerca(pre + grupo + '-' + k, h));
     }
-    if(pos < 0){ bolsas[grupo] = b; return -1; }
-    const i = b.quedan.splice(pos, 1)[0]; b.ultima = i; bolsas[grupo] = b;
+    if(pos < 0){ bolsas[pre + grupo] = b; return -1; }
+    const i = b.quedan.splice(pos, 1)[0]; b.ultima = i; bolsas[pre + grupo] = b;
     try { localStorage.setItem(CLAVE_BOLSA, JSON.stringify(bolsas)); } catch(e){}
     return i;
   }
-  function frase(r){
+  function frase(r, quienFijo){
+    const quien = quienFijo || quienHabla(), F = frasesDe(quien), pre = quien === 'lola' ? 'lola:' : '';
     let grupo = r.bruto <= -2 ? 'aguila' : r.bruto === -1 ? 'birdie' : r.bruto === 0 ? 'par'
       : r.neto <= 0 ? 'parneto' : r.bruto === 1 ? 'bogey' : r.bruto === 2 ? 'doble' : 'triple';
     // Par con golpe de hándicap: se mezclan sus frases con las del par de campo (sorteo según cuántas tiene cada una)
     let i = -1;
     if(grupo === 'parneto'){
-      const nG = k => Math.min(FRASES[k].length, GRABADAS[k] || 0);
+      const nG = k => quien === 'lola' ? F[k].length : Math.min(F[k].length, GRABADAS[k] || 0);
       const orden = Math.random() < nG('parneto') / (nG('parneto') + nG('par')) ? ['parneto', 'par'] : ['par', 'parneto'];
-      for(const k of orden){ i = siguienteFrase(k, r.h); if(i >= 0){ grupo = k; break; } }
-    } else i = siguienteFrase(grupo, r.h);
+      for(const k of orden){ i = siguienteFrase(k, r.h, quien); if(i >= 0){ grupo = k; break; } }
+    } else i = siguienteFrase(grupo, r.h, quien);
     if(i < 0) return null;
-    dichas.push({ h: r.h, k: grupo + '-' + i }); if(dichas.length > 30) dichas = dichas.slice(-30);
-    return { animo: ANIMO[grupo], t: FRASES[grupo][i].split('{n}').join(esc(r.n)), grupo, i };
+    dichas.push({ h: r.h, k: pre + grupo + '-' + i }); if(dichas.length > 30) dichas = dichas.slice(-30);
+    const txt = F[grupo][i];
+    return { animo: ANIMO[grupo], t: txt.includes('{n}') ? txt.split('{n}').join(esc(r.n)) : '<i class="cu-para">' + esc(r.n) + ':</i> ' + txt, grupo, i, quien };
   }
 
   // ---------- La voz (la del propio móvil, en español) ----------
@@ -182,17 +209,17 @@
   let audio = null;
   function hablarFrase(f){
     if(!vozActiva()) return;
-    const n = GRABADAS[f.grupo];
+    const n = f.quien === 'lola' ? FRASES_LOLA[f.grupo].length : GRABADAS[f.grupo];
     if(n && f.i < n){
       try {
         if('speechSynthesis' in window) speechSynthesis.cancel();
         if(!audio) audio = new Audio();
-        audio.pause(); audio.src = 'voz/curro-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=3';
+        audio.pause(); audio.src = 'voz/' + (f.quien === 'lola' ? 'lola' : 'curro') + '-' + f.grupo + '-' + (f.i + 1) + '.mp3?v=' + (f.quien === 'lola' ? 1 : 3);
         const p = audio.play(); if(p && p.catch) p.catch(() => hablar(f.t));
         return;
       } catch(e){}
     }
-    hablarFrase(f);
+    hablar(f.t);
   }
   function callar(){ try { if(audio) audio.pause(); if('speechSynthesis' in window) speechSynthesis.cancel(); } catch(e){} }
   function hablar(texto){
@@ -226,6 +253,15 @@
     if(!el){
       el = document.createElement('div'); el.id = 'cuFlash'; el.setAttribute('role', 'status');
       el.addEventListener('click', ev => {
+        const q = ev.target.closest && ev.target.closest('.cu-quien');
+        if(q){
+          ev.stopPropagation();
+          const sig = { turnos:'curro', curro:'lola', lola:'turnos' }[modoCaddie()];
+          try { localStorage.setItem(CLAVE_CADDIE, sig); } catch(e){}
+          q.textContent = ({ turnos:'👫', curro:'👴', lola:'👩' })[sig];
+          const t = el.querySelector('.cu-bocadillo b'); if(t) t.textContent = ({ turnos:'Comentan Curro y Lola', curro:'Solo comenta Curro', lola:'Solo comenta Lola' })[sig];
+          return;
+        }
         const b = ev.target.closest && ev.target.closest('.cu-voz');
         if(b){
           ev.stopPropagation();
@@ -239,8 +275,8 @@
       });
       document.body.appendChild(el);
     }
-    el.className = 'cu-flash cu-' + f.animo;
-    el.innerHTML = cara(f.animo) + '<div class="cu-bocadillo"><b>Curro, tu caddie</b><button type="button" class="cu-voz" aria-label="' + (vozActiva() ? 'Silenciar a Curro' : 'Que hable Curro') + '">' + (vozActiva() ? '🔊' : '🔇') + '</button><p>' + f.t + '</p></div>';
+    el.className = 'cu-flash cu-' + f.animo + (f.quien === 'lola' ? ' cu-lola' : '');
+    el.innerHTML = cara(f.animo, f.quien) + '<div class="cu-bocadillo"><b>' + nombreDe(f.quien) + ', tu caddie</b><button type="button" class="cu-quien" aria-label="Cambiar de caddie">' + ({ turnos:'👫', curro:'👴', lola:'👩' })[modoCaddie()] + '</button><button type="button" class="cu-voz" aria-label="' + (vozActiva() ? 'Silenciar a Curro' : 'Que hable Curro') + '">' + (vozActiva() ? '🔊' : '🔇') + '</button><p>' + f.t + '</p></div>';
     el.classList.remove('ver'); void el.offsetWidth; el.classList.add('ver');
     clearTimeout(ocultar);
     ocultar = setTimeout(quitar, Math.min(11000, 4000 + f.t.length * 55));
@@ -284,7 +320,7 @@
     const nombres = (typeof players !== 'undefined' && players) ? players : [];
     const r = x => ({ n: nombreCorto(nombres[x.p] || 'Jugador'), bruto: x.bruto, neto: x.neto, h, semilla: x.p });
     let lista;
-    if(res.length >= 4 && peor.bruto > mejor.bruto) lista = [frase(r(mejor)), frase(r(peor))].filter(Boolean);
+    if(res.length >= 4 && peor.bruto > mejor.bruto){ const a = frase(r(mejor)); const b = frase(r(peor), modoCaddie() === 'turnos' && a ? (a.quien === 'lola' ? 'curro' : 'lola') : null); lista = [a, b].filter(Boolean); }
     else {
       // Uno solo: el que más chicha tenga; si a ese no le queda frase sin repetir, se prueba con otro; si no, nada
       const primero = (mejor.bruto <= -1 || peor.bruto < 2 || mejor.bruto === peor.bruto) ? mejor : peor;
@@ -306,5 +342,5 @@
   document.addEventListener('change', alApuntar, true);
   document.addEventListener('input', alApuntar, true);
 
-  window.acgolfCurro = { cara, dibujo, frase, mostrar, hablar };
+  window.acgolfCurro = { cara, dibujo, frase, mostrar, hablar, modoCaddie };
 })();
