@@ -171,6 +171,9 @@ async function ligaResultados(l){
   const { data: rondas } = await client.from('rounds').select('code, course_id, match_groups').in('code', rc);
   const porCodigo = {}; (rondas || []).forEach(r => porCodigo[r.code] = r);
   const out = { _estado: rondaDe };
+  // Solo puntúan los jugadores con cuenta: los apuntados a mano sin correo juegan, pero no clasifican
+  let conCuenta = null;
+  try { const rc2 = await client.rpc('jugadores_con_cuenta'); if(!rc2.error && Array.isArray(rc2.data)) conCuenta = new Set(rc2.data.map(x => String(x).toLowerCase())); } catch(e){}
   l.jornadas.forEach(j => {
     const r = porCodigo[rondaDe[ligaCodigoJornada(l, j.n)]];
     if(!r) return;
@@ -178,6 +181,7 @@ async function ligaResultados(l){
     const filas = [];
     (r.match_groups || []).forEach(g => (g.players || []).forEach((n, i) => {
       if(!n || !l.jugadores.includes(n)) return;
+      if(conCuenta && !conCuenta.has(String(n).toLowerCase())) return;
       const sc = (g.scores && g.scores[i]) || {};
       const golpes = Object.keys(sc).map(h => Number(sc[h])).filter(v => v > 0);
       if(golpes.length < 18) return; // solo cuentan las tarjetas completas

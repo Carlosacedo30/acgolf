@@ -883,10 +883,12 @@
       const box = $('cgSinCuenta'); const d = rs && rs.data;
       if(!box || rs.error || !d || !(d.jugadores || []).length) return;
       const enlace = d.codigo ? APP_PRUEBAS + '?unirse=' + encodeURIComponent(d.codigo) : '';
-      const texto = j => '⛳ Te invito a «' + d.grupo + '» en acgolf, la app de golf del grupo.\nEntra en este enlace, regístrate con tu correo y una contraseña e instálala en tu móvil:\n' + enlace
+      const texto = j => '⛳ Hola, ' + j.nombre.split(' ')[0] + '. Estás apuntado en «' + d.grupo + '» en acgolf, la app de golf del grupo, pero todavía no te has inscrito.\n'
+        + '🔒 Mientras no te inscribas puedes jugar, pero no sales en la clasificación, ni en el ganador de la semana, ni en las medallas.\n'
+        + 'Para desbloquearlo, entra en este enlace, regístrate con tu correo y una contraseña e instálala en tu móvil:\n' + enlace
         + '\nPon tu nombre tal cual: ' + j.nombre + ' (así conservas tu hándicap).';
       box.innerHTML = '<div class="cg-sep">🔒 Sin cuenta todavía</div>'
-        + '<div class="cg-candado"><b>🔒 Pendientes de inscribirse</b>Están apuntados en el grupo, pero no pueden entrar en la app ni anotar sus golpes desde su móvil. '
+        + '<div class="cg-candado"><b>🔒 Pendientes de inscribirse</b>Pueden jugar, pero no salen en la clasificación, ni en el ganador de la semana, ni en las medallas, y no pueden entrar en la app desde su móvil. '
         + 'Para desbloquearlos tienen que inscribirse con su correo desde el enlace de invitación, poniendo su nombre tal cual sale aquí.</div>'
         + '<div class="pa-lista">' + d.jugadores.map((j, i) => '<div class="pa-fila pa-bloq"><div class="pa-fila-t"><b>🔒 ' + esc(j.nombre) + '</b>'
             + '<span>Sin correo · Hándicap ' + (j.hcp == null ? '—' : esc(String(j.hcp).replace('.', ','))) + '</span></div>'
