@@ -137,3 +137,8 @@ button.lg-cal-f{ cursor:pointer; }
 .lg-t tr.lg-lider td{ background:var(--lg-c2); }
 .lg-t tr.lg-gris td{ opacity:.5; }
 .lg-desc s{ display:inline-block; margin-right:4px; border-radius:6px; padding:1px 6px; background:var(--lg-c2); color:var(--lg-mut); font-size:13.5px; }
+/* Campo de la liga: Sevilla, favoritos y buscador */
+.lg-campos{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.lg-campos .lg-opc{ font-size:15px; line-height:1.15; }
+.lg-campos-t{ font-size:13px; font-weight:700; color:var(--lg-mut); margin:10px 2px 6px; }
+.lg-buscar-campo{ width:100%; margin-top:8px; border-style:dashed; }

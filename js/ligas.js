@@ -76,7 +76,35 @@ function ligaEsAdmin(){
   return typeof isAdminDevice === 'function' ? isAdminDevice() : !!(typeof getAdminKey === 'function' && getAdminKey());
 }
 function ligaCampo(id){ return COURSES.find(c => c.id === id) || COURSES.find(c => c.id === 'hato-verde'); }
-function ligaCampoCorto(id){ return id === 'zaudin' ? 'Zaudín' : 'Hato Verde'; }
+// Campos de la liga: los de Sevilla de siempre, los favoritos del móvil y cualquiera del buscador de campos
+const LIGA_CAMPOS_SEVILLA = [['hato-verde', 'Hato Verde'], ['zaudin', 'Zaudín'], ['sevilla-golf', 'R.C. Golf Sevilla'], ['rc-pineda', 'R.C. Pineda'], ['la-cartuja', 'La Cartuja']];
+function ligaCampoCorto(id){
+  const fijo = LIGA_CAMPOS_SEVILLA.find(c => c[0] === id); if(fijo) return fijo[1];
+  const c = (typeof COURSES !== 'undefined' ? COURSES : []).find(x => x.id === id);
+  return c ? String(c.name).replace(/^Real Club de Golf /, 'R.C. Golf ').replace(/^Club de Golf /, '') : 'Hato Verde';
+}
+// Un campo que no viene con la app (del buscador) se guarda dentro de la liga y se da de alta al cargarla, así lo ven todos los móviles
+function ligaRegistrarCampos(campos){
+  if(!campos || typeof COURSES === 'undefined') return;
+  Object.values(campos).forEach(c => { if(c && c.id && Array.isArray(c.par) && !COURSES.some(x => x.id === c.id)) COURSES.push(Object.assign({}, c, { externo: true })); });
+}
+function ligaCampoGuardable(id){
+  const c = (typeof COURSES !== 'undefined' ? COURSES : []).find(x => x.id === id);
+  if(!c || !c.externo) return null;
+  return { id: c.id, name: c.name, location: c.location || '', par: c.par, hcp: c.hcp, tees: c.tees || undefined, holes9: c.holes9 || undefined };
+}
+// Botones para elegir campo: Sevilla, favoritos, el elegido si es otro y «Buscar otro campo»
+function ligaBotonesCampo(sel, attr, conAlternar){
+  const favs = (window.acgolfCampos && window.acgolfCampos.Favoritos ? window.acgolfCampos.Favoritos.leer() : [])
+    .map(f => { const c = window.acgolfCampos._util.aCursoApp(f); return c ? [c.id, f.nombre] : null; })
+    .filter(x => x && !LIGA_CAMPOS_SEVILLA.some(c => c[0] === x[0]));
+  const lista = LIGA_CAMPOS_SEVILLA.concat(conAlternar ? [['alternar', 'Alternar Hato Verde y Zaudín']] : []);
+  const otro = sel && !lista.some(c => c[0] === sel) && !favs.some(c => c[0] === sel) ? [[sel, ligaCampoCorto(sel)]] : [];
+  const btn = c => '<button type="button" class="lg-opc' + (sel === c[0] ? ' on' : '') + '" ' + attr + '="' + ligaEsc(c[0]) + '">' + ligaEsc(c[1]) + '</button>';
+  return '<div class="lg-campos">' + lista.concat(otro).map(btn).join('') + '</div>'
+    + (favs.length ? '<div class="lg-campos-t">⭐ Tus campos favoritos</div><div class="lg-campos">' + favs.map(btn).join('') + '</div>' : '')
+    + (window.acgolfCampos ? '<button type="button" class="lg-opc lg-buscar-campo" data-buscarcampo="' + attr + '">🔍 Buscar otro campo</button>' : '');
+}
 function ligaHcp(n){ const h = Number((typeof FAVORITE_HANDICAPS !== 'undefined' ? FAVORITE_HANDICAPS : {})[n]); return isNaN(h) ? null : h; }
 function ligaJugadoresTodos(){ return (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []).sort((a, b) => a.localeCompare(b, 'es')); }
 
@@ -157,11 +185,11 @@ function ligaDesdeFila(row){
   return { id: row.id, code: row.code, updatedAt: row.updated_at, nombre: meta.nombre || 'Liga', jugadores: meta.jugadores || [],
     dia: meta.dia, courseId: meta.courseId, hora: meta.hora || '08:40', cada: meta.cada || 7, hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [],
     frec: meta.frec || null, formato: meta.formato === 'stableford' ? 'stableford' : 'stroke', regla: meta.regla || 'todas', cuentan: meta.cuentan || null,
-    fijas: Array.isArray(meta.fijas) ? meta.fijas : [], minimo: meta.minimo || 0, sorteo: meta.sorteo || 'azar' };
+    fijas: Array.isArray(meta.fijas) ? meta.fijas : [], minimo: meta.minimo || 0, sorteo: meta.sorteo || 'azar', campos: (ligaRegistrarCampos(meta.campos), meta.campos || {}) };
 }
 function ligaAFila(l){
   return [{ players: [], handicaps: [], scores: {}, meta: { liga: { nombre: l.nombre, jugadores: l.jugadores, dia: l.dia, courseId: l.courseId, hora: l.hora, cada: l.cada || 7, hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas,
-    frec: l.frec || null, formato: l.formato || 'stroke', regla: l.regla || 'todas', cuentan: l.cuentan || null, fijas: l.fijas || [], minimo: l.minimo || 0, sorteo: l.sorteo || 'azar' } } }];
+    frec: l.frec || null, formato: l.formato || 'stroke', regla: l.regla || 'todas', cuentan: l.cuentan || null, fijas: l.fijas || [], minimo: l.minimo || 0, sorteo: l.sorteo || 'azar', campos: l.campos || {} } } }];
 }
 const ligaCodigoJornada = (l, n) => l.code + 'J' + n;
 
@@ -336,7 +364,7 @@ function ligaPintarForm(){
     + '<div class="field"><label for="lgHora">1ª salida</label><input type="time" id="lgHora" value="' + f.hora + '"></div></div>'
 
     + '<div class="conv-eyebrow">5 · Campo</div>'
-    + '<div class="lg-dos lg-tres">' + [['hato-verde', 'Hato Verde'], ['zaudin', 'Zaudín'], ['alternar', 'Alternar']].map(c => '<button type="button" class="lg-opc' + (f.campo === c[0] ? ' on' : '') + '" data-campo="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
+    + ligaBotonesCampo(f.campo, 'data-campo', true)
 
     + '<div class="conv-eyebrow">6 · Salida</div>'
     + '<div class="lg-dos">' + [['normal', 'Por un hoyo'], ['tiro', 'Al tiro']].map(c => '<button type="button" class="lg-opc' + (f.salida === c[0] ? ' on' : '') + '" data-salida="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
@@ -398,6 +426,7 @@ function ligaPintarForm(){
     f.dia = Number(b.dataset.dia); leer(); f.inicio = ligaProximoDia(f.dia); f.fechas = {}; ligaPintarForm();
   }));
   body.querySelectorAll('[data-campo]').forEach(b => b.addEventListener('click', ()=>{ f.campo = b.dataset.campo; repintar(); }));
+  body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { f.campo = curso.id; ligaPintarForm(); }, 'buscar'); }));
   body.querySelectorAll('[data-cada]').forEach(b => b.addEventListener('click', ()=>{ f.cada = Number(b.dataset.cada); f.fechas = {}; repintar(); }));
   body.querySelectorAll('[data-salida]').forEach(b => b.addEventListener('click', ()=>{ f.salida = b.dataset.salida; repintar(); }));
   body.querySelectorAll('[data-formato]').forEach(b => b.addEventListener('click', ()=>{ f.formato = b.dataset.formato; repintar(); }));
@@ -446,7 +475,8 @@ async function ligaCrear(){
   try {
     const l = { nombre: f.nombre, jugadores: f.jugadores.slice(), dia: f.dia, courseId: f.campo, hora: f.hora, cada: f.cada, hoyoInicio: f.hoyoInicio || 1, jornadas: cal,
       frec: (LIGA_FREC.find(x => x[3] === f.cada) || [null])[0], formato: f.formato, regla: f.regla, cuentan: Math.min(f.cuentan, f.jornadas),
-      fijas: f.fijas.filter(r => r <= f.jornadas), minimo: f.minimo || 0, sorteo: f.sorteo };
+      fijas: f.fijas.filter(r => r <= f.jornadas), minimo: f.minimo || 0, sorteo: f.sorteo, campos: {} };
+    cal.forEach(j => { const c = ligaCampoGuardable(j.courseId); if(c) l.campos[c.id] = c; });
     const { data, error } = await client.from('rounds').insert({
       code: genRoundCode(), course_id: null, course_name: null, round_name: LIGA_TAG, scoring_type: 'strokeplay', match_groups: ligaAFila(l),
     }).select('id, code, match_groups, updated_at').single();
@@ -630,7 +660,7 @@ async function ligaConfigJornada(l, n, res){
         + '<div class="field"><label for="ljHora">' + (cfg.salida === 'tiro' ? 'Hora del tiro' : '1ª salida') + '</label><input type="time" id="ljHora" value="' + cfg.hora + '"></div></div>'
         + '<div class="lg-aviso" style="margin-top:0;">' + ligaEsc(ligaFechaLarga(cfg.date)) + '</div>'
         + '<div class="conv-eyebrow">Campo</div>'
-        + '<div class="lg-dos">' + [['hato-verde', 'Hato Verde'], ['zaudin', 'Zaudín']].map(x => '<button type="button" class="lg-opc' + (cfg.courseId === x[0] ? ' on' : '') + '" data-c="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>'
+        + ligaBotonesCampo(cfg.courseId, 'data-c', false)
         + '<div class="conv-eyebrow">Salida</div>'
         + '<div class="lg-dos">' + [['normal', 'Por un hoyo'], ['tiro', 'Al tiro']].map(x => '<button type="button" class="lg-opc' + (cfg.salida === x[0] ? ' on' : '') + '" data-s="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>'
         + (cfg.salida === 'tiro'
@@ -658,6 +688,7 @@ async function ligaConfigJornada(l, n, res){
       const h = document.getElementById('ljHora'); if(h && h.value) cfg.hora = h.value;
     };
     body.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.courseId = b.dataset.c; pintar(); }));
+    body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'buscar'); }));
     body.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.salida = b.dataset.s; pintar(); }));
     body.querySelectorAll('[data-hoyoini]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.hoyoInicio = ligaHoyoMas(cfg.hoyoInicio, Number(b.dataset.hoyoini)); pintar(); }));
     body.querySelectorAll('.lg-mas-p').forEach(b => b.addEventListener('click', ()=>{
@@ -712,6 +743,7 @@ async function ligaGuardarJornada(l, j, cfg, c, callado){
   const client = initSupabase(); if(!client) return false;
   const antes = JSON.stringify(j);
   j.date = cfg.date; j.courseId = cfg.courseId;
+  { const cg = ligaCampoGuardable(cfg.courseId); if(cg){ l.campos = l.campos || {}; l.campos[cg.id] = cg; } }
   if(cfg.hora && cfg.hora !== l.hora) j.hora = cfg.hora; else delete j.hora;
   if(cfg.grupos) j.grupos = cfg.grupos.map(g => g.slice());
   if(cfg.salida === 'tiro'){ j.salida = 'tiro'; j.hoyos = cfg.hoyos.slice(); delete j.hoyoInicio; }
