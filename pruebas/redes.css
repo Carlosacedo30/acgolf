@@ -1,0 +1,11 @@
+/* Redes sociales de acgolf (portada) */
+.ac-redes{ margin:10px auto 6px; max-width:420px; }
+.ac-redes-t{ font:800 12px 'Barlow', sans-serif; letter-spacing:.14em; text-transform:uppercase; color:#5A6478; margin-bottom:8px; }
+.ac-redes-l{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.ac-red{ display:flex; align-items:center; justify-content:center; min-height:46px; border-radius:12px; font:800 15px 'Barlow', sans-serif;
+  color:#FFFFFF; text-decoration:none; }
+.ac-red.ig{ background:linear-gradient(45deg, #F58529, #DD2A7B 55%, #8134AF); }
+.ac-red.tt{ background:#111316; border:1px solid #2A3138; }
+.ac-red.yt{ background:#E62117; }
+.ac-red.fb{ background:#1877F2; }
+.ac-red:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
