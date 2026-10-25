@@ -230,6 +230,15 @@ cambia('pruebas/js/data.js', """      hcp:[3,5,13,12,10,15,2,11,9] },""", """   
         amarillas:{ rating:25.4, slope:138 },
         rojas:    { rating:26.3, slope:146 },
       } },""")
+# Las Minas (9 hoyos, par 36): rating y slope de 9 hoyos de golfingrecord.com (orientativo, falta confirmar con el club)
+cambia('pruebas/js/data.js', """      hcp:[9,3,15,7,17,13,5,11,1] },""", """      hcp:[9,3,15,7,17,13,5,11,1],
+      // Rating / slope de 9 hoyos: golfingrecord.com (orientativo); blancas y amarillas de caballeros, azules y rojas de damas
+      tees:{
+        blancas:   { rating:35.5, slope:132 },
+        amarillas: { rating:35.4, slope:131 },
+        azules:    { rating:36.2, slope:126 },
+        rojas:     { rating:35.5, slope:124 },
+      } },""")
 # Real Club de Golf de Sevilla: rating y slope de la tarjeta del club (enero de 2026, Sistema Mundial de Hándicap).
 # La tarjeta va por número de barra; colores por distancia (como la Federación):
 # blancas = barra 62 y amarillas = barra 56 (caballeros); azules = barra 53 y rojas = barra 46 (damas).

@@ -107,7 +107,14 @@
       } },
     { id:'las-minas', name:'Las Minas Golf', location:'Aznalcázar, Sevilla', holes9:true,
       par:[4,5,3,4,4,4,4,3,5],
-      hcp:[9,3,15,7,17,13,5,11,1] },
+      hcp:[9,3,15,7,17,13,5,11,1],
+      // Rating / slope de 9 hoyos: golfingrecord.com (orientativo); blancas y amarillas de caballeros, azules y rojas de damas
+      tees:{
+        blancas:   { rating:35.5, slope:132 },
+        amarillas: { rating:35.4, slope:131 },
+        azules:    { rating:36.2, slope:126 },
+        rojas:     { rating:35.5, slope:124 },
+      } },
     { id:'hato-verde', name:'Club Hato Verde', location:'Las Pajanosas-Guillena, Sevilla',
       par:[5,4,4,4,3,3,3,5,3, 5,3,5,4,4,3,4,4,4],
       hcp:[1,7,13,5,9,11,17,3,15, 8,18,10,4,6,12,2,16,14],
