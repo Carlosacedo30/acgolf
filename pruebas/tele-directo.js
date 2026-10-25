@@ -25,29 +25,62 @@
     return NOMBRES.includes(k2) ? 'n-' + k2 : null;
   }
 
-  // ---------- Sonido: se cargan las frases y se recorta el silencio del principio y del final ----------
-  let ctx = null, sonando = null, cola = [], turno = 0, cache = {};
-  function contexto(){
-    if(!ctx){ const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return null; ctx = new AC(); }
-    return ctx;
+  // ---------- Sonido ----------
+  // Se oye con un reproductor normal (<audio>), como el resto de la app: así suena aunque el iPhone tenga
+  // el interruptor de silencio puesto. Cada frase se baja una vez, se mira dónde empieza y acaba la voz
+  // (para quitar el silencio de los bordes) y se guarda en el móvil mientras dura la pantalla.
+  let voz = null, cola = [], turno = 0, cache = {}, cortaT = null;
+  const reproductor = () => { if(!voz){ voz = new Audio(); voz.preload = 'auto'; voz.setAttribute('playsinline', ''); } return voz; };
+  function decodificar(ab){
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if(!OAC) return Promise.resolve(null);
+    const c = new OAC(1, 44100, 44100);
+    return new Promise(ok => { try { const pr = c.decodeAudioData(ab, ok, () => ok(null)); if(pr && pr.catch) pr.catch(() => ok(null)); } catch(e){ ok(null); } });
   }
   async function cargar(clave){
     if(cache[clave]) return cache[clave];
     cache[clave] = (async () => {
-      const c = contexto(); if(!c) throw new Error('sin audio');
       const r = await fetch(VOCES + clave + '.mp3');
       if(!r.ok) throw new Error('no está ' + clave);
-      const buf = await new Promise((ok, mal) => { const b = r.arrayBuffer(); b.then(ab => c.decodeAudioData(ab, ok, mal), mal); });
-      // Recorte del silencio (umbral bajo, con un pelín de margen)
-      const d = buf.getChannelData(0), sr = buf.sampleRate, U = 0.012;
-      let a = 0, z = d.length - 1;
-      while(a < d.length && Math.abs(d[a]) < U) a++;
-      while(z > a && Math.abs(d[z]) < U) z--;
-      const ini = Math.max(0, a / sr - 0.04), fin = Math.min(buf.duration, z / sr + 0.12);
-      return { buf, ini, dur: Math.max(0.2, fin - ini) };
+      const ab = await r.arrayBuffer();
+      const url = URL.createObjectURL(new Blob([ab.slice(0)], { type: 'audio/mpeg' }));
+      let ini = 0, dur = null;
+      const buf = await decodificar(ab);
+      if(buf){
+        const d = buf.getChannelData(0), sr = buf.sampleRate, U = 0.015;
+        let a = 0, z = d.length - 1;
+        while(a < d.length && Math.abs(d[a]) < U) a++;
+        while(z > a && Math.abs(d[z]) < U) z--;
+        if(a < z){ ini = Math.max(0, a / sr - 0.05); dur = Math.min(buf.duration, z / sr + 0.15) - ini; }
+      }
+      return { url, ini, dur };
     })();
     cache[clave].catch(() => { delete cache[clave]; });
     return cache[clave];
+  }
+  // Toca una frase; si el móvil no deja sonar (nadie ha tocado la pantalla), devuelve 'bloqueado'
+  function tocar(s){
+    const el = reproductor();
+    return new Promise(ok => {
+      let hecho = false;
+      const fin = r => { if(hecho) return; hecho = true; clearTimeout(cortaT); el.onended = null; el.onerror = null; try { el.pause(); } catch(e){} ok(r); };
+      el.onended = () => fin('ok'); el.onerror = () => fin('error');
+      const empezar = () => {
+        try { if(s.ini) el.currentTime = s.ini; } catch(e){}
+        const pr = el.play();
+        const corta = () => { if(s.dur) cortaT = setTimeout(() => fin('ok'), s.dur * 1000 + 80); };
+        if(pr && pr.then) pr.then(corta, err => fin(err && err.name === 'NotAllowedError' ? 'bloqueado' : 'error'));
+        else corta();
+      };
+      el.muted = false;
+      if(el.src !== s.url){ el.src = s.url; el.onloadedmetadata = () => { el.onloadedmetadata = null; empezar(); }; el.load(); }
+      else empezar();
+      setTimeout(() => fin('error'), 15000);
+    });
+  }
+  // Desbloquear el sonido dentro del toque del dedo (iPhone): se arranca el reproductor en silencio
+  function desbloquear(){
+    const el = reproductor();
+    try { el.muted = true; el.src = VOCES + 'l-hola-campeon.mp3'; const pr = el.play(); if(pr && pr.then) pr.then(() => { el.pause(); }, () => {}); } catch(e){}
   }
 
   // ---------- La mesa de Lola y Curro ----------
@@ -66,20 +99,20 @@
     r.innerHTML = html; r.classList.remove('ver'); void r.offsetWidth; r.classList.add('ver');
   }
   function parar(){
-    cola = [];
-    try { if(sonando) sonando.stop(); } catch(e){}
-    sonando = null; mesa(null); rotulo('');
-    const b = document.querySelector('#vvOverlay .vt-oir'); if(b) b.hidden = false;
+    cola = []; clearTimeout(cortaT);
+    try { if(voz){ voz.pause(); } } catch(e){}
+    mesa(null); rotulo('');
+  }
+  function botonOir(ver, texto){
+    const b = document.querySelector('#vvOverlay .vt-oir'); if(!b) return;
+    b.hidden = !ver; if(texto) b.querySelector('span').textContent = texto;
   }
   async function reproducir(pasos){
     parar();
-    const c = contexto(); if(!c) return;
-    try { if(c.state === 'suspended') await c.resume(); } catch(e){}
-    if(c.state !== 'running') return false;
-    const b = document.querySelector('#vvOverlay .vt-oir'); if(b) b.hidden = true;
+    botonOir(false);
     cola = pasos.slice();
-    pasos.forEach(p => p.clips.forEach(k => cargar(k).catch(() => {})));   // se van bajando todas
     const mia = cola;
+    pasos.forEach(p => p.clips.forEach(k => cargar(k).catch(() => {})));   // se van bajando todas
     for(const p of pasos){
       if(cola !== mia) return;
       rotulo(p.rot || '');
@@ -88,15 +121,13 @@
         let s; try { s = await cargar(k); } catch(e){ continue; }
         if(cola !== mia) return;
         mesa(p.q);
-        await new Promise(ok => {
-          const src = c.createBufferSource(); src.buffer = s.buf; src.connect(c.destination);
-          src.onended = ok; sonando = src; src.start(0, s.ini, s.dur);
-        });
+        const r = await tocar(s);
+        if(r === 'bloqueado'){ mesa(null); rotulo(''); cola = []; botonOir(true, 'Escuchar a Lola y Curro'); return false; }
       }
       mesa(null);
-      await new Promise(ok => setTimeout(ok, 260));
+      await new Promise(ok => setTimeout(ok, 220));
     }
-    if(cola === mia){ sonando = null; rotulo(''); const bb = document.querySelector('#vvOverlay .vt-oir'); if(bb){ bb.hidden = false; bb.querySelector('span').textContent = 'Volver a escuchar a Lola y Curro'; } }
+    if(cola === mia){ rotulo(''); botonOir(true, 'Volver a escuchar a Lola y Curro'); }
     return true;
   }
 
@@ -161,7 +192,7 @@
       + '<div class="vt-bajo"><div class="vt-reloj"></div><div class="vt-marcador"><div class="vt-cinta"></div></div></div>'
       + '<button type="button" class="vt-oir">🔊 <span>Escuchar a Lola y Curro</span></button>'
       + '</div>';
-    sitio.querySelector('.vt-oir').onclick = () => { reproducir(guion(ronda)); };
+    sitio.querySelector('.vt-oir').onclick = () => { desbloquear(); reproducir(guion(ronda)); };
     sitio.querySelector('.vt-grande').onclick = () => {
       const el = sitio.querySelector('.vt');
       try { if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch(e){} }).catch(() => el.classList.toggle('vt-full')); else el.classList.toggle('vt-full'); } catch(e){ el.classList.toggle('vt-full'); }
@@ -169,7 +200,7 @@
     actualizar(round);
     clearInterval(reloj); reloj = setInterval(pintarReloj, 30000);
     // Al entrar, se intenta empezar solos (vienen de tocar «Seguir en vivo»); si el móvil no deja, sale el botón
-    setTimeout(() => { if(!empezado){ empezado = true; reproducir(guion(ronda)).then(ok => { if(ok === false) { const b = sitio.querySelector('.vt-oir'); if(b) b.hidden = false; } }); } }, 600);
+    setTimeout(() => { if(!empezado){ empezado = true; reproducir(guion(ronda)); } }, 600);
   }
   function pintarReloj(){
     const r = document.querySelector('#vvOverlay .vt-reloj'); if(!r || !ronda) return;
