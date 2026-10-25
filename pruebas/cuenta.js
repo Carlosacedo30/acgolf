@@ -872,11 +872,27 @@
       + '<div class="pa-lista">' + lista.map(m => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(m.nombre) + '</b>'
           + '<span>' + esc(m.email) + '</span><span>' + ROL[m.rol] + ' · desde ' + fecha(m.desde) + '</span></div>'
           + '<div class="pa-acc">' + (m.user_id === window.miPerfilId && !desdeSuper ? '<span class="pa-tu">Tú</span>' : '<button type="button" class="pa-b rojo" data-quitar="' + esc(m.user_id) + '" data-n="' + esc(m.nombre) + '">Quitar</button>') + '</div></div>').join('') + '</div>'
+      + '<div id="cgSinCuenta"></div>'
       + '<div class="cg-sep">Añadir a alguien que ya tiene cuenta</div>'
       + '<label class="cg-lbl">Su correo<small>Si aún no tiene cuenta, mándale el enlace de invitación desde «Mi cuenta».</small><input id="paEmail" type="email" autocapitalize="off" inputmode="email"></label>'
       + '<button type="button" class="cg-btn ghost" id="paAnadir">Añadir al grupo</button>'
       + '<button type="button" class="cg-btn" id="cgVolver">Volver</button>');
     $('cgVolver').onclick = () => desdeSuper ? pantallaSuper(perfil, 'grupos') : panelMiCuenta(perfil);
+    // Jugadores apuntados a mano, sin cuenta: salen con candado y un aviso para que se inscriban
+    client.rpc('ga_sin_cuenta', { p_grupo: grupoId }).then(rs => {
+      const box = $('cgSinCuenta'); const d = rs && rs.data;
+      if(!box || rs.error || !d || !(d.jugadores || []).length) return;
+      const enlace = d.codigo ? APP_PRUEBAS + '?unirse=' + encodeURIComponent(d.codigo) : '';
+      const texto = j => '⛳ Te invito a «' + d.grupo + '» en acgolf, la app de golf del grupo.\nEntra en este enlace, regístrate con tu correo y una contraseña e instálala en tu móvil:\n' + enlace
+        + '\nPon tu nombre tal cual: ' + j.nombre + ' (así conservas tu hándicap).';
+      box.innerHTML = '<div class="cg-sep">🔒 Sin cuenta todavía</div>'
+        + '<div class="cg-candado"><b>🔒 Pendientes de inscribirse</b>Están apuntados en el grupo, pero no pueden entrar en la app ni anotar sus golpes desde su móvil. '
+        + 'Para desbloquearlos tienen que inscribirse con su correo desde el enlace de invitación, poniendo su nombre tal cual sale aquí.</div>'
+        + '<div class="pa-lista">' + d.jugadores.map((j, i) => '<div class="pa-fila pa-bloq"><div class="pa-fila-t"><b>🔒 ' + esc(j.nombre) + '</b>'
+            + '<span>Sin correo · Hándicap ' + (j.hcp == null ? '—' : esc(String(j.hcp).replace('.', ','))) + '</span></div>'
+            + (enlace ? '<div class="pa-acc"><a class="pa-b" href="https://wa.me/?text=' + encodeURIComponent(texto(j)) + '" target="_blank" rel="noopener">Invitar</a></div>' : '')
+            + '</div>').join('') + '</div>';
+    }, () => {});
     $('paAnadir').onclick = e => ocupado(e.target, async () => {
       const email = $('paEmail').value.trim(); if(!email){ msg('Escribe su correo.'); return; }
       const { data, error } = await client.rpc('ga_anadir', { p_grupo: grupoId, p_email: email });
