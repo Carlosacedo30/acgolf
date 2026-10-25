@@ -29,7 +29,7 @@
   // Se oye con un reproductor normal (<audio>), como el resto de la app: así suena aunque el iPhone tenga
   // el interruptor de silencio puesto. Cada frase se baja una vez, se mira dónde empieza y acaba la voz
   // (para quitar el silencio de los bordes) y se guarda en el móvil mientras dura la pantalla.
-  let voz = null, cola = [], turno = 0, cache = {}, cortaT = null;
+  let voz = null, cola = [], turno = 0, cache = {}, cortaT = null, suena = false, hablando = false;
   const reproductor = () => { if(!voz){ voz = new Audio(); voz.preload = 'auto'; voz.setAttribute('playsinline', ''); } return voz; };
   function decodificar(ab){
     const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if(!OAC) return Promise.resolve(null);
@@ -109,6 +109,7 @@
   }
   async function reproducir(pasos){
     parar();
+    hablando = true;
     botonOir(false);
     cola = pasos.slice();
     const mia = cola;
@@ -122,12 +123,13 @@
         if(cola !== mia) return;
         mesa(p.q);
         const r = await tocar(s);
-        if(r === 'bloqueado'){ mesa(null); rotulo(''); cola = []; botonOir(true, 'Escuchar a Lola y Curro'); return false; }
+        if(r === 'ok') suena = true;
+        if(r === 'bloqueado'){ hablando = false; mesa(null); rotulo(''); cola = []; botonOir(true, 'Escuchar a Lola y Curro'); return false; }
       }
       mesa(null);
       await new Promise(ok => setTimeout(ok, 220));
     }
-    if(cola === mia){ rotulo(''); botonOir(true, 'Volver a escuchar a Lola y Curro'); }
+    if(cola === mia){ rotulo(''); botonOir(true, 'Volver a escuchar a Lola y Curro'); hablando = false; setTimeout(siguienteAviso, 1500); }
     return true;
   }
 
@@ -178,9 +180,55 @@
 
   // ---------- La pantalla ----------
   let ronda = null, codigo = null, reloj = null, empezado = false;
+
+  // ---------- Lola y Curro vuelven a hablar solos cuando pasa algo importante ----------
+  // Cambio de líder, empate arriba, birdie o águila, un hoyo desastroso y la recta final (hoyo 15).
+  // Como mucho uno cada minuto; si están hablando, espera. Solo si el sonido ya ha funcionado antes.
+  let antes = null, avisos = [], ultimoAviso = 0, avisoT = null;
+  const MIN_ENTRE_AVISOS = 60000;
+  function foto(round){
+    const EV = window.acgolfEnVivo || {};
+    const t = EV.tabla ? EV.tabla(round) : [], m = EV.momentos ? EV.momentos(round) : [];
+    const jugadas = {}; m.forEach(x => { jugadas[x.gi + ':' + x.p + ':' + x.h] = x; });
+    return { t, jugadas, hoyo: t.reduce((a, x) => Math.max(a, x.ultimo), 0), lider: t[0] ? t[0].n : null, empate: !!(t[1] && t[1].neto === t[0].neto) };
+  }
+  function vigilar(round){
+    const ahora = foto(round);
+    if(!antes){ antes = ahora; return; }          // la primera vez solo se apunta cómo está
+    const nuevas = Object.keys(ahora.jugadas).filter(k => !antes.jugadas[k]).map(k => ahora.jugadas[k]);
+    const L = (clips, rot) => ({ q: 'lola', clips: [].concat(clips).filter(Boolean), rot });
+    const C = (clips, rot) => ({ q: 'curro', clips: [].concat(clips).filter(Boolean), rot });
+    const t = ahora.t;
+    if(ahora.lider && antes.lider && norm(ahora.lider) !== norm(antes.lider) && !ahora.empate){
+      const k = claveNombre(ahora.lider), rot = '¡Nuevo líder! · <b>' + esc(corto(ahora.lider)) + '</b> ' + signo(t[0].neto) + ' neto';
+      avisos.push({ prio: 1, pasos: [k ? L(['l-manda', k], rot) : null, C(turno % 2 ? 'c-eso-es-golf' : 'c-como-un-tiro', rot)].filter(Boolean) });
+    } else if(ahora.empate && !antes.empate){
+      avisos.push({ prio: 2, pasos: [C('c-empate', '¡Empate arriba! · <b>' + esc(corto(t[0].n)) + '</b> y <b>' + esc(corto(t[1].n)) + '</b> ' + signo(t[0].neto))] });
+    }
+    const bir = nuevas.filter(x => x.d < 0).sort((a, b) => a.d - b.d)[0];
+    if(bir) avisos.push({ prio: 3, pasos: [C('c-birdie', (bir.d <= -2 ? '¡Águila' : '¡Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b>! · hoyo ' + bir.h)] });
+    const malo = nuevas.filter(x => x.d >= 3).sort((a, b) => b.d - a.d)[0];
+    if(malo && !bir) avisos.push({ prio: 5, pasos: [C('c-atragantado', 'Hoyo ' + malo.h + ' · <b>' + esc(corto(malo.n)) + '</b> ' + malo.v + ' golpes en un par ' + malo.par)] });
+    if(ahora.hoyo >= 15 && antes.hoyo < 15) avisos.push({ prio: 4, pasos: [L('l-final', 'Hoyo ' + ahora.hoyo + ' · <b>¡recta final!</b>')] });
+    antes = ahora;
+    if(avisos.length > 3) avisos = avisos.sort((a, b) => a.prio - b.prio).slice(0, 3);
+    siguienteAviso();
+  }
+  function siguienteAviso(){
+    clearTimeout(avisoT);
+    if(!avisos.length || !suena || !ronda) return;
+    const falta = MIN_ENTRE_AVISOS - (Date.now() - ultimoAviso);
+    if(hablando || falta > 0){ avisoT = setTimeout(siguienteAviso, Math.max(falta, 5000)); return; }
+    avisos.sort((a, b) => a.prio - b.prio);
+    const a = avisos.shift();
+    // Un aviso viejo de líder ya no vale si el líder ha vuelto a cambiar
+    if(a.prio === 1 && ronda){ const f = foto(ronda); if(!f.lider || a.pasos[a.pasos.length - 1].rot.indexOf(esc(corto(f.lider))) < 0) return siguienteAviso(); }
+    ultimoAviso = Date.now();
+    reproducir(a.pasos);
+  }
   function montar(code, round){
     const sitio = document.querySelector('#vvOverlay .vt-sitio'); if(!sitio) return;
-    codigo = code; ronda = round; empezado = false;
+    codigo = code; ronda = round; empezado = false; antes = null; avisos = []; ultimoAviso = Date.now();
     sitio.innerHTML = '<div class="vt" role="region" aria-label="acgolf TV, partida en directo">'
       + '<div class="vt-fondo"></div>'
       + '<div class="vt-logo">acgolf <b>TV</b></div>'
@@ -213,6 +261,7 @@
   }
   function actualizar(round){
     ronda = round;
+    try { vigilar(round); } catch(e){}
     const caja = document.querySelector('#vvOverlay .vt'); if(!caja) return;
     const EV = window.acgolfEnVivo || {}; const t = EV.tabla ? EV.tabla(round) : [];
     const centro = caja.querySelector('.vt-centro');
@@ -229,7 +278,7 @@
     if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos
     pintarReloj();
   }
-  function quitar(){ parar(); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
+  function quitar(){ parar(); hablando = false; avisos = []; antes = null; clearTimeout(avisoT); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
 
   // Para verlo como espectador aunque juegues o seas administrador: acgolf.es/#vivo=CÓDIGO
   async function porEnlace(){
@@ -241,5 +290,5 @@
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);
 
-  window.acgolfTele = { montar, actualizar, quitar, guion, claveNombre, _reproducir: reproducir };
+  window.acgolfTele = { montar, actualizar, quitar, guion, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
 })();
