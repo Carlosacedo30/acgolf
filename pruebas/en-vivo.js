@@ -195,6 +195,7 @@
   function cerrar(){
     clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null;
     paraPlato();
+    try { if(window.acgolfTele) window.acgolfTele.quitar(); } catch(e){}
     const ov = document.getElementById('vvOverlay'); if(ov){ ov.hidden = true; ov.innerHTML = ''; }
     document.body.classList.remove('vv-abierto');
   }
@@ -210,6 +211,7 @@
     ov.innerHTML = '<div class="vv-top"><span class="vv-live' + (fin ? ' vv-fin' : '') + '"><i></i>' + (fin ? 'FINAL' : 'EN DIRECTO') + '</span>'
       + '<div class="vv-tit"><b>' + esc(round.round_name || 'Partida') + '</b>' + esc(round.course_name || '') + '</div>'
       + '<button type="button" class="vv-x" aria-label="Cerrar">✕</button></div>'
+      + (!fin && window.acgolfTele ? '<div class="vt-sitio"></div>' : '')
       + '<div class="vv-asi"></div><div class="vv-plato-sitio"></div>'
       + '<div class="vv-tableros"></div><div class="vv-ult" aria-live="polite"></div>'
       + '<div class="vv-car">' + tarjetas() + '</div>'
@@ -229,6 +231,7 @@
       car.scrollTo({ left: sig >= car.children.length ? 0 : sig * ancho, behavior: 'smooth' });
     }, 20000);
     if(fin) entradaResumen(round, !!verResumen);
+    else if(window.acgolfTele && ov.querySelector('.vt-sitio')) window.acgolfTele.montar(code, round);   // acgolf TV (tele-directo.js)
     else resumenEntrada(round);
     clearInterval(timer);
     timer = setInterval(async () => {
@@ -238,7 +241,8 @@
       if(terminada(rondaAbierta)) return;
       const r = await leerRonda(code); if(!r || codigoAbierto !== code) return;
       rondaAbierta = r; pintar(r);
-      if(terminada(r)){ const l = ov.querySelector('.vv-live'); if(l){ l.classList.add('vv-fin'); l.innerHTML = '<i></i>FINAL'; } entradaResumen(r, false); return; }
+      if(terminada(r)){ try { if(window.acgolfTele){ window.acgolfTele.quitar(); const vt = ov.querySelector('.vt-sitio'); if(vt) vt.remove(); } } catch(e){}
+        const l = ov.querySelector('.vv-live'); if(l){ l.classList.add('vv-fin'); l.innerHTML = '<i></i>FINAL'; } entradaResumen(r, false); return; }
       if(Date.now() - ultimoGolpe > MIN_RELLENO * 60000 && Date.now() - ultimoRelleno > MIN_RELLENO * 60000) rellenar();
     }, 10000);
   }
@@ -257,6 +261,7 @@
   function pintar(round){
     const ov = document.getElementById('vvOverlay'); if(!ov) return;
     pintarAsi(round);
+    try { if(window.acgolfTele && ov.querySelector('.vt')) window.acgolfTele.actualizar(round); } catch(e){}
     const pares = paresDe(round);
     const gs = grupos(round);
     const nuevos = [];
@@ -526,5 +531,5 @@
   window.addEventListener('load', engancharEntrada);
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharPortada); else engancharPortada();
   window.addEventListener('load', engancharPortada);
-  window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar, guion, tabla, rellenar };
+  window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar, guion, tabla, momentos, rellenar, leerRonda };
 })();

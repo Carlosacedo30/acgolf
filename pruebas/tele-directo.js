@@ -1,0 +1,214 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+// --- «acgolf TV»: la partida en directo como una emisión de tele, con Lola y Curro en su mesa ---
+// Va encima de «Seguir en vivo» (en-vivo.js), solo mientras la partida está en juego.
+//  · Pantalla 16:9: logo del canal, «● EN DIRECTO», el líder grande, marcador abajo y reloj de la partida.
+//  · Abajo a la derecha, la mesa de Lola y Curro (vídeo): el que habla se mueve; entre frase y frase, quietos.
+//  · Al entrar: saludo con el nombre del que mira y unos 40 segundos contando cómo va la partida.
+//    Son frases grabadas una vez con sus voces de siempre (carpeta «voces-directo» del servidor) que se juntan
+//    según la partida. Nombres grabados: los del grupo; si no está el nombre, «¡Hola, campeón!».
+(function(){
+  'use strict';
+  const VOCES = 'https://svnkgmbfanwftncopqjg.supabase.co/storage/v1/object/public/voces-directo/v1/';
+  // Nombres con voz (de Lola). Clave: primer nombre sin acentos. Otras formas → el grabado.
+  const NOMBRES = ['alvaro','carlos','fernando','francisco','jesus','jose','juan','lorenzo','manuel','rafael','camilo','emilio','jorge','maria','segundo','antonio','ivan'];
+  const APODOS = { fco:'francisco', paco:'francisco', pepe:'jose', manu:'manuel', manolo:'manuel', rafa:'rafael', chema:'jose', toni:'antonio', antoñito:'antonio' };
+  const VIDEOS = { lola: ['tele-lola-a.mp4?v=1', 'tele-lola-b.mp4?v=1'], curro: ['tele-curro-a.mp4?v=1', 'tele-curro-b.mp4?v=1'] };
+
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  const corto = n => String(n || '').trim().split(/\s+/)[0] || String(n || '');
+  const signo = d => d === 0 ? 'E' : (d > 0 ? '+' : '−') + Math.abs(d);
+  const yo = () => (window.miPerfil && window.miPerfil.player_name) || (() => { try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } })();
+  function claveNombre(n){
+    const k = norm(corto(n)).replace(/[^a-zñ]/g, '');
+    const k2 = APODOS[k] || k;
+    return NOMBRES.includes(k2) ? 'n-' + k2 : null;
+  }
+
+  // ---------- Sonido: se cargan las frases y se recorta el silencio del principio y del final ----------
+  let ctx = null, sonando = null, cola = [], turno = 0, cache = {};
+  function contexto(){
+    if(!ctx){ const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return null; ctx = new AC(); }
+    return ctx;
+  }
+  async function cargar(clave){
+    if(cache[clave]) return cache[clave];
+    cache[clave] = (async () => {
+      const c = contexto(); if(!c) throw new Error('sin audio');
+      const r = await fetch(VOCES + clave + '.mp3');
+      if(!r.ok) throw new Error('no está ' + clave);
+      const buf = await new Promise((ok, mal) => { const b = r.arrayBuffer(); b.then(ab => c.decodeAudioData(ab, ok, mal), mal); });
+      // Recorte del silencio (umbral bajo, con un pelín de margen)
+      const d = buf.getChannelData(0), sr = buf.sampleRate, U = 0.012;
+      let a = 0, z = d.length - 1;
+      while(a < d.length && Math.abs(d[a]) < U) a++;
+      while(z > a && Math.abs(d[z]) < U) z--;
+      const ini = Math.max(0, a / sr - 0.04), fin = Math.min(buf.duration, z / sr + 0.12);
+      return { buf, ini, dur: Math.max(0.2, fin - ini) };
+    })();
+    cache[clave].catch(() => { delete cache[clave]; });
+    return cache[clave];
+  }
+
+  // ---------- La mesa de Lola y Curro ----------
+  function mesa(quien){
+    const box = document.querySelector('#vvOverlay .vt-mesa'); if(!box) return;
+    const v = box.querySelector('video');
+    box.dataset.habla = quien || '';
+    if(!quien){ if(v){ v.pause(); } return; }
+    const lista = VIDEOS[quien]; const src = lista[(turno++) % lista.length];
+    if(v && !v.src.endsWith(src)){ v.src = src; }
+    if(v){ v.currentTime = 0; v.play().catch(() => {}); }
+  }
+  function rotulo(html){
+    const r = document.querySelector('#vvOverlay .vt-rot'); if(!r) return;
+    if(!html){ r.classList.remove('ver'); return; }
+    r.innerHTML = html; r.classList.remove('ver'); void r.offsetWidth; r.classList.add('ver');
+  }
+  function parar(){
+    cola = [];
+    try { if(sonando) sonando.stop(); } catch(e){}
+    sonando = null; mesa(null); rotulo('');
+    const b = document.querySelector('#vvOverlay .vt-oir'); if(b) b.hidden = false;
+  }
+  async function reproducir(pasos){
+    parar();
+    const c = contexto(); if(!c) return;
+    try { if(c.state === 'suspended') await c.resume(); } catch(e){}
+    if(c.state !== 'running') return false;
+    const b = document.querySelector('#vvOverlay .vt-oir'); if(b) b.hidden = true;
+    cola = pasos.slice();
+    pasos.forEach(p => p.clips.forEach(k => cargar(k).catch(() => {})));   // se van bajando todas
+    const mia = cola;
+    for(const p of pasos){
+      if(cola !== mia) return;
+      rotulo(p.rot || '');
+      for(const k of p.clips){
+        if(cola !== mia) return;
+        let s; try { s = await cargar(k); } catch(e){ continue; }
+        if(cola !== mia) return;
+        mesa(p.q);
+        await new Promise(ok => {
+          const src = c.createBufferSource(); src.buffer = s.buf; src.connect(c.destination);
+          src.onended = ok; sonando = src; src.start(0, s.ini, s.dur);
+        });
+      }
+      mesa(null);
+      await new Promise(ok => setTimeout(ok, 260));
+    }
+    if(cola === mia){ sonando = null; rotulo(''); const bb = document.querySelector('#vvOverlay .vt-oir'); if(bb){ bb.hidden = false; bb.querySelector('span').textContent = 'Volver a escuchar a Lola y Curro'; } }
+    return true;
+  }
+
+  // ---------- El guion: se monta con las frases grabadas según cómo va la partida ----------
+  let visitas = 0;
+  try { visitas = (+localStorage.getItem('acgolfTeleVisitas') || 0) + 1; localStorage.setItem('acgolfTeleVisitas', String(visitas)); } catch(e){ visitas = 1 + Math.floor(Math.random() * 2); }
+  function guion(round){
+    const EV = window.acgolfEnVivo || {};
+    const t = EV.tabla ? EV.tabla(round) : [];
+    const m = EV.momentos ? EV.momentos(round) : [];
+    const pasos = [];
+    const L = (clips, rot) => pasos.push({ q: 'lola', clips: [].concat(clips).filter(Boolean), rot });
+    const C = (clips, rot) => pasos.push({ q: 'curro', clips: [].concat(clips).filter(Boolean), rot });
+    // 1. Saludo (unas veces empieza Lola y otras Curro)
+    const quienMira = yo(), kn = claveNombre(quienMira);
+    const saludo = '<b>¡Hola' + (quienMira ? ', ' + esc(corto(quienMira)) : '') + '!</b> Bienvenido a la mesa de Lola y Curro';
+    if(visitas % 2 === 1){ L([kn || 'l-hola-campeon', 'l-bienvenida'], saludo); C('c-hola', saludo); }
+    else { C('c-hola', saludo); L([kn || 'l-hola-campeon', 'l-bienvenida'], saludo); }
+    if(!t.length){ L('l-empieza', 'Aún no hay golpes: <b>la partida está a punto de empezar</b>'); L('l-cierre', 'acgolf <b>TV</b> · seguimos en directo'); return pasos; }
+    // 2. En qué momento está
+    const hoyo = t.reduce((a, x) => Math.max(a, x.ultimo), 0);
+    if(hoyo <= 4) L('l-empieza', 'Hoyo ' + hoyo + ' · <b>está todo por decidir</b>');
+    else if(hoyo >= 15) L('l-final', 'Hoyo ' + hoyo + ' · <b>¡se decide en el 18!</b>');
+    else if(hoyo >= 9) L('l-mitad', 'Hoyo ' + hoyo + ' · <b>segunda mitad de la partida</b>');
+    // 3. El líder
+    const l = t[0], k1 = claveNombre(l.n);
+    const rotLider = 'Líder · <b>' + esc(corto(l.n)) + '</b> ' + signo(l.neto) + ' neto';
+    if(k1) L(['l-manda', k1], rotLider);
+    C(visitas % 2 ? 'c-como-un-tiro' : 'c-eso-es-golf', rotLider);
+    // 4. El segundo
+    if(t[1]){
+      const dif = t[1].neto - l.neto, k2 = claveNombre(t[1].n);
+      const rot2 = '2.º · <b>' + esc(corto(t[1].n)) + '</b> ' + signo(t[1].neto) + (dif === 0 ? ' · ¡empatados!' : ' · a ' + dif + (dif === 1 ? ' golpe' : ' golpes'));
+      if(dif === 0) C('c-empate', rot2);
+      else { if(k2) L(['l-sigue', k2], rot2); if(dif >= 3) C('c-diferencia', rot2); }
+    }
+    // 5. Birdies y hoyos para olvidar
+    const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.h - a.h)[0];
+    if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b> en el hoyo ' + bir.h; L('l-birdie', r); C('c-birdie', r); }
+    const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.h - a.h)[0];
+    if(malo) { const r = 'Hoyo ' + malo.h + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); C('c-atragantado', r); }
+    // 6. Predicción y broma
+    C(visitas % 2 ? 'c-prediccion-greens' : 'c-prediccion-putts', 'La predicción de <b>Curro</b>');
+    if(t.length >= 3) C('c-ultimo', 'Último · <b>' + esc(corto(t[t.length - 1].n)) + '</b> · el hoyo 19 lo gana cualquiera');
+    L('l-cierre', 'acgolf <b>TV</b> · seguimos en directo');
+    return pasos;
+  }
+
+  // ---------- La pantalla ----------
+  let ronda = null, codigo = null, reloj = null, empezado = false;
+  function montar(code, round){
+    const sitio = document.querySelector('#vvOverlay .vt-sitio'); if(!sitio) return;
+    codigo = code; ronda = round; empezado = false;
+    sitio.innerHTML = '<div class="vt" role="region" aria-label="acgolf TV, partida en directo">'
+      + '<div class="vt-fondo"></div>'
+      + '<div class="vt-logo">acgolf <b>TV</b></div>'
+      + '<div class="vt-live"><i></i>EN DIRECTO</div>'
+      + '<div class="vt-centro"></div>'
+      + '<div class="vt-rot" aria-live="polite"></div>'
+      + '<div class="vt-mesa"><video muted playsinline loop preload="auto" poster="tele-quieto.jpg?v=1"></video><span>Lola y Curro</span>'
+      + '<button type="button" class="vt-grande" aria-label="Ver a pantalla completa">⤢</button></div>'
+      + '<div class="vt-bajo"><div class="vt-reloj"></div><div class="vt-marcador"><div class="vt-cinta"></div></div></div>'
+      + '<button type="button" class="vt-oir">🔊 <span>Escuchar a Lola y Curro</span></button>'
+      + '</div>';
+    sitio.querySelector('.vt-oir').onclick = () => { reproducir(guion(ronda)); };
+    sitio.querySelector('.vt-grande').onclick = () => {
+      const el = sitio.querySelector('.vt');
+      try { if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch(e){} }).catch(() => el.classList.toggle('vt-full')); else el.classList.toggle('vt-full'); } catch(e){ el.classList.toggle('vt-full'); }
+    };
+    actualizar(round);
+    clearInterval(reloj); reloj = setInterval(pintarReloj, 30000);
+    // Al entrar, se intenta empezar solos (vienen de tocar «Seguir en vivo»); si el móvil no deja, sale el botón
+    setTimeout(() => { if(!empezado){ empezado = true; reproducir(guion(ronda)).then(ok => { if(ok === false) { const b = sitio.querySelector('.vt-oir'); if(b) b.hidden = false; } }); } }, 600);
+  }
+  function pintarReloj(){
+    const r = document.querySelector('#vvOverlay .vt-reloj'); if(!r || !ronda) return;
+    const EV = window.acgolfEnVivo || {}; const t = EV.tabla ? EV.tabla(ronda) : [];
+    const hoyo = t.reduce((a, x) => Math.max(a, x.ultimo), 0);
+    const ini = new Date(ronda.created_at).getTime();
+    let min = Math.max(0, Math.round((Date.now() - ini) / 60000));
+    const txt = min > 600 ? '' : (min >= 60 ? Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0') + ' min' : min + ' min');
+    r.innerHTML = (txt ? '⏱ <b>' + txt + '</b>' : '') + '<span>' + (hoyo ? (hoyo >= 18 ? 'Último hoyo' : 'Faltan <b>' + (18 - hoyo) + '</b> hoyos') : 'Sin golpes aún') + '</span>';
+  }
+  function actualizar(round){
+    ronda = round;
+    const caja = document.querySelector('#vvOverlay .vt'); if(!caja) return;
+    const EV = window.acgolfEnVivo || {}; const t = EV.tabla ? EV.tabla(round) : [];
+    const centro = caja.querySelector('.vt-centro');
+    if(!t.length) centro.innerHTML = '<small>' + esc(round.course_name || 'Partida') + '</small><h3>Empieza enseguida</h3>';
+    else {
+      const l = t[0];
+      centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
+        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + signo(l.neto) + '</b><em>' + (l.ultimo >= 18 ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
+    }
+    const cinta = caja.querySelector('.vt-cinta');
+    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i>' + esc(corto(x.n)) + ' <b>' + signo(x.neto) + '</b> <small>' + (x.ultimo >= 18 ? 'F' : 'h' + x.ultimo) + '</small></span>').join('');
+    cinta.innerHTML = items || '<span>Esperando los primeros golpes…</span>';
+    cinta.classList.toggle('anda', t.length > 3);
+    if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos
+    pintarReloj();
+  }
+  function quitar(){ parar(); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
+
+  // Para verlo como espectador aunque juegues o seas administrador: acgolf.es/#vivo=CÓDIGO
+  async function porEnlace(){
+    const m = String(location.hash || '').match(/vivo=([A-Za-z0-9]{4,12})/); if(!m) return;
+    const EV = window.acgolfEnVivo; if(!EV || !EV.leerRonda) return;
+    const code = m[1].toUpperCase(), r = await EV.leerRonda(code);
+    if(r) EV.pantalla(code, r);
+  }
+  window.addEventListener('load', () => setTimeout(porEnlace, 2500));
+  window.addEventListener('hashchange', porEnlace);
+
+  window.acgolfTele = { montar, actualizar, quitar, guion, claveNombre, _reproducir: reproducir };
+})();
