@@ -232,6 +232,8 @@ async function ligaAsegurarJornadas(){
 }
 
 // Resultados de las jornadas ya jugadas: { n: [{jugador, bruto, neto, hcp}] }
+// Compara dos desempates por últimos hoyos (menor es mejor)
+function ligaCompararCb(a, b){ for(let i = 0; i < Math.min((a || []).length, (b || []).length); i++){ if(a[i] !== b[i]) return a[i] - b[i]; } return 0; }
 async function ligaResultados(l){
   const client = initSupabase(); if(!client) return {};
   const codigos = l.jornadas.map(j => ligaCodigoJornada(l, j.n));
@@ -264,19 +266,22 @@ async function ligaResultados(l){
       const bruto = golpes.reduce((a, b) => a + b, 0);
       const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined) : Math.round(hcp);
       // Puntos Stableford: por hoyo, 2 − (golpes − golpes recibidos − par), sin bajar de 0
-      let stb = 0;
+      let stb = 0; const ptsHoyo = [], golHoyo = [];
       for(let h = 1; h <= 18; h++){
         const gol = Number(sc[h]); const par = curso && curso.par ? Number(curso.par[h - 1]) : 4;
         const rec = typeof strokesForHole === 'function' && curso && curso.hcp ? strokesForHole(recibidos, curso.hcp[h - 1]) : 0;
-        stb += Math.max(0, 2 - (gol - rec - par));
+        const pt = Math.max(0, 2 - (gol - rec - par)); stb += pt; ptsHoyo.push(pt); golHoyo.push(gol);
       }
-      filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb });
+      // Desempate (bases, punto 9): últimos 9, 12, 15, 16 y 17 hoyos, con el mismo cálculo que la ronda
+      const suma = (a, k) => a.slice(18 - k).reduce((x, y) => x + y, 0);
+      const cb = [9, 12, 15, 16, 17].map(k => l.formato === 'stableford' ? -suma(ptsHoyo, k) : suma(golHoyo, k) - recibidos * k / 18);
+      filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb, cb });
     }));
     if(l.formato === 'stableford'){
-      filas.sort((a, b) => b.stb - a.stb || a.hcp - b.hcp);
+      filas.sort((a, b) => b.stb - a.stb || a.hcp - b.hcp || ligaCompararCb(a.cb, b.cb));
       filas.forEach((f, i) => { f.pos = i + 1; f.puntos = f.stb; });
     } else {
-      filas.sort((a, b) => a.neto - b.neto || a.hcp - b.hcp);
+      filas.sort((a, b) => a.neto - b.neto || a.hcp - b.hcp || ligaCompararCb(a.cb, b.cb));
       filas.forEach((f, i) => { f.pos = i + 1; f.puntos = LIGA_PUNTOS[i] != null ? LIGA_PUNTOS[i] : 0; });
     }
     out[j.n] = filas;

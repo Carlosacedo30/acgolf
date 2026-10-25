@@ -40,7 +40,9 @@ const LIGA_BASES = [
     'Cada partida de la liga da puntos según el puesto conseguido, con la escala de la Fórmula 1. Quien no juega, suma 0 puntos. Al final del mes gana el jugador con más puntos.' ],
     puntos: true },
   { t: '9. Empates', p: [
-    'En golf no hay empates: a igual resultado gana siempre el jugador con el hándicap más bajo. Vale para una partida, para el campeón de la semana, para el campeón del mes y para las ligas de amigos.' ]},
+    'En golf no hay empates. Vale para una partida, para el campeón de la semana, para el campeón del mes y para las ligas de amigos:' ],
+    l: [ 'A igual resultado gana el jugador con el hándicap de juego más bajo.',
+      'Si también tienen el mismo hándicap, gana el mejor resultado en los últimos 9 hoyos; si siguen igual, en los últimos 12, 15, 16 y 17, con el mismo cálculo con el que se jugó (neto o puntos Stableford).' ]},
   { t: '10. Ligas de amigos (Crear liga)', p: [
     'Además de la liga semanal y mensual, el administrador puede crear ligas de varias rondas. Al crear cada liga se fijan sus normas, que se ven dentro de la propia liga:' ],
     l: [ 'Campo: uno de los de Sevilla (Hato Verde, Zaudín, Real Club de Golf Sevilla, Real Club Pineda o La Cartuja), alternar Hato Verde y Zaudín, uno de tus campos favoritos o cualquiera del buscador de campos.',
@@ -49,7 +51,7 @@ const LIGA_BASES = [
       'Rondas que cuentan: todas, las mejores de cada jugador, todas menos la peor, las primeras que juegue o unas rondas elegidas. Las demás se descartan y se ven tachadas en la tabla con su resultado.',
       'Mínimo de rondas para clasificar: quien no llegue sale en la tabla en gris y sin puesto.',
       'Grupos de salida por sorteo: rotando, para que todos coincidan con todos y se repita lo menos posible, o al azar. El administrador puede cambiarlos a mano en cada jornada.',
-      'Empates: a igual puntuación gana el jugador con el hándicap más bajo.' ]},
+      'Empates: como en el punto 9, gana el hándicap más bajo y, si sigue el empate, los últimos hoyos.' ]},
   { t: '11. Regla local', p: [ 'Se puede mover la bola un palo (colocarla) sin penalidad.' ]},
   { t: '12. Reclamaciones y borrado de partidas', l: [
     'Se puede reclamar hasta el lunes a las 10:00. Después, los resultados son definitivos.',
