@@ -10,11 +10,14 @@
     foto: 'premio-semana.jpg?v=2',          // foto del premio de la semana (cámbiala cuando cambie el premio)
     fotoTexto: 'El premio de esta semana: 12 bolas Srixon AD333',
     premioCorto: '12 bolas Srixon AD333',  // lo que se lee bajo la foto en Inicio
+    enPortada: false,                      // true = volver a enseñar «Premio de la semana» en Inicio
   };
 
   function renderPatrocinadorHome(){
     const el = document.getElementById('sponsorHome');
     if(!el || !PATROCINADOR) return;
+    // Quitado de la portada (25-oct-2026): ya no se enseña «Premio de la semana» con la foto de las bolas
+    if(!PATROCINADOR.enPortada){ el.innerHTML = ''; el.hidden = true; el.style.display = 'none'; return; }
     // En Inicio: "Premio de la semana" con la foto; el patrocinador se nombra una sola vez, junto al premio
     el.innerHTML =
       '<div class="eyebrow">Premio de la semana</div>'
