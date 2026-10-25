@@ -188,12 +188,14 @@
       + '<div class="conv-where">' + convEsc(course.name) + (convAlTiro(conv) ? ' · salida al tiro a las ' + convTime(conv.times[0]) : '') + '</div>';
 
     // Partidas por hora
+    const puedeQuitar = (isAdmin || !!(conv.organiza && conv.organiza === window.miPerfilId)) && !conv.roundCode && conv.times.length > 1;
     h += '<div class="conv-tees">' + conv.times.map((t, i) => {
       const g = conv.groups[i] || [];
       const seats = Array.from({ length: CONV_SLOTS }, (_, k) => g[k]
         ? '<div class="conv-seat filled' + (g[k] === me ? ' me' : '') + '">' + convEsc(g[k]) + '</div>'
         : '<div class="conv-seat">Libre</div>').join('');
-      return '<div class="conv-tee"><div class="conv-tee-h"><span class="conv-tee-time">' + convEtq(conv, i) + '</span><span class="conv-tee-n">' + g.length + '/' + CONV_SLOTS + '</span></div>' + seats + '</div>';
+      return '<div class="conv-tee"><div class="conv-tee-h"><span class="conv-tee-time">' + convEtq(conv, i) + '</span><span class="conv-tee-n">' + g.length + '/' + CONV_SLOTS + '</span>'
+        + (puedeQuitar ? '<button type="button" class="conv-tee-x" data-quitar="' + i + '" aria-label="Quitar el horario de las ' + convEsc(convEtq(conv, i)) + '">✕</button>' : '') + '</div>' + seats + '</div>';
     }).join('') + '</div>';
     {
       const organizo1 = !!(conv.organiza && conv.organiza === window.miPerfilId);
@@ -281,6 +283,18 @@
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
     const nb = document.getElementById('convNewBtn'); if(nb) nb.addEventListener('click', renderConvNewForm);
     const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
+    body.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', async ()=>{
+      const i = Number(b.dataset.quitar); const hora = convEtq(conv, i); const n = (conv.groups[i] || []).length;
+      if(!confirm('¿Quitar el horario de las ' + hora + '?' + (n ? '\n' + (n === 1 ? 'El apuntado se queda' : 'Los ' + n + ' apuntados se quedan') + ' sin hora y ' + (n === 1 ? 'tendrá' : 'tendrán') + ' que apuntarse en otra.' : ''))) return;
+      b.disabled = true;
+      await convMutate(c => {
+        if(c.roundCode) return 'La partida ya está creada: ya no se pueden quitar horarios.';
+        if(c.times.length <= 1) return 'Tiene que quedar al menos un horario.';
+        const k = c.times.indexOf(conv.times[i]); const j = k >= 0 ? k : i;
+        c.times.splice(j, 1); c.groups.splice(j, 1); if(c.hoyos) c.hoyos.splice(j, 1);
+        return null;
+      });
+    }));
     const at = document.getElementById('convAddTee'); if(at) at.addEventListener('click', async ()=>{
       if(at.dataset.busy) return; at.dataset.busy = '1'; at.textContent = 'Guardando…';
       await convMutate(c => { const t = convHoraMas(c.times[c.times.length - 1], 10); c.times.push(t); c.groups.push([]); if(c.hoyos) c.hoyos.push(null); return null; });

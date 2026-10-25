@@ -38,3 +38,8 @@ html #convHomeNew.conv-home-new{ min-height:76px !important; font-size:21px !imp
   border-width:2.5px !important; background:rgba(198,242,78,.12) !important; gap:14px !important; margin:6px 0 12px !important; }
 html #convHomeNew .ip-logo-grupo{ width:54px; height:54px; }
 html #convHomeNew .ip-logo-grupo.ip-escudo svg{ max-width:54px; max-height:54px; }
+/* Organizar partido: cruz grande para quitar un horario */
+.conv-tee-h{ align-items:center; gap:8px; }
+.conv-tee-h .conv-tee-n{ margin-left:auto; }
+.conv-tee-x{ flex:none; width:44px; height:44px; border-radius:50%; border:2px solid #E5484D; background:transparent; color:#E5484D; font:800 20px/1 'Barlow', sans-serif; cursor:pointer; touch-action:manipulation; display:flex; align-items:center; justify-content:center; }
+.conv-tee-x:disabled{ opacity:.4; }
