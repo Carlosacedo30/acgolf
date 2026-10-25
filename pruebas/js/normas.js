@@ -28,7 +28,7 @@
       'Decide un comité de 3 jugadores elegido por el grupo. Si la reclamación afecta a uno de ellos, decide el resto. Su decisión es final.' ]},
     { t:'7. Premios', d:[
       'Salen solos en la app cada lunes.',
-      'El Iscariote de la semana (mejor neto) se lleva las bolas del patrocinador. Si hay empate, gana el de menos golpes brutos.',
+      'El Iscariote de la semana (mejor neto) se lleva las bolas del patrocinador. Si hay empate, gana el de hándicap más bajo.',
       'Si el ganador no está, se le guarda el premio para la semana siguiente.' ]},
     { t:'8. Juego limpio', d:[
       'Si se demuestra una trampa, se anula esa tarjeta. Si se repite, el comité puede dejar al jugador fuera de la liga.',

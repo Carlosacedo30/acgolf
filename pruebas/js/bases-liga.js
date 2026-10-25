@@ -39,9 +39,8 @@ const LIGA_BASES = [
   { t: '8. Campeón del mes', p: [
     'Cada partida de la liga da puntos según el puesto conseguido, con la escala de la Fórmula 1. Quien no juega, suma 0 puntos. Al final del mes gana el jugador con más puntos.' ],
     puntos: true },
-  { t: '9. Empates', l: [
-    'En una partida o en la semana: si hay empate en neto, gana el jugador con el hándicap más bajo.',
-    'En el campeón del mes: gana el que tenga más victorias en ese mes; si sigue el empate, el de hándicap más bajo.' ]},
+  { t: '9. Empates', p: [
+    'En golf no hay empates: a igual resultado gana siempre el jugador con el hándicap más bajo. Vale para una partida, para el campeón de la semana, para el campeón del mes y para las ligas de amigos.' ]},
   { t: '10. Ligas de amigos (Crear liga)', p: [
     'Además de la liga semanal y mensual, el administrador puede crear ligas de varias rondas. Al crear cada liga se fijan sus normas, que se ven dentro de la propia liga:' ],
     l: [ 'Campo: uno de los de Sevilla (Hato Verde, Zaudín, Real Club de Golf Sevilla, Real Club Pineda o La Cartuja), alternar Hato Verde y Zaudín, uno de tus campos favoritos o cualquiera del buscador de campos.',
