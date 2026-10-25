@@ -4,7 +4,7 @@
   'use strict';
   // Cambiar aquí si cambia alguna dirección
   const REDES = [
-    { n: 'Instagram', url: 'https://www.instagram.com/acgolf.e/', c: 'ig' },
+    { n: 'Instagram', url: 'https://www.instagram.com/acgolf.es/', c: 'ig' },
     { n: 'TikTok',    url: 'https://www.tiktok.com/@user153189006', c: 'tt' },
     { n: 'YouTube',   url: 'https://www.youtube.com/channel/UCUqjPt8RqN0JQeTiel8Ygsw', c: 'yt' },
     { n: 'Facebook',  url: 'https://www.facebook.com/1437955202727013', c: 'fb' },
