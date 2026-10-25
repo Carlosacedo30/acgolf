@@ -205,7 +205,7 @@
     const m = String(location.hash || '').match(/vivo=([A-Za-z0-9]{4,12})/); if(!m) return;
     const EV = window.acgolfEnVivo; if(!EV || !EV.leerRonda) return;
     const code = m[1].toUpperCase(), r = await EV.leerRonda(code);
-    if(r) EV.pantalla(code, r);
+    if(r){ window.__teleForzada = true; EV.pantalla(code, r); }
   }
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);

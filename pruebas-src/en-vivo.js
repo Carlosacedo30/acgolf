@@ -207,7 +207,7 @@
     }
     ov.hidden = false; document.body.classList.add('vv-abierto');
     codigoAbierto = code; previo = null; rondaAbierta = round; ultimoGolpe = Date.now(); ultimoRelleno = Date.now(); ticks = 0;
-    const fin = terminada(round);
+    const fin = terminada(round) && !window.__teleForzada;   // #vivo=CÓDIGO: la tele también con la partida terminada (para verla)
     ov.innerHTML = '<div class="vv-top"><span class="vv-live' + (fin ? ' vv-fin' : '') + '"><i></i>' + (fin ? 'FINAL' : 'EN DIRECTO') + '</span>'
       + '<div class="vv-tit"><b>' + esc(round.round_name || 'Partida') + '</b>' + esc(round.course_name || '') + '</div>'
       + '<button type="button" class="vv-x" aria-label="Cerrar">✕</button></div>'
@@ -238,7 +238,7 @@
       if(codigoAbierto !== code || document.hidden) return;
       ticks++;
       if(ticks % 6 === 0) apuntar('envivo_min', code);      // un minuto más mirando
-      if(terminada(rondaAbierta)) return;
+      if(terminada(rondaAbierta) || window.__teleForzada) return;
       const r = await leerRonda(code); if(!r || codigoAbierto !== code) return;
       rondaAbierta = r; pintar(r);
       if(terminada(r)){ try { if(window.acgolfTele){ window.acgolfTele.quitar(); const vt = ov.querySelector('.vt-sitio'); if(vt) vt.remove(); } } catch(e){}
