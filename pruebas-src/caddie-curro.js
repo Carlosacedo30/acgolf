@@ -291,8 +291,7 @@
   }
 
   // ---------- Cuando están los golpes de TODOS en el hoyo ----------
-  // 3 jugadores o menos: un comentario (el mejor o el peor, el que más «chicha» tenga).
-  // 4 o más: dos comentarios, primero el mejor y luego el peor.
+  // Un solo comentario por hoyo (el mejor o el peor, el que más «chicha» tenga), Curro y Lola por turnos de hoyo.
   const yaDicho = {};
   let hoyoPendiente = null, temporizador = null;
   function datos(p, h){
@@ -319,17 +318,15 @@
     const mejor = orden[0], peor = orden[orden.length - 1];
     const nombres = (typeof players !== 'undefined' && players) ? players : [];
     const r = x => ({ n: nombreCorto(nombres[x.p] || 'Jugador'), bruto: x.bruto, neto: x.neto, h, semilla: x.p });
-    let lista;
-    if(res.length >= 4 && peor.bruto > mejor.bruto){ const a = frase(r(mejor)); const b = frase(r(peor), modoCaddie() === 'turnos' && a ? (a.quien === 'lola' ? 'curro' : 'lola') : null); lista = [a, b].filter(Boolean); }
-    else {
-      // Uno solo: el que más chicha tenga; si a ese no le queda frase sin repetir, se prueba con otro; si no, nada
-      const primero = (mejor.bruto <= -1 || peor.bruto < 2 || mejor.bruto === peor.bruto) ? mejor : peor;
-      const otros = orden.filter(x => x !== primero && (x.bruto !== primero.bruto || x.neto !== primero.neto));
-      let f = frase(r(primero));
-      for(const x of otros){ if(f) break; f = frase(r(x)); }
-      lista = f ? [f] : [];
-    }
-    mostrar(lista);
+    // Un solo comentario por hoyo. En «turnos» se alternan por hoyo: impares Curro, pares Lola
+    // (igual en todos los móviles y en la pantalla En vivo). Si se eligió uno solo, habla ese.
+    const quien = modoCaddie() === 'turnos' ? (h % 2 ? 'curro' : 'lola') : null;
+    // El que más chicha tenga; si a ese no le queda frase sin repetir, se prueba con otro; si no, nada
+    const primero = (mejor.bruto <= -1 || peor.bruto < 2 || mejor.bruto === peor.bruto) ? mejor : peor;
+    const otros = orden.filter(x => x !== primero && (x.bruto !== primero.bruto || x.neto !== primero.neto));
+    let f = frase(r(primero), quien);
+    for(const x of otros){ if(f) break; f = frase(r(x), quien); }
+    mostrar(f ? [f] : []);
   }
   function alApuntar(e){
     const inp = e.target;
