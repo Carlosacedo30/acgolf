@@ -62,3 +62,5 @@
 .vt:fullscreen{ border-radius:0; width:100vw; height:100vh; aspect-ratio:auto; }
 .vt.vt-full{ position:fixed; inset:0; z-index:9700; border-radius:0; width:100vw; height:56.25vw; max-height:100vh; margin:auto; }
 @media (prefers-reduced-motion: reduce){ .vt-cinta.anda{ animation:none; } .vt-live i{ animation:none; } }
+/* Botón del administrador en la portada */
+.vt-admin-btn{ margin-top:8px; background:#0B0D10 !important; color:#C6F24E !important; border:2px solid #C6F24E !important; }

@@ -119,6 +119,7 @@
     if(!btn || !r) return;
     const y = norm(yo());
     const juego = !!y && (r.players || []).some(n => norm(n) === y);
+    if(soyAdmin()) botonTele(r.code, btn);          // el administrador entra al marcador, pero también puede ver la tele
     if(juego || soyAdmin()) return;
     const nuevo = btn.cloneNode(false);
     nuevo.id = 'homeVivoBtn'; nuevo.className = btn.className + ' vv-btn';
@@ -126,6 +127,22 @@
     btn.replaceWith(nuevo);
     const t = document.querySelector('#homeEnMarcha .home-marcha-t'); if(t) t.innerHTML = '<span class="vv-dot"></span> Partida en directo';
     nuevo.addEventListener('click', () => abrir(r.code, nuevo, '👁 Seguir en vivo ›'));
+  }
+  // Solo para el administrador: «📺 Ver en acgolf TV» debajo de «Continuar partida»
+  function botonTele(code, despues){
+    if(!despues || !code) return;
+    const sig = despues.nextElementSibling;
+    if(sig && sig.classList.contains('vt-admin-btn') && sig.dataset.code === code) return;
+    if(sig && sig.classList.contains('vt-admin-btn')) sig.remove();
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'home-big-btn vv-btn vt-admin-btn'; b.dataset.code = code;
+    b.textContent = '📺 Ver en acgolf TV';
+    b.addEventListener('click', async () => {
+      if(b.dataset.busy) return; b.dataset.busy = '1'; b.textContent = 'Abriendo…';
+      try { const round = await leerRonda(code); if(round) pantalla(code, round); else alert('No se ha podido abrir la partida.'); }
+      finally { delete b.dataset.busy; b.textContent = '📺 Ver en acgolf TV'; }
+    });
+    despues.insertAdjacentElement('afterend', b);
   }
   // Debajo de «Partida en marcha»: las demás partidas en directo del grupo (si juegan varios grupos a la vez)
   // y el resumen de cada partida terminada hace menos de 2 horas (para todos)
@@ -158,7 +175,10 @@
         + '<div class="home-marcha-t">🎬 El plató de acgolf</div>'
         + '<div class="home-marcha-sub">Curro y Lola comentan ' + esc(x.round.round_name || 'la partida') + ' (' + grupos(x.round).map(g => g.players.filter(Boolean).map(corto).join(', ')).join(' · ') + ') · hasta las ' + x.hora + '</div>'
         + '<button type="button" class="home-big-btn vv-btn vv-res-btn" data-vv-res="' + esc(x.round.code) + '">▶ Ver el resumen</button></div>').join('');
-    cont.querySelectorAll('[data-vv-abrir]').forEach(b => b.addEventListener('click', () => abrir(b.dataset.vvAbrir, b, b.textContent)));
+    cont.querySelectorAll('[data-vv-abrir]').forEach(b => {
+      b.addEventListener('click', () => abrir(b.dataset.vvAbrir, b, b.textContent));
+      if(soyAdmin()) botonTele(b.dataset.vvAbrir, b);
+    });
     cont.querySelectorAll('[data-vv-res]').forEach(b => b.addEventListener('click', () => {
       if(document.documentElement.classList.contains('es-invitado')) return;
       const x = resumenes.find(z => z.round.code === b.dataset.vvRes); if(x) pantalla(x.round.code, x.round, true);
