@@ -20,3 +20,7 @@
   font:900 19px 'Archivo', 'Barlow', sans-serif; letter-spacing:.03em; text-decoration:none; cursor:pointer; touch-action:manipulation; }
 .pb-ir{ background:#C6F24E; color:#111316; border:none; }
 .pb-cerrar{ background:transparent; color:#F2F4F5; border:2px solid rgba(255,255,255,.35); }
+/* Tarjeta pequeña del Inicio (sin foto ni detalle) */
+.pb-tarjeta{ gap:8px; padding:8px 14px; border-radius:999px; border-width:1.5px; margin:0 0 12px; min-height:44px; }
+.pb-tarjeta .pb-tit{ font-size:16px; }
+.pb-tarjeta .pb-flecha{ font-size:22px; }

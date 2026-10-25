@@ -37,10 +37,8 @@
     if(!t){
       t = document.createElement('button');
       t.type = 'button'; t.id = 'pbTarjeta'; t.className = 'pb-tarjeta';
-      t.innerHTML = '<img src="' + MINI + '" alt="">'
-        + '<span class="pb-txt"><span class="pb-eti">Regalo con tu pedido</span>'
-        + '<span class="pb-tit">3 bolas GRATIS</span>'
-        + '<span class="pb-pie">TaylorMade SpeedSoft Ink · hasta el 31 de diciembre</span></span>'
+      // Pequeña y sin detalle: el detalle sale al tocarla
+      t.innerHTML = '<span class="pb-txt"><span class="pb-tit">🎁 Regalo: 3 bolas GRATIS</span></span>'
         + '<span class="pb-flecha" aria-hidden="true">›</span>';
       t.addEventListener('click', abrir);
     }
