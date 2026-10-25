@@ -118,3 +118,22 @@ button.lg-cal-f{ cursor:pointer; }
 .lg-opc:disabled{ opacity:.4; }
 .conv-liga-nota{ margin-top:10px; }
 .lg-otros-btn{ width:100%; margin-top:12px; }
+/* Opciones nuevas de la liga (oct-2026): botones con subtítulo, reglas de conteo, rondas elegidas y tabla completa */
+.lg-opc2{ line-height:1.15; padding:6px; }
+.lg-opc2 small{ display:block; font-weight:500; font-size:12.5px; opacity:.8; margin-top:2px; }
+.lg-reglas{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.lg-reglas .lg-opc:last-child{ grid-column:1 / -1; }
+.lg-rondas, .lg-ver{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.lg-rondas .lg-chip, .lg-ver .lg-chip{ flex:0 0 auto; padding:0 12px; }
+.lg-chip.on{ background:var(--lg-acc); border-color:var(--lg-acc); color:var(--lg-acc-ink); }
+.lg-chips-res{ display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 2px; }
+.lg-chips-res span{ font-size:12.5px; font-weight:700; color:var(--lg-mut); border:1px solid var(--lg-line); border-radius:999px; padding:3px 9px; }
+.lg-tabla-w{ overflow-x:auto; border-radius:12px; border:1px solid var(--lg-line); margin-top:10px; -webkit-overflow-scrolling:touch; }
+.lg-t{ width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; min-width:560px; color:var(--forest-fg); }
+.lg-t th{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--lg-mut); background:var(--lg-c2); padding:9px 7px; text-align:right; white-space:nowrap; }
+.lg-t td{ padding:9px 7px; border-top:1px solid var(--lg-line); text-align:right; font-size:15px; white-space:nowrap; }
+.lg-t th:nth-child(2), .lg-t td:nth-child(2), .lg-t th:last-child, .lg-t td:last-child{ text-align:left; }
+.lg-t td.lg-pos{ font-weight:900; color:var(--lg-mut); width:26px; }
+.lg-t tr.lg-lider td{ background:var(--lg-c2); }
+.lg-t tr.lg-gris td{ opacity:.5; }
+.lg-desc s{ display:inline-block; margin-right:4px; border-radius:6px; padding:1px 6px; background:var(--lg-c2); color:var(--lg-mut); font-size:13.5px; }

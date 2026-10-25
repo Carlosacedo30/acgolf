@@ -13,6 +13,49 @@
 const LIGA_TAG = 'Liga de amigos';
 const LIGA_PUNTOS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 const LIGA_MAX_JORNADAS = 30;
+// Opciones de la liga (oct-2026): rondas al mes, formato, qué rondas cuentan, mínimo para clasificar y sorteo de salidas.
+// Las ligas creadas antes siguen igual: Stroke Play con puntos F1, cuentan todas, sin mínimo y sorteo al azar.
+const LIGA_FREC = [[1, '1 al mes', 'Cada 4 semanas', 28], [2, '2 al mes', 'Cada 15 días', 14], [4, '4 al mes', 'Cada semana', 7]];
+const LIGA_REGLAS = [['todas', 'Todas', 'Suman todas'], ['mejores', 'Las mejores', 'Se quitan las peores'], ['peor', 'Quitar la peor', 'Se quita una'], ['primeras', 'Las primeras', 'El resto, práctica'], ['fijas', 'Elegidas', 'Las eliges tú']];
+function ligaNombreRegla(regla, l){
+  const x = l.cuentan || 1;
+  return ({ todas: 'Todas', mejores: 'Las ' + x + ' mejores', peor: 'Quitar la peor', primeras: 'Las ' + x + ' primeras',
+    fijas: 'Rondas ' + ((l.fijas || []).join(', ') || '—') })[regla] || 'Todas';
+}
+// Rondas válidas de un jugador según la regla: rs = [{ n, v }] (v: puntos de esa ronda, más es mejor)
+function ligaValidas(rs, regla, l){
+  if(regla === 'mejores') return rs.slice().sort((a, b) => b.v - a.v || a.n - b.n).slice(0, l.cuentan || rs.length);
+  if(regla === 'peor') return rs.length > 1 ? rs.slice().sort((a, b) => b.v - a.v || a.n - b.n).slice(0, rs.length - 1) : rs.slice();
+  if(regla === 'primeras') return rs.slice().sort((a, b) => a.n - b.n).slice(0, l.cuentan || rs.length);
+  if(regla === 'fijas') return rs.filter(x => (l.fijas || []).includes(x.n));
+  return rs.slice();
+}
+// Sorteo rotando: en cada jornada se busca, entre muchos repartos al azar, el que menos repite compañeros de las anteriores.
+// Siempre sale igual para la misma liga (semilla fija), así todos los móviles ven los mismos grupos.
+const ligaSorteoCache = {};
+function ligaSorteoRotando(l){
+  const clave = l.code + '|' + l.jugadores.join(',') + '|' + l.jornadas.length;
+  if(ligaSorteoCache[clave]) return ligaSorteoCache[clave];
+  let s = 0; for(const ch of String(l.code)) s = (s * 31 + ch.charCodeAt(0)) >>> 0;
+  const azar = () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; };
+  const base = l.jugadores.slice().sort((a, b) => a.localeCompare(b, 'es'));
+  const nG = Math.max(1, Math.ceil(base.length / 4));
+  const visto = {}; const out = [];
+  const clavePar = (a, b) => a < b ? a + '|' + b : b + '|' + a;
+  for(let r = 0; r < l.jornadas.length; r++){
+    let mejor = null, coste = Infinity;
+    for(let t = 0; t < 80; t++){
+      const x = base.slice(); for(let i = x.length - 1; i > 0; i--){ const j = Math.floor(azar() * (i + 1)); [x[i], x[j]] = [x[j], x[i]]; }
+      const g = Array.from({ length: nG }, () => []); x.forEach((n, i) => g[i % nG].push(n));
+      let c = 0; g.forEach(gr => gr.forEach((a, i) => gr.slice(i + 1).forEach(b => { c += visto[clavePar(a, b)] || 0; })));
+      if(c < coste){ coste = c; mejor = g; if(!c) break; }
+    }
+    mejor.forEach(gr => gr.forEach((a, i) => gr.slice(i + 1).forEach(b => { visto[clavePar(a, b)] = (visto[clavePar(a, b)] || 0) + 1; })));
+    out.push(mejor);
+  }
+  ligaSorteoCache[clave] = out;
+  return out;
+}
 let ligasTodas = [];          // [{ id, code, updatedAt, nombre, jugadores, dia, courseId, hora, jornadas:[{n, date, courseId}] }]
 let ligaAbierta = null;       // code de la liga que se está viendo
 let ligaForm = null;          // borrador del formulario de crear liga
@@ -103,6 +146,7 @@ function ligaGrupos(jugadores, semilla){
 // Grupos de una jornada: los que haya dejado el administrador o, si no, los automáticos
 function ligaGruposJornada(l, j){
   if(Array.isArray(j.grupos) && j.grupos.some(g => g && g.length)) return j.grupos.map(g => (g || []).slice());
+  if(l.sorteo === 'rotar'){ const r = ligaSorteoRotando(l)[l.jornadas.indexOf(j)]; if(r) return r.map(g => g.slice()); }
   return ligaGrupos(l.jugadores, ligaCodigoJornada(l, j.n));
 }
 
@@ -111,10 +155,13 @@ function ligaDesdeFila(row){
   const mg = Array.isArray(row.match_groups) ? row.match_groups : [];
   const meta = ((mg.find(g => g && g.meta) || {}).meta || {}).liga || {};
   return { id: row.id, code: row.code, updatedAt: row.updated_at, nombre: meta.nombre || 'Liga', jugadores: meta.jugadores || [],
-    dia: meta.dia, courseId: meta.courseId, hora: meta.hora || '08:40', cada: meta.cada || 7, hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [] };
+    dia: meta.dia, courseId: meta.courseId, hora: meta.hora || '08:40', cada: meta.cada || 7, hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [],
+    frec: meta.frec || null, formato: meta.formato === 'stableford' ? 'stableford' : 'stroke', regla: meta.regla || 'todas', cuentan: meta.cuentan || null,
+    fijas: Array.isArray(meta.fijas) ? meta.fijas : [], minimo: meta.minimo || 0, sorteo: meta.sorteo || 'azar' };
 }
 function ligaAFila(l){
-  return [{ players: [], handicaps: [], scores: {}, meta: { liga: { nombre: l.nombre, jugadores: l.jugadores, dia: l.dia, courseId: l.courseId, hora: l.hora, cada: l.cada || 7, hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas } } }];
+  return [{ players: [], handicaps: [], scores: {}, meta: { liga: { nombre: l.nombre, jugadores: l.jugadores, dia: l.dia, courseId: l.courseId, hora: l.hora, cada: l.cada || 7, hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas,
+    frec: l.frec || null, formato: l.formato || 'stroke', regla: l.regla || 'todas', cuentan: l.cuentan || null, fijas: l.fijas || [], minimo: l.minimo || 0, sorteo: l.sorteo || 'azar' } } }];
 }
 const ligaCodigoJornada = (l, n) => l.code + 'J' + n;
 
@@ -188,10 +235,22 @@ async function ligaResultados(l){
       const hcp = Number((g.handicaps || [])[i]) || 0;
       const bruto = golpes.reduce((a, b) => a + b, 0);
       const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined) : Math.round(hcp);
-      filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp });
+      // Puntos Stableford: por hoyo, 2 − (golpes − golpes recibidos − par), sin bajar de 0
+      let stb = 0;
+      for(let h = 1; h <= 18; h++){
+        const gol = Number(sc[h]); const par = curso && curso.par ? Number(curso.par[h - 1]) : 4;
+        const rec = typeof strokesForHole === 'function' && curso && curso.hcp ? strokesForHole(recibidos, curso.hcp[h - 1]) : 0;
+        stb += Math.max(0, 2 - (gol - rec - par));
+      }
+      filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb });
     }));
-    filas.sort((a, b) => a.neto - b.neto || a.hcp - b.hcp);
-    filas.forEach((f, i) => { f.pos = i + 1; f.puntos = LIGA_PUNTOS[i] != null ? LIGA_PUNTOS[i] : 0; });
+    if(l.formato === 'stableford'){
+      filas.sort((a, b) => b.stb - a.stb || a.hcp - b.hcp);
+      filas.forEach((f, i) => { f.pos = i + 1; f.puntos = f.stb; });
+    } else {
+      filas.sort((a, b) => a.neto - b.neto || a.hcp - b.hcp);
+      filas.forEach((f, i) => { f.pos = i + 1; f.puntos = LIGA_PUNTOS[i] != null ? LIGA_PUNTOS[i] : 0; });
+    }
     out[j.n] = filas;
   });
   return out;
@@ -247,7 +306,8 @@ function ligaPintarLista(){
 function ligaPintarForm(){
   const body = document.getElementById('ligaCuerpo'); if(!body) return;
   ligaTitulo('Crear liga');
-  if(!ligaForm) ligaForm = { nombre: '', jugadores: [], jornadas: 8, dia: 6, inicio: ligaProximoDia(6), campo: 'hato-verde', hora: '08:40', cada: 7, fechas: {}, salida: 'normal', hoyoInicio: 1 };
+  if(!ligaForm) ligaForm = { nombre: '', jugadores: [], jornadas: 8, dia: 6, inicio: ligaProximoDia(6), campo: 'hato-verde', hora: '08:40', cada: 7, fechas: {}, salida: 'normal', hoyoInicio: 1,
+    formato: 'stroke', regla: 'todas', cuentan: 5, fijas: [], minimo: 0, sorteo: 'rotar' };
   const f = ligaForm;
   const todos = ligaJugadoresTodos();
   const cal = ligaCalendario(f.inicio, f.jornadas, f.campo, f.cada, f.fechas, f.salida);
@@ -264,11 +324,11 @@ function ligaPintarForm(){
           + '<i class="lg-check">' + (on ? '✓' : '') + '</i><span>' + ligaEsc(n) + '</span><b>' + (h === null ? '' : String(h).replace('.', ',')) + '</b></button>';
       }).join('') + '</div>'
 
-    + '<div class="conv-eyebrow">2 · Jornadas</div>'
-    + '<div class="lg-paso"><button type="button" class="lg-mas" data-d="-1" aria-label="Una jornada menos">−</button><div class="lg-num"><b>' + f.jornadas + '</b><small>' + (f.jornadas === 1 ? 'jornada' : 'jornadas') + '</small></div><button type="button" class="lg-mas" data-d="1" aria-label="Una jornada más">+</button></div>'
+    + '<div class="conv-eyebrow">2 · Total de rondas</div>'
+    + '<div class="lg-paso"><button type="button" class="lg-mas" data-d="-1" aria-label="Una ronda menos">−</button><div class="lg-num"><b>' + f.jornadas + '</b><small>' + (f.jornadas === 1 ? 'ronda' : 'rondas') + '</small></div><button type="button" class="lg-mas" data-d="1" aria-label="Una ronda más">+</button></div>'
 
-    + '<div class="conv-eyebrow">3 · Cada cuánto se juega</div>'
-    + '<div class="lg-dos">' + [[7, 'Cada semana'], [14, 'Cada 15 días']].map(c => '<button type="button" class="lg-opc' + (f.cada === c[0] ? ' on' : '') + '" data-cada="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
+    + '<div class="conv-eyebrow">3 · Rondas al mes</div>'
+    + '<div class="lg-dos lg-tres">' + LIGA_FREC.map(c => '<button type="button" class="lg-opc lg-opc2' + (f.cada === c[3] ? ' on' : '') + '" data-cada="' + c[3] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
 
     + '<div class="conv-eyebrow">4 · Día de juego</div>'
     + '<div class="lg-dos"><button type="button" class="lg-opc' + (f.dia === 6 ? ' on' : '') + '" data-dia="6">Sábado</button><button type="button" class="lg-opc' + (f.dia === 0 ? ' on' : '') + '" data-dia="0">Domingo</button></div>'
@@ -285,13 +345,36 @@ function ligaPintarForm(){
         : (nGrupos ? 'Salidas por el hoyo ' + (f.hoyoInicio || 1) + ' cada 10 minutos: ' + ligaHoras(f.hora, nGrupos).map(t => t.replace(/^0/, '')).join(', ') + '.' : 'Salidas por el hoyo ' + (f.hoyoInicio || 1) + ' cada 10 minutos.')) + '</div>'
     + (f.salida === 'tiro' ? '' : ligaPasoHoyo(f.hoyoInicio || 1, 'lgHoyoIni'))
 
+    + '<div class="conv-eyebrow">7 · Formato</div>'
+    + '<div class="lg-dos">' + [['stroke', 'Stroke Play', 'Puntos F1 por puesto'], ['stableford', 'Stableford', 'Suma de puntos']].map(c => '<button type="button" class="lg-opc lg-opc2' + (f.formato === c[0] ? ' on' : '') + '" data-formato="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
+    + '<div class="lg-aviso">' + (f.formato === 'stableford'
+        ? 'Stableford: en cada ronda se suman los puntos Stableford de cada jugador (con su hándicap). Gana quien más puntos sume.'
+        : 'Puntos por puesto en cada ronda (por neto), como en la Fórmula 1: 25 · 18 · 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1. Del 11.º en adelante y quien no juega, 0.') + '</div>'
+
+    + '<div class="conv-eyebrow">8 · Rondas que cuentan</div>'
+    + '<div class="lg-reglas">' + LIGA_REGLAS.map(c => '<button type="button" class="lg-opc lg-opc2' + (f.regla === c[0] ? ' on' : '') + '" data-regla="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
+    + ((f.regla === 'mejores' || f.regla === 'primeras')
+        ? '<div class="lg-paso" style="margin-top:10px;"><button type="button" class="lg-mas" data-cuentan="-1" aria-label="Una menos">−</button><div class="lg-num"><b>' + Math.min(f.cuentan, f.jornadas) + '</b><small>cuentan</small></div><button type="button" class="lg-mas" data-cuentan="1" aria-label="Una más">+</button></div>'
+          + '<div class="lg-aviso">De ' + f.jornadas + ' rondas cuentan ' + Math.min(f.cuentan, f.jornadas) + (f.regla === 'mejores' ? ': las mejores de cada jugador; las peores se descartan.' : ': las primeras que juegue cada uno; el resto son de práctica.') + '</div>'
+        : f.regla === 'fijas'
+        ? '<div class="lg-rondas">' + Array.from({ length: f.jornadas }, (_, i) => '<button type="button" class="lg-chip' + (f.fijas.includes(i + 1) ? ' on' : '') + '" data-fija="' + (i + 1) + '" aria-pressed="' + f.fijas.includes(i + 1) + '">R' + (i + 1) + '</button>').join('') + '</div>'
+          + '<div class="lg-aviso">Toca las rondas que cuentan (' + f.fijas.length + ' elegidas).</div>'
+        : '<div class="lg-aviso">' + (f.regla === 'peor' ? 'Se quita la peor ronda de cada jugador: de ' + f.jornadas + ' cuentan ' + Math.max(1, f.jornadas - 1) + '.' : 'Suman todas las rondas.') + '</div>')
+
+    + '<div class="conv-eyebrow">9 · Mínimo para clasificar</div>'
+    + '<div class="lg-paso"><button type="button" class="lg-mas" data-minimo="-1" aria-label="Una menos">−</button><div class="lg-num"><b>' + (f.minimo || 0) + '</b><small>' + (f.minimo ? (f.minimo === 1 ? 'ronda' : 'rondas') : 'sin mínimo') + '</small></div><button type="button" class="lg-mas" data-minimo="1" aria-label="Una más">+</button></div>'
+    + '<div class="lg-aviso">' + (f.minimo ? 'Quien juegue menos de ' + f.minimo + (f.minimo === 1 ? ' ronda' : ' rondas') + ' sale en la tabla en gris, sin puesto.' : 'Todos los que jueguen salen con puesto en la tabla.') + '</div>'
+
+    + '<div class="conv-eyebrow">10 · Grupos de salida</div>'
+    + '<div class="lg-dos">' + [['rotar', 'Sorteo rotando', 'Todos con todos'], ['azar', 'Sorteo al azar', 'Cada jornada']].map(c => '<button type="button" class="lg-opc lg-opc2' + (f.sorteo === c[0] ? ' on' : '') + '" data-sorteo="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
+    + '<div class="lg-aviso">' + (f.sorteo === 'rotar' ? 'La app sortea los grupos de cada jornada procurando que todos coincidan con todos y se repita lo menos posible.' : 'La app sortea los grupos de cada jornada al azar.') + ' Luego puedes cambiarlos a mano en cada jornada.</div>'
+
     + '<div class="conv-eyebrow">Calendario <span class="lg-cuenta">toca una fecha para cambiarla</span></div>'
     + '<div class="lg-cal">' + cal.map(j => '<label class="lg-cal-f lg-cal-ed' + (f.fechas[j.n] ? ' lg-cambiada' : '') + '"><span>J' + j.n + '</span><b>' + ligaEsc(ligaFechaLarga(j.date)) + '</b><small>' + ligaCampoCorto(j.courseId) + (f.fechas[j.n] ? ' · fecha cambiada' : '') + '</small>'
         + '<input type="date" class="lg-cal-in" data-n="' + j.n + '" value="' + j.date + '" aria-label="Fecha de la jornada ' + j.n + '"></label>').join('') + '</div>'
     + (Object.keys(f.fechas).length ? '<button type="button" class="conv-link" id="lgFechasAuto">Volver a las fechas automáticas</button>' : '')
-    + (f.jugadores.length ? '<div class="lg-aviso">Cada jornada es una partida con todos: ' + nGrupos + (nGrupos === 1 ? ' grupo' : ' grupos') + '. Los grupos cambian cada jornada.</div>' : '')
+    + (f.jugadores.length ? '<div class="lg-aviso">Cada ronda es una partida con todos: ' + nGrupos + (nGrupos === 1 ? ' grupo' : ' grupos') + '. Los grupos se sortean en cada ronda.</div>' : '')
     + (nGrupos > MAX_GROUPS ? '<div class="lg-aviso lg-mal">Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4. Quita jugadores.</div>' : '')
-    + '<div class="lg-aviso">Puntos por puesto en cada jornada (por neto), como en la Fórmula 1: 25 · 18 · 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1. Del 11.º en adelante y quien no juega, 0.</div>'
     + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="lgCrear">Crear la liga</button>'
     + '<button type="button" class="conv-link" id="lgCancelar">Cancelar</button></div>';
 
@@ -308,7 +391,7 @@ function ligaPintarForm(){
   }));
   document.getElementById('lgTodos').addEventListener('click', ()=>{ f.jugadores = todos.slice(); repintar(); });
   document.getElementById('lgNinguno').addEventListener('click', ()=>{ f.jugadores = []; repintar(); });
-  body.querySelectorAll('.lg-mas').forEach(b => b.addEventListener('click', ()=>{
+  body.querySelectorAll('.lg-mas[data-d]').forEach(b => b.addEventListener('click', ()=>{
     f.jornadas = Math.min(LIGA_MAX_JORNADAS, Math.max(1, f.jornadas + Number(b.dataset.d))); repintar();
   }));
   body.querySelectorAll('[data-dia]').forEach(b => b.addEventListener('click', ()=>{
@@ -317,6 +400,12 @@ function ligaPintarForm(){
   body.querySelectorAll('[data-campo]').forEach(b => b.addEventListener('click', ()=>{ f.campo = b.dataset.campo; repintar(); }));
   body.querySelectorAll('[data-cada]').forEach(b => b.addEventListener('click', ()=>{ f.cada = Number(b.dataset.cada); f.fechas = {}; repintar(); }));
   body.querySelectorAll('[data-salida]').forEach(b => b.addEventListener('click', ()=>{ f.salida = b.dataset.salida; repintar(); }));
+  body.querySelectorAll('[data-formato]').forEach(b => b.addEventListener('click', ()=>{ f.formato = b.dataset.formato; repintar(); }));
+  body.querySelectorAll('[data-regla]').forEach(b => b.addEventListener('click', ()=>{ f.regla = b.dataset.regla; if(f.regla === 'fijas' && !f.fijas.length) f.fijas = Array.from({ length: Math.min(5, f.jornadas) }, (_, i) => i + 1); repintar(); }));
+  body.querySelectorAll('[data-cuentan]').forEach(b => b.addEventListener('click', ()=>{ f.cuentan = Math.min(f.jornadas, Math.max(1, Math.min(f.cuentan, f.jornadas) + Number(b.dataset.cuentan))); repintar(); }));
+  body.querySelectorAll('[data-fija]').forEach(b => b.addEventListener('click', ()=>{ const r = Number(b.dataset.fija); f.fijas = f.fijas.includes(r) ? f.fijas.filter(x => x !== r) : f.fijas.concat(r).sort((a, b) => a - b); repintar(); }));
+  body.querySelectorAll('[data-minimo]').forEach(b => b.addEventListener('click', ()=>{ f.minimo = Math.min(f.jornadas, Math.max(0, (f.minimo || 0) + Number(b.dataset.minimo))); repintar(); }));
+  body.querySelectorAll('[data-sorteo]').forEach(b => b.addEventListener('click', ()=>{ f.sorteo = b.dataset.sorteo; repintar(); }));
   body.querySelectorAll('[data-hoyoini]').forEach(b => b.addEventListener('click', ()=>{ f.hoyoInicio = ligaHoyoMas(f.hoyoInicio || 1, Number(b.dataset.hoyoini)); repintar(); }));
   body.querySelectorAll('.lg-cal-in').forEach(inp => inp.addEventListener('change', ()=>{
     if(!inp.value) return;
@@ -350,11 +439,14 @@ async function ligaCrear(){
   const cal = ligaCalendario(f.inicio, f.jornadas, f.campo, f.cada, f.fechas, f.salida);
   if(cal.some(j => j.date < ligaHoy())){ alert('Hay alguna jornada con fecha pasada. Revisa el calendario.'); return; }
   if(new Set(cal.map(j => j.date)).size < cal.length){ alert('Hay dos jornadas el mismo día. Revisa el calendario.'); return; }
-  if(!confirm('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' jornadas.\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
+  if(f.regla === 'fijas' && !f.fijas.filter(r => r <= f.jornadas).length){ alert('Elige qué rondas cuentan.'); return; }
+  if(!confirm('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' rondas (' + (f.formato === 'stableford' ? 'Stableford' : 'Stroke Play') + ').\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
   const client = initSupabase(); if(!client) return;
   btn.textContent = 'Creando…'; btn.disabled = true;
   try {
-    const l = { nombre: f.nombre, jugadores: f.jugadores.slice(), dia: f.dia, courseId: f.campo, hora: f.hora, cada: f.cada, hoyoInicio: f.hoyoInicio || 1, jornadas: cal };
+    const l = { nombre: f.nombre, jugadores: f.jugadores.slice(), dia: f.dia, courseId: f.campo, hora: f.hora, cada: f.cada, hoyoInicio: f.hoyoInicio || 1, jornadas: cal,
+      frec: (LIGA_FREC.find(x => x[3] === f.cada) || [null])[0], formato: f.formato, regla: f.regla, cuentan: Math.min(f.cuentan, f.jornadas),
+      fijas: f.fijas.filter(r => r <= f.jornadas), minimo: f.minimo || 0, sorteo: f.sorteo };
     const { data, error } = await client.from('rounds').insert({
       code: genRoundCode(), course_id: null, course_name: null, round_name: LIGA_TAG, scoring_type: 'strokeplay', match_groups: ligaAFila(l),
     }).select('id, code, match_groups, updated_at').single();
@@ -371,8 +463,29 @@ async function ligaCrear(){
 }
 
 // --- Una liga: clasificación y calendario ---
+// Regla con la que se está mirando la tabla (null = la de la liga). Solo cambia lo que se ve, no la liga.
+let ligaVerRegla = null;
+// Tabla de la liga con la regla de conteo: puntos de las rondas válidas, rondas descartadas, mejor, promedio y diferencia con el hándicap
+function ligaTabla(l, res, regla){
+  const hoy = ligaHoy();
+  const filas = l.jugadores.map(n => {
+    const rs = [];
+    l.jornadas.forEach(j => (res[j.n] || []).forEach(f => { if(f.jugador === n) rs.push({ n: j.n, v: f.puntos, stb: f.stb, neto: f.neto, pos: f.pos }); }));
+    const validas = ligaValidas(rs, regla, l);
+    const vset = new Set(validas.map(x => x.n));
+    const stb = rs.map(x => x.stb).filter(v => v != null);
+    const media = stb.length ? stb.reduce((a, b) => a + b, 0) / stb.length : null;
+    return { jugador: n, hcp: ligaHcp(n), puntos: validas.reduce((a, x) => a + x.v, 0), validas: validas.length, jugadas: rs.length,
+      victorias: rs.filter(x => x.pos === 1).length, mejor: stb.length ? Math.max(...stb) : null, media, dif: media == null ? null : media - 36,
+      descartadas: rs.filter(x => !vset.has(x.n)), entra: rs.length >= (l.minimo || 0) && rs.length > 0 };
+  });
+  filas.sort((a, b) => (b.entra - a.entra) || b.puntos - a.puntos || (a.hcp ?? 99) - (b.hcp ?? 99));
+  return filas;
+}
+
 async function ligaVer(code){
   const l = ligasTodas.find(x => x.code === code); if(!l) return;
+  if(ligaAbierta !== code) ligaVerRegla = null;
   ligaAbierta = code;
   const body = document.getElementById('ligaCuerpo'); if(!body) return;
   ligaTitulo(l.nombre);
@@ -383,24 +496,27 @@ async function ligaVer(code){
   const hoy = ligaHoy();
   const estado = res._estado || {};
 
-  // Clasificación: suma de puntos de todas las jornadas
-  const tabla = {};
-  l.jugadores.forEach(n => tabla[n] = { jugador: n, puntos: 0, jugadas: 0, victorias: 0 });
-  l.jornadas.forEach(j => (res[j.n] || []).forEach(f => {
-    const t = tabla[f.jugador]; if(!t) return;
-    t.puntos += f.puntos; t.jugadas++; if(f.pos === 1) t.victorias++;
-  }));
-  const clasif = Object.values(tabla).sort((a, b) => b.puntos - a.puntos || b.victorias - a.victorias || (ligaHcp(a.jugador) ?? 99) - (ligaHcp(b.jugador) ?? 99));
+  const reglaVista = ligaVerRegla || l.regla || 'todas';
+  const clasif = ligaTabla(l, res, reglaVista);
   const hayPuntos = clasif.some(c => c.jugadas);
+  const fmt = (v, d) => v == null ? '–' : (d ? v.toFixed(d) : String(v)).replace('.', ',');
 
   const proxJ = ligaProxima(l);
   const orden = l.jornadas.slice().sort((a, b) => a.date.localeCompare(b.date));
-  body.innerHTML = '<div class="lg-sub">' + l.jugadores.length + ' jugadores · ' + (l.cada === 14 ? 'cada 15 días' : 'cada semana') + ' · 1ª salida ' + ligaEsc(String(l.hora).replace(/^0/, '')) + '</div>'
+  body.innerHTML = '<div class="lg-sub">' + l.jugadores.length + ' jugadores · ' + l.jornadas.length + ' rondas · ' + (l.cada === 28 ? '1 al mes' : l.cada === 14 ? '2 al mes' : 'cada semana') + ' · 1ª salida ' + ligaEsc(String(l.hora).replace(/^0/, '')) + '</div>'
+    + '<div class="lg-chips-res">' + [l.formato === 'stableford' ? 'Stableford' : 'Stroke Play · puntos F1', 'Cuentan: ' + ligaNombreRegla(l.regla || 'todas', l).toLowerCase(), l.minimo ? 'Mínimo ' + l.minimo + ' rondas' : null, l.sorteo === 'rotar' ? 'Sorteo rotando' : null].filter(Boolean).map(t => '<span>' + ligaEsc(t) + '</span>').join('') + '</div>'
     + '<div class="conv-eyebrow">Clasificación</div>'
-    + (hayPuntos ? '' : '<div class="lg-aviso">Los puntos empiezan a contar cuando se juegue la primera jornada.</div>')
-    + '<div class="lg-tabla"><div class="lg-fila lg-cab"><span>#</span><span>Jugador</span><span>Jug.</span><span>Pts</span></div>'
-    + clasif.map((c, i) => '<div class="lg-fila' + (i === 0 && hayPuntos ? ' lg-lider' : '') + '"><span>' + (hayPuntos ? i + 1 : '–') + '</span><span class="lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + '</span><span>' + c.jugadas + '</span><span class="lg-pts">' + c.puntos + '</span></div>').join('')
-    + '</div>'
+    + '<div class="lg-ver">' + [[l.regla || 'todas', 'Regla de la liga']].concat(LIGA_REGLAS.filter(r => r[0] !== (l.regla || 'todas') && (r[0] !== 'fijas' || (l.fijas || []).length) && ((r[0] !== 'mejores' && r[0] !== 'primeras') || l.cuentan)).map(r => [r[0], r[1]]))
+        .map((r, i) => '<button type="button" class="lg-chip' + (reglaVista === r[0] ? ' on' : '') + '" data-ver="' + (i === 0 ? '' : r[0]) + '">' + ligaEsc(r[1]) + '</button>').join('') + '</div>'
+    + (ligaVerRegla ? '<div class="lg-aviso">Estás viendo la tabla contando «' + ligaEsc(ligaNombreRegla(ligaVerRegla, l)) + '». La regla de la liga no cambia.</div>' : '')
+    + (hayPuntos ? '' : '<div class="lg-aviso">Los puntos empiezan a contar cuando se juegue la primera ronda.</div>')
+    + '<div class="lg-tabla-w"><table class="lg-t"><thead><tr><th>#</th><th>Jugador</th><th>' + (l.formato === 'stableford' ? 'Puntos' : 'Pts F1') + '</th><th>PR</th><th>Mejor</th><th>Promedio</th><th>Dif. hcp</th><th>Rondas descartadas</th></tr></thead><tbody>'
+    + (() => { let pos = 0; return clasif.map(c => { if(c.entra) pos++;
+        return '<tr class="' + (c.entra && pos === 1 && hayPuntos ? 'lg-lider' : '') + (c.entra || !hayPuntos ? '' : ' lg-gris') + '"><td class="lg-pos">' + (hayPuntos && c.entra ? pos : '–') + '</td><td class="lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + '</td>'
+          + '<td class="lg-pts">' + c.puntos + '</td><td>' + c.validas + '</td><td>' + fmt(c.mejor) + '</td><td>' + fmt(c.media, 1) + '</td><td>' + (c.dif == null ? '–' : (c.dif > 0 ? '+' : '') + fmt(c.dif, 1)) + '</td>'
+          + '<td class="lg-desc">' + (c.descartadas.length ? c.descartadas.map(x => '<s>R' + x.n + ' · ' + x.v + (l.formato === 'stableford' ? '' : ' pts') + '</s>').join('') : '—') + '</td></tr>'; }).join(''); })()
+    + '</tbody></table></div>'
+    + '<div class="lg-aviso">PR = rondas válidas. Mejor, Promedio y Dif. hcp en puntos Stableford (36 = jugar a tu hándicap). A igual puntuación gana el hándicap más bajo.' + (l.minimo ? ' En gris, quien aún no tiene ' + l.minimo + (l.minimo === 1 ? ' ronda.' : ' rondas.') : '') + ' Solo puntúan los jugadores con cuenta.</div>'
     + '<div class="conv-eyebrow">Calendario</div>'
     + '<div class="lg-cal">' + orden.map(j => {
         const filas = res[j.n];
@@ -418,6 +534,7 @@ async function ligaVer(code){
     + '<div class="conv-actions"><button type="button" class="conv-link" id="lgVolver">‹ Todas las ligas</button>'
     + (ligaEsAdmin() ? '<button type="button" class="conv-btn borrar" id="lgBorrar">' + (typeof icono === 'function' ? icono('papelera') : '') + ' Borrar esta liga</button>' : '') + '</div>';
 
+  body.querySelectorAll('[data-ver]').forEach(b => b.addEventListener('click', ()=>{ ligaVerRegla = b.dataset.ver || null; ligaVer(l.code); }));
   body.querySelectorAll('.lg-cal-f[data-n]').forEach(b => b.addEventListener('click', ()=>
     ligaEsAdmin() ? ligaConfigJornada(l, Number(b.dataset.n), res) : ligaAbrirJornada(l, Number(b.dataset.n), res)));
   document.getElementById('lgVolver').addEventListener('click', ligaPintarLista);
