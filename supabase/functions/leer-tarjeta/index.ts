@@ -9,7 +9,8 @@ const MAX_FOTOS = 3;
 const MAX_BYTES_FOTO = 2_500_000;
 const LIMITE_PERSONA_DIA = 12;   // lecturas + guardados por persona y día
 const LIMITE_TOTAL_DIA = 300;    // para no pasar del nivel gratis de Gemini
-const MODELOS = () => [Deno.env.get("GEMINI_MODELO"), "gemini-flash-latest", "gemini-2.5-flash"].filter(Boolean) as string[];
+// Primero el modelo ligero (lee bien las tarjetas en 1-2 s); si está saturado, los otros
+const MODELOS = () => [Deno.env.get("GEMINI_MODELO"), "gemini-flash-lite-latest", "gemini-flash-latest", "gemini-3.8-flash"].filter(Boolean) as string[];
 
 let CORS: Record<string, string> = {
   "Access-Control-Allow-Origin": ORIGENES[0],
@@ -90,7 +91,7 @@ async function preguntarGemini(fotos: Foto[], clave: string) {
   let ultimo = "";
   for (const modelo of MODELOS()) {
     const ctl = new AbortController();
-    const reloj = setTimeout(() => ctl.abort(), 45000);
+    const reloj = setTimeout(() => ctl.abort(), 30000);
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelo)}:generateContent`, {
         method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": clave }, body: cuerpo, signal: ctl.signal,
@@ -101,15 +102,14 @@ async function preguntarGemini(fotos: Foto[], clave: string) {
         if (/API key|API_KEY|permission/i.test(t)) throw new Fallo(502, "La clave de Google (Gemini) no es válida.");
         throw new Fallo(502, "No se ha podido leer la foto. Prueba con otra foto más clara.");
       }
-      if (r.status === 429) throw new Fallo(503, "Hoy se han leído muchas tarjetas. Prueba más tarde o escribe tú los datos.");
+      if (r.status === 429) { ultimo = "sin cupo en " + modelo; continue; }
       if (!r.ok) { ultimo = "Gemini " + r.status; console.error(ultimo, (await r.text()).slice(0, 300)); continue; }
       const j = await r.json();
       const texto = j?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || "").join("") || "";
       try { return JSON.parse(texto); } catch { throw new Fallo(502, "No se ha podido leer la tarjeta. Prueba con otra foto más clara."); }
     } catch (e) {
       if (e instanceof Fallo) throw e;
-      if ((e as Error).name === "AbortError") throw new Fallo(504, "Está tardando demasiado. Inténtalo otra vez.");
-      ultimo = String(e); console.error("Gemini", ultimo);
+      ultimo = (e as Error).name === "AbortError" ? "tarda demasiado (" + modelo + ")" : String(e); console.error("Gemini", ultimo);
     } finally { clearTimeout(reloj); }
   }
   console.error("Gemini sin respuesta:", ultimo);
