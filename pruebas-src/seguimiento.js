@@ -11,7 +11,7 @@
   const fechaHora = d => d ? new Date(d).toLocaleString('es-ES', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
   const pct = (a, b) => b ? Math.round(a * 100 / b) + ' %' : '—';
   let periodo = '7';
-  let guardado = null, abierta = null;
+  let guardado = null, abierta = null, patro = null;
   // Desde cuándo cuenta cada periodo (igual que en la base de datos)
   function desdePeriodo(){
     if(periodo === 'todo') return 0;
@@ -35,10 +35,47 @@
 
   async function pintar(caja, client){
     caja.innerHTML = '<p class="sg-carga">Cargando los datos…</p>';
-    const { data, error } = await client.rpc('sa_seguimiento', { p_dias: 30 });
+    const [res, resP] = await Promise.all([client.rpc('sa_seguimiento', { p_dias: 30 }), client.rpc('sa_patrocinio').catch(() => ({ data: null }))]);
+    const { data, error } = res;
     if(error){ caja.innerHTML = '<p class="sg-carga">No se pudieron cargar los datos. Prueba en un rato.</p>'; return; }
-    guardado = data;
+    guardado = data; patro = (resP && resP.data) || null;
     dibujar(caja);
+  }
+
+  // ---------- El patrocinador, claro y explicado (lo que se le puede enseñar) ----------
+  function seccionPatro(nombreP){
+    if(!patro || !(patro.patrocinadores || []).length) return '<h3 class="sg-h">📢 Patrocinador</h3><p class="sg-vacio">Todavía no hay datos del patrocinador.</p>';
+    const dir = (patro.directo || {})[periodo] || {};
+    const dias = patro.por_dia || [];
+    const maxD = Math.max(1, ...dias.map(x => x.vieron || 0));
+    return (patro.patrocinadores || []).map(nombre => {
+      const x = ((patro.periodos || {})[periodo] || {})[nombre] || { vistas: 0, personas_vieron: 0, toques: 0, personas_tocaron: 0, por_grupo: [], quien: [] };
+      const fichas = [
+        ['👁', x.personas_vieron, 'personas lo vieron', x.vistas + (x.vistas === 1 ? ' vez' : ' veces') + ' en total'],
+        ['👆', x.personas_tocaron, 'fueron a su web', x.toques + (x.toques === 1 ? ' toque' : ' toques') + ' en total'],
+        ['🎯', x.personas_vieron ? Math.round(x.personas_tocaron * 100 / x.personas_vieron) + ' %' : '—', 'de los que lo ven, van a su web', 'cuanto más alto, mejor'],
+        ['📺', dir.personas || 0, 'vieron el directo', (dir.minutos || 0) + ' minutos con su franja en pantalla'],
+      ];
+      return '<div class="sg-patro"><h3 class="sg-h">📢 ' + esc(nombre) + ' <small>patrocinador · ' + nombreP + '</small></h3>'
+        + '<div class="sg-fichas">' + fichas.map(f => '<div class="sg-ficha"><i>' + f[0] + '</i><b>' + f[1] + '</b><span>' + f[2] + '</span><small>' + f[3] + '</small></div>').join('') + '</div>'
+        + '<h4 class="sg-h4">Por grupo</h4>'
+        + (x.por_grupo.length ? '<table class="sg-tabla"><thead><tr><th>Grupo</th><th>Lo vieron</th><th>Fueron a su web</th></tr></thead><tbody>'
+            + x.por_grupo.map(g => '<tr><td>' + esc(g.grupo) + '</td><td>' + g.vieron + '</td><td>' + (g.tocaron ? '<b>' + g.tocaron + '</b>' : '0') + '</td></tr>').join('') + '</tbody></table>'
+          : '<p class="sg-vacio">Nadie en este tiempo.</p>')
+        + '<h4 class="sg-h4">Día a día <small>últimos 30 días · lo vieron <i class="sg-lv"></i> · fueron a su web <i class="sg-lr"></i></small></h4>'
+        + '<div class="sg-dias">' + dias.map(d => '<div class="sg-dia" title="' + fecha(d.dia) + ': ' + d.vieron + ' lo vieron, ' + d.tocaron + ' fueron a su web">'
+            + '<div class="sg-col"><i class="v" style="height:' + ((d.vieron || 0) * 100 / maxD) + '%"></i><i class="r" style="height:' + ((d.tocaron || 0) * 100 / maxD) + '%"></i></div>'
+            + '<span>' + new Date(d.dia).getDate() + '</span></div>').join('') + '</div>'
+        + '<h4 class="sg-h4">¿Quién fue a su web? <small>' + nombreP + '</small></h4>'
+        + (x.quien.length ? '<div class="pa-lista">' + x.quien.map(q => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(q.jugador) + ' <em class="sg-et">' + q.toques + (q.toques === 1 ? ' vez' : ' veces') + '</em></b>'
+            + '<span>' + esc(q.grupo || '') + ' · la última, el ' + fechaHora(q.ultimo) + '</span></div></div>').join('') + '</div>'
+          : '<p class="sg-vacio">Nadie ha ido a su web ' + nombreP + '.</p>')
+        + '<div class="sg-explica"><b>Qué significa cada número</b>'
+        + '<span><b>Lo vieron:</b> su logo o su anuncio salió en la pantalla de esa persona. Cada persona cuenta una sola vez al día.</span>'
+        + '<span><b>Fueron a su web:</b> tocaron su enlace y se abrió su tienda. Los enlaces llevan la etiqueta «acgolf», así que él también ve en sus estadísticas las visitas que le llegan desde la app.</span>'
+        + '<span><b>Vieron el directo:</b> personas que siguieron una partida en directo, donde su nombre sale siempre abajo.</span>'
+        + '<span>No te contamos a ti. Datos desde el ' + fecha(patro.desde) + '.</span></div></div>';
+    }).join('');
   }
 
   function dibujar(caja){
@@ -52,7 +89,7 @@
       ['🏌️', P.partidas, 'Partidas creadas', ''],
       ['👥', P.grupos, 'Grupos nuevos', ''],
       ['📺', P.espectadores, 'Miraron en directo', (P.minutos_vivo || 0) + ' minutos en total'],
-      ['📢', P.anuncio_vistas, 'Vieron el anuncio', (P.anuncio_toques || 0) + ' lo tocaron'],
+      ['📢', P.anuncio_vistas, 'Vieron al patrocinador', (P.anuncio_toques || 0) + ' toques · detalle abajo'],
     ];
     const P30 = (d.periodos || {})['30'] || {};
     const emb = [['Visitan la web', P30.visitas || 0], ['Prueban sin registro', P30.pruebas || 0], ['Se registran', P30.registros || 0], ['La instalan', P30.instaladas || 0]];
@@ -70,6 +107,7 @@
       + '<p class="sg-nota">Lo que ha pasado <b>' + nombreP + '</b>:</p>'
       + '<div class="sg-fichas">' + fichas.map(f => (f[4] ? '<button type="button" class="sg-ficha sg-toca' + (abierta === f[4] ? ' on' : '') + '" data-ver="' + f[4] + '">' : '<div class="sg-ficha">') + '<i>' + f[0] + '</i><b>' + (f[1] || 0) + '</b><span>' + f[2] + '</span>' + (f[3] ? '<small>' + f[3] + '</small>' : '') + (f[4] ? '</button>' : '</div>')).join('') + '</div>'
       + (abierta === 'cuentas' ? listaCuentas(d) : '')
+      + seccionPatro(nombreP)
 
       + '<h3 class="sg-h">De cada 100 que llegan… <small>últimos 30 días</small></h3>'
       + '<div class="sg-emb">' + emb.map((e, i) => '<div class="sg-emb-f"><span>' + e[0] + '</span><div class="sg-barra"><i style="width:' + Math.max(2, e[1] * 100 / maxE) + '%"></i></div><b>' + e[1] + '</b><em>' + (i ? pct(e[1], emb[0][1]) : '') + '</em></div>').join('') + '</div>'

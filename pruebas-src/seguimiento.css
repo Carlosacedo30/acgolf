@@ -37,3 +37,16 @@ button.sg-ficha small{ color:#C6F24E; }
 button.sg-ficha.on{ background:rgba(198,242,78,.16); box-shadow:inset 0 0 0 2px #C6F24E; }
 .sg-detalle{ display:flex; flex-direction:column; gap:8px; scroll-margin-top:12px; }
 .sg-cerrar{ align-self:center; margin-top:4px; }
+
+/* Patrocinador */
+.sg-patro{ margin:18px 0 6px; padding:14px; background:#1B1E22; border:1.5px solid rgba(198,242,78,.55); border-radius:18px; }
+.sg-patro .sg-h{ margin-top:0; }
+.sg-h4{ font:800 16px 'Barlow', sans-serif; color:#C6F24E; margin:16px 0 8px; }
+.sg-h4 small{ font-weight:600; color:#9AA3AB; margin-left:6px; }
+.sg-tabla{ width:100%; border-collapse:collapse; font:600 16px 'Barlow', sans-serif; color:#F2F4F5; }
+.sg-tabla th{ text-align:left; font-size:13px; color:#9AA3AB; text-transform:uppercase; letter-spacing:.06em; padding:6px 4px; border-bottom:1px solid #33383E; }
+.sg-tabla td{ padding:8px 4px; border-bottom:1px solid #24282D; }
+.sg-tabla td:not(:first-child), .sg-tabla th:not(:first-child){ text-align:center; }
+.sg-tabla b{ color:#C6F24E; }
+.sg-explica{ display:flex; flex-direction:column; gap:6px; margin-top:14px; padding:12px; background:#24282D; border-radius:14px; font:500 15px/1.4 'Barlow', sans-serif; color:#F2F4F5; }
+.sg-explica > b{ color:#C6F24E; font-weight:800; }
