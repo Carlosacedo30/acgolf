@@ -284,3 +284,7 @@ a.pa-b{ display:inline-flex; align-items:center; justify-content:center; text-de
 .cg-hcp-global small{ font:500 15px/1.35 'Barlow', sans-serif; color:#F2F4F5; }
 .cg-pasos-txt{ margin:4px 0 6px; padding-left:24px; font:600 17px/1.5 'Barlow', sans-serif; color:#F2F4F5; }
 .cg-pasos-txt li::marker{ color:#C6F24E; font-weight:900; }
+.cg-paso-b{ display:flex; align-items:center; gap:14px; margin:14px 0 6px; }
+.cg-paso-b b{ display:block; font:900 19px 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; }
+.cg-paso-b small{ display:block; font:500 16px/1.35 'Barlow', sans-serif; color:#9AA3AB; margin-top:2px; }
+a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decoration:none; }

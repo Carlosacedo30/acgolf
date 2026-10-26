@@ -602,6 +602,31 @@
     abrir: async () => { try { const r = await client.rpc('mi_plan'); if(!r.error && r.data && r.data.es_admin) pantallaPlanes(r.data); } catch(e){} }
   };
 
+  // ---------- Bienvenida al grupo nuevo: qué hacer, en dos pasos y muy claro ----------
+  const claveBienvenida = perfil => 'acgolfBienvenidaGrupo:' + (perfil.grupo_id || perfil.grupo || '');
+  function bienvenidaVista(perfil){ try { return localStorage.getItem(claveBienvenida(perfil)) === '1'; } catch(e){ return true; } }
+  async function bienvenidaGrupo(perfil){
+    const nombre = String(perfil.player_name || '').split(' ')[0];
+    const vista = () => { try { localStorage.setItem(claveBienvenida(perfil), '1'); } catch(e){} };
+    mostrar(cabecera('¡Ya tienes tu grupo! 🎉', '«' + esc(perfil.grupo || 'Tu grupo') + '» es tu grupo' + (nombre ? ', ' + esc(nombre) : '') + '. Aquí se guardan tus partidas y se ve quién gana.')
+      + '<div class="cg-paso-b"><span class="cg-camino-ico" aria-hidden="true">⛳</span><div><b>Para jugar</b><small>Toca «Crear partida», elige el campo y apunta tus golpes hoyo a hoyo.</small></div></div>'
+      + '<button type="button" class="cg-btn" id="cgBvJugar">Crear mi primera partida</button>'
+      + '<div class="cg-paso-b"><span class="cg-camino-ico" aria-hidden="true">📩</span><div><b>Para jugar con tus amigos</b><small>Mándales tu enlace por WhatsApp. Al abrirlo, entran en tu grupo.</small></div></div>'
+      + '<a class="cg-btn ghost" id="cgBvInvitar" href="#" target="_blank" rel="noopener">Invitar por WhatsApp</a>'
+      + '<button type="button" class="cg-link" id="cgBvOk">Ahora no, ver la app</button>');
+    $('cgBvJugar').onclick = () => { vista(); ocultar(); setTimeout(() => { const b = document.getElementById('prAbrirBtn'); if(b) b.click(); }, 250); };
+    $('cgBvOk').onclick = () => { vista(); ocultar(); };
+    const inv = $('cgBvInvitar');
+    inv.onclick = () => vista();
+    try {
+      const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: false });
+      if(r.error || !r.data) throw new Error('sin enlace');
+      const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(r.data.codigo);
+      const texto = '⛳ Te invito a «' + r.data.grupo + '» en la app de golf. Crea tu cuenta desde este enlace y entrarás directamente en el grupo:\n' + enlace;
+      inv.href = 'https://wa.me/?text=' + encodeURIComponent(texto);
+    } catch(e){ inv.remove(); }
+  }
+
   function asistentePortada(perfil, desdeCuenta){
     const P = window.acgolfPortada;
     if(!P){ ocultar(); return; }
@@ -1183,8 +1208,9 @@
       const pintar = () => P.aplicar(perfil);
       if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();
       // Grupo recién creado: el administrador monta la portada e invita a los demás
-      if(perfil.es_admin && perfil.grupo_tipo === 'liga' && !(perfil.grupo_marca || {}).hecho && !P.esPortadaOriginal(perfil)){
-        asistentePortada(perfil, false); return;
+      // (antes salía el asistente de la portada; ahora una bienvenida sencilla y la portada se cambia luego desde «Mi cuenta»)
+      if(perfil.es_admin && perfil.grupo_tipo === 'liga' && !(perfil.grupo_marca || {}).hecho && !P.esPortadaOriginal(perfil) && !bienvenidaVista(perfil)){
+        bienvenidaGrupo(perfil); return;
       }
     }
     ocultar();
