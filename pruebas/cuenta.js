@@ -1215,7 +1215,7 @@
       if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pintar); else pintar();
       // Grupo recién creado: el administrador monta la portada e invita a los demás
       // (antes salía el asistente de la portada; ahora una bienvenida sencilla y la portada se cambia luego desde «Mi cuenta»)
-      if(perfil.es_admin && perfil.grupo_tipo === 'liga' && !(perfil.grupo_marca || {}).hecho && !P.esPortadaOriginal(perfil) && !bienvenidaVista(perfil)){
+      if(perfil.es_admin && !perfil.solo_control && perfil.grupo_tipo === 'liga' && !(perfil.grupo_marca || {}).hecho && !P.esPortadaOriginal(perfil) && !bienvenidaVista(perfil)){
         bienvenidaGrupo(perfil); return;
       }
     }
