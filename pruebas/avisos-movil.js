@@ -47,6 +47,8 @@
   // Pinta la opción en «Mi cuenta»
   async function pintar(box, perfil, msg){
     if(!box) return;
+    // De momento solo lo ve el super administrador (en pruebas); para todos: window.acgolfAvisosTodos = true
+    if(!(perfil && perfil.es_super) && !window.acgolfAvisosTodos){ box.remove(); return; }
     const titulo = '<b>Avisos en el móvil</b><br>';
     if(iphone && !instalada()){
       box.innerHTML = '<div class="cg-acepto" style="margin:4px 0 2px;display:block;"><span>' + titulo
