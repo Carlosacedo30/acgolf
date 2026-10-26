@@ -5,7 +5,7 @@
 --   · Hándicap actualizado: cuando cambia (unos 15 minutos después de cerrar la partida).
 --   · Horas de silencio: de 22:00 a 8:00 (hora de España) no llega nada; lo de la noche sale a las 8:00.
 -- Todo pasa por una cola (avisos_cola) que vacía la función «avisos-cola» cada minuto.
--- PENDIENTE de aplicar en svnkgmbfanwftncopqjg (acgolf.es / pruebas): falta la confirmación de Carlos.
+-- Aplicado en svnkgmbfanwftncopqjg (acgolf.es / pruebas) el 26-oct-2026.
 
 -- ---------- Cola de avisos ----------
 create table if not exists public.avisos_cola (
@@ -197,7 +197,6 @@ begin
   return new;
 exception when others then return new;  -- un fallo en el aviso nunca debe frenar el cálculo del hándicap
 end; $$;
-drop trigger if exists aviso_handicap on public.handicap_historial;
 create trigger aviso_handicap after insert on public.handicap_historial for each row execute function public._aviso_handicap();
 
 -- Funciones internas: solo el servidor
@@ -207,7 +206,6 @@ revoke all on function public._hora_permitida(timestamptz), public._encolar(uuid
 grant execute on function public._cola_tomar(text), public._aviso_movil(uuid, text) to service_role;
 
 -- ---------- Relojes ----------
-select cron.unschedule(jobname) from cron.job where jobname in ('avisos-cola', 'avisos-recordatorio', 'avisos-ganador');
 select cron.schedule('avisos-cola', '* * * * *', 'select public._lanzar_avisos()');
 select cron.schedule('avisos-recordatorio', '0 18,19 * * *', 'select public._avisos_recordatorio(); select public._lanzar_avisos()');   -- 20:00 en España (invierno y verano)
 select cron.schedule('avisos-ganador', '0 8,9 * * 1', 'select public._avisos_ganador(); select public._lanzar_avisos()');            -- lunes 10:00 en España
