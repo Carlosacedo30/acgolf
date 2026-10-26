@@ -9,7 +9,9 @@
 .ac-red.yt{ background:#E62117; }
 .ac-red.fb{ background:#1877F2; }
 .ac-red:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
-.ac-resena{ display:flex; align-items:center; justify-content:center; min-height:48px; margin-top:10px; border-radius:999px;
+.ac-resena{ display:flex; align-items:center; justify-content:center; min-height:48px; border-radius:999px; padding:0 10px; text-align:center;
   background:#C6F24E; color:#111316; font:900 15px 'Archivo', 'Barlow', sans-serif; text-decoration:none; transition:transform .1s; }
 .ac-resena:active{ transform:scale(.97); }
 .ac-resena:focus-visible{ outline:3px solid #F2F4F5; outline-offset:2px; }
+.ac-resenas{ margin-top:14px; }
+.ac-resenas p{ margin:0 0 8px; font:500 14px 'Barlow', sans-serif; color:#9AA3AB; }

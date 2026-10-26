@@ -9,7 +9,11 @@
     { n: 'YouTube',   url: 'https://www.youtube.com/channel/UCUqjPt8RqN0JQeTiel8Ygsw', c: 'yt' },
     { n: 'Facebook',  url: 'https://www.facebook.com/1437955202727013', c: 'fb' },
   ];
-  const RESENA = 'https://g.page/r/Ceq0QgzdhDQ8ECE/review';
+  // Reseñas en Google: la nuestra y la del patrocinador
+  const RESENAS = [
+    { n: '⭐ acgolf', url: 'https://g.page/r/Ceq0QgzdhDQ8ECE/review' },
+    { n: '⭐ Bolarecuperada', url: 'https://maps.app.goo.gl/j7pf91yTuF8MWC43A' },
+  ];
   const esc = v => String(v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function poner(){
     const pie = document.querySelector('.home-pie'); if(!pie || document.getElementById('acRedes')) return;
@@ -17,7 +21,9 @@
     caja.id = 'acRedes'; caja.className = 'ac-redes';
     caja.innerHTML = '<div class="ac-redes-t">Síguenos</div><div class="ac-redes-l">'
       + REDES.map(r => '<a class="ac-red ' + r.c + '" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.n) + '</a>').join('') + '</div>'
-      + '<a class="ac-resena" href="' + esc(RESENA) + '" target="_blank" rel="noopener">⭐ Danos tu opinión en Google</a>';
+      + '<div class="ac-resenas"><div class="ac-redes-t">Déjanos tu reseña en Google</div>'
+      + '<p>Un minuto y nos ayudas muchísimo. Gracias 🙏</p><div class="ac-redes-l">'
+      + RESENAS.map(r => '<a class="ac-resena" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + esc(r.n) + '</a>').join('') + '</div></div>';
     const copy = pie.querySelector('.app-copyright');
     if(copy) pie.insertBefore(caja, copy); else pie.appendChild(caja);
   }
