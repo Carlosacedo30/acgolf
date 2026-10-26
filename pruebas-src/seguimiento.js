@@ -70,12 +70,35 @@
         + (x.quien.length ? '<div class="pa-lista">' + x.quien.map(q => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(q.jugador) + ' <em class="sg-et">' + q.toques + (q.toques === 1 ? ' vez' : ' veces') + '</em></b>'
             + '<span>' + esc(q.grupo || '') + ' · la última, el ' + fechaHora(q.ultimo) + '</span></div></div>').join('') + '</div>'
           : '<p class="sg-vacio">Nadie ha ido a su web ' + nombreP + '.</p>')
+        + '<div class="sg-enviar"><b>📤 Enviar este informe a ' + esc(nombre) + '</b><small>Solo van los números, sin nombres de jugadores.</small>'
+        + '<div class="sg-enviar-b"><button type="button" class="pa-b" data-env="wa" data-patro="' + esc(nombre) + '">WhatsApp</button>'
+        + '<button type="button" class="pa-b" data-env="mail" data-patro="' + esc(nombre) + '">Correo</button>'
+        + '<button type="button" class="pa-b" data-env="copiar" data-patro="' + esc(nombre) + '">Copiar</button></div></div>'
         + '<div class="sg-explica"><b>Qué significa cada número</b>'
         + '<span><b>Lo vieron:</b> su logo o su anuncio salió en la pantalla de esa persona. Cada persona cuenta una sola vez al día.</span>'
         + '<span><b>Fueron a su web:</b> tocaron su enlace y se abrió su tienda. Los enlaces llevan la etiqueta «acgolf», así que él también ve en sus estadísticas las visitas que le llegan desde la app.</span>'
         + '<span><b>Vieron el directo:</b> personas que siguieron una partida en directo, donde su nombre sale siempre abajo.</span>'
         + '<span>No te contamos a ti. Datos desde el ' + fecha(patro.desde) + '.</span></div></div>';
     }).join('');
+  }
+
+  // Informe para el patrocinador: solo números (nunca nombres de jugadores)
+  function informePatro(nombre){
+    const x = ((patro.periodos || {})[periodo] || {})[nombre] || { vistas: 0, personas_vieron: 0, toques: 0, personas_tocaron: 0, por_grupo: [] };
+    const dir = (patro.directo || {})[periodo] || {};
+    const hoy = new Date(), dd = d => d.toLocaleDateString('es-ES', { day:'numeric', month:'short' });
+    const desde = periodo === 'todo' ? (patro.desde ? new Date(patro.desde) : null) : periodo === 'hoy' ? hoy : new Date(Date.now() - (+periodo) * 86400000);
+    const per = periodo === 'hoy' ? 'hoy, ' + dd(hoy) : (desde ? 'del ' + dd(desde) + ' al ' + dd(hoy) : 'desde el principio');
+    const pctT = x.personas_vieron ? Math.round(x.personas_tocaron * 100 / x.personas_vieron) + ' %' : '—';
+    return '📢 Informe de acgolf para ' + nombre + '\n'
+      + 'Periodo: ' + per + '\n\n'
+      + '👁 ' + x.personas_vieron + ' personas vieron vuestra marca en la app (' + x.vistas + ' veces)\n'
+      + '👆 ' + x.personas_tocaron + ' entraron en vuestra web (' + x.toques + ' visitas)\n'
+      + '🎯 ' + pctT + ' de los que os ven entran en la web\n'
+      + '📺 ' + (dir.personas || 0) + ' personas siguieron partidas en directo con vuestro nombre en pantalla (' + (dir.minutos || 0) + ' minutos)\n'
+      + (x.por_grupo.length ? '\nPor grupo:\n' + x.por_grupo.filter(g => g.grupo !== 'Sin grupo').map(g => '• ' + g.grupo + ': ' + g.vieron + (g.vieron === 1 ? ' os vio, ' : ' os vieron, ') + g.tocaron + (g.tocaron === 1 ? ' entró en la web' : ' entraron en la web')).join('\n') + '\n' : '')
+      + '\nEn vuestras estadísticas, estas visitas aparecen con la etiqueta «acgolf».\n'
+      + '¡Gracias por patrocinar acgolf! ⛳ acgolf.es';
   }
 
   function dibujar(caja){
@@ -143,6 +166,12 @@
       + '<p class="sg-nota">Las visitas, pruebas e instalaciones se cuentan desde el 24 de octubre de 2026. Nunca se guarda quién es cada visitante: solo un número al azar de su móvil.</p>';
 
     caja.querySelectorAll('.sg-per button').forEach(b => b.onclick = () => { periodo = b.dataset.p; dibujar(caja); });
+    caja.querySelectorAll('[data-env]').forEach(b => b.onclick = async () => {
+      const t = informePatro(b.dataset.patro);
+      if(b.dataset.env === 'wa') window.open('https://wa.me/?text=' + encodeURIComponent(t), '_blank', 'noopener');
+      else if(b.dataset.env === 'mail') location.href = 'mailto:?subject=' + encodeURIComponent('Informe de acgolf para ' + b.dataset.patro) + '&body=' + encodeURIComponent(t);
+      else { try { await navigator.clipboard.writeText(t); b.textContent = '¡Copiado!'; setTimeout(() => { b.textContent = 'Copiar'; }, 2000); } catch(e){ prompt('Copia el informe:', t); } }
+    });
     caja.querySelectorAll('[data-ver]').forEach(b => b.onclick = () => { abierta = abierta === b.dataset.ver ? null : b.dataset.ver; dibujar(caja); if(abierta){ const l = caja.querySelector('.sg-detalle'); if(l) l.scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
   }
 
