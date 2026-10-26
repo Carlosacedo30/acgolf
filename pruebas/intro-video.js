@@ -8,7 +8,7 @@
 // · Cuando termina, avisa (window.acgolfIntro) para que después salga la bienvenida del patrocinador.
 (function(){
   const LOLA = 'plato-lola.mp4?v=1', CURRO = 'plato-curro.mp4?v=1';
-  const MITAD = 2500, TOTAL = 5000;
+  const TOTAL = 2500;   // solo Lola (Carlos quitó los 2,5 s de Curro)
   let avisar;
   window.acgolfIntro = new Promise(r => { avisar = r; });
 
@@ -49,11 +49,10 @@
       try { v.currentTime = 0; } catch(e){}
       const p = v.play(); if(p && p.catch) p.catch(() => {});
     }
-    // Sin sonido: 2,5 s Lola + 2,5 s Curro
+    // 2,5 s de Lola saludando
     function mudo(){
       tiempos.forEach(clearTimeout); tiempos = [];
       poner('lola');
-      tiempos.push(setTimeout(() => poner('curro'), MITAD));
       tiempos.push(setTimeout(quitar, TOTAL + 200));
     }
     vL.addEventListener('playing', () => { arrancado = true; });
