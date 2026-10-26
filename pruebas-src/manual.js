@@ -166,6 +166,7 @@
       '<b>«Mi foto o avatar»</b>: pon tu foto o elige un dibujo de golf. Sale al lado de tu nombre en toda la app.',
       '<b>«Mis grupos»</b>: si juegas en varios grupos, cambias de uno a otro aquí.',
       '<b>«Avisos por correo»</b>: quita la marca si no quieres el correo cada vez que alguien crea una partida.',
+      '<b>«Avisos en el móvil»</b>: marca la casilla y toca «Permitir» para que te llegue un aviso al móvil cuando te apunten en una partida. En el iPhone, primero instala la app en la pantalla de inicio.',
       '<b>«Cambiar mi contraseña»</b>, <b>«Cerrar sesión en este móvil»</b> y <b>«Borrar mi cuenta»</b>.',
       '<b>«Descargar mis datos»</b>: te bajas todo lo tuyo en un archivo.' ]},
     { ico:'ayuda', t:'Si algo no va', sub:'Lo que más pasa', pasos:[

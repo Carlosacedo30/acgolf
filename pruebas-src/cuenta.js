@@ -925,6 +925,7 @@
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
       + (perfil.grupo_tipo === 'liga' ? '<label class="cg-acepto" style="margin:4px 0 2px;"><input type="checkbox" id="cgCorreos" checked disabled><span><b>Avisos por correo</b><br>Te llega un correo cuando alguien de tu grupo crea una partida.</span></label>' : '')
+      + (perfil.grupo_tipo === 'liga' && window.acgolfAvisosMovil ? '<div id="cgMovil"></div>' : '')
       + (window.acgolfInstalar ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
       + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
@@ -948,6 +949,7 @@
         msg(data ? 'Recibirás los avisos por correo.' : 'Ya no te llegarán avisos por correo.', true);
       };
     }
+    if($('cgMovil')) window.acgolfAvisosMovil.pintar($('cgMovil'), perfil, msg);
     if($('cgInstalar')) $('cgInstalar').onclick = () => { ocultar(); window.acgolfInstalar(); };
     if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
     if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);

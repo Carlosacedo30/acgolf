@@ -21,6 +21,8 @@
   async function avisarPorMail(code){
     const p = window.miPerfil;
     if(!p || p.grupo_tipo !== 'liga') return;
+    // Aviso al móvil de los apuntados que lo tengan activado (avisos-movil.js)
+    if(window.acgolfAvisosMovil) window.acgolfAvisosMovil.partidaNueva(code).then(n => { if(n) aviso('📳 Avisados en el móvil ' + n + (n === 1 ? ' compañero' : ' compañeros')); });
     const client = initSupabase();
     if(!client || !client.functions) return;
     try {

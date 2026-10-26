@@ -3,6 +3,7 @@
    - Archivos de la app: se usan los guardados al momento y se actualizan por detrás.
    - La página: se intenta traer de internet (preguntando siempre si hay versión nueva), pero si en 2,5 s no llega, se abre la guardada.
    - La base de datos y las fotos de fuera van siempre por internet. */
+importScripts('sw-avisos.js?v=1'); // avisos al móvil (notificaciones)
 const CACHE = 'acgolf-__VERSION__';
 const PRECACHE = __PRECACHE__;
 
