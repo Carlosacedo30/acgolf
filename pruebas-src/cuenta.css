@@ -37,7 +37,7 @@ body.cg-open{ overflow:hidden; }
 .cg-legal{ text-align:center; font-size:16px; color:var(--ink-muted, #B9C3D4); line-height:1.5; }
 /* Nombre y grupo: centrados arriba, uno al lado del otro, misma altura */
 .cg-barra{ position:fixed; top:calc(env(safe-area-inset-top, 0px) + 10px); left:0; right:0; z-index:900; display:flex; justify-content:center; gap:12px; padding:0 10px; pointer-events:none; }
-/* Botones de arriba: «Ir a mi cuenta» (principal) y «Mi grupo» (secundario). Mismo tamaño, letra y esquinas */
+/* Botones de arriba: «Ir a mi cuenta» (principal) y el nombre del grupo (secundario). Mismo tamaño, letra y esquinas */
 .cg-bt{ pointer-events:auto; box-sizing:border-box; min-height:44px; min-width:44px; display:inline-flex; align-items:center; gap:8px;
   flex:0 1 auto; padding:12px 20px; border-radius:8px; font:500 16px/1.2 'Barlow', system-ui, sans-serif; letter-spacing:.01em;
   white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent;
@@ -56,7 +56,9 @@ body.cg-open{ overflow:hidden; }
   .cg-bt-pri:hover{ background:#B2DA46; border-color:#B2DA46; box-shadow:0 2px 8px rgba(0,0,0,.35); }
   .cg-bt-sec:hover{ background:#F3F4F6; border-color:#C6F24E; color:#111316; }
 }
-@media (max-width:374px){ .cg-bt{ padding:12px 14px; gap:6px; } }
+/* En el móvil, un poco menos de relleno para que quepa el nombre del grupo */
+@media (max-width:430px){ .cg-bt{ padding:12px 14px; gap:6px; } }
+@media (max-width:374px){ .cg-bt{ padding:12px 10px; font-size:15px; } }
 .cg-oculto{ position:absolute !important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
 /* Lista de grupos que se abre debajo de «Mi grupo» */
 .cg-gmenu{ position:fixed; z-index:9990; box-sizing:border-box; padding:8px; border-radius:12px; background:#1B1E22; border:1px solid #33383E;

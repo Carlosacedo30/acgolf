@@ -1046,7 +1046,7 @@
     });
   }
 
-  // Barra de arriba: «Ir a mi cuenta» (botón principal) y «Mi grupo» (secundario, abre la lista de grupos)
+  // Barra de arriba: «Ir a mi cuenta» (botón principal) y el nombre de mi grupo (secundario, abre la lista de grupos)
   const ICO_PERSONA = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
   const ICO_GRUPO = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M17.5 13.6a5 5 0 0 1 4 4.9"/></svg>';
   function botonMiCuenta(perfil){
@@ -1062,9 +1062,10 @@
     const sg = document.createElement('button');
     sg.type = 'button'; sg.className = 'cg-selgrupo cg-bt cg-bt-sec';
     sg.title = 'Elige el grupo al que perteneces para ver sus recursos';
+    sg.setAttribute('aria-label', 'Mi grupo: ' + (perfil.grupo || 'sin grupo'));
     sg.setAttribute('aria-describedby', 'cgGrupoAyuda');
     sg.setAttribute('aria-haspopup', 'menu'); sg.setAttribute('aria-expanded', 'false'); sg.setAttribute('aria-controls', 'cgGruposMenu');
-    sg.innerHTML = '<span class="cg-bt-ico">' + ICO_GRUPO + '</span><span class="cg-bt-txt">Mi grupo</span><span class="cg-bt-flecha" aria-hidden="true">▾</span>'
+    sg.innerHTML = '<span class="cg-bt-ico">' + ICO_GRUPO + '</span><span class="cg-bt-txt">' + esc(perfil.grupo || 'Mi grupo') + '</span><span class="cg-bt-flecha" aria-hidden="true">▾</span>'
       + '<span id="cgGrupoAyuda" class="cg-oculto">Elige el grupo al que perteneces para ver sus recursos. Ahora estás en ' + esc(perfil.grupo || 'tu grupo') + '.</span>';
     sg.onclick = () => menuGrupos(perfil, sg);
     barra.appendChild(b); barra.appendChild(sg);
