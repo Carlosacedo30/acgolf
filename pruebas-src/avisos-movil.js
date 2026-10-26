@@ -103,5 +103,38 @@
     } catch(e){ console.error('No se pudo avisar al móvil', e); return 0; }
   }
 
+  // Pregunta una sola vez en cada móvil «¿Quieres recibir avisos?» (el móvil obliga a que lo acepte cada uno)
+  const VISTO = 'acgolfPreguntaAvisos';
+  const hayVentana = () => document.body.classList.contains('cg-open')
+    || document.querySelector('.iv, .pb-velo, .pd-bienv, .ay-aviso, .am-preg');
+  async function preguntar(intento){
+    try { if(localStorage.getItem(VISTO)) return; } catch(e){ return; }
+    if(!puede() || (iphone && !instalada()) || Notification.permission !== 'default') return;
+    const client = typeof initSupabase === 'function' && initSupabase();
+    if(!client) return;
+    try { const { data } = await client.auth.getSession(); if(!data || !data.session) return; } catch(e){ return; }
+    if(await suscripcion()) return;
+    if(hayVentana()){ if((intento || 0) < 40) setTimeout(() => preguntar((intento || 0) + 1), 4000); return; }
+    const caja = document.createElement('div');
+    caja.className = 'am-preg'; caja.setAttribute('role', 'dialog'); caja.setAttribute('aria-label', 'Avisos de tus partidas');
+    caja.innerHTML = '<div class="am-preg-c"><div class="am-ico">' + CAMPANA + '</div>'
+      + '<h2>¿Quieres que acgolf te avise de tus partidas?</h2>'
+      + '<p>Te llegará un aviso al móvil cuando haya partida en tu grupo, como un mensaje de WhatsApp.</p>'
+      + '<p class="am-preg-n">Al tocar «Sí, quiero» el móvil te preguntará: toca <b>«Permitir»</b>.</p>'
+      + '<button type="button" class="am-preg-si">Sí, quiero</button>'
+      + '<button type="button" class="am-preg-no">Ahora no</button>'
+      + '<small>Puedes cambiarlo cuando quieras en «Mi cuenta».</small></div>';
+    document.body.appendChild(caja);
+    const fin = () => { try { localStorage.setItem(VISTO, '1'); } catch(e){} caja.remove(); };
+    caja.querySelector('.am-preg-no').onclick = fin;
+    caja.querySelector('.am-preg-si').onclick = async e => {
+      e.target.disabled = true; e.target.textContent = 'Un momento…';
+      try { await activar(); caja.querySelector('.am-preg-c').innerHTML = '<div class="am-ico">' + CAMPANA + '</div><h2>¡Avisos activados!</h2><p>Ya te llegarán a este móvil.</p><button type="button" class="am-preg-si">Vale</button>';
+        caja.querySelector('.am-preg-si').onclick = fin; try { localStorage.setItem(VISTO, '1'); } catch(_){} }
+      catch(err){ console.error('Avisos al móvil', err); fin(); }
+    };
+  }
+  setTimeout(() => preguntar(0), 6000);
+
   window.acgolfAvisosMovil = { pintar, partidaNueva };
 })();

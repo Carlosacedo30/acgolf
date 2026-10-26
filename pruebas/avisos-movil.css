@@ -14,3 +14,15 @@
 .am-sw input:checked + i::after{transform:translateX(24px);background:#111316}
 .am-sw input:focus-visible + i{outline:2px solid #C6F24E;outline-offset:2px}
 .am-sw input:disabled + i{opacity:.6}
+/* Pregunta «¿Quieres recibir avisos?» (una vez por móvil) */
+.am-preg{position:fixed;inset:0;z-index:9800;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
+.am-preg-c{width:100%;max-width:380px;background:#1B1E22;border:1px solid #33383E;border-radius:20px;padding:24px 20px 18px;text-align:center;color:#F2F4F5;font-family:'Barlow',sans-serif;display:flex;flex-direction:column;align-items:center;gap:10px;box-sizing:border-box}
+.am-preg-c h2{margin:4px 0 0;font:900 22px/1.2 'Archivo','Barlow',sans-serif}
+.am-preg-c p{margin:0;font-size:16px;line-height:1.4;color:#9AA3AB}
+.am-preg-c .am-preg-n{color:#F2F4F5;background:#2F3A1C;border:1px solid #C6F24E;border-radius:14px;padding:10px 12px}
+.am-preg-si,.am-preg-no{width:100%;min-height:52px;border-radius:999px;font:900 17px 'Archivo','Barlow',sans-serif;cursor:pointer;transition:transform .1s}
+.am-preg-si{background:#C6F24E;color:#111316;border:0;margin-top:6px}
+.am-preg-no{background:#24282D;color:#F2F4F5;border:1px solid rgba(198,242,78,.55)}
+.am-preg-si:active,.am-preg-no:active{transform:scale(.97)}
+.am-preg-si:disabled{opacity:.7}
+.am-preg-c small{color:#9AA3AB;font-size:13px}
