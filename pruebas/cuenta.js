@@ -246,25 +246,27 @@
     }
     let elegido = '';
     const libres = info.libres || [];
-    mostrar(cabecera('Te unes a «' + esc(info.grupo) + '»', libres.length ? 'Toca tu nombre. Si no estás en la lista, escríbelo abajo.' : 'Escribe tu nombre y tu hándicap.')
+    const hg = await miHcpGlobal();
+    mostrar(cabecera('Te unes a «' + esc(info.grupo) + '»', libres.length ? 'Toca tu nombre. Si no estás en la lista, escríbelo abajo.' : (hg ? 'Escribe tu nombre.' : 'Escribe tu nombre y tu hándicap.'))
       + (libres.length ? '<div class="cg-nombres">' + libres.map(n => '<button type="button" class="cg-nombre" data-n="' + esc(n) + '">' + esc(n) + '</button>').join('') + '</div>'
           + '<div class="cg-sep">¿No estás en la lista?</div>' : '')
-      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
-      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name" value="' + esc((window.miPerfil && window.miPerfil.player_name) || '') + '"></label>'
+      + (hg ? '<div class="cg-hcp-global"><span>Tu hándicap</span><b>' + comaHcp(hg.hcp) + '</b><small>Entras con tu hándicap de siempre. Es el mismo en todos tus grupos.</small></div>'
+            : '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4. Si no tienes, pon 36</small><input id="cgHcp" type="text" inputmode="decimal"></label>')
       + aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgEmpezar">Entrar en el grupo</button>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
     gate.querySelectorAll('.cg-nombre').forEach(b => b.onclick = () => {
       elegido = elegido === b.dataset.n ? '' : b.dataset.n;
       gate.querySelectorAll('.cg-nombre').forEach(x => x.classList.toggle('on', x.dataset.n === elegido));
-      if(elegido){ $('cgNombre').value = ''; $('cgHcp').value = ''; }
+      if(elegido){ $('cgNombre').value = ''; if($('cgHcp')) $('cgHcp').value = ''; }
     });
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
     $('cgEmpezar').onclick = e => ocupado(e.target, async () => {
       const nombre = elegido || $('cgNombre').value.trim();
       if(!nombre){ msg('Toca tu nombre o escríbelo.'); return; }
-      const hcp = elegido ? null : leerHcp('cgHcp');
-      if(!elegido && hcp === null){ msg('Escribe tu hándicap.'); return; }
+      const hcp = (elegido || hg) ? null : leerHcp('cgHcp');
+      if(!elegido && !hg && hcp === null){ msg('Escribe tu hándicap.'); return; }
       if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
       const { error } = await client.rpc('unirse_grupo', { p_codigo: codigo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
       if(error){ msg(traducir(error)); return; }
@@ -359,51 +361,66 @@
     empezarGrupoNuevo(email, perfil || null);   // sin código: se elige plan, se activa y se crea el grupo
   }
 
-  // Cuenta nueva sin invitación: empezar gratis (espacio personal), Los Iscariotes o crear un grupo
+  // Cuenta nueva sin grupo: solo dos caminos, muy explicados
+  //   1) Tengo una invitación (código o enlace de un amigo)  ·  2) Crear mi grupo (gratis, aunque estés solo)
+  const queEsGrupo = '<details class="cg-que"><summary>¿Qué es un grupo?</summary>'
+    + '<p>Un grupo es como un <b>equipo</b>: los amigos con los que juegas. Allí se apuntan las partidas y se ve quién gana.</p>'
+    + '<p>Puedes estar en <b>varios grupos</b>. Tu <b>hándicap es uno solo</b> y es el mismo en todos.</p></details>';
   function pantallaBienvenida(email){
-    mostrar(cabecera('Bienvenido', 'Elige cómo quieres empezar. Solo se hace una vez.')
-      + '<div class="cg-opcion"><b>⛳ Empezar gratis</b><span>Apunta tus partidas, lleva tu hándicap y usa el caddie. Solo lo ves tú.</span>'
-      +   '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
-      +   '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
-      +   aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
-      +   '<button type="button" class="cg-btn" id="cgPersonal">Empezar</button></div>'
-      + '<div class="cg-sep">¿Juegas con un grupo de amigos?</div>'
-      + '<p class="cg-p" style="font-size:14px;">Si te han mandado un enlace de invitación, ábrelo desde el mensaje y entrarás en tu grupo.</p>'
-      + '<button type="button" class="cg-btn ghost" id="cgIscariotes">Soy de Los Iscariotes</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear mi grupo</button>'
+    mostrar(cabecera('¡Hola! 👋', 'Para jugar necesitas un grupo. Elige una de estas dos cosas:')
+      + '<button type="button" class="cg-camino" id="cgTengoInv"><span class="cg-camino-ico" aria-hidden="true">📩</span>'
+      +   '<span class="cg-camino-txt"><b>Tengo una invitación</b><small>Un amigo te ha mandado un enlace o un código. Entras en su grupo.</small></span><i aria-hidden="true">›</i></button>'
+      + '<button type="button" class="cg-camino" id="cgNuevoGrupo"><span class="cg-camino-ico" aria-hidden="true">⛳</span>'
+      +   '<span class="cg-camino-txt"><b>Crear mi grupo</b><small>Empiezas tu propio grupo. Aunque estés solo, ya puedes jugar. Luego invitas a tus amigos.</small></span><i aria-hidden="true">›</i></button>'
+      + queEsGrupo
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
-    $('cgIscariotes').onclick = () => pantallaCompletar(email, true);
+    $('cgTengoInv').onclick = () => pantallaTengoInvitacion(email, null);
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
-    $('cgPersonal').onclick = e => ocupado(e.target, async () => {
-      const nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
-      if(!nombre){ msg('Escribe tu nombre.'); return; }
-      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
-      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
-      const { error } = await client.rpc('empezar_personal', { p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
-      if(error){ msg(traducir(error)); return; }
-      location.reload();
-    });
   }
+  // Escribir el código de la invitación (si no se abrió el enlace)
+  function pantallaTengoInvitacion(email, perfil){
+    mostrar(cabecera('📩 Tu invitación', 'Escribe el código que te mandó tu amigo.')
+      + '<div class="cg-ayuda"><b>¿Dónde está el código?</b><span>Son 8 letras y números que vienen al final del enlace. Por ejemplo: <code>AB12CD34</code></span>'
+      +   '<span>Si tienes el enlace, también puedes tocarlo en el mensaje y entras directamente.</span></div>'
+      + '<label class="cg-lbl">Código<input id="cgCodigo" class="cg-codigo" type="text" autocapitalize="characters" autocomplete="off" maxlength="40" placeholder="AB12CD34"></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgUnirme">Seguir</button>'
+      + '<button type="button" class="cg-link" id="cgVolver">‹ Volver</button>');
+    $('cgVolver').onclick = () => perfil ? pantallaMisGrupos(perfil) : pantallaBienvenida(email);
+    $('cgUnirme').onclick = () => {
+      const c = $('cgCodigo').value.trim().toUpperCase().replace(/.*UNIRSE=/, '').replace(/[^A-Z0-9]/g, '');
+      if(!c){ msg('Escribe el código.'); return; }
+      try { localStorage.setItem('acgolfInvitacion', c); } catch(e){}
+      pantallaUnirse(email || (perfil && perfil.email), c);
+    };
+  }
+  // Mi hándicap global (null si aún no tengo): así no se pregunta otra vez al entrar en otro grupo
+  async function miHcpGlobal(){
+    try { const r = await client.rpc('mi_hcp_global'); return (!r.error && r.data && r.data.hcp != null) ? r.data : null; } catch(e){ return null; }
+  }
+  const comaHcp = v => String(Math.round(Number(v) * 10) / 10).replace('.', ',');
 
-  // Mis grupos: cambiar de grupo, crear uno, unirse con un código o empezar el espacio personal
+  // Mis grupos: cambiar de grupo, unirse con una invitación o crear uno nuevo (ya no hay espacio personal)
   async function pantallaMisGrupos(perfil){
     mostrar(cabecera('Mis grupos', 'Cargando…'));
     let grupos = [];
     try { const r = await client.rpc('mis_grupos'); if(r.error) throw r.error; grupos = r.data || []; } catch(e){}
-    const tienePersonal = grupos.some(g => g.tipo === 'personal');
-    mostrar(cabecera('Mis grupos', 'Toca un grupo para entrar en él. Cada grupo solo ve lo suyo.')
+    const hg = await miHcpGlobal();
+    mostrar(cabecera('Mis grupos', 'Toca un grupo para entrar en él. Cada grupo tiene sus partidas y su clasificación.')
+      + (hg ? '<div class="cg-hcp-global"><span>Tu hándicap</span><b>' + comaHcp(hg.hcp) + '</b><small>Es el mismo en todos tus grupos y se actualiza con todas tus partidas.</small></div>' : '')
       + '<div class="cg-grupos">' + grupos.map(g => '<button type="button" class="cg-grupo' + (g.activo ? ' on' : '') + '" data-g="' + esc(g.id) + '">'
-          + '<b>' + (g.tipo === 'personal' ? '⛳ ' : '🏆 ') + esc(g.nombre) + '</b>'
-          + '<span>' + (g.tipo === 'personal' ? 'Tu espacio personal (gratis)' : 'Grupo con liga') + ' · ' + esc(g.jugador) + (g.es_admin && g.tipo !== 'personal' ? ' · Administrador' : '') + '</span>'
+          + '<b>🏆 ' + esc(g.nombre) + '</b>'
+          + '<span>Juegas como ' + esc(g.jugador) + (g.es_admin ? ' · Eres el administrador' : '') + '</span>'
           + (g.activo ? '<i>Estás aquí</i>' : '') + '</button>'
           + (g.es_admin && g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="cg-borrar-g" data-g="' + esc(g.id) + '">Borrar «' + esc(g.nombre) + '»</button>' : '')).join('') + '</div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
-      + '<div class="cg-sep">Unirme a otro grupo</div>'
-      + '<label class="cg-lbl">Código de invitación<small>Viene al final del enlace que te mandaron</small><input id="cgCodigo" type="text" autocapitalize="characters" maxlength="12"></label>'
-      + '<button type="button" class="cg-btn ghost" id="cgUnirme">Unirme</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgNuevoGrupo">Crear un grupo con liga</button>'
-      + (tienePersonal ? '' : '<button type="button" class="cg-btn ghost" id="cgPersonal">Empezar mi espacio personal</button>')
+      + '<div class="cg-sep">¿Otro grupo?</div>'
+      + '<button type="button" class="cg-camino" id="cgTengoInv"><span class="cg-camino-ico" aria-hidden="true">📩</span>'
+      +   '<span class="cg-camino-txt"><b>Tengo una invitación</b><small>Entras en el grupo de un amigo.</small></span><i aria-hidden="true">›</i></button>'
+      + '<button type="button" class="cg-camino" id="cgNuevoGrupo"><span class="cg-camino-ico" aria-hidden="true">⛳</span>'
+      +   '<span class="cg-camino-txt"><b>Crear un grupo nuevo</b><small>Tú serás el administrador e invitarás a quien quieras.</small></span><i aria-hidden="true">›</i></button>'
+      + queEsGrupo
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
     gate.querySelectorAll('.cg-grupo').forEach(b => b.onclick = async () => {
@@ -416,14 +433,8 @@
     gate.querySelectorAll('.cg-borrar-g').forEach(b => b.onclick = () => {
       const g = grupos.find(x => x.id === b.dataset.g); if(g) pantallaBorrarGrupo(perfil, g);
     });
-    $('cgUnirme').onclick = () => {
-      const c = $('cgCodigo').value.trim().toUpperCase().replace(/.*UNIRSE=/, '');
-      if(!c){ msg('Escribe el código.'); return; }
-      try { localStorage.setItem('acgolfInvitacion', c); } catch(e){}
-      pantallaUnirse(perfil.email, c);
-    };
+    $('cgTengoInv').onclick = () => pantallaTengoInvitacion(perfil.email, perfil);
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(perfil.email, perfil);
-    const pp = $('cgPersonal'); if(pp) pp.onclick = () => pantallaPersonalExtra(perfil);
   }
 
   // Borrar un grupo entero (solo su administrador; Los Iscariotes no se pueden borrar)
@@ -446,27 +457,10 @@
     });
   }
 
-  function pantallaPersonalExtra(perfil){
-    mostrar(cabecera('Mi espacio personal', 'Tus partidas, tu hándicap y tu caddie, solo para ti.')
-      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" value="' + esc(perfil.player_name) + '"></label>'
-      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
-      + '<div id="cgMsg" class="cg-msg"></div>'
-      + '<button type="button" class="cg-btn" id="cgPersonal">Crear mi espacio</button>'
-      + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
-    $('cgVolver').onclick = () => pantallaMisGrupos(perfil);
-    $('cgPersonal').onclick = e => ocupado(e.target, async () => {
-      const hcp = leerHcp('cgHcp');
-      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
-      const { error } = await client.rpc('empezar_personal', { p_player: $('cgNombre').value.trim(), p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
-      if(error){ msg(traducir(error)); return; }
-      location.reload();
-    });
-  }
-
   async function pantallaCompletar(email, iscariotes){
     if(codigoAdmin()){ pantallaCodigoAdmin(email, null, codigoAdmin()); return; }
     if(invitacion()){ pantallaUnirse(email, invitacion()); return; }
-    if(!iscariotes){ pantallaBienvenida(email); return; }
+    if(!iscariotes){ pantallaBienvenida(email); return; }   // (la lista «¿Quién eres?» de Los Iscariotes ya no se ofrece al darse de alta)
     mostrar(cabecera('¿Quién eres?', 'Toca tu nombre. Solo se hace una vez.') + '<div class="cg-p">Cargando jugadores…</div>');
     let libres = [];
     try {
@@ -527,11 +521,11 @@
       + (info.nuevo || info.estado === 'activo' ? '<button type="button" class="cg-link" id="plVolver">Volver</button>'
           : '<button type="button" class="cg-link" id="plSalir">Salir de mi cuenta</button>'));
     if($('plSalir')) $('plSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
-    if($('plVolver')) $('plVolver').onclick = () => info.nuevo ? (info.perfil ? pantallaMisGrupos(info.perfil) : pantallaBienvenida(info.email)) : (window.miPerfil ? panelMiCuenta(window.miPerfil) : ocultar());
+    if($('plVolver')) $('plVolver').onclick = () => info.nuevo ? pantallaCrearGrupoPlan(info) : (window.miPerfil ? panelMiCuenta(window.miPerfil) : ocultar());
     $('plSeguir').onclick = e => ocupado(e.target, async () => {
       const r = document.querySelector('input[name="plPlan"]:checked');
       if(!r){ msg('Elige un plan tocando en él.'); return; }
-      if(info.nuevo){ pantallaPago(Object.assign({}, info, { plan: r.value })); return; }
+      if(info.nuevo){ pantallaCrearGrupoPlan(Object.assign({}, info, { plan: r.value })); return; }
       const { data, error } = await client.rpc('elegir_plan', { p_plan: r.value });
       if(error){ msg(traducir(error)); return; }
       if(data.estado === 'activo'){ pantallaPagoHecho(data); return; }   // mismo plan que ya tenía
@@ -560,20 +554,25 @@
   function pantallaCrearGrupoPlan(info){
     const p = (info.planes || []).find(x => x.id === info.plan) || {};
     const sinCuenta = !info.perfil;
-    mostrar(cabecera('Crear tu grupo', 'Tendréis vuestra propia liga, hándicaps, medallas y caddie. Solo lo veréis los de vuestro grupo.')
-      + '<div class="pl-resumen"><b>' + esc(p.nombre || '') + ' activado</b><span>Tu grupo admitirá ' + MAX_PLAN(p) + '.</span></div>'
-      + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Cajapollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
+    const hg = info.hg || null;
+    mostrar(cabecera('⛳ Crear tu grupo', 'Solo tres datos y listo. Tú serás el administrador.')
+      + '<ol class="cg-pasos-txt"><li>Pon un nombre a tu grupo.</li><li>Escribe tu nombre' + (hg ? '' : ' y tu hándicap') + '.</li><li>Toca «Crear el grupo». Luego invitas a tus amigos con un enlace.</li></ol>'
+      + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Los del sábado</small><input id="cgGrupo" type="text" maxlength="40"></label>'
       + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name" value="' + esc(info.perfil ? info.perfil.player_name || '' : '') + '"></label>'
-      + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
+      + (hg ? '<div class="cg-hcp-global"><span>Tu hándicap</span><b>' + comaHcp(hg.hcp) + '</b><small>Es el de siempre: el mismo en todos tus grupos.</small></div>'
+            : '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4. Si no tienes, pon 36</small><input id="cgHcp" type="text" inputmode="decimal"></label>')
+      + '<div class="pl-resumen"><b>Gratis</b><span>Tu grupo admite ' + MAX_PLAN(p) + '. Si sois más, se cambia luego.</span></div>'
       + (sinCuenta ? aceptoHtml : '') + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgCrearGrupo">Crear el grupo</button>'
-      + '<button type="button" class="cg-link" id="plCambiar">Cambiar de plan</button>');
+      + '<button type="button" class="cg-link" id="plCambiar">Somos más de ' + esc(p.max || 11) + ': cambiar de plan</button>'
+      + '<button type="button" class="cg-link" id="cgVolverCg">‹ Volver</button>');
     $('plCambiar').onclick = () => pantallaPlanes(info, info.plan);
+    $('cgVolverCg').onclick = () => info.perfil ? pantallaMisGrupos(info.perfil) : pantallaBienvenida(info.email);
     $('cgCrearGrupo').onclick = e => ocupado(e.target, async () => {
-      const grupo = $('cgGrupo').value.trim(), nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
+      const grupo = $('cgGrupo').value.trim(), nombre = $('cgNombre').value.trim(), hcp = hg ? null : leerHcp('cgHcp');
       if(!grupo){ msg('Ponle un nombre al grupo.'); return; }
       if(!nombre){ msg('Escribe tu nombre.'); return; }
-      if(hcp === null){ msg('Escribe tu hándicap.'); return; }
+      if(!hg && hcp === null){ msg('Escribe tu hándicap.'); return; }
       if($('cgAcepto') && !$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
       const { error } = await client.rpc('crear_grupo_con_plan', { p_plan: info.plan, p_nombre: grupo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
       if(error){ msg(traducir(error)); return; }
@@ -587,7 +586,9 @@
     let planes = [];
     try { const r = await client.rpc('planes_acgolf'); if(!r.error) planes = r.data || []; } catch(e){}
     if(!planes.length){ mostrar(cabecera('Sin conexión', 'No se han podido cargar los planes.') + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
-    pantallaPlanes({ nuevo: true, email, perfil, planes, usados: 0 });
+    const hg = perfil ? await miHcpGlobal() : null;
+    // Se empieza con el plan más pequeño (gratis); si sois más, se cambia luego desde «Mi cuenta»
+    pantallaCrearGrupoPlan({ nuevo: true, email, perfil, planes, usados: 0, plan: (planes[0] || {}).id || 'par', hg });
   }
 
   function pantallaPagoHecho(info){
@@ -736,7 +737,7 @@
       cuerpo = '<div id="sgPanel"></div>';
     } else if(pestana === 'grupos'){
       cuerpo = '<div class="pa-lista">' + datos.map(g => '<div class="pa-fila">'
-          + '<div class="pa-fila-t"><b>' + esc(g.nombre) + '</b><span>' + (g.tipo === 'personal' ? 'Espacio personal' : 'Grupo con liga') + ' · ' + g.miembros + ' miembro' + (g.miembros === 1 ? '' : 's') + ' · desde ' + fecha(g.creado) + '</span>'
+          + '<div class="pa-fila-t"><b>' + esc(g.nombre) + '</b><span>' + 'Grupo' + ' · ' + g.miembros + ' miembro' + (g.miembros === 1 ? '' : 's') + ' · desde ' + fecha(g.creado) + '</span>'
           + '<span>Admin: ' + (g.admins.length ? esc(g.admins.join(', ')) : '<i>sin administrador</i>') + '</span></div>'
           + '<div class="pa-acc"><button type="button" class="pa-b" data-miembros="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Miembros</button>'
           + (g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="pa-b rojo" data-borrar="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Borrar</button>' : '')
@@ -1115,7 +1116,7 @@
     menu.innerHTML = '<div class="cg-gmenu-t">Tus grupos</div>'
       + (grupos.length ? grupos.map(g => '<button type="button" role="menuitemradio" class="cg-gmenu-i' + (g.activo ? ' on' : '') + '" aria-checked="' + (g.activo ? 'true' : 'false') + '" data-g="' + esc(g.id) + '">'
           + '<span class="cg-gmenu-check" aria-hidden="true">' + (g.activo ? '✓' : '') + '</span>'
-          + '<span class="cg-gmenu-n"><b>' + esc(g.nombre) + '</b><small>' + (g.tipo === 'personal' ? 'Tu espacio personal' : 'Grupo con liga') + (g.activo ? ' · Estás aquí' : '') + '</small></span></button>').join('')
+          + '<span class="cg-gmenu-n"><b>' + esc(g.nombre) + '</b><small>' + 'Grupo' + (g.activo ? ' · Estás aquí' : '') + '</small></span></button>').join('')
         : '<div class="cg-gmenu-cargando">No se pudieron cargar tus grupos. Revisa la conexión.</div>')
       + '<div class="cg-gmenu-msg" role="status"></div>'
       + '<button type="button" role="menuitem" class="cg-gmenu-gest">Gestionar grupos<small>Unirte con un código, crear o borrar un grupo</small></button>';

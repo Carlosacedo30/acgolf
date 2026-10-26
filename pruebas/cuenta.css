@@ -257,3 +257,30 @@ html.es-invitado :is(#homeLigaSemana, #homeRecientes)::after{ content:'🔒 Guar
 .pa-fila.pa-bloq{ background:rgba(255,255,255,.03); box-shadow:inset 0 0 0 1.5px rgba(242,201,76,.35); }
 .pa-fila.pa-bloq b{ color:#C9CED3; }
 a.pa-b{ display:inline-flex; align-items:center; justify-content:center; text-decoration:none; }
+
+/* Alta sencilla: dos caminos grandes y explicados (estilo Grafito deportivo) */
+.cg-camino{ display:flex; align-items:center; gap:14px; width:100%; text-align:left; margin:8px 0; padding:16px 16px; min-height:92px;
+  background:#1B1E22; border:1.5px solid rgba(198,242,78,.55); border-radius:18px; color:#F2F4F5; font:inherit; cursor:pointer; touch-action:manipulation;
+  transition:transform .12s, background .12s; }
+.cg-camino:active{ transform:scale(.97); }
+.cg-camino:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
+.cg-camino-ico{ flex:0 0 auto; width:52px; height:52px; display:grid; place-items:center; font-size:28px; border-radius:50%; background:#2F3A1C; border:1.5px solid #C6F24E; }
+.cg-camino-txt{ flex:1; display:flex; flex-direction:column; gap:4px; }
+.cg-camino-txt b{ font:900 20px 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; }
+.cg-camino-txt small{ font:500 16px/1.35 'Barlow', sans-serif; color:#9AA3AB; }
+.cg-camino > i{ font-style:normal; font-size:30px; color:#C6F24E; }
+.cg-que{ margin:10px 0 4px; background:#24282D; border:1px solid #33383E; border-radius:14px; padding:0 14px; }
+.cg-que summary{ min-height:50px; display:flex; align-items:center; font:800 17px 'Barlow', sans-serif; color:#C6F24E; cursor:pointer; list-style:none; }
+.cg-que summary::-webkit-details-marker{ display:none; }
+.cg-que summary::before{ content:'💡'; margin-right:8px; }
+.cg-que p{ font:500 17px/1.4 'Barlow', sans-serif; color:#F2F4F5; margin:0 0 12px; }
+.cg-ayuda{ display:flex; flex-direction:column; gap:6px; background:#24282D; border:1px solid #33383E; border-radius:14px; padding:14px; font:500 17px/1.4 'Barlow', sans-serif; color:#F2F4F5; }
+.cg-ayuda b{ color:#C6F24E; }
+.cg-ayuda code{ font:800 18px 'Barlow', sans-serif; letter-spacing:.08em; background:#111316; padding:1px 8px; border-radius:6px; color:#C6F24E; }
+.cg-lbl input.cg-codigo{ font:800 26px 'Barlow', sans-serif; letter-spacing:.12em; text-transform:uppercase; text-align:center; }
+.cg-hcp-global{ display:grid; grid-template-columns:auto 1fr; align-items:center; column-gap:12px; background:#2F3A1C; border:1.5px solid #C6F24E; border-radius:16px; padding:12px 16px; margin:6px 0; }
+.cg-hcp-global span{ font:800 15px 'Barlow', sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#C6F24E; grid-column:1 / -1; }
+.cg-hcp-global b{ font:900 40px 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; line-height:1.05; }
+.cg-hcp-global small{ font:500 15px/1.35 'Barlow', sans-serif; color:#F2F4F5; }
+.cg-pasos-txt{ margin:4px 0 6px; padding-left:24px; font:600 17px/1.5 'Barlow', sans-serif; color:#F2F4F5; }
+.cg-pasos-txt li::marker{ color:#C6F24E; font-weight:900; }
