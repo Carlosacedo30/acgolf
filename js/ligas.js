@@ -457,7 +457,7 @@ function ligaPintarForm(){
     repintar();
   });
   document.getElementById('lgCancelar').addEventListener('click', ligaPintarLista);
-  document.getElementById('lgBasesForm').addEventListener('click', ()=>{ leer(); ligaVerBases(ligaPintarForm); });
+  document.getElementById('lgBasesForm').addEventListener('click', ()=>{ leer(); ligaVerBases(ligaPintarForm, { courseId: ligaForm && ligaForm.campo }); });
   document.getElementById('lgCrear').addEventListener('click', ligaCrear);
 }
 
@@ -573,7 +573,7 @@ async function ligaVer(code){
   body.querySelectorAll('.lg-cal-f[data-n]').forEach(b => b.addEventListener('click', ()=>
     ligaEsAdmin() ? ligaConfigJornada(l, Number(b.dataset.n), res) : ligaAbrirJornada(l, Number(b.dataset.n), res)));
   document.getElementById('lgVolver').addEventListener('click', ligaPintarLista);
-  document.getElementById('lgBasesVer').addEventListener('click', ()=> ligaVerBases(()=> ligaVer(l.code)));
+  document.getElementById('lgBasesVer').addEventListener('click', ()=> ligaVerBases(()=> ligaVer(l.code), l));
   const br = document.getElementById('lgBorrar'); if(br) br.addEventListener('click', ()=> ligaBorrar(l, br));
 }
 

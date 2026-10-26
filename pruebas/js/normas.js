@@ -8,7 +8,7 @@
       'Juegan la liga los jugadores de la lista de la liga. Los invitados pueden jugar con nosotros, pero no puntúan.' ]},
     { t:'2. Cuándo cuenta una partida', d:[
       'La semana va de lunes a domingo.',
-      'Cuenta cualquier partida de 18 hoyos en Hato Verde o Zaudín apuntada en la app.',
+      'Cuenta cualquier partida de 18 hoyos en el campo elegido para la liga, apuntada en la app.',
       'Partida que no está en la app, no cuenta. Para nadie, tampoco para el organizador.' ]},
     { t:'3. Modalidad', d:[
       'Stroke Play, 18 hoyos, barras amarillas.',

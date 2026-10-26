@@ -3,18 +3,30 @@
 const LIGA_BASES_TITULO = 'Bases de la Liga Los Iscariotes 2026/2027';
 // En cada grupo las bases llevan su propio nombre (y el premio de la semana, el suyo)
 function ligaBasesGrupo(){ try { return (window.miPerfil && window.miPerfil.grupo_tipo !== 'personal' && window.miPerfil.grupo) || 'Los Iscariotes'; } catch(e){ return 'Los Iscariotes'; } }
+// El campo: dentro de una liga sale el nombre de su campo; fuera, «el campo elegido para la liga»
+let ligaBasesCampoActual = null;
+function ligaBasesNombreCampo(l){
+  if(!l || !l.courseId) return null;
+  const nom = id => { try { const c = (typeof COURSES !== 'undefined' ? COURSES : []).find(x => x.id === id); return c ? c.name : null; } catch(e){ return null; } };
+  if(l.courseId === 'alternar') return (nom('hato-verde') || 'Hato Verde') + ' y ' + (nom('zaudin') || 'Zaudín') + ', alternando';
+  const ids = [...new Set([l.courseId].concat((l.jornadas || []).map(j => j && j.courseId).filter(Boolean)))];
+  const nombres = ids.map(nom).filter(Boolean);
+  return nombres.length ? nombres.join(', ') : null;
+}
 function ligaBasesTexto(t){
-  const g = ligaBasesGrupo(); if(g === 'Los Iscariotes') return t;
-  return String(t).replace(/el Iscariote de la semana/g, 'el ganador de la semana').replace(/Los Iscariotes/g, g);
+  const g = ligaBasesGrupo();
+  let r = String(t).replace(/\{CAMPO\}/g, ligaBasesCampoActual || 'el campo elegido para la liga');
+  if(g === 'Los Iscariotes') return r;
+  return r.replace(/el Iscariote de la semana/g, 'el ganador de la semana').replace(/Los Iscariotes/g, g);
 }
 const LIGA_BASES = [
   { t: '', p: [
     'La Liga Los Iscariotes nace para fomentar la competición, el pique sano y la convivencia entre amigos, con un campeón cada semana y otro cada mes durante toda la temporada.',
-    'La liga semanal y mensual se juega en Club Hato Verde y Club Zaudín Golf (Sevilla); las ligas de amigos, en el campo que se elija al crearlas. Todas las partidas se apuntan en la app de la liga.' ]},
+    'La liga se juega en {CAMPO}. Todas las partidas se apuntan en la app de la liga.' ]},
   { t: '1. Quién juega y qué partidas cuentan', p: [
     'Juegan la liga los jugadores de la lista de la liga. Los invitados pueden jugar con nosotros, pero no puntúan.',
     'Solo puntúan los jugadores inscritos en la app con su correo. Un jugador apuntado a mano, sin cuenta, puede jugar y se le apuntan los golpes, pero no sale en la clasificación de la semana, ni en la del mes, ni en las medallas, ni en los puntos de las ligas, hasta que se inscriba. Al inscribirse con su mismo nombre recupera sus partidas.',
-    'La semana va de lunes a domingo. Cuentan todas las partidas de 18 hoyos jugadas esa semana en Hato Verde o Zaudín y apuntadas en la app. Partida que no está en la app no cuenta, para nadie.' ]},
+    'La semana va de lunes a domingo. Cuentan todas las partidas de 18 hoyos jugadas esa semana en {CAMPO} y apuntadas en la app. Partida que no está en la app no cuenta, para nadie.' ]},
   { t: '2. Modalidad de juego', p: [
     'Las partidas se juegan a 18 hoyos, Stroke Play individual.',
     'Para la liga cuenta el resultado neto: golpes totales menos el hándicap del jugador.',
@@ -45,7 +57,7 @@ const LIGA_BASES = [
       'Si también tienen el mismo hándicap, gana el mejor resultado en los últimos 9 hoyos; si siguen igual, en los últimos 12, 15, 16 y 17, con el mismo cálculo con el que se jugó (neto o puntos Stableford).' ]},
   { t: '10. Ligas de amigos (Crear liga)', p: [
     'Además de la liga semanal y mensual, el administrador puede crear ligas de varias rondas. Al crear cada liga se fijan sus normas, que se ven dentro de la propia liga:' ],
-    l: [ 'Campo: uno de los de Sevilla (Hato Verde, Zaudín, Real Club de Golf Sevilla, Real Club Pineda o La Cartuja), alternar Hato Verde y Zaudín, uno de tus campos favoritos o cualquiera del buscador de campos.',
+    l: [ 'Campo: {CAMPO}. Al crear la liga se elige entre tus campos favoritos o cualquiera del buscador de campos.',
       'Rondas al mes (1, 2 o 4) y total de rondas de la liga. Cada ronda es una partida con todos los jugadores de la liga.',
       'Formato: Stroke Play, con puntos por puesto en cada ronda (escala de la Fórmula 1, por neto), o Stableford, sumando los puntos Stableford de cada ronda.',
       'Rondas que cuentan: todas, las mejores de cada jugador, todas menos la peor, las primeras que juegue o unas rondas elegidas. Las demás se descartan y se ven tachadas en la tabla con su resultado.',
@@ -84,8 +96,9 @@ function ligaBasesHtml(){
 }
 
 // Muestra las bases dentro de la ventana de Ligas; «volver» repinta la pantalla de antes
-function ligaVerBases(volver){
+function ligaVerBases(volver, liga){
   const body = document.getElementById('ligaCuerpo'); if(!body) return;
+  ligaBasesCampoActual = ligaBasesNombreCampo(liga);
   if(typeof ligaTitulo === 'function') ligaTitulo('Bases de la liga');
   body.innerHTML = '<div class="lg-sub">' + ligaEsc(ligaBasesTexto(LIGA_BASES_TITULO)) + '</div>' + ligaBasesHtml()
     + '<div class="conv-actions"><button type="button" class="conv-btn primary" id="lgbVolver">‹ Volver</button></div>';
