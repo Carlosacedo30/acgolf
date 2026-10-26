@@ -1,0 +1,10 @@
+/* Selector de idioma (portada y Mi cuenta) */
+.id-caja{ margin:14px auto 6px; max-width:420px; }
+.id-t{ font:800 12px 'Barlow', sans-serif; letter-spacing:.14em; text-transform:uppercase; color:#9AA3AB; margin-bottom:8px; }
+.id-l{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.id-b{ min-height:46px; border-radius:999px; border:1px solid rgba(198,242,78,.55); background:#24282D; color:#F2F4F5;
+  font:800 15px 'Archivo', 'Barlow', sans-serif; cursor:pointer; transition:transform .1s; }
+.id-b.on{ background:#2F3A1C; border-color:#C6F24E; color:#C6F24E; }
+.id-b:active{ transform:scale(.97); }
+.id-b:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
+.cg-card .id-caja{ margin:8px 0 6px; }
