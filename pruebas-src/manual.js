@@ -82,7 +82,7 @@
       'Si tocas la tarjeta ves quién va en cada hora y <b>qué tiempo hará</b> en el campo ese día.',
       'El día del partido la tarjeta te dice <b>«Hoy juegas»</b>, tu hora y con quién sales.' ]},
     { ico:'megafono', t:'Organizar un partido con amigos', sub:'Cualquier jugador puede hacerlo', pasos:[
-      'En el Inicio pulsa <b>«Organizar partido con amigos»</b>. Sale con el <b>escudo de tu grupo</b>.',
+      'En el Inicio pulsa <b>«Organizar partidos»</b>, justo debajo de «Crear partida». Sale con el <b>escudo de tu grupo</b>.',
       'Elige el <b>día</b>, el <b>campo</b> y las <b>horas</b> de la 1ª y la 2ª partida. Pulsa <b>«Crear el partido»</b>.',
       'Pulsa <b>«Enviar al grupo de WhatsApp»</b>: les llega el enlace y cada uno se apunta desde su móvil.',
       'Cuando estén todos, quien lo ha organizado o cualquiera de los apuntados pulsa <b>«Crear la partida con los apuntados»</b>. La partida queda hecha con los jugadores en su hora.' ]},

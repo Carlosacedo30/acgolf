@@ -1,5 +1,5 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
-// --- Inicio: botón «Ir App Hato Verde» encima de «Crear partida» ---
+// --- Inicio: botón «Ir App Hato Verde», discreto, debajo del menú del inicio ---
 // Solo en los grupos Los Iscariotes y Cajapollos (juegan en Club Hato Verde).
 // Abre la app oficial del club (Hato Verde Club de Golf, de Golfmanager):
 // · Android: abre la app si está instalada; si no, su ficha de Google Play para instalarla.
@@ -18,6 +18,7 @@
 
   function poner(){
     const crear = document.getElementById('prAbrirBtn');
+    const menu = document.querySelector('#homeAhora .home-menu');
     let b = document.getElementById('irHatoBtn');
     if(!crear || !GRUPOS.test(grupoActual())){ if(b) b.remove(); return; }
     if(!b){
@@ -29,7 +30,9 @@
         + '<span class="ih-txt">Ir App Hato Verde<small>Reservas y carnet del club</small></span>'
         + '<span class="ih-flecha" aria-hidden="true">›</span>';
     }
-    if(crear.previousElementSibling !== b) crear.parentNode.insertBefore(b, crear);
+    // Va después del menú (Clasificación, Ganadores…): ya no compite con CREAR PARTIDA
+    if(menu){ if(menu.nextElementSibling !== b) menu.parentNode.insertBefore(b, menu.nextSibling); }
+    else if(crear.parentNode.lastElementChild !== b) crear.parentNode.appendChild(b);
   }
 
   function arrancar(){ poner(); setInterval(poner, 1000); }

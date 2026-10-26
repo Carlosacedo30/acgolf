@@ -48,10 +48,11 @@
     const nuevoBtn = puedeOrganizar ? '<button type="button" class="conv-home-new' + (logo ? ' con-logo' : '') + '" id="convHomeNew">'
       + (logo ? (logo.src ? '<img class="ip-logo-grupo" src="' + logo.src + '" alt="' + esc(logo.nombre) + '">'
                           : '<span class="ip-logo-grupo ip-escudo" role="img" aria-label="Escudo de ' + esc(logo.nombre) + '">' + logo.svg + '</span>') : '')
-      + '<span>Organizar partido con amigos</span></button>' : '';
+      + '<span>Organizar partidos</span></button>' : '';
     const me = convMe();
     const hoy = convIsoToday();
-    box.innerHTML = lista.map(c => {
+    // «Organizar partidos» justo debajo de CREAR PARTIDA (lo más importante, arriba del todo)
+    box.innerHTML = (nuevoBtn ? '<div class="ip-nuevo">' + nuevoBtn + '</div>' : '') + lista.map(c => {
       const total = c.groups.reduce((a, g) => a + g.length, 0);
       const mi = me ? convSlotOf(c, me) : -1;
       const d = new Date(c.date + 'T12:00:00');
@@ -74,7 +75,7 @@
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
         + '<div class="ip-eti">' + etiqueta + '</div><div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
         + derecha + '</div>' + elegir + cambiar + '</div>';
-    }).join('') + (nuevoBtn ? '<div class="ip-nuevo">' + nuevoBtn + '</div>' : '');
+    }).join('');
 
     box.querySelectorAll('[data-conv-code]').forEach(card => card.addEventListener('click', () => {
       const c = convActivas.find(x => x.code === card.dataset.convCode); if(!c) return;
