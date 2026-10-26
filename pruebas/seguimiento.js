@@ -35,7 +35,9 @@
 
   async function pintar(caja, client){
     caja.innerHTML = '<p class="sg-carga">Cargando los datos…</p>';
-    const [res, resP] = await Promise.all([client.rpc('sa_seguimiento', { p_dias: 30 }), client.rpc('sa_patrocinio').catch(() => ({ data: null }))]);
+    let res, resP;
+    try { [res, resP] = await Promise.all([client.rpc('sa_seguimiento', { p_dias: 30 }), Promise.resolve().then(() => client.rpc('sa_patrocinio')).catch(() => ({ data: null }))]); }
+    catch(e){ caja.innerHTML = '<p class="sg-carga">No se pudieron cargar los datos. Prueba en un rato.</p>'; return; }
     const { data, error } = res;
     if(error){ caja.innerHTML = '<p class="sg-carga">No se pudieron cargar los datos. Prueba en un rato.</p>'; return; }
     guardado = data; patro = (resP && resP.data) || null;
