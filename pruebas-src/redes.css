@@ -9,3 +9,7 @@
 .ac-red.yt{ background:#E62117; }
 .ac-red.fb{ background:#1877F2; }
 .ac-red:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
+.ac-resena{ display:flex; align-items:center; justify-content:center; min-height:48px; margin-top:10px; border-radius:999px;
+  background:#C6F24E; color:#111316; font:900 15px 'Archivo', 'Barlow', sans-serif; text-decoration:none; transition:transform .1s; }
+.ac-resena:active{ transform:scale(.97); }
+.ac-resena:focus-visible{ outline:3px solid #F2F4F5; outline-offset:2px; }
