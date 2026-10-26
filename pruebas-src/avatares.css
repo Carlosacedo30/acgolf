@@ -16,8 +16,7 @@
 .av-xl.av-ini{ font-size:48px; width:132px; height:132px; }
 .resumen-avatar.av-foto{ overflow:hidden; padding:0; }
 .resumen-avatar img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
-.cg-mi.av-con{ padding:0 14px 0 5px; }
-.cg-mi .av{ margin-right:.4em; }
+.cg-bt-ico .av{ margin:0; width:24px; height:24px; font-size:12px; box-shadow:0 0 0 1.5px #111316; }
 
 /* Ventana para elegir (letra grande: jugadores con gafas de cerca) */
 .av-ov{ position:fixed; inset:0; z-index:10000; background:rgba(5,10,20,.72); display:flex; align-items:flex-start; justify-content:center;
