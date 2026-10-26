@@ -56,6 +56,9 @@ window.acgolfTextosEN = {
   '🔊 Con sonido': '🔊 With sound',
   '🔇 Sin sonido': '🔇 Mute',
   'Saltar ›': 'Skip ›',
+  'Golf entre amigos': 'Golf with friends',
+  '«¡Hola! Esto es acgolf.»': '"Hi! This is acgolf."',
+  '«¡El golf entre amigos! ¡A jugar!»': '"Golf with friends! Let\'s play!"',
 
   // ---- Partidos con amigos ----
   'Partidos con amigos': 'Games with friends',

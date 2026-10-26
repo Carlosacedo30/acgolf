@@ -122,7 +122,7 @@
         else if(m.type === 'attributes') atributos(m.target);
         else m.addedNodes.forEach(recorrer);
       }
-    }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: !!T, attributeFilter: ATRS });
+    }).observe(document.body, T ? { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ATRS } : { childList: true, subtree: true });
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
 })();
