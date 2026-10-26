@@ -412,8 +412,9 @@
       + '<div class="cg-grupos">' + grupos.map(g => '<button type="button" class="cg-grupo' + (g.activo ? ' on' : '') + '" data-g="' + esc(g.id) + '">'
           + '<b>🏆 ' + esc(g.nombre) + '</b>'
           + '<span>Juegas como ' + esc(g.jugador) + (g.es_admin ? ' · Eres el administrador' : '') + '</span>'
+          + (g.admins && g.admins.length ? '<span class="cg-grupo-adm">' + (g.admins.length > 1 ? 'Administradores: ' : 'Administrador: ') + esc(g.admins.join(', ')) + '</span>' : '')
           + (g.activo ? '<i>Estás aquí</i>' : '') + '</button>'
-          + (g.es_admin && g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="cg-borrar-g" data-g="' + esc(g.id) + '">Borrar «' + esc(g.nombre) + '»</button>' : '')).join('') + '</div>'
+          + (g.es_admin && g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="cg-borrar-g" data-g="' + esc(g.id) + '">Borrar «' + esc(g.nombre) + '»' + (g.admins && g.admins.length ? ' (' + esc(g.admins.join(', ')) + ')' : '') + '</button>' : '')).join('') + '</div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<div class="cg-sep">¿Otro grupo?</div>'
       + '<button type="button" class="cg-camino" id="cgTengoInv"><span class="cg-camino-ico" aria-hidden="true">📩</span>'

@@ -288,3 +288,4 @@ a.pa-b{ display:inline-flex; align-items:center; justify-content:center; text-de
 .cg-paso-b b{ display:block; font:900 19px 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; }
 .cg-paso-b small{ display:block; font:500 16px/1.35 'Barlow', sans-serif; color:#9AA3AB; margin-top:2px; }
 a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decoration:none; }
+.cg-grupo span.cg-grupo-adm{ color:#C6F24E; font-weight:700; }
