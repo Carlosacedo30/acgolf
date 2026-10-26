@@ -1046,21 +1046,95 @@
     });
   }
 
+  // Barra de arriba: «Ir a mi cuenta» (botón principal) y «Mi grupo» (secundario, abre la lista de grupos)
+  const ICO_PERSONA = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
+  const ICO_GRUPO = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M17.5 13.6a5 5 0 0 1 4 4.9"/></svg>';
   function botonMiCuenta(perfil){
-    // Barra centrada arriba: mi nombre y mi grupo, uno al lado del otro
     const barra = document.createElement('div');
     barra.className = 'cg-barra';
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'cg-mi'; b.setAttribute('aria-label', 'Mi cuenta');
-    b.textContent = '👤 ' + String(perfil.player_name).split(' ')[0];
-    b.onclick = () => panelMiCuenta(perfil);
+    b.type = 'button'; b.className = 'cg-mi cg-bt cg-bt-pri';
+    b.title = 'Accede a tu perfil y configura tu cuenta';
+    b.setAttribute('aria-describedby', 'cgMiAyuda');
+    b.innerHTML = '<span class="cg-bt-ico">' + ICO_PERSONA + '</span><span class="cg-bt-txt">Ir a mi cuenta</span>'
+      + '<span id="cgMiAyuda" class="cg-oculto">Accede a tu perfil y configura tu cuenta</span>';
+    b.onclick = () => { cerrarMenuGrupos(); panelMiCuenta(perfil); };
     const sg = document.createElement('button');
-    sg.type = 'button'; sg.className = 'cg-selgrupo'; sg.setAttribute('aria-label', 'Cambiar de grupo');
-    sg.textContent = (perfil.grupo_tipo === 'personal' ? '⛳ ' : '🏆 ') + (perfil.grupo || 'Mi grupo') + ' ▾';
-    sg.onclick = () => pantallaMisGrupos(perfil);
+    sg.type = 'button'; sg.className = 'cg-selgrupo cg-bt cg-bt-sec';
+    sg.title = 'Elige el grupo al que perteneces para ver sus recursos';
+    sg.setAttribute('aria-describedby', 'cgGrupoAyuda');
+    sg.setAttribute('aria-haspopup', 'menu'); sg.setAttribute('aria-expanded', 'false'); sg.setAttribute('aria-controls', 'cgGruposMenu');
+    sg.innerHTML = '<span class="cg-bt-ico">' + ICO_GRUPO + '</span><span class="cg-bt-txt">Mi grupo</span><span class="cg-bt-flecha" aria-hidden="true">▾</span>'
+      + '<span id="cgGrupoAyuda" class="cg-oculto">Elige el grupo al que perteneces para ver sus recursos. Ahora estás en ' + esc(perfil.grupo || 'tu grupo') + '.</span>';
+    sg.onclick = () => menuGrupos(perfil, sg);
     barra.appendChild(b); barra.appendChild(sg);
     document.body.appendChild(barra);
     if(window.acgolfAvatares) window.acgolfAvatares.recargar();
+  }
+
+  // Lista desplegable de grupos: ✓ en el grupo en el que estás; al tocar otro, se cambia
+  let menuAbierto = null;
+  function cerrarMenuGrupos(devolverFoco){
+    if(!menuAbierto) return;
+    const { menu, boton, fuera } = menuAbierto;
+    menuAbierto = null;
+    menu.remove();
+    boton.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('pointerdown', fuera, true);
+    window.removeEventListener('resize', cerrarMenuGrupos);
+    if(devolverFoco) boton.focus();
+  }
+  async function menuGrupos(perfil, boton){
+    if(menuAbierto){ cerrarMenuGrupos(); return; }
+    const menu = document.createElement('div');
+    menu.id = 'cgGruposMenu'; menu.className = 'cg-gmenu'; menu.setAttribute('role', 'menu'); menu.setAttribute('aria-label', 'Tus grupos');
+    menu.innerHTML = '<div class="cg-gmenu-t">Tus grupos</div><div class="cg-gmenu-cargando">Cargando…</div>';
+    document.body.appendChild(menu);
+    const r = boton.getBoundingClientRect(), ancho = Math.min(320, window.innerWidth - 20);
+    menu.style.width = ancho + 'px';
+    menu.style.top = Math.round(r.bottom + 8) + 'px';
+    menu.style.left = Math.round(Math.max(10, Math.min(r.right - ancho, window.innerWidth - ancho - 10))) + 'px';
+    const fuera = e => { if(!menu.contains(e.target) && !boton.contains(e.target)) cerrarMenuGrupos(); };
+    menuAbierto = { menu, boton, fuera };
+    boton.setAttribute('aria-expanded', 'true');
+    document.addEventListener('pointerdown', fuera, true);
+    window.addEventListener('resize', cerrarMenuGrupos);
+    menu.addEventListener('keydown', e => {
+      const items = [...menu.querySelectorAll('[role^="menuitem"]:not(:disabled)')];
+      const i = items.indexOf(document.activeElement);
+      if(e.key === 'Escape'){ e.preventDefault(); cerrarMenuGrupos(true); }
+      else if(e.key === 'ArrowDown'){ e.preventDefault(); if(items.length) items[(i + 1) % items.length].focus(); }
+      else if(e.key === 'ArrowUp'){ e.preventDefault(); if(items.length) items[(i - 1 + items.length) % items.length].focus(); }
+      else if(e.key === 'Tab'){ cerrarMenuGrupos(); }
+    });
+
+    let grupos = [];
+    try { const rg = await client.rpc('mis_grupos'); if(rg.error) throw rg.error; grupos = rg.data || []; } catch(e){}
+    if(!menuAbierto || menuAbierto.menu !== menu) return;   // se cerró mientras cargaba
+    menu.innerHTML = '<div class="cg-gmenu-t">Tus grupos</div>'
+      + (grupos.length ? grupos.map(g => '<button type="button" role="menuitemradio" class="cg-gmenu-i' + (g.activo ? ' on' : '') + '" aria-checked="' + (g.activo ? 'true' : 'false') + '" data-g="' + esc(g.id) + '">'
+          + '<span class="cg-gmenu-check" aria-hidden="true">' + (g.activo ? '✓' : '') + '</span>'
+          + '<span class="cg-gmenu-n"><b>' + esc(g.nombre) + '</b><small>' + (g.tipo === 'personal' ? 'Tu espacio personal' : 'Grupo con liga') + (g.activo ? ' · Estás aquí' : '') + '</small></span></button>').join('')
+        : '<div class="cg-gmenu-cargando">No se pudieron cargar tus grupos. Revisa la conexión.</div>')
+      + '<div class="cg-gmenu-msg" role="status"></div>'
+      + '<button type="button" role="menuitem" class="cg-gmenu-gest">Gestionar grupos<small>Unirte con un código, crear o borrar un grupo</small></button>';
+    menu.querySelectorAll('.cg-gmenu-i').forEach(it => it.onclick = async () => {
+      if(it.classList.contains('on')){ cerrarMenuGrupos(true); return; }
+      menu.querySelectorAll('.cg-gmenu-i').forEach(x => x.disabled = true);
+      const sub = it.querySelector('small'), antes = sub.textContent;
+      sub.textContent = 'Cambiando…';
+      const { error } = await client.rpc('cambiar_grupo', { p_grupo: it.dataset.g });
+      if(error){
+        menu.querySelectorAll('.cg-gmenu-i').forEach(x => x.disabled = false);
+        sub.textContent = antes;
+        menu.querySelector('.cg-gmenu-msg').textContent = traducir(error);
+        return;
+      }
+      location.reload();
+    });
+    menu.querySelector('.cg-gmenu-gest').onclick = () => { cerrarMenuGrupos(); pantallaMisGrupos(perfil); };
+    const primero = menu.querySelector('.cg-gmenu-i.on') || menu.querySelector('[role^="menuitem"]');
+    if(primero) primero.focus({ preventScroll: true });
   }
 
   // ---------- Arranque ----------

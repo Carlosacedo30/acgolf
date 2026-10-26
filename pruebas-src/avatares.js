@@ -116,8 +116,9 @@
   function pintarBotonCuenta(){
     const b = document.querySelector('.cg-mi'); const p = window.miPerfil;
     if(!b || !p) return;
-    b.innerHTML = html(p.player_name, 'sm') + esc(String(p.player_name).split(' ')[0]);
-    b.classList.add('av-con');
+    // «Ir a mi cuenta»: si el jugador tiene foto o avatar, sale en lugar del muñequito
+    const ico = b.querySelector('.cg-bt-ico');
+    if(ico && lista[p.player_name]){ ico.innerHTML = html(p.player_name, 'sm'); b.classList.add('av-con'); }
   }
 
   // ---------- Foto: recortar en cuadrado y hacerla pequeña ----------
