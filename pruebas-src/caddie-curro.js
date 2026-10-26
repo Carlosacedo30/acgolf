@@ -198,7 +198,9 @@
   let vozElegida = null;
   function buscarVoz(){
     if(!('speechSynthesis' in window)) return null;
-    const v = speechSynthesis.getVoices().filter(x => /^es/i.test(x.lang));
+    const EN = window.acgolfIdioma === 'en';
+    const v = speechSynthesis.getVoices().filter(x => (EN ? /^en/i : /^es/i).test(x.lang));
+    if(EN) return v.find(x => /en-GB/i.test(x.lang) && hombre(x)) || v.find(x => /en-GB/i.test(x.lang)) || v[0] || null;
     // Mejor una voz de hombre de España; si no, cualquiera de España; si no, cualquiera en español
     const hombre = x => /jorge|pablo|alvaro|álvaro|diego|enrique|juan|carlos|miguel|male|hombre/i.test(x.name);
     return v.find(x => /es-ES/i.test(x.lang) && hombre(x)) || v.find(x => /es-ES/i.test(x.lang)) || v[0] || null;
@@ -210,6 +212,8 @@
   function hablarFrase(f){
     if(!vozActiva()) return;
     const n = f.quien === 'lola' ? FRASES_LOLA[f.grupo].length : GRABADAS[f.grupo];
+    // En inglés todavía no hay voces grabadas: habla el móvil en inglés
+    if(window.acgolfIdioma === 'en'){ hablar(window.acgolfTraducir ? window.acgolfTraducir(String(f.t).replace(/<[^>]+>/g, '')) : f.t); return; }
     if(n && f.i < n){
       try {
         if('speechSynthesis' in window) speechSynthesis.cancel();
@@ -227,7 +231,7 @@
     try {
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(String(texto).replace(/<[^>]+>/g, '').replace(/[«»]/g, '').replace(/\bna\b/g, 'nada'));
-      u.lang = 'es-ES'; if(vozElegida) u.voice = vozElegida;
+      u.lang = window.acgolfIdioma === 'en' ? 'en-GB' : 'es-ES'; if(vozElegida) u.voice = vozElegida;
       u.rate = 1.02; u.pitch = 0.9;
       speechSynthesis.speak(u);
     } catch(e){}

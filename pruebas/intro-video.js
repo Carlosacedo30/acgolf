@@ -15,7 +15,8 @@
     try { vista = sessionStorage.getItem('acgolfIntro') === '1'; sessionStorage.setItem('acgolfIntro', '1'); } catch(e){}
     let sinMovimiento = false;
     try { sinMovimiento = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
-    if(vista || sinMovimiento) return avisar();
+    // En inglés: el vídeo de Curro está en español; hasta tener el inglés, no se enseña
+    if(vista || sinMovimiento || window.acgolfIdioma === 'en') return avisar();
 
     const el = document.createElement('div');
     el.className = 'iv'; el.setAttribute('role', 'presentation');

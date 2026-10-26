@@ -44,8 +44,27 @@
   }
 
   // ---------- Traducción ----------
-  const T = idioma === 'en' ? (window.acgolfTextosEN || {}) : null;
-  const P = idioma === 'en' ? (window.acgolfPatronesEN || []) : [];
+  const T = idioma === 'en' ? Object.assign({}, window.acgolfTextosEN2 || {}, window.acgolfTextosEN || {}) : null;
+  const P = idioma === 'en' ? (window.acgolfPatronesEN || []).slice() : [];
+  // Plantillas con hueco ({n} = nombre del jugador, {CAMPO} = campo…): «Par, {n}. …» → «Par, {n}. …»
+  const escRe = x => x.replace(/[.*+?^$()|[\]\\]/g, '\\$&');
+  if(T) (window.acgolfPlantillasEN || []).forEach(([es, en]) => {
+    const huecos = es.match(/\{(n|CAMPO|)\}/g) || [];
+    const re = new RegExp('^' + es.split(/\{(?:n|CAMPO|)\}/).map(escRe).join('(.+?)') + '$');
+    P.push([re, (...m) => { let i = 1; return en.replace(/\{(?:n|CAMPO|)\}/g, () => m[i++] || ''); }]);
+  });
+  // Trozos de frase (cuando la frase lleva nombres o números en medio): los más largos primero
+  const TROZOS = T ? Object.keys(T).filter(k => k.length >= 12 && /\s/.test(k)).sort((a, b) => b.length - a.length) : [];
+  const cache = new Map();
+  function porTrozos(t){
+    if(cache.has(t)) return cache.get(t);
+    let r = t, hay = false;
+    for(const k of TROZOS){ if(r.includes(k)){ r = r.split(k).join(T[k]); hay = true; } }
+    const res = hay ? r : null;
+    if(cache.size > 3000) cache.clear();
+    cache.set(t, res);
+    return res;
+  }
   function traducir(txt){
     if(!T || !txt) return null;
     const limpio = txt.replace(/\s+/g, ' ').trim();
@@ -54,6 +73,7 @@
     if(r == null){
       for(const [re, fn] of P){ if(re.test(limpio)){ r = limpio.replace(re, fn); break; } }
     }
+    if(r == null && limpio.length >= 12 && /[a-záéíóúñ]/.test(limpio)) r = porTrozos(limpio);
     if(r == null || r === limpio) return null;
     const ini = txt.match(/^\s*/)[0], fin = txt.match(/\s*$/)[0];
     return ini + r + fin;
