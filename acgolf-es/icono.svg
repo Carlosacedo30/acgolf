@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#111316"/>
-  <circle cx="256" cy="256" r="196" fill="none" stroke="#C6F24E" stroke-width="18"/>
-  <path d="M222 372 V132" stroke="#F2F4F5" stroke-width="22" stroke-linecap="round"/>
-  <path d="M236 132 L354 176 L236 222 Z" fill="#C6F24E"/>
-  <ellipse cx="232" cy="378" rx="78" ry="17" fill="#F2F4F5" opacity=".28"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<!-- © 2026 Carlos Acedo Domínguez. Símbolo de acgolf: escudo lima con bandera y bola (E2, 26-oct-2026) -->
+<rect width="200" height="200" fill="#111316"/>
+<g id="escudo">
+<path d="M100 20 L162 38 L162 98 C162 138 135 162 100 179 C65 162 38 138 38 98 L38 38 Z" fill="#C6F24E"/>
+<rect x="84" y="50" width="10" height="90" rx="5" fill="#111316"/>
+<path d="M94 51 C108 46 118 60 136 54 L130 68 L136 82 C118 88 108 74 94 78 Z" fill="#111316"/>
+<ellipse cx="94" cy="141" rx="22" ry="5" fill="#111316" opacity=".35"/>
+<circle cx="122" cy="132" r="10" fill="#F2F4F5" stroke="#111316" stroke-width="4"/>
+</g>
 </svg>

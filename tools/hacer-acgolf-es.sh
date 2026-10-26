@@ -34,7 +34,7 @@ s = s.replace('<body>', '<body>\n<noscript><p><a href="app-golf.html">acgolf: ap
 s = s.replace('<div class="pr-banda">Pruebas</div>\n', '', 1)  # en acgolf.es no sale el cartel de PRUEBAS
 s = s.replace('<meta name="apple-mobile-web-app-title" content="App Golf">', '<meta name="apple-mobile-web-app-title" content="acgolf">', 1)
 s = s.replace('<meta name="theme-color" content="#0E1F3D">', '<meta name="theme-color" content="#111316">', 1)
-s = s.replace('<link rel="apple-touch-icon" href="icon-180.png">', '<link rel="apple-touch-icon" href="icon-180.png?v=2">\n<link rel="icon" href="icon-192.png" type="image/png">', 1)
+s = s.replace('<link rel="apple-touch-icon" href="icon-180.png">', '<link rel="apple-touch-icon" href="icon-180.png?v=3">\n<link rel="icon" href="icon-192.png" type="image/png">', 1)
 s = s.replace('</head>', '<link rel="stylesheet" href="instalar.css?v=4">\n<script src="instalar.js?v=3"></script>\n</head>', 1)
 assert 'instalar.js' in s and 'noindex' not in s and 'rel="canonical"' in s and 'pr-banda' not in s
 open(p, 'w', encoding='utf-8').write(s)
