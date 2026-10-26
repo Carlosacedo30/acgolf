@@ -1,0 +1,16 @@
+/* © 2026 Carlos Acedo Domínguez. Avisos en el móvil: tarjeta oscura con campana lima e interruptor (diseño A) */
+.am-lbl{display:block;margin:6px 0 4px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.am-card{display:flex;align-items:center;gap:14px;background:#111316;border-radius:16px;padding:16px;margin:6px 0 4px;box-sizing:border-box}
+.am-lbl .am-card{margin:0}
+.am-ico{width:48px;height:48px;border-radius:13px;background:#C6F24E;color:#111316;display:flex;align-items:center;justify-content:center;flex:none}
+.am-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;text-align:left}
+.am-txt b{color:#F2F4F5;font-size:18px;line-height:1.25}
+.am-txt span{color:#B9C3CB;font-size:14px;line-height:1.35}
+.am-sw{position:relative;width:60px;height:36px;flex:none}
+.am-sw input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:1}
+.am-sw i{position:absolute;inset:0;border-radius:18px;background:#3A3F45;transition:background .2s}
+.am-sw i::after{content:"";position:absolute;left:3px;top:3px;width:30px;height:30px;border-radius:50%;background:#F2F4F5;transition:transform .2s,background .2s}
+.am-sw input:checked + i{background:#C6F24E}
+.am-sw input:checked + i::after{transform:translateX(24px);background:#111316}
+.am-sw input:focus-visible + i{outline:2px solid #C6F24E;outline-offset:2px}
+.am-sw input:disabled + i{opacity:.6}
