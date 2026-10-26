@@ -32,6 +32,11 @@ s = s.replace('<title>App de Golf · PRUEBAS</title>\n<meta name="robots" conten
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"acgolf","url":"https://acgolf.es/","applicationCategory":"SportsApplication","operatingSystem":"iPhone, Android, ordenador (navegador)","inLanguage":"es","description":"App de golf gratis para jugar con amigos: tarjeta hoyo a hoyo, hándicap de juego, Stableford, liga del grupo y estadísticas.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"image":"https://acgolf.es/icon-512.png"}</script>''', 1)  # acgolf.es SÍ debe salir en Google (el noindex es solo para pruebas)
 s = s.replace('<body>', '<body>\n<noscript><p><a href="app-golf.html">acgolf: app de golf gratis para jugar con amigos</a></p></noscript>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>\n', '', 1)  # en acgolf.es no sale el cartel de PRUEBAS
+import re
+# El inglés todavía no sale en acgolf.es (Carlos quiere el paquete completo antes: voces y vídeo)
+s = re.sub(r'<script src="idioma[^"]*"></script>\n', '', s)
+s = re.sub(r'<link rel="stylesheet" href="idioma\.css[^"]*">\n', '', s)
+assert 'idioma' not in s
 s = s.replace('<meta name="apple-mobile-web-app-title" content="App Golf">', '<meta name="apple-mobile-web-app-title" content="acgolf">', 1)
 s = s.replace('<meta name="theme-color" content="#0E1F3D">', '<meta name="theme-color" content="#111316">', 1)
 s = s.replace('<link rel="apple-touch-icon" href="icon-180.png">', '<link rel="apple-touch-icon" href="icon-180.png?v=3">\n<link rel="icon" href="icon-192.png" type="image/png">', 1)
