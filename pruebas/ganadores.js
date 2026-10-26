@@ -11,6 +11,16 @@
   let base = null;   // lunes de «esta semana» (el que da la app al empezar)
   let atras = 0;     // semanas hacia atrás
   let cargando = false;
+  // Semana pedida desde fuera (el aviso «Ganador de la semana» abre esa semana, no la de hoy)
+  let pedida = null;
+  function aplicarPedida(){
+    if(!pedida || !base || cargando) return false;
+    const n = Math.round((deIso(base) - deIso(pedida)) / (7 * 864e5));
+    pedida = null;
+    if(n < 0 || n === atras || masDias(base, -7 * n) < PRIMER_LUNES) return false;
+    atras = n; cargar(); return true;
+  }
+  window.gnVerSemana = function(lunes){ pedida = String(lunes).slice(0, 10); aplicarPedida(); };
 
   function rango(lunes){
     const a = deIso(lunes), b = deIso(masDias(lunes, 6));
@@ -35,6 +45,7 @@
     const el = document.getElementById('premiosHome');
     const p = typeof premiosData !== 'undefined' ? premiosData : null;
     if(p && p.desde && !base) base = String(p.desde).slice(0, 10);
+    if(pedida && aplicarPedida()) return;
     original.apply(this, arguments);
     if(!el || !base) return;
     // semana sin tarjetas: se deja el pasador y un aviso, para poder seguir pasando
