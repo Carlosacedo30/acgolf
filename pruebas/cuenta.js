@@ -1146,7 +1146,7 @@
     menu.innerHTML = '<div class="cg-gmenu-t">Tus grupos</div>'
       + (grupos.length ? grupos.map(g => '<button type="button" role="menuitemradio" class="cg-gmenu-i' + (g.activo ? ' on' : '') + '" aria-checked="' + (g.activo ? 'true' : 'false') + '" data-g="' + esc(g.id) + '">'
           + '<span class="cg-gmenu-check" aria-hidden="true">' + (g.activo ? '✓' : '') + '</span>'
-          + '<span class="cg-gmenu-n"><b>' + esc(g.nombre) + '</b><small>' + 'Grupo' + (g.activo ? ' · Estás aquí' : '') + '</small></span></button>').join('')
+          + '<span class="cg-gmenu-n"><b>' + esc(g.nombre) + '</b><small>' + (g.admins && g.admins.length ? 'De ' + esc(g.admins.join(', ')) : (g.es_admin ? 'Eres el administrador' : 'Grupo')) + (g.activo ? ' · Estás aquí' : '') + '</small></span></button>').join('')
         : '<div class="cg-gmenu-cargando">No se pudieron cargar tus grupos. Revisa la conexión.</div>')
       + '<div class="cg-gmenu-msg" role="status"></div>'
       + '<button type="button" role="menuitem" class="cg-gmenu-gest">Gestionar grupos<small>Unirte con un código, crear o borrar un grupo</small></button>';
