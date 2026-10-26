@@ -119,7 +119,7 @@
     caja.className = 'am-preg'; caja.setAttribute('role', 'dialog'); caja.setAttribute('aria-label', 'Avisos de tus partidas');
     caja.innerHTML = '<div class="am-preg-c"><div class="am-ico">' + CAMPANA + '</div>'
       + '<h2>¿Quieres que acgolf te avise de tus partidas?</h2>'
-      + '<p>Te llegará un aviso al móvil cuando haya partida en tu grupo, como un mensaje de WhatsApp.</p>'
+      + '<p>Te llegará un aviso al móvil.</p>'
       + '<p class="am-preg-n">Al tocar «Sí, quiero» el móvil te preguntará: toca <b>«Permitir»</b>.</p>'
       + '<button type="button" class="am-preg-si">Sí, quiero</button>'
       + '<button type="button" class="am-preg-no">Ahora no</button>'
