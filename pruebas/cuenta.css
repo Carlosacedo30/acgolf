@@ -37,47 +37,52 @@ body.cg-open{ overflow:hidden; }
 .cg-legal{ text-align:center; font-size:16px; color:var(--ink-muted, #B9C3D4); line-height:1.5; }
 /* Nombre y grupo: centrados arriba, uno al lado del otro, misma altura */
 .cg-barra{ position:fixed; top:calc(env(safe-area-inset-top, 0px) + 10px); left:0; right:0; z-index:900; display:flex; justify-content:center; gap:12px; padding:0 10px; pointer-events:none; }
-/* Botones de arriba: «Ir a mi cuenta» (principal) y el nombre del grupo (secundario). Mismo tamaño, letra y esquinas */
+/* Botones de arriba: «Ir a mi cuenta» (principal) y el nombre del grupo (secundario).
+   Con el diseño de la app (Grafito deportivo): pastilla, letra Archivo, verde lima sobre grafito */
 .cg-bt{ pointer-events:auto; box-sizing:border-box; min-height:44px; min-width:44px; display:inline-flex; align-items:center; gap:8px;
-  flex:0 1 auto; padding:12px 20px; border-radius:8px; font:500 16px/1.2 'Barlow', system-ui, sans-serif; letter-spacing:.01em;
-  white-space:nowrap; cursor:pointer; -webkit-tap-highlight-color:transparent;
-  transition:background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease; }
+  flex:0 1 auto; padding:10px 18px; border-radius:999px; font:800 15px/1.2 'Archivo', 'Barlow', sans-serif; letter-spacing:0;
+  white-space:nowrap; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+  transition:background .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease; }
+.cg-bt:active{ transform:scale(.97); }
 .cg-bt-ico{ flex:none; display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; }
 .cg-bt-ico svg{ width:20px; height:20px; display:block; }
 .cg-bt-txt{ min-width:0; overflow:hidden; text-overflow:ellipsis; }
-.cg-bt-flecha{ flex:none; font-size:13px; margin-left:-2px; }
+.cg-bt-flecha{ flex:none; font-size:12px; margin-left:-2px; color:#C6F24E; }
 .cg-bt:focus-visible{ outline:2px solid #C6F24E; outline-offset:2px; }
-.cg-bt-pri{ flex-shrink:0; background:#C6F24E; border:1px solid #C6F24E; color:#111316; }
-.cg-bt-pri:active{ background:#9EC23E; border-color:#9EC23E; }
-/* «transparente» pero oscurecido: encima de la foto del campo el texto blanco no se leería (contraste AA) */
-.cg-bt-sec{ background:rgba(17,19,22,.72); border:1px solid #9AA3AB; color:#F2F4F5; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
-.cg-bt-sec[aria-expanded="true"], .cg-bt-sec:active{ background:#F3F4F6; border-color:#C6F24E; color:#111316; }
+/* Principal: como «Crear partida» */
+.cg-bt-pri{ flex-shrink:0; background:#C6F24E; border:2px solid #C6F24E; color:#111316; }
+/* Secundario: como los botones del Inicio (fondo grafito, borde lima suave, icono lima) */
+.cg-bt-sec{ background:linear-gradient(180deg, #262B31 0%, #1B1E22 100%); border:2px solid rgba(198,242,78,.55); color:#F2F4F5;
+  box-shadow:0 6px 16px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.07); }
+.cg-bt-sec .cg-bt-ico{ color:#C6F24E; }
+.cg-bt-sec[aria-expanded="true"], .cg-bt-sec:active{ background:#2A2F35; border-color:#C6F24E; }
 @media (hover:hover){
-  .cg-bt-pri:hover{ background:#B2DA46; border-color:#B2DA46; box-shadow:0 2px 8px rgba(0,0,0,.35); }
-  .cg-bt-sec:hover{ background:#F3F4F6; border-color:#C6F24E; color:#111316; }
+  .cg-bt-pri:hover{ background:#B2DA46; border-color:#B2DA46; box-shadow:0 4px 12px rgba(0,0,0,.4); }
+  .cg-bt-sec:hover{ background:#2A2F35; border-color:#C6F24E; }
 }
 /* En el móvil, un poco menos de relleno para que quepa el nombre del grupo */
-@media (max-width:430px){ .cg-bt{ padding:12px 14px; gap:6px; } }
-@media (max-width:374px){ .cg-bt{ padding:12px 10px; font-size:15px; } }
+@media (max-width:430px){ .cg-bt{ padding:10px 13px; gap:6px; } }
+@media (max-width:374px){ .cg-bt{ padding:10px 10px; font-size:14px; } }
 .cg-oculto{ position:absolute !important; width:1px; height:1px; margin:-1px; padding:0; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
-/* Lista de grupos que se abre debajo de «Mi grupo» */
-.cg-gmenu{ position:fixed; z-index:9990; box-sizing:border-box; padding:8px; border-radius:12px; background:#1B1E22; border:1px solid #33383E;
-  box-shadow:0 12px 32px rgba(0,0,0,.5); font-family:'Barlow', system-ui, sans-serif; color:#F2F4F5; max-height:70vh; overflow-y:auto; }
-.cg-gmenu-t{ font-weight:600; font-size:14px; letter-spacing:.08em; text-transform:uppercase; color:#9AA3AB; padding:6px 10px 8px; }
-.cg-gmenu-cargando{ padding:10px; font-size:16px; color:#C9CED3; }
-.cg-gmenu-i, .cg-gmenu-gest{ display:flex; align-items:center; gap:10px; width:100%; min-height:48px; box-sizing:border-box; padding:8px 10px; border:1px solid transparent;
-  border-radius:8px; background:transparent; color:#F2F4F5; text-align:left; font:500 17px/1.25 'Barlow', system-ui, sans-serif; cursor:pointer;
-  transition:background-color .2s ease, border-color .2s ease; }
-.cg-gmenu-i:focus-visible, .cg-gmenu-gest:focus-visible{ outline:2px solid #C6F24E; outline-offset:-2px; }
-.cg-gmenu-i.on{ border-color:#C6F24E; }
-.cg-gmenu-check{ flex:none; width:22px; font-size:20px; font-weight:700; color:#C6F24E; text-align:center; }
+/* Lista de grupos que se abre debajo del botón del grupo (tarjeta grafito, como las del Inicio) */
+.cg-gmenu{ position:fixed; z-index:9990; box-sizing:border-box; padding:10px; border-radius:20px; background:#1B1E22; border:2px solid rgba(198,242,78,.55);
+  box-shadow:0 12px 32px rgba(0,0,0,.55); font-family:'Barlow', sans-serif; color:#F2F4F5; max-height:70vh; overflow-y:auto; }
+.cg-gmenu-t{ font:700 14px 'Barlow', sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#C6F24E; padding:4px 8px 8px; }
+.cg-gmenu-cargando{ padding:10px; font-size:17px; color:#9AA3AB; }
+.cg-gmenu-i, .cg-gmenu-gest{ display:flex; align-items:center; gap:10px; width:100%; min-height:52px; box-sizing:border-box; padding:10px 12px; border:1.5px solid #33383E;
+  border-radius:14px; background:#24282D; color:#F2F4F5; text-align:left; font-family:inherit; cursor:pointer; margin-bottom:8px;
+  transition:background .2s ease, border-color .2s ease, transform .2s ease; }
+.cg-gmenu-i:active, .cg-gmenu-gest:active{ transform:scale(.98); }
+.cg-gmenu-i:focus-visible, .cg-gmenu-gest:focus-visible{ outline:2px solid #C6F24E; outline-offset:2px; }
+.cg-gmenu-i.on{ background:#2F3A1C; border-color:#C6F24E; box-shadow:inset 0 0 0 1px #C6F24E; }
+.cg-gmenu-check{ flex:none; width:22px; font-size:20px; font-weight:800; color:#C6F24E; text-align:center; }
 .cg-gmenu-n{ min-width:0; }
-.cg-gmenu-n b{ display:block; font-weight:600; overflow:hidden; text-overflow:ellipsis; }
-.cg-gmenu-n small, .cg-gmenu-gest small{ display:block; font-size:14px; color:#9AA3AB; margin-top:2px; }
-.cg-gmenu-gest{ display:block; margin-top:6px; border-top:1px solid #33383E; border-radius:0 0 8px 8px; padding:12px 10px 10px 42px; }
+.cg-gmenu-n b{ display:block; font:800 17px/1.2 'Archivo', 'Barlow', sans-serif; overflow:hidden; text-overflow:ellipsis; }
+.cg-gmenu-n small, .cg-gmenu-gest small{ display:block; font:500 15px/1.3 'Barlow', sans-serif; color:#9AA3AB; margin-top:3px; }
+.cg-gmenu-gest{ display:block; margin:4px 0 0; background:transparent; border-color:#4A5058; padding:10px 12px 10px 44px; font:800 17px/1.2 'Archivo', 'Barlow', sans-serif; color:#C6F24E; }
 .cg-gmenu-msg:empty{ display:none; }
-.cg-gmenu-msg{ padding:6px 10px; color:#F29A5B; font-size:15px; }
-@media (hover:hover){ .cg-gmenu-i:hover, .cg-gmenu-gest:hover{ background:#2A2F35; } }
+.cg-gmenu-msg{ padding:4px 8px 8px; color:#F29A5B; font-size:16px; }
+@media (hover:hover){ .cg-gmenu-i:not(.on):hover, .cg-gmenu-gest:hover{ background:#2A2F35; border-color:#C6F24E; } }
 .cg-bajas{ border:2px solid #F29A5B; border-radius:12px; padding:12px 14px; font-size:17px; line-height:1.5; color:#F6F1E4; }
 .cg-bajas small{ display:block; color:#B9C3D4; font-size:15px; margin-top:6px; }
 /* Firma de la tarjeta */
