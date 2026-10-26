@@ -56,7 +56,7 @@
     if(jugadores) return jugadores;
     const client = typeof initSupabase === 'function' ? initSupabase() : null;
     if(!client) return [];
-    const { data } = await client.from('league_players').select('name');
+    const { data } = await client.from('league_players').select('name').eq('active', true);
     const vistos = {};
     jugadores = (data || []).map(x => String(x.name || '').trim()).filter(n => n && !vistos[clave(n)] && (vistos[clave(n)] = 1))
       .sort((a, b) => a.localeCompare(b, 'es'));

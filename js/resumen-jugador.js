@@ -36,7 +36,7 @@
     if(!client) return null;
     const hoy = new Date();
     const [lp, hist, med, liga] = await Promise.all([
-      client.from('league_players').select('name, hcp'),
+      client.from('league_players').select('name, hcp').eq('active', true),
       client.from('handicap_historial').select('player_name, hcp_antes, hcp_despues, cambiado_en').gte('cambiado_en', new Date(Date.now() - 20 * 3600 * 1000).toISOString()).order('cambiado_en', { ascending: true }),
       client.rpc('medallas_liga'),
       client.rpc('liga_mes', { p_anio: hoy.getFullYear(), p_mes: hoy.getMonth() + 1 }),

@@ -411,7 +411,7 @@
       + (hg ? '<div class="cg-hcp-global"><span>Tu hándicap</span><b>' + comaHcp(hg.hcp) + '</b><small>Es el mismo en todos tus grupos y se actualiza con todas tus partidas.</small></div>' : '')
       + '<div class="cg-grupos">' + grupos.map(g => '<button type="button" class="cg-grupo' + (g.activo ? ' on' : '') + '" data-g="' + esc(g.id) + '">'
           + '<b>🏆 ' + esc(g.nombre) + '</b>'
-          + '<span>Juegas como ' + esc(g.jugador) + (g.es_admin ? ' · Eres el administrador' : '') + '</span>'
+          + '<span>' + (g.miembro === false ? 'Entras solo para revisarlo: no juegas ni sales en él' : 'Juegas como ' + esc(g.jugador) + (g.es_admin ? ' · Eres el administrador' : '')) + '</span>'
           + (g.admins && g.admins.length ? '<span class="cg-grupo-adm">' + (g.admins.length > 1 ? 'Administradores: ' : 'Administrador: ') + esc(g.admins.join(', ')) + '</span>' : '')
           + (g.activo ? '<i>Estás aquí</i>' : '') + '</button>'
           + (g.es_admin && g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="cg-borrar-g" data-g="' + esc(g.id) + '">Borrar «' + esc(g.nombre) + '»' + (g.admins && g.admins.length ? ' (' + esc(g.admins.join(', ')) + ')' : '') + '</button>' : '')).join('') + '</div>'
@@ -1194,12 +1194,13 @@
     const eraAdmin = esAdminGuardado();
     let eraYo = ''; try { eraYo = localStorage.getItem('golfAppConvMe') || ''; } catch(e){}
     try { localStorage.setItem('acgolfEsAdmin', perfil.es_admin ? '1' : '0'); } catch(e){}
-    try { localStorage.setItem('golfAppConvMe', perfil.player_name); } catch(e){} // "quién soy" = el de la cuenta
+    // "quién soy" = el de la cuenta. En un grupo ajeno (super administrador revisando) no es nadie: no sale en ninguna lista
+    try { if(perfil.solo_control) localStorage.removeItem('golfAppConvMe'); else localStorage.setItem('golfAppConvMe', perfil.player_name); } catch(e){}
     window.miPerfil = perfil;
     document.documentElement.classList.toggle('es-super', !!perfil.es_super); // los greens solo los toca el super administrador
     window.miPerfilId = session.user && session.user.id;
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
-    if(eraAdmin !== !!perfil.es_admin || eraYo !== perfil.player_name){ location.reload(); return; }
+    if(eraAdmin !== !!perfil.es_admin || eraYo !== (perfil.solo_control ? '' : perfil.player_name)){ location.reload(); return; }
     botonMiCuenta(perfil);
     if(perfil.es_prueba) document.documentElement.classList.add('es-invitado');   // candados (invitado.js), sin avisos fijos
     // Grupo nuevo: el administrador elige su plan y paga antes de entrar

@@ -27,7 +27,7 @@
     // (son variables de otros archivos de la app, no de window)
     try { (typeof leaguePlayers !== 'undefined' ? leaguePlayers : []).forEach(p => p && p.name && s.add(p.name)); } catch(e){}
     try { Object.keys(typeof FAVORITE_HANDICAPS !== 'undefined' ? FAVORITE_HANDICAPS : {}).forEach(n => s.add(n)); } catch(e){}
-    if(window.miPerfil && window.miPerfil.player_name) s.add(window.miPerfil.player_name);
+    if(window.miPerfil && window.miPerfil.player_name && !window.miPerfil.solo_control) s.add(window.miPerfil.player_name);
     return [...s];
   }
   function rehacerIndice(){
