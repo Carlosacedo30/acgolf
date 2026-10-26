@@ -950,7 +950,9 @@
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
-      + (perfil.grupo_tipo === 'liga' ? '<label class="cg-acepto" style="margin:4px 0 2px;"><input type="checkbox" id="cgCorreos" checked disabled><span><b>Avisos por correo</b><br>Te llega un correo cuando alguien de tu grupo crea una partida.</span></label>' : '')
+      + (perfil.grupo_tipo === 'liga' ? '<label class="am-lbl"><div class="am-card"><div class="am-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6l9 -6"/></svg></div>'
+        + '<div class="am-txt"><b>Avisos por correo</b><span id="cgCorreosTxt">Un correo cuando alguien de tu grupo crea una partida</span></div>'
+        + '<span class="am-sw"><input type="checkbox" id="cgCorreos" role="switch" checked disabled aria-label="Avisos por correo"><i></i></span></div></label>' : '')
       + (perfil.grupo_tipo === 'liga' && window.acgolfAvisosMovil ? '<div id="cgMovil"></div>' : '')
       + (window.acgolfInstalar ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
@@ -966,13 +968,15 @@
     if($('cgPlan')) $('cgPlan').onclick = () => window.acgolfPlanes.abrir();
     const cc = $('cgCorreos');
     if(cc){
-      client.rpc('mis_correos').then(r => { if(!r.error){ cc.checked = r.data !== false; cc.disabled = false; } });
+      client.rpc('mis_correos').then(r => { if(!r.error){ cc.checked = r.data !== false; cc.disabled = false;
+        if(!cc.checked && $('cgCorreosTxt')) $('cgCorreosTxt').textContent = 'Desactivados. Actívalos para no perderte nada'; } });
       cc.onchange = async () => {
         cc.disabled = true;
         const { data, error } = await client.rpc('mis_correos', { p_quiero: cc.checked });
         cc.disabled = false;
         if(error){ cc.checked = !cc.checked; msg(traducir(error)); return; }
         msg(data ? 'Recibirás los avisos por correo.' : 'Ya no te llegarán avisos por correo.', true);
+        const t = $('cgCorreosTxt'); if(t) t.textContent = data ? 'Un correo cuando alguien de tu grupo crea una partida' : 'Desactivados. Actívalos para no perderte nada';
       };
     }
     if($('cgMovil')) window.acgolfAvisosMovil.pintar($('cgMovil'), perfil, msg);
