@@ -945,6 +945,7 @@
       + '<div id="cgMsg" class="cg-msg"></div>'
       + (window.acgolfAvatares ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
+      + (perfil.es_super ? '<a class="cg-btn ghost" href="https://cloud.umami.is/" target="_blank" rel="noopener">📊 Ver visitas (Umami)</a>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgCorreoLibre">✉️ Enviar un correo desde avisos@acgolf.es</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgPruebaCorreo">✉️ Mandarme un correo de prueba</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPlan">Plan del grupo</button>' : '')
