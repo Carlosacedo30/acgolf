@@ -41,6 +41,9 @@ s = s.replace('<meta name="apple-mobile-web-app-title" content="App Golf">', '<m
 s = s.replace('<meta name="theme-color" content="#0E1F3D">', '<meta name="theme-color" content="#111316">', 1)
 s = s.replace('<link rel="apple-touch-icon" href="icon-180.png">', '<link rel="apple-touch-icon" href="icon-180.png?v=3">\n<link rel="icon" href="icon-192.png" type="image/png">', 1)
 s = s.replace('</head>', '<link rel="stylesheet" href="instalar.css?v=4">\n<script src="instalar.js?v=3"></script>\n</head>', 1)
+# Estadísticas de visitas con Umami (sin cookies; solo en acgolf.es, no en pruebas)
+s = s.replace('</head>', '<script defer src="https://cloud.umami.is/script.js" data-website-id="d5a09845-aabf-40a9-9df7-1b2d973cb1da"></script>\n</head>', 1)
+assert 'cloud.umami.is' in s
 assert 'instalar.js' in s and 'noindex' not in s and 'rel="canonical"' in s and 'pr-banda' not in s
 open(p, 'w', encoding='utf-8').write(s)
 PY
