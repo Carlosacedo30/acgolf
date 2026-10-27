@@ -8,6 +8,7 @@
     { n: 'TikTok',    url: 'https://www.tiktok.com/@acgolf.es', c: 'tt' },
     { n: 'YouTube',   url: 'https://www.youtube.com/channel/UCUqjPt8RqN0JQeTiel8Ygsw', c: 'yt' },
     { n: 'Facebook',  url: 'https://www.facebook.com/1437955202727013', c: 'fb' },
+    { n: 'LinkedIn',  url: 'https://www.linkedin.com/in/acgolf-golf-para-amigos-348364447/', c: 'li' },
   ];
   // Reseñas en Google: la nuestra y la del patrocinador
   const RESENAS = [

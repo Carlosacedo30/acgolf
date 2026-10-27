@@ -15,3 +15,5 @@
 .ac-resena:focus-visible{ outline:3px solid #F2F4F5; outline-offset:2px; }
 .ac-resenas{ margin-top:14px; }
 .ac-resenas p{ margin:0 0 8px; font:500 14px 'Barlow', sans-serif; color:#9AA3AB; }
+.ac-red.li{ background:#0A66C2; }
+.ac-redes-l .ac-red:last-child:nth-child(odd){ grid-column:1 / -1; }
