@@ -450,7 +450,9 @@
     $('cgVolver').onclick = () => pantallaMisGrupos(perfil);
     $('cgBorrarSi').onclick = e => ocupado(e.target, async () => {
       const escrito = $('cgBorrarNombre').value.trim();
-      if(escrito.toLowerCase() !== String(g.nombre).trim().toLowerCase()){ msg('El nombre no coincide. Escríbelo igual que arriba.'); return; }
+      // Sin fijarse en mayúsculas, acentos, puntos ni espacios (el móvil a veces los cambia solo)
+      const simple = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9ñ]+/g, '');
+      if(!escrito || !simple(escrito).startsWith(simple(g.nombre))){ msg('El nombre no coincide. Escríbelo igual que arriba.'); return; }
       const { error } = await client.rpc('borrar_grupo', { p_grupo: g.id, p_nombre: escrito });
       if(error){ msg(traducir(error)); return; }
       mostrar(cabecera('Grupo borrado', '«' + esc(g.nombre) + '» ya no existe.')
