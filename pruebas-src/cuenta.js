@@ -814,9 +814,7 @@
     gate.querySelectorAll('.pa-tabs button').forEach(b => b.onclick = () => pantallaSuper(perfil, b.dataset.t));
     gate.querySelectorAll('[data-miembros]').forEach(b => b.onclick = () => pantallaMiembros(perfil, b.dataset.miembros, b.dataset.n, true));
     gate.querySelectorAll('[data-borrar]').forEach(b => b.onclick = async () => {
-      const n = prompt('Para borrar «' + b.dataset.n + '» con todos sus jugadores y partidas, escribe su nombre:');
-      if(n === null) return;
-      if(n.trim().toLowerCase() !== b.dataset.n.trim().toLowerCase()){ msg('El nombre no coincide. No se ha borrado nada.'); return; }
+      if(!confirm('¿Borrar «' + b.dataset.n + '» con todos sus jugadores y partidas para siempre?')) return;
       const { error } = await client.rpc('sa_borrar_grupo', { p_grupo: b.dataset.borrar });
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'grupos');
