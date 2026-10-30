@@ -441,19 +441,14 @@
   // Borrar un grupo entero (solo su administrador; Los Iscariotes no se pueden borrar)
   function pantallaBorrarGrupo(perfil, g){
     mostrar(cabecera('Borrar «' + esc(g.nombre) + '»', 'Se borran el grupo, sus jugadores, sus partidas, sus hándicaps y sus ligas. Los demás miembros dejarán de verlo.')
-      + '<p class="cg-p"><b>No se puede deshacer desde la app.</b> Para confirmar, escribe el nombre del grupo tal cual:</p>'
-      + '<div class="cg-enlace" style="font-size:18px;font-weight:700;">' + esc(g.nombre) + '</div>'
-      + '<label class="cg-lbl">Nombre del grupo<input id="cgBorrarNombre" type="text" autocomplete="off" autocapitalize="off"></label>'
+      + '<p class="cg-p"><b>No se puede deshacer desde la app.</b></p>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn danger" id="cgBorrarSi">Borrar el grupo para siempre</button>'
       + '<button type="button" class="cg-link" id="cgVolver">No, volver</button>');
     $('cgVolver').onclick = () => pantallaMisGrupos(perfil);
     $('cgBorrarSi').onclick = e => ocupado(e.target, async () => {
-      const escrito = $('cgBorrarNombre').value.trim();
-      // Sin fijarse en mayúsculas, acentos, puntos ni espacios (el móvil a veces los cambia solo)
-      const simple = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9ñ]+/g, '');
-      if(!escrito || !simple(escrito).startsWith(simple(g.nombre))){ msg('El nombre no coincide. Escríbelo igual que arriba.'); return; }
-      const { error } = await client.rpc('borrar_grupo', { p_grupo: g.id, p_nombre: escrito });
+      // Sin escribir el nombre (decisión de Carlos): basta con confirmar
+      const { error } = await client.rpc('borrar_grupo', { p_grupo: g.id, p_nombre: g.nombre });
       if(error){ msg(traducir(error)); return; }
       mostrar(cabecera('Grupo borrado', '«' + esc(g.nombre) + '» ya no existe.')
         + '<button type="button" class="cg-btn" onclick="location.reload()">Seguir</button>');
