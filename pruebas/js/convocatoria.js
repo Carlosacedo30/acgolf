@@ -10,6 +10,8 @@
   let conv = null;            // { id, code, updatedAt, times:[], groups:[[names]], date, courseId, roundCode }
   let convActivas = [];       // todas las convocatorias de hoy en adelante, de la más próxima a la más lejana
   let convChannel = null;
+  let convMarc = false;       // interruptor «Partida con marcador» al crear la partida de un partido organizado
+  const convEsJornada = c => !!(c && /J\d+$/.test(c.code || '') && String(c.code).length > 6);   // jornada de una liga: el marcador va solo
   let convOpenPlayer = null;  // jugador con el selector de hora abierto
   let convFilter = '';
 
@@ -250,9 +252,15 @@
     const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
     const yoMismo = (window.miPerfil && window.miPerfil.player_name) || '';
     const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquiera de los apuntados puede crear la partida
-    if((isAdmin || organizo || apuntado) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    if((isAdmin || organizo || apuntado) && !conv.roundCode){
+      if(!convEsJornada(conv)) h += '<button type="button" class="pr-marc' + (convMarc ? ' on' : '') + '" id="convMarc" role="switch" aria-checked="' + (convMarc ? 'true' : 'false') + '">'
+        + '<span class="pr-marc-t"><b>' + (convMarc ? 'Con marcador' : 'Partida normal') + '</b><small>'
+        + (convMarc ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga.' : 'Cada uno apunta sus golpes, sin marcador. Toca para jugar con marcador.')
+        + '</small></span><span class="pr-marc-sw" aria-hidden="true"><i></i></span></button>';
+      h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    }
     if(isAdmin || window.miPerfilId) h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
-    if(isAdmin){
+    if(isAdmin || organizo){
       h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">' + icono('papelera') + ' Borrar este partido</button>';
     }
     h += '</div>';
@@ -288,6 +296,7 @@
     const op = document.getElementById('convOpenRound'); if(op) op.addEventListener('click', convOpenRound);
     const nb = document.getElementById('convNewBtn'); if(nb) nb.addEventListener('click', renderConvNewForm);
     const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
+    const cm = document.getElementById('convMarc'); if(cm) cm.addEventListener('click', ()=>{ convMarc = !convMarc; renderConv(); });
     body.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', async ()=>{
       const i = Number(b.dataset.quitar); const hora = convEtq(conv, i); const n = (conv.groups[i] || []).length;
       if(!confirm('¿Quitar el horario de las ' + hora + '?' + (n ? '\n' + (n === 1 ? 'El apuntado se queda' : 'Los ' + n + ' apuntados se quedan') + ' sin hora y ' + (n === 1 ? 'tendrá' : 'tendrán') + ' que apuntarse en otra.' : ''))) return;
@@ -359,6 +368,8 @@
         created_at: new Date(conv.date + 'T' + (withPlayers[0].t || '08:40') + ':00').toISOString(),
       }).select('code').single();
       if(error) throw error;
+      if(convMarc && !convEsJornada(conv)){ try { await client.rpc('poner_marcador', { p_code: data.code }); } catch(e){} }
+      convMarc = false;
       await convMutate(c => { c.roundCode = data.code; return null; });
     } catch(e){
       console.error(e); alert('No se pudo crear la partida. Revisa la conexión.');
@@ -419,8 +430,9 @@
   // Solo el administrador: borra la convocatoria para todos (la partida creada desde ella, si la hay, no se toca)
   async function convDelete(btn){
     if(!conv || btn.dataset.busy) return;
-    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\nDesaparece para todos los jugadores y no se puede deshacer.')) return;
+    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\n' + (conv.roundCode ? 'También se borra la partida que se creó con los apuntados. ' : '') + 'Desaparece para todos los jugadores y no se puede deshacer.')) return;
     btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
+    if(conv.roundCode){ try { await deleteSharedRound(conv.roundCode); } catch(e){} }
     const res = await deleteSharedRound(conv.code);
     if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar el partido'); delete btn.dataset.busy; btn.innerHTML = icono('papelera') + ' Borrar este partido'; return; }
     const client = initSupabase();

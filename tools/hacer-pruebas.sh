@@ -430,11 +430,47 @@ s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="idioma-en-2.js?v=2"></script>\n<script src="idioma-en.js?v=3"></script>\n<script src="idioma.js?v=4"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=4"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=3"></script>\n<script src="manual.js?v=10"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=3"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=9"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=10"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=15"></script>\n<script src="redes.js?v=7"></script>\n<script src="tele-directo.js?v=6"></script>\n<script src="en-vivo.js?v=9"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="idioma-en-2.js?v=2"></script>\n<script src="idioma-en.js?v=3"></script>\n<script src="idioma.js?v=4"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=4"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=1"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=4"></script>\n<script src="manual.js?v=10"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=3"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=9"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=10"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=15"></script>\n<script src="redes.js?v=7"></script>\n<script src="tele-directo.js?v=6"></script>\n<script src="en-vivo.js?v=9"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'
 t = open(m, encoding='utf-8').read().replace('"App de Golf"', '"App de Golf · PRUEBAS"').replace('"App Golf"', '"Golf PRUEBAS"')
 open(m, 'w', encoding='utf-8').write(t)
 EOF
+# Partido organizado: interruptor «Partida con marcador» al crear la partida, y el organizador (o el administrador)
+# puede borrar el partido aunque ya tenga la partida creada (se borran los dos)
+python3 - <<'EOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:60])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+f = 'pruebas/js/convocatoria.js'
+cambia(f, """  let convChannel = null;""", """  let convChannel = null;
+  let convMarc = false;       // interruptor «Partida con marcador» al crear la partida de un partido organizado
+  const convEsJornada = c => !!(c && /J\\d+$/.test(c.code || '') && String(c.code).length > 6);   // jornada de una liga: el marcador va solo""")
+cambia(f, """    if((isAdmin || organizo || apuntado) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';""",
+"""    if((isAdmin || organizo || apuntado) && !conv.roundCode){
+      if(!convEsJornada(conv)) h += '<button type="button" class="pr-marc' + (convMarc ? ' on' : '') + '" id="convMarc" role="switch" aria-checked="' + (convMarc ? 'true' : 'false') + '">'
+        + '<span class="pr-marc-t"><b>' + (convMarc ? 'Con marcador' : 'Partida normal') + '</b><small>'
+        + (convMarc ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga.' : 'Cada uno apunta sus golpes, sin marcador. Toca para jugar con marcador.')
+        + '</small></span><span class="pr-marc-sw" aria-hidden="true"><i></i></span></button>';
+      h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    }""")
+cambia(f, """    if(isAdmin){
+      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">""", """    if(isAdmin || organizo){
+      h += '<button type="button" class="conv-btn borrar" id="convDeleteBtn">""")
+cambia(f, """    const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));""",
+"""    const db = document.getElementById('convDeleteBtn'); if(db) db.addEventListener('click', ()=> convDelete(db));
+    const cm = document.getElementById('convMarc'); if(cm) cm.addEventListener('click', ()=>{ convMarc = !convMarc; renderConv(); });""")
+cambia(f, """      if(error) throw error;
+      await convMutate(c => { c.roundCode = data.code; return null; });""", """      if(error) throw error;
+      if(convMarc && !convEsJornada(conv)){ try { await client.rpc('poner_marcador', { p_code: data.code }); } catch(e){} }
+      convMarc = false;
+      await convMutate(c => { c.roundCode = data.code; return null; });""")
+cambia(f, """    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\\nDesaparece para todos los jugadores y no se puede deshacer.')) return;""",
+"""    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\\n' + (conv.roundCode ? 'También se borra la partida que se creó con los apuntados. ' : '') + 'Desaparece para todos los jugadores y no se puede deshacer.')) return;""")
+cambia(f, """    const res = await deleteSharedRound(conv.code);""", """    if(conv.roundCode){ try { await deleteSharedRound(conv.roundCode); } catch(e){} }
+    const res = await deleteSharedRound(conv.code);""")
+EOF
+
 echo "Versión de pruebas generada en pruebas/"

@@ -74,13 +74,22 @@
       return '<div class="ip-card' + (esHoy ? ' hoy' : '') + '">'
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
         + '<div class="ip-eti">' + etiqueta + '</div><div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
-        + derecha + '</div>' + elegir + cambiar + '</div>';
+        + derecha + '</div>' + elegir + cambiar
+        // Partida ya creada: el administrador o quien lo organizó puede abrir el partido para borrarlo
+        + (c.roundCode && (isAdmin || (c.organiza && c.organiza === window.miPerfilId)) ? '<button type="button" class="ip-cambiar" data-gestionar="' + esc(c.code) + '">Ver o borrar el partido</button>' : '')
+        + '</div>';
     }).join('');
 
     box.querySelectorAll('[data-conv-code]').forEach(card => card.addEventListener('click', () => {
       const c = convActivas.find(x => x.code === card.dataset.convCode); if(!c) return;
       if(!conv || conv.code !== c.code){ conv = c; convWatch(); }
       if(c.roundCode && typeof convOpenRound === 'function') convOpenRound(); else openConv(false);
+    }));
+    box.querySelectorAll('[data-gestionar]').forEach(b => b.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const c = convActivas.find(x => x.code === b.dataset.gestionar); if(!c) return;
+      if(!conv || conv.code !== c.code){ conv = c; convWatch(); }
+      openConv(false);
     }));
     box.querySelectorAll('[data-apuntar]').forEach(b => b.addEventListener('click', ev => {
       ev.stopPropagation();
