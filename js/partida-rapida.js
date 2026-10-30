@@ -116,6 +116,7 @@
         + ops.map(o => '<button type="button" class="pr-tecla' + (String(o[0]) === String(actual) ? ' on' : '') + '" data-k="' + clave + '" data-v="' + prEsc(o[0]) + '">' + prEsc(o[1]) + '</button>').join('')
         + '</div>';
       h += '<div class="pr-q">¿Cómo jugáis?</div>'
+        + (prDesde ? '<div class="pr-r-nota">Jugadores del partido (ya apuntados): <b>' + prEsc(prGrupos.map(g => g.map(n => String(n).split(' ')[0]).join(', ')).join(' · ')) + '</b></div>' : '')
         + fila('Puntuación', 'punt', PR_PUNT, prPunt)
         + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
         + fila('Modalidad', 'modal', PR_MODAL, prModal)
@@ -269,7 +270,7 @@
       prGrupos[prGrupo] = prElegidos = nuevo;
       prPintar();
     });
-    const at = document.getElementById('prAtras'); if(at) at.addEventListener('click', ()=>{ prPaso -= 1; prPintar(); });
+    const at = document.getElementById('prAtras'); if(at) at.addEventListener('click', ()=>{ prPaso -= (prDesde && prPaso === 4) ? 2 : 1; prPintar(); });
     body.querySelectorAll('.pr-tecla[data-k]').forEach(b => b.addEventListener('click', ()=>{
       const k = b.dataset.k, v = b.dataset.v;
       if(k === 'punt') prPunt = v;
@@ -294,6 +295,12 @@
     }
     body.querySelectorAll('.pr-gtab').forEach(b => b.addEventListener('click', ()=>{ prGrupo = Number(b.dataset.g); prPintar(); }));
     const sg = document.getElementById('prSig'); if(sg) sg.addEventListener('click', ()=>{
+      // Desde un partido organizado los jugadores ya vienen puestos: se salta «¿Quién juega?»
+      if(prDesde && prPaso === 2){
+        const err = prErrorParejas();
+        if(err){ alert(err + '\nLos jugadores vienen del partido: elige otra modalidad.'); return; }
+        prPaso = 4; prPintar(); return;
+      }
       if(prPaso === 3 && (!prTodos().length || prErrorParejas())) return;
       prPaso += 1; prPintar();
     });
