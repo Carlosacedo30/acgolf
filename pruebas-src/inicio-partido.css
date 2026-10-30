@@ -43,3 +43,17 @@ html #convHomeNew .ip-logo-grupo.ip-escudo svg{ max-width:54px; max-height:54px;
 .conv-tee-h .conv-tee-n{ margin-left:auto; }
 .conv-tee-x{ flex:none; width:44px; height:44px; border-radius:50%; border:2px solid #E5484D; background:transparent; color:#E5484D; font:800 20px/1 'Barlow', sans-serif; cursor:pointer; touch-action:manipulation; display:flex; align-items:center; justify-content:center; }
 .conv-tee-x:disabled{ opacity:.4; }
+/* Crear partida: interruptor «Partida con marcador» */
+.pr-marc{ display:flex; align-items:center; gap:14px; width:100%; box-sizing:border-box; text-align:left; padding:14px 16px; margin:4px 0 10px;
+  border-radius:16px; border:1px solid #33383E; background:#1B1E22; color:#F2F4F5; cursor:pointer; font-family:'Barlow', sans-serif; transition:transform .1s; }
+.pr-marc:active{ transform:scale(.97); }
+.pr-marc.on{ background:#2F3A1C; border-color:#C6F24E; }
+.pr-marc-t{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.pr-marc-t b{ font:900 18px 'Archivo', 'Barlow', sans-serif; }
+.pr-marc.on .pr-marc-t b{ color:#C6F24E; }
+.pr-marc-t small{ font-size:14px; line-height:1.35; color:#9AA3AB; }
+.pr-marc-sw{ position:relative; flex:none; width:60px; height:36px; border-radius:18px; background:#3A3F45; transition:background .2s; }
+.pr-marc-sw i{ position:absolute; left:3px; top:3px; width:30px; height:30px; border-radius:50%; background:#F2F4F5; transition:transform .2s, background .2s; }
+.pr-marc.on .pr-marc-sw{ background:#C6F24E; }
+.pr-marc.on .pr-marc-sw i{ transform:translateX(24px); background:#111316; }
+.pr-marc:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }

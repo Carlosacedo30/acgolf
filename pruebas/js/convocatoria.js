@@ -54,7 +54,10 @@
     q = code ? q.eq('code', code) : q.order('created_at', { ascending: false }).limit(1);
     const { data, error } = await q;
     if(error || !data || !data.length) return null;
-    return convFromRow(data[0]);
+    const c = convFromRow(data[0]);
+    // La partida creada se borró: el partido vuelve a estar «sin crear»
+    if(c.roundCode){ try { const r = await client.from('rounds').select('code').eq('code', c.roundCode); if(!r.error && r.data && !r.data.length) c.roundCode = null; } catch(e){} }
+    return c;
   }
 
   // Todas las convocatorias que aún no han pasado (hoy o después), ordenadas por fecha
@@ -72,6 +75,8 @@
       const { data: rondas } = await client.from('rounds').select('code, match_groups').in('code', codigos);
       const terminadas = new Set((rondas || []).filter(r => isRoundFinished(r.match_groups)).map(r => r.code));
       lista = lista.filter(c => !terminadas.has(c.roundCode));
+      // Si la partida creada se borró, el partido vuelve a estar «sin crear» (así se puede abrir, rehacer o borrar)
+      if(rondas){ const existen = new Set(rondas.map(r => r.code)); lista.forEach(c => { if(c.roundCode && !existen.has(c.roundCode)) c.roundCode = null; }); }
     }
     return lista.sort((a, b) => a.date.localeCompare(b.date));
   }

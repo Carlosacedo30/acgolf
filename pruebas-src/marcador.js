@@ -43,6 +43,12 @@
     if(!currentRoundCode || cargando) return;
     cargando = true;
     try {
+      // Partida normal recién creada con el interruptor «Partida con marcador» encendido
+      const pend = window.acgolfMarcadorPendiente;
+      if(pend && currentRoundCode !== pend.antes){
+        window.acgolfMarcadorPendiente = null;
+        try { const r = await initSupabase().rpc('poner_marcador', { p_code: currentRoundCode }); if(!r.error && r.data === true) modos[currentRoundCode] = true; } catch(e){}
+      }
       await cargarModo(currentRoundCode);
       if(!conMarcadorEn(currentRoundCode)){ est = []; estCode = currentRoundCode; estJson = '[]'; cargando = false; if(forzar){ repintarHoyo(); pintarEntrega(); } return; }
       const { data, error } = await initSupabase().rpc('estado_marcas', { p_code: currentRoundCode });

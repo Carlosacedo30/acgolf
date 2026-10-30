@@ -88,7 +88,7 @@
   function prAbrir(){
     const ov = document.getElementById('prOverlay'); if(!ov) return;
     prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false; prBarras = {};
-    if(window.acgolfTorneo) window.acgolfTorneo.con = true;
+    window.acgolfTorneo = { con: false };   // partida normal por defecto; el interruptor la pasa a «con marcador»
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
     const yo = prYo();
     prGrupos = [yo ? [yo] : []];
@@ -121,8 +121,11 @@
         + fila('Puntuación', 'punt', PR_PUNT, prPunt)
         + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
         + fila('Modalidad', 'modal', PR_MODAL, prModal)
-        + (window.acgolfTorneo ? fila('Modo torneo', 'torneo', [['1','Con marcador'],['0','Sin marcador']], window.acgolfTorneo.con ? '1' : '0')
-            + '<div class="pr-r-nota" style="margin-top:-2px">' + (window.acgolfTorneo.con ? 'Cada uno apunta sus golpes y los del jugador al que marca. La tarjeta es oficial.' : 'Cada uno apunta sus golpes, sin marcador. La tarjeta no cuenta para la liga.') + '</div>' : '')
+        + (window.acgolfTorneo ? '<div class="pr-op-t">Partida con marcador</div>'
+            + '<button type="button" class="pr-marc' + (window.acgolfTorneo.con ? ' on' : '') + '" id="prMarc" role="switch" aria-checked="' + (window.acgolfTorneo.con ? 'true' : 'false') + '">'
+            + '<span class="pr-marc-t"><b>' + (window.acgolfTorneo.con ? 'Con marcador' : 'Partida normal') + '</b><small>'
+            + (window.acgolfTorneo.con ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga. La tarjeta es oficial cuando la confirma su marcador.' : 'Cada uno apunta sus golpes, sin marcador.')
+            + '</small></span><span class="pr-marc-sw" aria-hidden="true"><i></i></span></button>' : '')
         + (MAX_GROUPS > GRUPOS_EN_PESTANAS
             ? '<div class="pr-op-t">Grupos</div><div class="pr-npaso"><button type="button" class="pr-tecla pr-nmas" data-d="-1" aria-label="Un grupo menos"' + (prNGrupos > 1 ? '' : ' disabled') + '>−</button>'
               + '<div class="pr-nnum"><b>' + prNGrupos + '</b><small>hasta ' + (prNGrupos * PR_MAX) + ' jugadores</small></div>'
@@ -278,6 +281,8 @@
       if(k === 'grupos') prCambiarNGrupos(Number(v));
       prPintar();
     }));
+    const marc = document.getElementById('prMarc');
+    if(marc) marc.addEventListener('click', ()=>{ window.acgolfTorneo.con = !window.acgolfTorneo.con; prPintar(); });
     body.querySelectorAll('.pr-nmas').forEach(b => b.addEventListener('click', ()=>{
       prCambiarNGrupos(Math.min(MAX_GROUPS, Math.max(1, prNGrupos + Number(b.dataset.d)))); prPintar();
     }));
@@ -340,6 +345,8 @@
 
     prCerrar();
     delete btn.dataset.busy;
+    // Con marcador: en cuanto exista el código de la partida nueva, se marca como «con marcador» (marcador.js)
+    window.acgolfMarcadorPendiente = (window.acgolfTorneo && window.acgolfTorneo.con) ? { antes: (typeof currentRoundCode !== 'undefined' ? currentRoundCode : null) } : null;
     const pendiente = await findUnfinishedRoundForCourse(campo.id);
     if(pendiente) showDuplicateRoundWarning(pendiente); // "¿sigues con esa o creas una nueva?"
     else startNewRoundNow();
