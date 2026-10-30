@@ -19,6 +19,7 @@
   let prNGrupos = 1;           // 1 a MAX_GROUPS
   let prGrupo = 0;             // grupo que se está rellenando en "¿Quién juega?"
   let prGrupos = [[]];         // nombres por grupo
+  let prDesde = null;          // partido organizado desde el que se abre (para unir la partida creada a él)
   const PR_PUNT = [['strokeplay','Stroke Play'],['stableford','Stableford'],['matchplay','Match Play']];
   const PR_MODAL = [['Individual','Individual'],['Parejas (Foursome)','Foursome'],['Mejor bola (Fourball)','Fourball']];
   const prPuntTxt = v => (PR_PUNT.find(p => p[0] === v) || PR_PUNT[0])[1];
@@ -86,6 +87,7 @@
 
   function prAbrir(){
     const ov = document.getElementById('prOverlay'); if(!ov) return;
+    prDesde = null;
     prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false; prBarras = {};
     window.acgolfTorneo = { con: false };   // partida normal por defecto; el interruptor la pasa a «con marcador»
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
@@ -340,12 +342,35 @@
 
     prCerrar();
     delete btn.dataset.busy;
+    window.acgolfPartidoDesde = prDesde ? { alCrear: prDesde.alCrear } : null;
     // Con marcador: en cuanto exista el código de la partida nueva, se marca como «con marcador» (marcador.js)
     window.acgolfMarcadorPendiente = (window.acgolfTorneo && window.acgolfTorneo.con) ? { antes: (typeof currentRoundCode !== 'undefined' ? currentRoundCode : null) } : null;
     const pendiente = await findUnfinishedRoundForCourse(campo.id);
     if(pendiente) showDuplicateRoundWarning(pendiente); // "¿sigues con esa o creas una nueva?"
     else startNewRoundNow();
   }
+
+  // Desde un partido organizado: se abre Crear partida con el campo y los jugadores de cada hora ya puestos,
+  // en el paso «¿Cómo jugáis?», con las mismas opciones que una partida normal (marcador incluido)
+  window.prAbrirDesdePartido = function(p){
+    prAbrir();
+    prDesde = p;
+    if(p.courseId && COURSES.some(c => c.id === p.courseId)) prCampo = p.courseId;
+    const grupos = (p.grupos || []).map(g => g.slice(0, PR_MAX)).filter(g => g.length);
+    if(grupos.length){ prGrupos = grupos; prNGrupos = grupos.length; prGrupo = 0; prElegidos = prGrupos[0]; }
+    grupos.flat().forEach(n => {
+      if(prEsInv(n) && !prInvitados.includes(n)){
+        prInvitados.push(n);
+        if(prHcpInv[n] == null && typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) prHcpInv[n] = FAVORITE_HANDICAPS[n];
+      }
+    });
+    prPaso = prCampo ? 2 : 1;
+    prPintar();
+  };
+  document.addEventListener('acgolf:partida-creada', ev => {
+    const d = window.acgolfPartidoDesde; window.acgolfPartidoDesde = null;
+    if(d && typeof d.alCrear === 'function' && ev.detail && ev.detail.code){ try { d.alCrear(ev.detail.code); } catch(e){ console.error(e); } }
+  });
 
   (function setupPartidaRapida(){
     const b = document.getElementById('prAbrirBtn'); if(b) b.addEventListener('click', prAbrir);

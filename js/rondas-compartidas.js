@@ -195,6 +195,7 @@
       updateS3Title();
       subscribeToRound(data.id);
       setSyncStatus('live');
+      try { document.dispatchEvent(new CustomEvent('acgolf:partida-creada', { detail: { code: data.code } })); } catch(e){}
     } catch(e){
       console.error('No se pudo crear la partida compartida', e);
       setSyncStatus('error');
