@@ -17,3 +17,5 @@
 .ac-resenas p{ margin:0 0 8px; font:500 14px 'Barlow', sans-serif; color:#9AA3AB; }
 .ac-red.li{ background:#0A66C2; }
 .ac-redes-l .ac-red:last-child:nth-child(odd){ grid-column:1 / -1; }
+.ac-redes-ping{ border-radius:16px; animation:acRedesPing 1.2s ease-out 2; }
+@keyframes acRedesPing{ 0%{ box-shadow:0 0 0 0 rgba(198,242,78,.65); } 100%{ box-shadow:0 0 0 14px rgba(198,242,78,0); } }

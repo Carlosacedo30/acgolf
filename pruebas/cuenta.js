@@ -807,10 +807,20 @@
       + '<div class="cg-sep">Campos</div>'
       + '<p class="cg-p" style="font-size:16px;">Los greens son del campo, no del grupo: si mueves uno, cambia para <b>todos los grupos</b> que juegan allí.</p>'
       + '<button type="button" class="cg-btn ghost" id="paGreens">⛳ Greens en el mapa</button>'
+      + '<div class="cg-sep">Redes sociales</div>'
+      + '<p class="cg-p" style="font-size:16px;">Manda un aviso al móvil (como WhatsApp) a todos los jugadores que los tengan activados, invitándoles a seguirnos en redes.</p>'
+      + '<button type="button" class="cg-btn ghost" id="paRedes">📣 Avisar a todos: síguenos en redes</button>'
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
     if(pestana === 'seguimiento' && $('sgPanel') && window.acgolfSeguimiento) window.acgolfSeguimiento($('sgPanel'), client);
     $('paGreens').onclick = () => { ocultar(); if(typeof gmAbrir === 'function') gmAbrir(); };
+    if($('paRedes')) $('paRedes').onclick = e => ocupado(e.target, async () => {
+      if(!confirm('¿Mandar ahora el aviso de redes a todos los jugadores con avisos activados en el móvil?')) return;
+      if(!window.acgolfAvisosMovil || !window.acgolfAvisosMovil.avisarRedes){ msg('No está disponible ahora mismo.'); return; }
+      const d = await window.acgolfAvisosMovil.avisarRedes();
+      if(!d || d.error){ msg((d && d.error) || 'No se pudo mandar el aviso.'); return; }
+      msg('✅ Avisados ' + (d.enviados || 0) + (d.enviados === 1 ? ' móvil' : ' móviles') + '.', true);
+    });
     gate.querySelectorAll('.pa-tabs button').forEach(b => b.onclick = () => pantallaSuper(perfil, b.dataset.t));
     gate.querySelectorAll('[data-miembros]').forEach(b => b.onclick = () => pantallaMiembros(perfil, b.dataset.miembros, b.dataset.n, true));
     gate.querySelectorAll('[data-borrar]').forEach(b => b.onclick = async () => {

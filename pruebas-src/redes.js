@@ -28,5 +28,18 @@
     const copy = pie.querySelector('.app-copyright');
     if(copy) pie.insertBefore(caja, copy); else pie.appendChild(caja);
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', poner); else poner();
+  // Al tocar el aviso «Síguenos en redes» del móvil, la app abre aquí y baja hasta esta caja
+  function irDirecto(intento){
+    let va = false;
+    try { va = new URLSearchParams(location.search).get('redes') === '1'; } catch(e){}
+    if(!va) return;
+    const caja = document.getElementById('acRedes');
+    if(!caja){ if((intento || 0) < 25) setTimeout(() => irDirecto((intento || 0) + 1), 300); return; }
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch(e){}
+    caja.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    caja.classList.add('ac-redes-ping');
+    setTimeout(() => caja.classList.remove('ac-redes-ping'), 2400);
+  }
+  function arrancar(){ poner(); irDirecto(0); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
 })();

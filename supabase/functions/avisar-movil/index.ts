@@ -2,6 +2,7 @@
 // Manda avisos al móvil (notificaciones) a los jugadores que los han activado.
 // - { code }: partida nueva → avisa a los apuntados en esa partida (menos a quien la crea), una sola vez.
 // - { prueba: true }: aviso de prueba, solo el super administrador y solo a sus propios móviles.
+// - { redes: true }: invita a seguir las redes, solo el super administrador y a TODOS los móviles con avisos activados.
 // - La llave privada está en el Vault de Supabase («vapid_privada»), nunca en la app ni en el código.
 import { createClient } from "npm:@supabase/supabase-js@2.117.2";
 import webpush from "npm:web-push@3.6.7";
@@ -31,10 +32,10 @@ Deno.serve(async (req) => {
   const { data: u, error: eu } = await admin.auth.getUser(token);
   if (eu || !u?.user) return res({ error: "Tienes que entrar con tu cuenta" }, 401);
 
-  let code = "", prueba = false, volver = WEB;
+  let code = "", prueba = false, redes = false, volver = WEB;
   try {
     const b = await req.json();
-    code = String(b.code || "").trim().toUpperCase(); prueba = b.prueba === true;
+    code = String(b.code || "").trim().toUpperCase(); prueba = b.prueba === true; redes = b.redes === true;
     // Al tocar el aviso se abre la misma app desde la que se pidió (acgolf.es o pruebas)
     if (typeof b.web === "string" && /^https:\/\/(acgolf\.es|carlosacedo30\.github\.io\/acgolf\/pruebas)\//.test(b.web)) volver = b.web;
   } catch { /* sin cuerpo */ }
@@ -50,6 +51,17 @@ Deno.serve(async (req) => {
     const { data } = await admin.rpc("_moviles_de", { p_user: u.user.id });
     para = (data || []) as Movil[];
     aviso = { titulo: "⛳ acgolf", texto: "¡Funciona! Así te llegarán los avisos de tu grupo.", url: volver, etiqueta: "prueba" };
+  } else if (redes) {
+    const { data: s } = await admin.from("super_admins").select("user_id").eq("user_id", u.user.id).maybeSingle();
+    if (!s) return res({ error: "Solo el super administrador" }, 403);
+    const { data } = await admin.from("avisos_movil").select("endpoint,p256dh,auth");
+    para = (data || []) as Movil[];
+    aviso = {
+      titulo: "⛳ acgolf",
+      texto: "¿Nos sigues en redes? Novedades, sorteos y vídeos de Lola y Curro. Toca para verlas.",
+      url: volver + "?redes=1",
+      etiqueta: "redes",
+    };
   } else {
     if (!/^[A-Z0-9]{4,12}$/.test(code)) return res({ error: "Falta el código de la partida" }, 400);
     const { data: a, error } = await admin.rpc("_aviso_movil", { p_user: u.user.id, p_code: code });

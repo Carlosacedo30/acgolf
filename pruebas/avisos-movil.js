@@ -103,6 +103,17 @@
     } catch(e){ console.error('No se pudo avisar al móvil', e); return 0; }
   }
 
+  // Aviso de redes a todos los móviles con avisos activados (solo super administrador, botón del Panel general)
+  async function avisarRedes(){
+    const client = initSupabase();
+    if(!client || !client.functions) return { error: 'Sin conexión' };
+    try {
+      const { data, error } = await client.functions.invoke('avisar-movil', { body: { redes: true, web: base() } });
+      if(error) throw error;
+      return data;
+    } catch(e){ console.error('No se pudo avisar de redes', e); return { error: (e && e.message) || 'No se pudo mandar el aviso' }; }
+  }
+
   // Pregunta una sola vez en cada móvil «¿Quieres recibir avisos?» (el móvil obliga a que lo acepte cada uno)
   const VISTO = 'acgolfPreguntaAvisos';
   const hayVentana = () => document.body.classList.contains('cg-open')
@@ -136,5 +147,5 @@
   }
   setTimeout(() => preguntar(0), 6000);
 
-  window.acgolfAvisosMovil = { pintar, partidaNueva };
+  window.acgolfAvisosMovil = { pintar, partidaNueva, avisarRedes };
 })();
