@@ -747,7 +747,8 @@
       cuerpo = '<div class="pa-lista">' + datos.map(g => '<div class="pa-fila">'
           + '<div class="pa-fila-t"><b>' + esc(g.nombre) + '</b><span>' + 'Grupo' + ' · ' + g.miembros + ' miembro' + (g.miembros === 1 ? '' : 's') + ' · desde ' + fecha(g.creado) + '</span>'
           + '<span>Admin: ' + (g.admins.length ? esc(g.admins.join(', ')) : '<i>sin administrador</i>') + '</span></div>'
-          + '<div class="pa-acc"><button type="button" class="pa-b" data-miembros="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Miembros</button>'
+          + '<div class="pa-acc"><button type="button" class="pa-b" data-entrar-grupo="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Entrar</button>'
+          + '<button type="button" class="pa-b" data-miembros="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Miembros</button>'
           + (g.id !== '00000000-0000-0000-0000-000000000001' ? '<button type="button" class="pa-b rojo" data-borrar="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Borrar</button>' : '')
           + '</div></div>').join('') + '</div>'
         + '<div class="cg-sep">Crear un grupo nuevo</div>'
@@ -808,6 +809,11 @@
     });
     gate.querySelectorAll('.pa-tabs button').forEach(b => b.onclick = () => pantallaSuper(perfil, b.dataset.t));
     gate.querySelectorAll('[data-miembros]').forEach(b => b.onclick = () => pantallaMiembros(perfil, b.dataset.miembros, b.dataset.n, true));
+    gate.querySelectorAll('[data-entrar-grupo]').forEach(b => b.onclick = () => ocupado(b, async () => {
+      const { error } = await client.rpc('cambiar_grupo', { p_grupo: b.dataset.entrarGrupo });
+      if(error){ msg(traducir(error)); return; }
+      location.reload();
+    }));
     gate.querySelectorAll('[data-borrar]').forEach(b => b.onclick = async () => {
       if(!confirm('¿Borrar «' + b.dataset.n + '» con todos sus jugadores y partidas para siempre?')) return;
       const { error } = await client.rpc('sa_borrar_grupo', { p_grupo: b.dataset.borrar });
