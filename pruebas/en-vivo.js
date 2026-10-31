@@ -9,7 +9,7 @@
 //   3. Debajo, una rueda que cambia sola cada 20 s: clasificación de la liga, ¿sabías que…?, consejo, la app
 //      y el patrocinador (una de cada cuatro). Más una franja fija del patrocinador abajo.
 //   4. Cuando entra un golpe nuevo, Curro o Lola lo comentan. Si pasan 4 minutos sin golpes, rellenan con una curiosidad.
-//   5. Al terminar: «El plató de acgolf», el resumen con Curro y Lola en el plató (con voz), durante 2 horas.
+//   5. Al terminar: «El plató de acgolf», el resumen con Curro y Lola en el plató (con voz), durante 24 horas.
 // Se cuenta (sin nombres) cuánta gente mira y cuántos minutos: sirve para enseñárselo a un patrocinador.
 (function(){
   'use strict';
@@ -20,7 +20,7 @@
     oferta: '<b>3 bolas TaylorMade gratis</b> con cualquier pedido en Bolarecuperada, con el código <b>acgolf</b>.',
     url: 'https://bolarecuperada.com/'
   };
-  const HORAS_RESUMEN = 2;          // el resumen se ofrece 2 horas después de terminar
+  const HORAS_RESUMEN = 24;          // el resumen se ofrece 24 horas después de terminar
   const MIN_RELLENO = 4;            // minutos sin golpes para que Curro o Lola rellenen
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -145,7 +145,7 @@
     despues.insertAdjacentElement('afterend', b);
   }
   // Debajo de «Partida en marcha»: las demás partidas en directo del grupo (si juegan varios grupos a la vez)
-  // y el resumen de cada partida terminada hace menos de 2 horas (para todos)
+  // y el resumen de cada partida terminada hace menos de 24 horas (para todos)
   let extraN = 0;
   async function extrasPortada(recent){
     const box = document.getElementById('homeEnMarcha'); if(!box) return;
@@ -392,7 +392,7 @@
     return out.join('');
   }
 
-  // ---------- «El plató de acgolf»: el resumen con Curro y Lola (al terminar, durante 2 horas) ----------
+  // ---------- «El plató de acgolf»: el resumen con Curro y Lola (al terminar, durante 24 horas) ----------
   // Frases grabadas (voz/plato-curro-N.mp3 y voz/plato-lola-N.mp3), sin nombres: los nombres van en el rótulo.
   const PC = { hola:1, repaso:2, otraSalida:3, atencionBerdi:4, berdi:5, aguila:6, par:7, bogui:8, largo:9, bonito:10, parTres:11, ganadorEs:12, enhorabuena:13, adios:14 };
   const PL = { hola:1, fuerte:2, aguila:3, berdi:4, parLimpito:5, parCuenta:6, bogui:7, doble:8, lapiz:9, solido:10, seSale:11, ultimos:12, revancha:13, adios:14 };
