@@ -2696,7 +2696,30 @@ window.acgolfTextosEN2 = {
 "¿Nos sigues?": "Do you follow us?",
 "📣 Avisar a todos: síguenos en redes": "📣 Notify everyone: follow us on social media",
 "Patrocinador oficial": "Official sponsor",
-"📢 Patrocinador oficial": "📢 Official sponsor"
+"📢 Patrocinador oficial": "📢 Official sponsor",
+". Te lo explica todo paso a paso, con palabras sencillas.": ". It explains everything step by step, in simple words.",
+"Apunta tu partida": "Score your round",
+"Cada semana, por golpes menos hándicap.": "Every week, by shots minus handicap.",
+"Con Google o con el correo y la contraseña de tu cuenta.": "With Google, or your account's email and password.",
+"Continuar con Google": "Continue with Google",
+"En directo": "Live",
+"En la página principal tienes el botón": "On the home screen you have the",
+"Entrar con Google aún no está activado. Usa tu correo.": "Signing in with Google isn't turned on yet. Use your email.",
+"Ese correo ya tiene cuenta (quizá la creaste con Google). Pulsa «Continuar con Google» o «Ya tengo cuenta: entrar».": "That email already has an account (maybe you created it with Google). Tap \"Continue with Google\" or \"I already have an account: sign in\".",
+"Esta app ahora es solo con cuenta. Crea la tuya, es gratis y se hace en un minuto.": "This app now needs an account. Create yours, it's free and takes a minute.",
+"Gráficas de tu juego y de cómo mejoras.": "Charts of your game and how you're improving.",
+"Organiza partidos e invita con un enlace.": "Organise games and invite with a link.",
+"Quién gana": "Who wins",
+"Tu golf,": "Your golf,",
+"Tus amigos siguen la partida desde su móvil.": "Your friends follow the round from their phone.",
+"Tus caddies te comentan cada hoyo, con voz.": "Your caddies talk you through every hole, with voice.",
+"Tus golpes hoyo a hoyo, con la tarjeta del campo.": "Your shots hole by hole, with the course scorecard.",
+"con tus amigos.": "with your friends.",
+"o con tu correo": "or with your email",
+"ya está listo. Esto es lo que puedes hacer:": "is ready. Here's what you can do:",
+"«Manual de la app»": "\"App guide\"",
+"¿Alguna duda?": "Any questions?",
+"Ver el manual ahora": "See the guide now"
 };
 window.acgolfPlantillasEN = [
 [
