@@ -116,6 +116,8 @@
       if(password.length < 8){ msg('La contraseña tiene que tener al menos 8 caracteres.'); return; }
       const { data, error } = await client.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname } });
       if(error){ msg(traducir(error)); return; }
+      // Supabase no avisa si el correo ya existe (no manda ningún mensaje): se nota porque viene sin «identidades»
+      if(data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0){ msg('Ese correo ya tiene cuenta (quizá la creaste con Google). Pulsa «Continuar con Google» o «Ya tengo cuenta: entrar».'); return; }
       await evento('registro');
       if(data && data.session){ location.reload(); return; }
       mostrar(cabecera('Mira tu correo', 'Te hemos enviado un mensaje a <b>' + esc(email) + '</b>.')
