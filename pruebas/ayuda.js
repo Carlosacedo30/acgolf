@@ -54,7 +54,7 @@
       if(!gate || gate.hidden) break;
       await new Promise(r => setTimeout(r, 500));
     }
-    setTimeout(ponerAviso, 800);
+    // El cuadro «Novedades en la app» ya no sale solo; las novedades siguen dentro del Manual.
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
 

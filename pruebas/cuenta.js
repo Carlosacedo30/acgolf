@@ -82,14 +82,12 @@
       + '<button type="button" class="cg-link" id="cgIrOlvido">He olvidado mi contraseña</button>'
       + '<div class="cg-sep">¿Es tu primera vez?</div>'
       + '<button type="button" class="cg-btn ghost" id="cgIrCrear">Crear mi cuenta</button>'
-      + '<button type="button" class="cg-link" id="cgIrProbar">⛳ Probar sin registrarme</button>'
       + (window.acgolfInstalar ? '<button type="button" class="cg-link" id="cgInstalar">📲 Instalar la app en el móvil</button>' : ''));
     if($('cgInstalar')) $('cgInstalar').onclick = () => window.acgolfInstalar();
     if(aviso) msg(aviso, true);
     ligarGoogle();
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgIrCrear').onclick = () => pantallaCrear();
-    $('cgIrProbar').onclick = () => pantallaProbar();
     $('cgIrOlvido').onclick = () => pantallaOlvido($('cgEmail').value);
     $('cgEntrar').onclick = e => ocupado(e.target, async () => {
       const email = $('cgEmail').value.trim(), password = $('cgPass').value;
@@ -100,7 +98,7 @@
     });
   }
 
-  function pantallaCrear(){
+  function pantallaCrear(aviso){
     mostrar(cabecera('Crear mi cuenta', 'Solo hay que hacerlo una vez. Después el móvil te recuerda.') + botonGoogle()
       + '<label class="cg-lbl">Tu correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
       + '<label class="cg-lbl">Inventa una contraseña<small>Mínimo 8 letras o números</small><input id="cgPass" type="password" autocomplete="new-password"></label>'
@@ -109,6 +107,7 @@
       + '<button type="button" class="cg-btn" id="cgCrear">Crear cuenta</button>'
       + '<button type="button" class="cg-link" id="cgVolver">Ya tengo cuenta: entrar</button>');
     ligarGoogle();
+    if(aviso) msg(aviso);
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgVolver').onclick = () => pantallaEntrar();
     $('cgCrear').onclick = e => ocupado(e.target, async () => {
@@ -164,50 +163,10 @@
   const leerHcp = id => { const v = parseFloat(String(($(id) || {}).value || '').replace(',', '.')); return isNaN(v) ? null : v; };
 
 
-  // ---------- Probar sin registrarme (cuenta de prueba, sin correo) ----------
+  // ---------- Recordar si ya entró alguna vez ----------
   const yaEntroAntes = () => { try { return localStorage.getItem('acgolfYaEntro') === '1'; } catch(e){ return false; } };
   // Apunta el evento y espera como mucho 2 s (para que no se corte al recargar la app)
   const evento = e => { try { if(window.acgolfEvento) return Promise.race([window.acgolfEvento(e), new Promise(r => setTimeout(r, 2000))]); } catch(x){} return Promise.resolve(); };
-  function pantallaPortada(){
-    mostrar('<div class="cg-head"><div class="cg-pareja"><img class="cg-curro" src="curro.webp?v=1" alt="Curro, el caddie"><img class="cg-curro" src="lola.webp?v=1" alt="Lola, la caddie"></div>'
-      + '<div class="cg-eyebrow">acgolf · Golf entre amigos</div>'
-      + '<h1 class="cg-title">Juega gratis, sin registro</h1>'
-      + '<p class="cg-sub">Apunta tus partidas hoyo a hoyo, lleva tu hándicap y deja que Curro y Lola, tus caddies, te comenten cada hoyo.</p></div>'
-      + '<button type="button" class="cg-btn" id="cgProbar">⛳ Probar sin registrarme</button>'
-      + '<p class="cg-p" style="font-size:15px;text-align:center;margin-top:6px;">Gratis. Sin correo ni contraseña. Si te gusta, guardas tu cuenta después.</p>'
-      + '<div class="cg-sep">¿Ya juegas con nosotros?</div>'
-      + '<button type="button" class="cg-btn ghost" id="cgIrEntrar">Entrar con mi cuenta</button>'
-      + '<button type="button" class="cg-link" id="cgIrCrear">Crear mi cuenta</button>'
-      + (window.acgolfInstalar ? '<button type="button" class="cg-link" id="cgInstalar">📲 Instalar la app en el móvil</button>' : ''));
-    if($('cgInstalar')) $('cgInstalar').onclick = () => window.acgolfInstalar();
-    $('cgIrEntrar').onclick = () => pantallaEntrar();
-    $('cgIrCrear').onclick = () => pantallaCrear();
-    $('cgProbar').onclick = () => pantallaProbar();
-  }
-  function pantallaProbar(){
-    mostrar(cabecera('Vamos a probar', 'Solo dos datos para que el caddie sepa a quién comentar.')
-      + '<label class="cg-lbl">Tu nombre<input id="cgNombre" type="text" autocomplete="given-name" maxlength="40"></label>'
-      + '<label class="cg-lbl">Tu hándicap<small>Si no lo sabes, deja 24</small><input id="cgHcp" type="text" inputmode="decimal" value="24"></label>'
-      + aceptoHtml + '<div id="cgMsg" class="cg-msg"></div>'
-      + '<button type="button" class="cg-btn" id="cgEmpezarPrueba">Empezar a probar</button>'
-      + '<button type="button" class="cg-link" id="cgVolver">Volver</button>');
-    $('cgVolver').onclick = () => pantallaPortada();
-    $('cgEmpezarPrueba').onclick = e => ocupado(e.target, async () => {
-      const nombre = $('cgNombre').value.trim(), hcp = leerHcp('cgHcp');
-      if(!nombre){ msg('Escribe tu nombre.'); return; }
-      if(hcp === null){ msg('Escribe tu hándicap (si no lo sabes, pon 24).'); return; }
-      if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
-      let { data: ses } = await client.auth.getSession();
-      if(!ses || !ses.session){
-        const { error } = await client.auth.signInAnonymously();
-        if(error){ msg('Ahora mismo no se puede probar sin cuenta. Crea tu cuenta, es un minuto.'); return; }
-      }
-      const { error } = await client.rpc('empezar_personal', { p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
-      if(error && !/Ya tienes tu espacio personal/i.test(String(error.message || ''))){ msg(traducir(error)); return; }
-      await evento('prueba');
-      location.reload();
-    });
-  }
   function pantallaGuardarCuenta(){
     mostrar(cabecera('Guardar mi cuenta', 'Así no pierdes tus partidas y puedes entrar desde cualquier móvil.')
       + '<label class="cg-lbl">Tu correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
@@ -572,12 +531,9 @@
       + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name" value="' + esc(info.perfil ? info.perfil.player_name || '' : '') + '"></label>'
       + (hg ? '<div class="cg-hcp-global"><span>Tu hándicap</span><b>' + comaHcp(hg.hcp) + '</b><small>Es el de siempre: el mismo en todos tus grupos.</small></div>'
             : '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4. Si no tienes, pon 36</small><input id="cgHcp" type="text" inputmode="decimal"></label>')
-      + '<div class="pl-resumen"><b>Gratis</b><span>Tu grupo admite ' + MAX_PLAN(p) + '. Si sois más, se cambia luego.</span></div>'
       + (sinCuenta ? aceptoHtml : '') + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgCrearGrupo">Crear el grupo</button>'
-      + '<button type="button" class="cg-link" id="plCambiar">Somos más de ' + esc(p.max || 11) + ': cambiar de plan</button>'
       + '<button type="button" class="cg-link" id="cgVolverCg">‹ Volver</button>');
-    $('plCambiar').onclick = () => pantallaPlanes(info, info.plan);
     $('cgVolverCg').onclick = () => info.perfil ? pantallaMisGrupos(info.perfil) : pantallaBienvenida(info.email);
     $('cgCrearGrupo').onclick = e => ocupado(e.target, async () => {
       const grupo = $('cgGrupo').value.trim(), nombre = $('cgNombre').value.trim(), hcp = hg ? null : leerHcp('cgHcp');
@@ -599,7 +555,7 @@
     if(!planes.length){ mostrar(cabecera('Sin conexión', 'No se han podido cargar los planes.') + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
     const hg = perfil ? await miHcpGlobal() : null;
     // Se empieza con el plan más pequeño (gratis); si sois más, se cambia luego desde «Mi cuenta»
-    pantallaCrearGrupoPlan({ nuevo: true, email, perfil, planes, usados: 0, plan: (planes[0] || {}).id || 'par', hg });
+    pantallaCrearGrupoPlan({ nuevo: true, email, perfil, planes, usados: 0, plan: (planes[planes.length - 1] || {}).id || 'club', hg });
   }
 
   function pantallaPagoHecho(info){
@@ -616,26 +572,40 @@
   // ---------- Bienvenida al grupo nuevo: qué hacer, en dos pasos y muy claro ----------
   const claveBienvenida = perfil => 'acgolfBienvenidaGrupo:' + (perfil.grupo_id || perfil.grupo || '');
   function bienvenidaVista(perfil){ try { return localStorage.getItem(claveBienvenida(perfil)) === '1'; } catch(e){ return true; } }
+  // Primera vez dentro: resumen de lo que hace la app y un botón grande para entrar
+  const BV_ICO = {
+    partida: '<path d="M5 22V3"/><path d="M5 4h12l-2.5 4.5L17 13H5"/>',
+    clasif: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+    caddie: '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12Z"/><path d="M8.5 11h7"/><path d="M8.5 14.5h4"/>',
+    directo: '<circle cx="12" cy="12" r="2.5"/><path d="M7.5 7.5a6.4 6.4 0 0 0 0 9"/><path d="M16.5 7.5a6.4 6.4 0 0 1 0 9"/><path d="M4.5 4.5a10.6 10.6 0 0 0 0 15"/><path d="M19.5 4.5a10.6 10.6 0 0 1 0 15"/>',
+    grafica: '<path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/>',
+    grupo: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M17.5 13.6a5 5 0 0 1 4 4.9"/>',
+  };
+  const BV_ITEMS = [
+    ['partida', 'Apunta tu partida', 'Tus golpes hoyo a hoyo, con la tarjeta del campo.'],
+    ['clasif', 'Quién gana', 'Cada semana, por golpes menos hándicap.'],
+    ['caddie', 'Curro y Lola', 'Tus caddies te comentan cada hoyo, con voz.'],
+    ['directo', 'En directo', 'Tus amigos siguen la partida desde su móvil.'],
+    ['grafica', '¿Cómo jugué?', 'Gráficas de tu juego y de cómo mejoras.'],
+    ['grupo', 'Grupos y amigos', 'Organiza partidos e invita con un enlace.'],
+  ];
   async function bienvenidaGrupo(perfil){
     const nombre = String(perfil.player_name || '').split(' ')[0];
     const vista = () => { try { localStorage.setItem(claveBienvenida(perfil), '1'); } catch(e){} };
-    mostrar(cabecera('¡Ya tienes tu grupo! 🎉', '«' + esc(perfil.grupo || 'Tu grupo') + '» es tu grupo' + (nombre ? ', ' + esc(nombre) : '') + '. Aquí se guardan tus partidas y se ve quién gana.')
-      + '<div class="cg-paso-b"><span class="cg-camino-ico" aria-hidden="true">⛳</span><div><b>Para jugar</b><small>Toca «Crear partida», elige el campo y apunta tus golpes hoyo a hoyo.</small></div></div>'
-      + '<button type="button" class="cg-btn" id="cgBvJugar">Crear mi primera partida</button>'
-      + '<div class="cg-paso-b"><span class="cg-camino-ico" aria-hidden="true">📩</span><div><b>Para jugar con tus amigos</b><small>Mándales tu enlace por WhatsApp. Al abrirlo, entran en tu grupo.</small></div></div>'
-      + '<a class="cg-btn ghost" id="cgBvInvitar" href="#" target="_blank" rel="noopener">Invitar por WhatsApp</a>'
-      + '<button type="button" class="cg-link" id="cgBvOk">Ahora no, ver la app</button>');
-    $('cgBvJugar').onclick = () => { vista(); ocultar(); setTimeout(() => { const b = document.getElementById('prAbrirBtn'); if(b) b.click(); }, 250); };
+    mostrar('<div class="bv">'
+      + '<div class="bv-hero">'
+      +   '<div class="bv-eyebrow">Bienvenido a acgolf</div>'
+      +   '<h1 class="bv-titulo">Tu golf,<br>con tus amigos.</h1>'
+      +   '<p class="bv-sub">' + (nombre ? esc(nombre) + ', ' : '') + 'tu grupo <b>«' + esc(perfil.grupo || 'Tu grupo') + '»</b> ya está listo. Esto es lo que puedes hacer:</p>'
+      + '</div>'
+      + '<div class="bv-grid">' + BV_ITEMS.map(it => '<div class="bv-it"><span class="bv-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + BV_ICO[it[0]] + '</svg></span>'
+          + '<b>' + it[1] + '</b><small>' + it[2] + '</small></div>').join('') + '</div>'
+      + '<div class="bv-manual"><span class="bv-manual-ico" aria-hidden="true">📖</span><div><b>¿Alguna duda?</b><small>En la página principal tienes el botón <b>«Manual de la app»</b>. Te lo explica todo paso a paso, con palabras sencillas.</small></div></div>'
+      + '<button type="button" class="bv-entrar" id="cgBvOk">Entrar en la app <span aria-hidden="true">›</span></button>'
+      + '<button type="button" class="cg-link" id="cgBvManual">Ver el manual ahora</button>'
+      + '</div>');
     $('cgBvOk').onclick = () => { vista(); ocultar(); };
-    const inv = $('cgBvInvitar');
-    inv.onclick = () => vista();
-    try {
-      const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: false });
-      if(r.error || !r.data) throw new Error('sin enlace');
-      const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(r.data.codigo);
-      const texto = '⛳ Te invito a «' + r.data.grupo + '» en la app de golf. Crea tu cuenta desde este enlace y entrarás directamente en el grupo:\n' + enlace;
-      inv.href = 'https://wa.me/?text=' + encodeURIComponent(texto);
-    } catch(e){ inv.remove(); }
+    $('cgBvManual').onclick = () => { vista(); ocultar(); setTimeout(() => { if(window.acgolfManual) window.acgolfManual.abrir(); }, 250); };
   }
 
   function asistentePortada(perfil, desdeCuenta){
@@ -966,7 +936,7 @@
       + (perfil.es_super ? '<a class="cg-btn ghost" href="https://cloud.umami.is/" target="_blank" rel="noopener">📊 Ver visitas (Umami)</a>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgCorreoLibre">✉️ Enviar un correo desde avisos@acgolf.es</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn ghost" id="cgPruebaCorreo">✉️ Mandarme un correo de prueba</button>' : '')
-      + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPlan">Plan del grupo</button>' : '')
+      + ''
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
       + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
       + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
@@ -1195,14 +1165,16 @@
 
   (async function arrancar(){
     if(!client){ mostrar(cabecera('Sin conexión', 'No se ha podido conectar. Revisa la cobertura.') + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
-    let session = null;
+    let session = null, sinCuentaAviso = '';
     try { ({ data:{ session } } = await client.auth.getSession()); } catch(e){}
     if(recuperando && session){ pantallaNuevaClave(); return; }
-    if(!session){ try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){} if(yaEntroAntes() || invitacion() || codigoAdmin()) pantallaEntrar(); else pantallaPortada(); return; }
+    // Ya no se puede jugar sin registro: una sesión anónima antigua se cierra
+    if(session && session.user && session.user.is_anonymous){ try { await client.auth.signOut(); } catch(e){} session = null; sinCuentaAviso = 'Esta app ahora es solo con cuenta. Crea la tuya, es gratis y se hace en un minuto.'; }
+    if(!session){ try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){} if(yaEntroAntes() || codigoAdmin()) pantallaEntrar(sinCuentaAviso); else pantallaCrear(sinCuentaAviso); return; }
     const { data: perfil, error } = await client.rpc('mi_perfil');
     if(error){ mostrar(cabecera('Sin conexión', traducir(error)) + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
-    if(!perfil && session.user && session.user.is_anonymous){ pantallaProbar(); return; }
     if(!perfil){ pantallaCompletar(session.user && session.user.email); return; }
+    if(perfil.es_prueba){ try { await client.auth.signOut(); } catch(e){} pantallaCrear('Esta app ahora es solo con cuenta. Crea la tuya, es gratis y se hace en un minuto.'); return; }   // cuentas de «probar sin registro»: ya no existen
     if(!perfil.es_prueba){
       try { localStorage.setItem('acgolfYaEntro', '1'); } catch(e){}
       let falta = false; try { falta = localStorage.getItem('acgolfFaltaClave') === '1'; localStorage.removeItem('acgolfFaltaClave'); } catch(e){}
@@ -1221,7 +1193,6 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== (perfil.solo_control ? '' : perfil.player_name)){ location.reload(); return; }
     botonMiCuenta(perfil);
-    if(perfil.es_prueba) document.documentElement.classList.add('es-invitado');   // candados (invitado.js), sin avisos fijos
     // Grupo nuevo: el administrador elige su plan y paga antes de entrar
     if(perfil.es_admin && perfil.grupo_tipo === 'liga'){
       let plan = null;

@@ -61,7 +61,6 @@
   function arrancar(){
     tarjeta();
     setInterval(tarjeta, 1000);
-    (window.acgolfIntro || Promise.resolve()).then(aviso);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
 })();
