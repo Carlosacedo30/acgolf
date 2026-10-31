@@ -289,3 +289,11 @@ a.pa-b{ display:inline-flex; align-items:center; justify-content:center; text-de
 .cg-paso-b small{ display:block; font:500 16px/1.35 'Barlow', sans-serif; color:#9AA3AB; margin-top:2px; }
 a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decoration:none; }
 .cg-grupo span.cg-grupo-adm{ color:#C6F24E; font-weight:700; }
+
+
+/* Botón «Continuar con Google» */
+.cg-google{ display:flex; align-items:center; justify-content:center; gap:14px; width:100%; min-height:60px; border:none; border-radius:16px; background:#F2F4F5; color:#111316; font:700 20px 'Barlow', sans-serif; cursor:pointer; touch-action:manipulation; }
+.cg-google:disabled{ opacity:.6; }
+.cg-google svg{ flex:none; }
+.cg-sep.cg-o{ display:flex; align-items:center; gap:12px; margin:6px 0; text-transform:uppercase; letter-spacing:.12em; font-size:14px; }
+.cg-sep.cg-o::before, .cg-sep.cg-o::after{ content:""; flex:1; height:1px; background:#262b31; }

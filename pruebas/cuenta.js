@@ -60,9 +60,20 @@
   function mostrar(html){ gate.innerHTML = '<div class="cg-card">' + html + '</div>'; gate.hidden = false; document.body.classList.add('cg-open'); gate.scrollTop = 0; }
   function ocultar(){ gate.hidden = true; gate.innerHTML = ''; document.body.classList.remove('cg-open'); }
 
+  // Entrar o crear la cuenta con Google (Supabase lo gestiona; al volver, la sesión ya está abierta)
+  const G_SVG = '<svg viewBox="0 0 48 48" width="24" height="24" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.9-6.1C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.8l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z"/></svg>';
+  const botonGoogle = () => '<button type="button" class="cg-google" id="cgGoogle">' + G_SVG + '<span>Continuar con Google</span></button><div class="cg-sep cg-o">o con tu correo</div>';
+  function ligarGoogle(){
+    const b = $('cgGoogle'); if(!b) return;
+    b.onclick = e => ocupado(b, async () => {
+      const { error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname } });
+      if(error) msg(/provider|not enabled|Unsupported/i.test(String(error.message)) ? 'Entrar con Google aún no está activado. Usa tu correo.' : traducir(error));
+    });
+  }
+
   // ---------- Pantallas ----------
   function pantallaEntrar(aviso){
-    mostrar(cabecera('Entrar', 'Con el correo y la contraseña de tu cuenta.')
+    mostrar(cabecera('Entrar', 'Con Google o con el correo y la contraseña de tu cuenta.') + botonGoogle()
       + '<label class="cg-lbl">Correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
       + '<label class="cg-lbl">Contraseña<input id="cgPass" type="password" autocomplete="current-password"></label>'
       + '<label class="cg-ver"><input type="checkbox" id="cgVer"> Ver la contraseña</label>'
@@ -75,6 +86,7 @@
       + (window.acgolfInstalar ? '<button type="button" class="cg-link" id="cgInstalar">📲 Instalar la app en el móvil</button>' : ''));
     if($('cgInstalar')) $('cgInstalar').onclick = () => window.acgolfInstalar();
     if(aviso) msg(aviso, true);
+    ligarGoogle();
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgIrCrear').onclick = () => pantallaCrear();
     $('cgIrProbar').onclick = () => pantallaProbar();
@@ -89,13 +101,14 @@
   }
 
   function pantallaCrear(){
-    mostrar(cabecera('Crear mi cuenta', 'Solo hay que hacerlo una vez. Después el móvil te recuerda.')
+    mostrar(cabecera('Crear mi cuenta', 'Solo hay que hacerlo una vez. Después el móvil te recuerda.') + botonGoogle()
       + '<label class="cg-lbl">Tu correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
       + '<label class="cg-lbl">Inventa una contraseña<small>Mínimo 8 letras o números</small><input id="cgPass" type="password" autocomplete="new-password"></label>'
       + '<label class="cg-ver"><input type="checkbox" id="cgVer"> Ver la contraseña</label>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgCrear">Crear cuenta</button>'
       + '<button type="button" class="cg-link" id="cgVolver">Ya tengo cuenta: entrar</button>');
+    ligarGoogle();
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgVolver').onclick = () => pantallaEntrar();
     $('cgCrear').onclick = e => ocupado(e.target, async () => {
