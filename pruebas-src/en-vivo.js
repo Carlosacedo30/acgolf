@@ -171,10 +171,14 @@
         + '<div class="home-marcha-sub">' + esc(r.roundName ? r.roundName + ' · ' : '') + esc(r.courseName || 'Campo') + '</div>'
         + '<div class="home-marcha-chips">' + (r.players || []).map(x => '<span>' + esc(corto(x)) + '</span>').join('') + '</div>'
         + '<button type="button" class="home-big-btn' + (juego ? '' : ' vv-btn vv-vivo-btn') + '" data-vv-abrir="' + esc(r.code) + '">' + (juego ? 'Continuar partida ›' : '👁 Seguir en vivo ›') + '</button></div>';
-    }).join('') + resumenes.map(x => '<div class="home-marcha vv-home-res">'
-        + '<div class="home-marcha-t">🎬 El plató de acgolf</div>'
+    }).join('') + resumenes.map(x => {
+        const gan = tabla(x.round)[0];
+        const ganaTxt = gan ? corto(gan.n) + ' ' + apellido(gan.n) : '';
+        return '<div class="home-marcha vv-home-res">'
+        + '<div class="home-marcha-t">🎬 El plató de acgolf' + (ganaTxt ? ' · gana ' + esc(ganaTxt) : '') + '</div>'
         + '<div class="home-marcha-sub">Curro y Lola comentan ' + esc(x.round.round_name || 'la partida') + ' (' + grupos(x.round).map(g => g.players.filter(Boolean).map(corto).join(', ')).join(' · ') + ') · hasta las ' + x.hora + '</div>'
-        + '<button type="button" class="home-big-btn vv-btn vv-res-btn" data-vv-res="' + esc(x.round.code) + '">▶ Ver el resumen</button></div>').join('');
+        + '<button type="button" class="home-big-btn vv-btn vv-res-btn" data-vv-res="' + esc(x.round.code) + '">▶ Ver el resumen</button></div>';
+      }).join('');
     cont.querySelectorAll('[data-vv-abrir]').forEach(b => {
       b.addEventListener('click', () => abrir(b.dataset.vvAbrir, b, b.textContent));
       if(soyAdmin()) botonTele(b.dataset.vvAbrir, b);
