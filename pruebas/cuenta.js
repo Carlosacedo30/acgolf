@@ -732,12 +732,13 @@
   async function pantallaSuper(perfil, pestana){
     pestana = pestana || 'seguimiento';
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1></div><p class="cg-p">Cargando…</p>');
-    const r = pestana === 'seguimiento' ? { data: [] } : await client.rpc(pestana === 'grupos' ? 'sa_grupos' : pestana === 'codigos' ? 'sa_codigos_admin' : 'sa_usuarios');
+    const r = pestana === 'seguimiento' ? { data: [] } : await client.rpc(pestana === 'grupos' ? 'sa_grupos' : pestana === 'codigos' ? 'sa_codigos_admin' : pestana === 'avisos' ? 'sa_avisos_movil' : 'sa_usuarios');
     if(r.error){ mostrar(cabecera('No se pudo abrir', traducir(r.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>'); $('cgCerrar').onclick = ocultar; return; }
     const datos = r.data || [];
     const tabs = '<div class="pa-tabs"><button type="button" data-t="seguimiento" class="' + (pestana === 'seguimiento' ? 'on' : '') + '">📈 Seguimiento</button><button type="button" data-t="grupos" class="' + (pestana === 'grupos' ? 'on' : '') + '">Grupos</button>'
       + '<button type="button" data-t="usuarios" class="' + (pestana === 'usuarios' ? 'on' : '') + '">Usuarios</button>'
-      + '<button type="button" data-t="codigos" class="' + (pestana === 'codigos' ? 'on' : '') + '">Códigos</button></div>';
+      + '<button type="button" data-t="codigos" class="' + (pestana === 'codigos' ? 'on' : '') + '">Códigos</button>'
+      + '<button type="button" data-t="avisos" class="' + (pestana === 'avisos' ? 'on' : '') + '">📣 Avisos</button></div>';
     let gruposLiga = [];
     if(pestana === 'codigos'){ try { const rg = await client.rpc('sa_grupos'); gruposLiga = (rg.data || []).filter(g => g.tipo !== 'personal'); } catch(e){} }
     let cuerpo = '';
@@ -787,8 +788,18 @@
               + '<button type="button" class="pa-b rojo" data-borrar-u="' + esc(u.id) + '" data-e="' + esc(u.email) + '">Borrar</button>' : '')
           + '</div></div>').join('') + '</div>';
     }
+    if(pestana === 'avisos'){
+      const porGrupo = {};
+      datos.forEach(x => { const k = x.grupo || 'Sin grupo'; (porGrupo[k] = porGrupo[k] || []).push(x); });
+      const nombresGrupo = Object.keys(porGrupo).sort();
+      cuerpo = '<p class="cg-p" style="font-size:16px;">' + datos.length + (datos.length === 1 ? ' persona' : ' personas') + ' con los avisos del móvil activados ahora mismo.</p>'
+        + (nombresGrupo.length ? nombresGrupo.map(gn => '<div class="cg-sep">' + esc(gn) + '</div><div class="pa-lista">'
+            + porGrupo[gn].map(x => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(x.jugador) + (x.es_admin ? ' <em class="pa-super">Admin</em>' : '') + '</b>'
+                + '<span>' + x.moviles + (x.moviles === 1 ? ' móvil' : ' móviles') + ' · desde el ' + fecha(x.primera_vez) + '</span></div></div>').join('') + '</div>').join('')
+          : '<p class="cg-p" style="font-size:16px;">Todavía nadie los tiene activados.</p>');
+    }
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1>'
-      + '<p class="cg-sub">' + (pestana === 'seguimiento' ? 'Nuevas incorporaciones y redes' : pestana === 'grupos' ? datos.length + ' grupos' : pestana === 'codigos' ? 'Códigos de administrador' : datos.length + ' usuarios') + '</p></div>'
+      + '<p class="cg-sub">' + (pestana === 'seguimiento' ? 'Nuevas incorporaciones y redes' : pestana === 'grupos' ? datos.length + ' grupos' : pestana === 'codigos' ? 'Códigos de administrador' : pestana === 'avisos' ? datos.length + ' con avisos activados' : datos.length + ' usuarios') + '</p></div>'
       + tabs + '<div id="cgMsg" class="cg-msg"></div>' + cuerpo
       + '<div class="cg-sep">Campos</div>'
       + '<p class="cg-p" style="font-size:16px;">Los greens son del campo, no del grupo: si mueves uno, cambia para <b>todos los grupos</b> que juegan allí.</p>'
@@ -796,17 +807,24 @@
       + '<div class="cg-sep">Redes sociales</div>'
       + '<p class="cg-p" style="font-size:16px;">Manda un aviso al móvil (como WhatsApp) a todos los jugadores que los tengan activados, invitándoles a seguirnos en redes.</p>'
       + '<button type="button" class="cg-btn ghost" id="paRedes">📣 Avisar a todos: síguenos en redes</button>'
+      + '<div id="paRedesMsg" class="cg-msg"></div>'
+      + '<div class="cg-sep">Resúmenes de las partidas</div>'
+      + '<p class="cg-p" style="font-size:16px;">Abre el resumen («El plató») de cualquier partida ya jugada, de cualquier grupo.</p>'
+      + '<button type="button" class="cg-btn ghost" id="paResumenes">🎬 Ver resúmenes de las partidas</button>'
       + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
     $('cgCerrar').onclick = ocultar;
     if(pestana === 'seguimiento' && $('sgPanel') && window.acgolfSeguimiento) window.acgolfSeguimiento($('sgPanel'), client);
     $('paGreens').onclick = () => { ocultar(); if(typeof gmAbrir === 'function') gmAbrir(); };
     if($('paRedes')) $('paRedes').onclick = e => ocupado(e.target, async () => {
       if(!confirm('¿Mandar ahora el aviso de redes a todos los jugadores con avisos activados en el móvil?')) return;
-      if(!window.acgolfAvisosMovil || !window.acgolfAvisosMovil.avisarRedes){ msg('No está disponible ahora mismo.'); return; }
+      const elRedes = $('paRedesMsg');
+      const msgRedes = (txt, ok) => { if(elRedes){ elRedes.textContent = txt || ''; elRedes.className = 'cg-msg' + (ok ? ' ok' : ''); } };
+      if(!window.acgolfAvisosMovil || !window.acgolfAvisosMovil.avisarRedes){ msgRedes('No está disponible ahora mismo.'); return; }
       const d = await window.acgolfAvisosMovil.avisarRedes();
-      if(!d || d.error){ msg((d && d.error) || 'No se pudo mandar el aviso.'); return; }
-      msg('✅ Avisados ' + (d.enviados || 0) + (d.enviados === 1 ? ' móvil' : ' móviles') + '.', true);
+      if(!d || d.error){ msgRedes((d && d.error) || 'No se pudo mandar el aviso.'); return; }
+      msgRedes('✅ Avisados ' + (d.enviados || 0) + (d.enviados === 1 ? ' móvil' : ' móviles') + '.', true);
     });
+    if($('paResumenes')) $('paResumenes').onclick = () => pantallaResumenes(perfil);
     gate.querySelectorAll('.pa-tabs button').forEach(b => b.onclick = () => pantallaSuper(perfil, b.dataset.t));
     gate.querySelectorAll('[data-miembros]').forEach(b => b.onclick = () => pantallaMiembros(perfil, b.dataset.miembros, b.dataset.n, true));
     gate.querySelectorAll('[data-entrar-grupo]').forEach(b => b.onclick = () => ocupado(b, async () => {
@@ -882,6 +900,44 @@
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'usuarios');
     });
+  }
+
+  // ---------- Resúmenes de las partidas (Panel general: abrir «El plató» de cualquier grupo) ----------
+  async function pantallaResumenes(perfil, grupoId, grupoNombre){
+    if(!grupoId){
+      mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Resúmenes de las partidas</h1><p class="cg-sub">Elige un grupo</p></div><div id="cgMsg" class="cg-msg"></div><p class="cg-p">Cargando…</p>');
+      const rg = await client.rpc('sa_grupos');
+      if(rg.error){ mostrar(cabecera('No se pudo abrir', traducir(rg.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver</button>'); $('cgCerrar').onclick = () => pantallaSuper(perfil); return; }
+      const grupos = (rg.data || []).filter(g => g.tipo !== 'personal');
+      mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Resúmenes de las partidas</h1><p class="cg-sub">Elige un grupo</p></div>'
+        + '<div class="pa-lista">' + grupos.map(g => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(g.nombre) + '</b><span>' + g.miembros + ' miembro' + (g.miembros === 1 ? '' : 's') + '</span></div>'
+            + '<div class="pa-acc"><button type="button" class="pa-b" data-ver-grupo="' + esc(g.id) + '" data-n="' + esc(g.nombre) + '">Ver partidas</button></div></div>').join('') + '</div>'
+        + '<button type="button" class="cg-btn" id="cgVolver">Volver</button>');
+      $('cgVolver').onclick = () => pantallaSuper(perfil);
+      gate.querySelectorAll('[data-ver-grupo]').forEach(b => b.onclick = () => pantallaResumenes(perfil, b.dataset.verGrupo, b.dataset.n));
+      return;
+    }
+    mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">' + esc(grupoNombre) + '</h1><p class="cg-sub">Cargando…</p></div>');
+    const r = await client.rpc('sa_rondas_grupo', { p_grupo: grupoId });
+    if(r.error){ mostrar(cabecera('No se pudo abrir', traducir(r.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver</button>'); $('cgCerrar').onclick = () => pantallaResumenes(perfil); return; }
+    const lista = r.data || [];
+    mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">' + esc(grupoNombre) + '</h1>'
+      + '<p class="cg-sub">' + lista.length + ' partida' + (lista.length === 1 ? '' : 's') + '</p></div>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + (lista.length ? '<div class="pa-lista">' + lista.map(x => '<div class="pa-fila"><div class="pa-fila-t"><b>' + esc(x.round_name || 'Partida') + '</b>'
+          + '<span>' + esc((x.jugadores || []).flat().filter(Boolean).join(', ')) + '</span>'
+          + '<span>' + fecha(x.updated_at || x.created_at) + '</span></div>'
+          + '<div class="pa-acc"><button type="button" class="pa-b" data-ver-resumen="' + esc(x.code) + '">▶ Ver resumen</button></div></div>').join('') + '</div>'
+        : '<p class="cg-p" style="font-size:16px;">Todavía no hay partidas en este grupo.</p>')
+      + '<button type="button" class="cg-btn" id="cgVolver">Volver a los grupos</button>');
+    $('cgVolver').onclick = () => pantallaResumenes(perfil);
+    gate.querySelectorAll('[data-ver-resumen]').forEach(b => b.onclick = () => ocupado(b, async () => {
+      if(!window.acgolfEnVivo || typeof window.acgolfEnVivo.pantalla !== 'function'){ msg('No está disponible ahora mismo.'); return; }
+      const rr = await client.rpc('sa_leer_ronda', { p_code: b.dataset.verResumen });
+      if(rr.error || !rr.data){ msg('No se pudo abrir esta partida.'); return; }
+      ocultar();
+      window.acgolfEnVivo.pantalla(b.dataset.verResumen, rr.data, true);
+    }));
   }
 
   async function pantallaMiembros(perfil, grupoId, grupoNombre, desdeSuper){
