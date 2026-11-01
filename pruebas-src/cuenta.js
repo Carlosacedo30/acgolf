@@ -775,7 +775,7 @@
                   + '<button type="button" class="pa-b rojo" data-anular="' + esc(c.codigo) + '">Anular</button></div>' : '')
               + '</div>'; }).join('') + '</div>'
           : '<p class="cg-p" style="font-size:16px;">Todavía no has creado ninguno.</p>');
-    } else {
+    } else if(pestana !== 'avisos'){
       datos.sort((a, b) => (b.sin_nombre ? 1 : 0) - (a.sin_nombre ? 1 : 0));
       cuerpo = '<div class="pa-lista">' + datos.map(u => '<div class="pa-fila">'
           + '<div class="pa-fila-t"><b>' + esc(u.nombre) + (u.super ? ' <em class="pa-super">Super admin</em>' : '') + '</b><span>' + esc(u.email) + '</span>'
