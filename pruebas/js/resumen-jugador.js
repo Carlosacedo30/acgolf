@@ -14,6 +14,39 @@
   const golpes = (h, i) => { const x = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + i + '"]'); const v = x ? parseInt(x.value, 10) : NaN; return isNaN(v) || v <= 0 ? null : v; };
   const parDe = h => { const x = document.querySelector('.golpes-input[data-hole="' + h + '"]'); return x ? parseInt(x.dataset.par, 10) : null; };
   const siDe = h => { const x = document.querySelector('.golpes-input[data-hole="' + h + '"]'); return x ? parseInt(x.dataset.strokeIndex, 10) : null; };
+  const claseGolpe = (v, par) => {
+    if(v == null || par == null) return '';
+    const d = v - par;
+    return d <= -2 ? 'tb-eagle' : d === -1 ? 'tb-birdie' : d === 0 ? 'tb-par' : d === 1 ? 'tb-bogey' : 'tb-doble';
+  };
+  const hoyoSiguiente = h => h % 18 + 1;
+  // Orden real de los 18 hoyos empezando por el hoyo de salida (p. ej. si se sale por el 10: 10,11…18,1…9)
+  function ordenHoyos(salida){
+    const s = (salida >= 1 && salida <= 18) ? salida : 1;
+    const out = []; let h = s;
+    for(let k = 0; k < 18; k++){ out.push(h); h = hoyoSiguiente(h); }
+    return out;
+  }
+  // Media tarjeta (9 hoyos) en el orden real de juego, no siempre 1-9 y 10-18
+  function bloqueOrden(i, hoyos, actual){
+    let par = 0, golpesTot = 0, alguno = false;
+    let hoyosHtml = '', pares = '', marcas = '';
+    hoyos.forEach(h => {
+      const p = parDe(h), v = golpes(h, i);
+      par += p || 0;
+      if(v != null){ golpesTot += v; alguno = true; }
+      hoyosHtml += '<button type="button" class="tb-h' + (h === actual ? ' actual' : '') + '" data-h="' + h + '" aria-label="Ir al hoyo ' + h + '">' + h + '</button>';
+      pares += '<span>' + (p == null ? '' : p) + '</span>';
+      marcas += '<span><i class="tb-m ' + claseGolpe(v, p) + '">' + (v == null ? '' : v) + '</i></span>';
+    });
+    const primero = hoyos[0], ultimo = hoyos[hoyos.length - 1];
+    const nom = primero === 1 ? 'Ida' : primero === 10 ? 'Vta' : (primero + '–' + ultimo);
+    return '<div class="tb-bloque">'
+      + '<div class="tb-r tb-r-h"><span class="tb-lbl">Hoyo</span>' + hoyosHtml + '<span class="tb-tot">' + esc(nom) + '</span></div>'
+      + '<div class="tb-r tb-r-p"><span class="tb-lbl">Par</span>' + pares + '<span class="tb-tot">' + par + '</span></div>'
+      + '<div class="tb-r tb-r-g"><span class="tb-lbl">Golpes</span>' + marcas + '<span class="tb-tot b">' + (alguno ? golpesTot : '') + '</span></div>'
+      + '</div>';
+  }
 
   // Golpes, neto y puntos de la partida de un jugador del grupo activo
   function cuentas(i){
@@ -111,7 +144,9 @@
       + '<div><b>' + (c.n ? c.neto : '—') + '</b><span>neto</span></div>'
       + '<div><b class="' + (c.n && dif < 0 ? 'bajo' : '') + '">' + (!c.n ? '—' : dif === 0 ? 'PAR' : (dif > 0 ? '+' : '') + dif) + '</b><span>al par</span></div>'
       + '<div><b>' + (c.n ? c.pts : '—') + '</b><span>puntos</span></div></div>';
-    if(typeof window.tbBloque === 'function') h += seccion('Su tarjeta', window.tbBloque(i, 1, 0) + window.tbBloque(i, 10, 0));
+    const grupoDe = (typeof matchGroups !== 'undefined' && matchGroups[activeGroup]) || {};
+    const orden = ordenHoyos(Number(grupoDe.hoyoSalida) || 1);
+    h += seccion('Su tarjeta', bloqueOrden(i, orden.slice(0, 9), 0) + bloqueOrden(i, orden.slice(9), 0));
 
     if(!datos){ h += '<p class="rj-p">Cargando hándicap, medallas y clasificación…</p>'; return h; }
     if(datos.error){ h += '<p class="rj-p">No se ha podido cargar el resto. Revisa la cobertura.</p><button type="button" class="rj-otra" id="rjReintentar">Probar otra vez</button>'; return h; }
