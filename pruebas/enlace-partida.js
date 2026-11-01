@@ -2,6 +2,7 @@
 // Enlace directo a una partida: .../pruebas/?partida=CODIGO abre esa partida en cuanto el jugador ha entrado con su cuenta.
 // También .../pruebas/?conv=CODIGO abre la convocatoria (si al cargar todavía no había sesión, se abre al entrar).
 // Y los avisos del móvil: ?ver=ganadores&semana=AAAA-MM-DD abre los Ganadores de esa semana; ?ver=handicap abre Mi hándicap.
+// Y ?resumen=CODIGO abre directamente «El plató» (Curro y Lola comentando esa partida) en cuanto hay sesión.
 (function(){
   const qs = new URLSearchParams(location.search);
   const ver = (qs.get('ver') || '').trim().toLowerCase();
@@ -41,6 +42,20 @@
       conv = c;
       if(typeof convWatch === 'function') convWatch();
       openConv(false);
+    }, 500);
+  }
+  const resumenCode = (qs.get('resumen') || '').trim().toUpperCase();
+  if(resumenCode){
+    let nr = 0;
+    const tr = setInterval(async ()=>{
+      nr++;
+      if(nr > 120){ clearInterval(tr); return; } // 60 segundos como máximo
+      if(!window.miPerfil || !window.acgolfEnVivo || typeof window.acgolfEnVivo.leerRonda !== 'function') return;
+      clearInterval(tr);
+      try { history.replaceState(null, '', location.pathname); } catch(e){}
+      const round = await window.acgolfEnVivo.leerRonda(resumenCode);
+      if(round) window.acgolfEnVivo.pantalla(resumenCode, round, true);
+      else alert('No se ha podido abrir el resumen.');
     }, 500);
   }
   const code = (qs.get('partida') || '').trim().toUpperCase();
