@@ -71,8 +71,8 @@
     const key = currentRoundCode + ':' + activeGroup + ':' + players.join('|');
     if(elegidosKey !== key){ elegidosKey = key; elegidos = players.map((_, i) => (i + 1) % n); }
     return '<div class="mk-elegir">'
-      + '<div class="mk-tit">Antes de empezar: ¿quién marca a quién?</div>'
-      + '<p class="mk-p">Cada uno apunta en su móvil sus golpes y los del jugador al que marca. Toca para cambiarlo.</p>'
+      + '<div class="mk-tit">Confirma los marcadores antes de empezar</div>'
+      + '<p class="mk-p">Esta partida es de liga: no se puede apuntar ningún golpe hasta que confirméis quién marca a quién. Cada uno apunta en su móvil sus golpes y los del jugador al que marca. Toca para cambiarlo.</p>'
       + players.map((name, i) => '<div class="mk-fila"><div class="mk-q">A <b>' + esc(name) + '</b> le marca:</div><div class="mk-ops">'
           + players.map((m, j) => j === i ? '' : '<button type="button" class="mk-op' + (elegidos[i] === j ? ' on' : '') + '" data-i="' + i + '" data-j="' + j + '">' + esc(corto(m)) + '</button>').join('')
           + '</div></div>').join('')
@@ -172,8 +172,6 @@
     const wrap = document.getElementById('hvPlayers');
     const scores = wrap && wrap.querySelector('.hv-scores');
     if(!scores || !currentRoundCode || !yo()) return;
-    const me = miIdx();
-    if(me < 0) return; // no juego en este grupo: se ve como siempre
     if(!(currentRoundCode in modos)){ cargar(true); return; }
     if(!conMarcadorEn(currentRoundCode)){
       return; // sin marcador: se apunta como siempre
@@ -185,18 +183,26 @@
     if(estCode !== currentRoundCode){ cargar(true); scores.outerHTML = '<div class="mk-p">Cargando marcadores…</div>'; return; }
     const g = grupoEst();
     if(!g) return;
+    const conMarcadores = g.jugadores.every(j => j.marcador_idx != null);
+    if(!conMarcadores){
+      // Mientras no se confirmen los marcadores, no se puede apuntar ningún golpe (mire quien mire, apunte quien apunte)
+      const div = document.createElement('div');
+      div.innerHTML = htmlElegir(n);
+      scores.replaceWith(div.firstElementChild);
+      enlazarElegir(wrap);
+      return;
+    }
+    const me = miIdx();
+    if(me < 0) return; // marcadores ya confirmados, pero este usuario no juega en este grupo: se ve como siempre
     const h = currentHole;
     const input0 = document.querySelector('.golpes-input[data-hole="' + h + '"]');
     const par = input0 ? parseInt(input0.dataset.par, 10) : null;
     const si = input0 ? parseInt(input0.dataset.strokeIndex, 10) : null;
     if(llegada.hoyo !== h){ llegada = { hoyo: h, completo: hoyoMioCompleto(g, h) }; clearTimeout(avanceTimer); }
-    const conMarcadores = g.jugadores.every(j => j.marcador_idx != null);
     const div = document.createElement('div');
-    div.innerHTML = conMarcadores ? htmlColumnas(g, h, par, isNaN(si) ? null : si) : htmlElegir(n);
-    const nuevo = div.firstElementChild;
-    scores.replaceWith(nuevo);
-    if(conMarcadores){ enlazarColumnas(wrap, g, h, par, isNaN(si) ? null : si); marcarFichasHoyos(g); }
-    else enlazarElegir(wrap);
+    div.innerHTML = htmlColumnas(g, h, par, isNaN(si) ? null : si);
+    scores.replaceWith(div.firstElementChild);
+    enlazarColumnas(wrap, g, h, par, isNaN(si) ? null : si); marcarFichasHoyos(g);
   }
 
   // ---------- Entregar la tarjeta (pantalla de resultados) ----------

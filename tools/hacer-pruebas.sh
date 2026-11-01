@@ -465,15 +465,6 @@ cambia(f, """    const db = document.getElementById('convDeleteBtn'); if(db) db.
 cambia(f, """      if(error) throw error;
       await convMutate(c => { c.roundCode = data.code; return null; });""", """      if(error) throw error;
       if(convMarc && !convEsJornada(conv)){ try { await client.rpc('poner_marcador', { p_code: data.code }); } catch(e){} }
-      if(convEsJornada(conv)){
-        // Jornada de «Liga de amigos»: lleva marcador siempre, y se asigna solo (sin preguntar quién marca a quién)
-        for(let gi = 0; gi < groups.length; gi++){
-          const n = (groups[gi].players || []).filter(Boolean).length;
-          if(n < 2) continue;
-          const marc = groups[gi].players.map((_, pi) => (pi + 1) % n);
-          try { await client.rpc('fijar_marcadores', { p_code: data.code, p_grupo: gi, p_marcadores: marc }); } catch(e){ console.error('No se pudo asignar marcador automático', e); }
-        }
-      }
       convMarc = false;
       await convMutate(c => { c.roundCode = data.code; return null; });""")
 cambia(f, """    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\\nDesaparece para todos los jugadores y no se puede deshacer.')) return;""",
