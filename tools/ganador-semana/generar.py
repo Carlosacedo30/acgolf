@@ -31,7 +31,14 @@ def main():
         'ganador': p['iscariote'], 'tarjetas': p.get('tarjetas'),
         'clasificacion': sem['clasificacion'], 'bolas': entrada.get('bolas', 12),
         'invitacion': entrada.get('invitacion', ''),
+        'fotoTexto': entrada.get('foto_texto', ''),
     }
+    if entrada.get('foto'):
+        import base64, mimetypes
+        ruta = entrada['foto']
+        tipo = mimetypes.guess_type(ruta)[0] or 'image/jpeg'
+        with open(ruta, 'rb') as f:
+            datos['foto'] = 'data:' + tipo + ';base64,' + base64.b64encode(f.read()).decode('ascii')
     open(os.path.join(AQUI, 'datos.js'), 'w', encoding='utf-8').write('window.DATOS = ' + json.dumps(datos, ensure_ascii=False) + ';\n')
     asyncio.run(foto(salida))
     print('Imagen:', salida)

@@ -29,6 +29,11 @@ body{ width:1080px; position:relative; padding-bottom:96px; background:#FFFFFF; 
 .dato.top b{ color:var(--lima); }
 .dato small{ display:block; font-weight:600; font-size:21px; color:#B9CBBF; margin-top:6px; }
 
+.foto{ margin:26px 56px 0; border-radius:26px; overflow:hidden; border:5px solid var(--lima); position:relative; line-height:0; }
+.foto img{ width:100%; height:460px; object-fit:cover; display:block; }
+.foto .pie-foto{ position:absolute; left:0; right:0; bottom:0; padding:14px 26px; background:linear-gradient(0deg, rgba(14,51,36,.88), rgba(14,51,36,0)); line-height:1.2; }
+.foto .pie-foto b{ display:block; font-weight:800; font-size:26px; color:#fff; }
+
 .premio{ margin:26px 56px 0; background:var(--gris); border-radius:26px; padding:24px 30px; display:flex; align-items:center; gap:26px; border-left:12px solid var(--lima); }
 .premio .bolas{ font-family:Anton; font-weight:400; font-size:92px; line-height:1; color:var(--verde); }
 .premio .txt{ flex:1; }
@@ -71,6 +76,7 @@ body{ width:1080px; position:relative; padding-bottom:96px; background:#FFFFFF; 
     <div class="nombre" id="ganador"></div>
     <div class="datos" id="datos"></div>
   </div>
+  <div class="foto" id="foto" hidden><img id="fotoImg" alt=""><div class="pie-foto"><b id="fotoTexto"></b></div></div>
   <div class="premio">
     <div class="bolas" id="bolas"></div>
     <div class="txt"><b id="regalo"></b><small>Cortesía de nuestro patrocinador</small></div>
@@ -105,6 +111,7 @@ $('ganador').innerHTML = esc(w.slice(0, corte).join(' ')) + '<br><span>' + esc(w
 const vp = D.ganador.neto_vs_par;
 $('datos').innerHTML = [[D.ganador.neto, 'golpes netos', 1], [vp == null ? null : (vp > 0 ? '+' + vp : String(vp).replace('-', '−')), 'al par (neto)'], [D.ganador.bruto, 'golpes brutos'], [D.ganador.hcp, 'hándicap']]
   .filter(x => x[0] != null).map(x => '<div class="dato' + (x[2] ? ' top' : '') + '"><b>' + esc(x[0]) + '</b><small>' + x[1] + '</small></div>').join('');
+if(D.foto){ $('foto').hidden = false; $('fotoImg').src = D.foto; $('fotoTexto').textContent = D.fotoTexto || ''; }
 $('bolas').textContent = D.bolas;
 $('regalo').textContent = 'bolas de golf de regalo';
 $('tarjetas').textContent = D.tarjetas ? D.tarjetas + ' tarjetas jugadas' : '';
