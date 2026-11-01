@@ -26,3 +26,13 @@
 .am-preg-si:active,.am-preg-no:active{transform:scale(.97)}
 .am-preg-si:disabled{opacity:.7}
 .am-preg-c small{color:#9AA3AB;font-size:13px}
+/* Aviso discreto en Inicio para quien no tiene activados los avisos */
+.am-banner{position:relative;display:flex;align-items:center;gap:12px;background:#1B1E22;border:1px solid rgba(198,242,78,.35);border-radius:16px;padding:14px 40px 14px 14px;margin:0 0 10px;box-sizing:border-box}
+.am-banner .am-ico{width:40px;height:40px;border-radius:12px}
+.am-banner .am-txt b{font-size:16px}
+.am-banner .am-txt span{font-size:13px}
+.am-banner-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;background:transparent;color:#9AA3AB;font-size:15px;line-height:1;border-radius:999px;cursor:pointer}
+.am-banner-x:active{transform:scale(.9)}
+.am-banner-btn{flex:none;min-height:40px;padding:0 18px;border-radius:999px;background:#C6F24E;color:#111316;border:0;font:800 14px 'Archivo','Barlow',sans-serif;cursor:pointer;transition:transform .1s}
+.am-banner-btn:active{transform:scale(.97)}
+.am-banner-btn:disabled{opacity:.7}

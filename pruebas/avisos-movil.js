@@ -147,5 +147,50 @@
   }
   setTimeout(() => preguntar(0), 6000);
 
+  // Aviso discreto en Inicio para quien todavía no los tiene activados (se puede cerrar; vuelve a los 14 días)
+  const BANNER_KEY = 'acgolfBannerAvisos';
+  function bannerOculto(){
+    try { const v = localStorage.getItem(BANNER_KEY); return !!v && Date.now() - Number(v) < 14 * 24 * 3600 * 1000; } catch(e){ return false; }
+  }
+  function bannerCerrar(){
+    try { localStorage.setItem(BANNER_KEY, String(Date.now())); } catch(e){}
+    const el = document.getElementById('amBannerHome'); if(el) el.remove();
+  }
+  async function actualizarBanner(){
+    const activa = document.querySelector('.screen.active');
+    const el0 = document.getElementById('amBannerHome');
+    if(!activa || activa.dataset.screen !== '0'){ return; }   // solo en Inicio; no la tocamos si está en otra pantalla
+    if(bannerOculto() || (iphone && !instalada()) || !puede() || Notification.permission === 'denied'){ if(el0) el0.remove(); return; }
+    const client = typeof initSupabase === 'function' && initSupabase();
+    if(!client){ if(el0) el0.remove(); return; }
+    let sesion = null;
+    try { const { data } = await client.auth.getSession(); sesion = data && data.session; } catch(e){}
+    if(!sesion){ if(el0) el0.remove(); return; }
+    if(await suscripcion()){ if(el0) el0.remove(); return; }   // ya los tiene activados
+    const box = document.getElementById('homeEnMarcha');
+    if(!box) return;
+    let el = document.getElementById('amBannerHome');
+    if(!el){ el = document.createElement('div'); el.id = 'amBannerHome'; el.className = 'am-banner'; box.insertAdjacentElement('beforebegin', el); }
+    el.innerHTML = '<button type="button" class="am-banner-x" aria-label="Cerrar">✕</button>'
+      + '<div class="am-ico">' + CAMPANA + '</div>'
+      + '<div class="am-txt"><b>Actívalo y no te enteres tarde</b><span>Avisos al móvil de tus partidas, como WhatsApp</span></div>'
+      + '<button type="button" class="am-banner-btn">Activar</button>';
+    el.querySelector('.am-banner-x').onclick = bannerCerrar;
+    el.querySelector('.am-banner-btn').onclick = async e => {
+      const b = e.currentTarget; b.disabled = true; b.textContent = 'Un momento…';
+      try { await activar(); bannerCerrar(); }
+      catch(err){
+        console.error('Avisos al móvil', err);
+        b.disabled = false; b.textContent = 'Activar';
+        alert(err && err.message === 'permiso' ? 'Para recibir avisos tienes que tocar «Permitir» cuando el móvil lo pregunte.' : 'No se pudo activar. Prueba otra vez.');
+      }
+    };
+  }
+  if(typeof window.goTo === 'function'){
+    const goOrigBanner = window.goTo;
+    window.goTo = function(n){ const r = goOrigBanner.apply(this, arguments); if(n === 0) setTimeout(actualizarBanner, 300); return r; };
+  }
+  setTimeout(actualizarBanner, 2500);
+
   window.acgolfAvisosMovil = { pintar, partidaNueva, avisarRedes };
 })();
