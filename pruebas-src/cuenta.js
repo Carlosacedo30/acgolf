@@ -11,6 +11,13 @@
   document.body.appendChild(gate);
 
   const APP_PRUEBAS = 'https://carlosacedo30.github.io/acgolf/pruebas/';
+  // Vuelta desde el enlace del correo cuando falla (ya se usó o ha caducado): Supabase añade ?error=… o #error=…
+  let enlaceFallido = '';
+  try {
+    const h = new URLSearchParams((location.hash || '').replace(/^#/, '')), q = new URLSearchParams(location.search);
+    const fallo = h.get('error_code') || q.get('error_code') || h.get('error') || q.get('error') || '';
+    if(fallo){ enlaceFallido = fallo; history.replaceState(null, '', location.pathname); }
+  } catch(e){}
   try {
     const inv = new URLSearchParams(location.search).get('unirse');
     if(inv){ localStorage.setItem('acgolfInvitacion', inv.trim().toUpperCase()); history.replaceState(null, '', location.pathname); }
@@ -93,9 +100,43 @@
       const email = $('cgEmail').value.trim(), password = $('cgPass').value;
       if(!email || !password){ msg('Escribe tu correo y tu contraseña.'); return; }
       const { error } = await client.auth.signInWithPassword({ email, password });
-      if(error){ msg(traducir(error)); return; }
+      if(error){
+        msg(traducir(error));
+        if(/Email not confirmed/i.test(String(error.message || '')) && !$('cgOtroEnlace')){
+          const b = document.createElement('button'); b.type = 'button'; b.className = 'cg-btn ghost'; b.id = 'cgOtroEnlace'; b.textContent = 'Mándame otro enlace';
+          b.onclick = () => ocupado(b, () => mandarOtroEnlace($('cgEmail').value.trim()));
+          $('cgMsg').after(b);
+        }
+        return;
+      }
       location.reload();
     });
+  }
+
+  // Mandar otro enlace de confirmación (para quien no pudo confirmar)
+  async function mandarOtroEnlace(email){
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg('Escribe bien tu correo.'); return; }
+    const { error } = await client.auth.resend({ type: 'signup', email, options: { emailRedirectTo: location.origin + location.pathname } });
+    if(error){
+      if(/already|confirmed/i.test(String(error.message || ''))){ msg('Tu correo ya está confirmado. Entra con tu correo y tu contraseña.', true); return; }
+      msg(traducir(error)); return;
+    }
+    msg('Listo. Te hemos mandado un enlace nuevo a ' + email + '. Mira también en «Correo no deseado».', true);
+  }
+
+  function pantallaEnlaceFallido(){
+    mostrar(cabecera('Este enlace ya no sirve', 'Ya se había usado o ha caducado. No pasa nada.')
+      + '<p class="cg-p"><b>Si ya lo pulsaste antes</b>, tu correo ya está confirmado. Entra con tu correo y tu contraseña.</p>'
+      + '<button type="button" class="cg-btn" id="cgEnlEntrar">Entrar con mi cuenta</button>'
+      + '<div class="cg-sep">¿Todavía no puedes entrar?</div>'
+      + '<p class="cg-p">Te mandamos un enlace nuevo. Dura 24 horas y solo hay que pulsarlo una vez.</p>'
+      + '<label class="cg-lbl">Tu correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn ghost" id="cgEnlOtro">Mándame otro enlace</button>'
+      + '<button type="button" class="cg-link" id="cgEnlClave">Era para cambiar mi contraseña</button>');
+    $('cgEnlEntrar').onclick = () => pantallaEntrar();
+    $('cgEnlClave').onclick = () => pantallaOlvido($('cgEmail').value);
+    $('cgEnlOtro').onclick = e => ocupado(e.target, () => mandarOtroEnlace($('cgEmail').value.trim()));
   }
 
   function pantallaCrear(aviso){
@@ -122,6 +163,7 @@
       if(data && data.session){ location.reload(); return; }
       mostrar(cabecera('Mira tu correo', 'Te hemos enviado un mensaje a <b>' + esc(email) + '</b>.')
         + '<p class="cg-p">Ábrelo y pulsa el enlace para confirmar tu cuenta. Si no lo ves, mira en «Correo no deseado».</p>'
+        + '<p class="cg-p">El enlace dura 24 horas y <b>solo hay que pulsarlo una vez</b>.</p>'
         + '<p class="cg-p">Después vuelve aquí y entra con tu correo y tu contraseña.</p>'
         + '<button type="button" class="cg-btn" id="cgYa">Ya lo he confirmado: entrar</button>');
       $('cgYa').onclick = () => pantallaEntrar();
@@ -1232,6 +1274,7 @@
     let session = null, sinCuentaAviso = '';
     try { ({ data:{ session } } = await client.auth.getSession()); } catch(e){}
     if(recuperando && session){ pantallaNuevaClave(); return; }
+    if(enlaceFallido && !session){ pantallaEnlaceFallido(); return; }
     // Ya no se puede jugar sin registro: una sesión anónima antigua se cierra
     if(session && session.user && session.user.is_anonymous){ try { await client.auth.signOut(); } catch(e){} session = null; sinCuentaAviso = 'Esta app ahora es solo con cuenta. Crea la tuya, es gratis y se hace en un minuto.'; }
     if(!session){ try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){} if(yaEntroAntes() || codigoAdmin()) pantallaEntrar(sinCuentaAviso); else pantallaCrear(sinCuentaAviso); return; }

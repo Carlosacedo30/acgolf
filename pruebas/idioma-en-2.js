@@ -2719,9 +2719,24 @@ window.acgolfTextosEN2 = {
 "ya está listo. Esto es lo que puedes hacer:": "is ready. Here's what you can do:",
 "«Manual de la app»": "\"App guide\"",
 "¿Alguna duda?": "Any questions?",
-"Ver el manual ahora": "See the guide now"
+"Ver el manual ahora": "See the guide now",
+"Este enlace ya no sirve": "This link no longer works",
+"Ya se había usado o ha caducado. No pasa nada.": "It was already used or has expired. Don't worry.",
+"Si ya lo pulsaste antes": "If you already tapped it before",
+", tu correo ya está confirmado. Entra con tu correo y tu contraseña.": ", your email is already confirmed. Sign in with your email and password.",
+"¿Todavía no puedes entrar?": "Still can't sign in?",
+"Te mandamos un enlace nuevo. Dura 24 horas y solo hay que pulsarlo una vez.": "We'll send you a new link. It lasts 24 hours and you only need to tap it once.",
+"Mándame otro enlace": "Send me another link",
+"Era para cambiar mi contraseña": "It was to change my password",
+"Tu correo ya está confirmado. Entra con tu correo y tu contraseña.": "Your email is already confirmed. Sign in with your email and password.",
+"El enlace dura 24 horas y ": "The link lasts 24 hours and ",
+"solo hay que pulsarlo una vez": "you only need to tap it once"
 };
 window.acgolfPlantillasEN = [
+[
+"Listo. Te hemos mandado un enlace nuevo a {E}. Mira también en «Correo no deseado».",
+"Done. We've sent a new link to {E}. Check your spam folder too."
+],
 [
 "Campo: {CAMPO}. Al crear la liga se elige entre tus campos favoritos o cualquiera del buscador de campos.",
 "Course: {CAMPO}. When the league is created you choose one of your favourite courses or any course from the course finder."
