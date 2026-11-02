@@ -159,15 +159,16 @@
     if(hoyo <= 4) L('l-empieza', 'Hoyo ' + hoyo + ' · <b>está todo por decidir</b>');
     else if(hoyo >= 15) L('l-final', 'Hoyo ' + hoyo + ' · <b>¡se decide en el 18!</b>');
     else if(hoyo >= 9) L('l-mitad', 'Hoyo ' + hoyo + ' · <b>segunda mitad de la partida</b>');
-    // 3. El líder
-    const l = t[0], k1 = claveNombre(l.n);
-    const rotLider = 'Líder · <b>' + esc(corto(l.n)) + '</b> ' + signo(l.neto) + ' neto';
+    // 3. El líder (en puntos si se juega por puntos, en neto si no)
+    const l = t[0], k1 = claveNombre(l.n), esPtos = l.esPtos;
+    const marca = x => esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
+    const rotLider = 'Líder · <b>' + esc(corto(l.n)) + '</b> ' + marca(l);
     if(k1) L(['l-manda', k1], rotLider);
     C(visitas % 2 ? 'c-como-un-tiro' : 'c-eso-es-golf', rotLider);
     // 4. El segundo
     if(t[1]){
-      const dif = t[1].neto - l.neto, k2 = claveNombre(t[1].n);
-      const rot2 = '2.º · <b>' + esc(corto(t[1].n)) + '</b> ' + signo(t[1].neto) + (dif === 0 ? ' · ¡empatados!' : ' · a ' + dif + (dif === 1 ? ' golpe' : ' golpes'));
+      const dif = esPtos ? l.pts - t[1].pts : t[1].neto - l.neto, k2 = claveNombre(t[1].n);
+      const rot2 = '2.º · <b>' + esc(corto(t[1].n)) + '</b> ' + marca(t[1]) + (dif === 0 ? ' · ¡empatados!' : ' · a ' + dif + (esPtos ? (dif === 1 ? ' punto' : ' puntos') : (dif === 1 ? ' golpe' : ' golpes')));
       if(dif === 0) C('c-empate', rot2);
       else { if(k2) L(['l-sigue', k2], rot2); if(dif >= 3) C('c-diferencia', rot2); }
     }
@@ -195,7 +196,8 @@
     const EV = window.acgolfEnVivo || {};
     const t = EV.tabla ? EV.tabla(round) : [], m = EV.momentos ? EV.momentos(round) : [];
     const jugadas = {}; m.forEach(x => { jugadas[x.gi + ':' + x.p + ':' + x.h] = x; });
-    return { t, jugadas, hoyo: t.reduce((a, x) => Math.max(a, x.ultimo), 0), lider: t[0] ? t[0].n : null, empate: !!(t[1] && t[1].neto === t[0].neto) };
+    const empatados = x => x[0].esPtos ? x[1].pts === x[0].pts : x[1].neto === x[0].neto;
+    return { t, jugadas, hoyo: t.reduce((a, x) => Math.max(a, x.ultimo), 0), lider: t[0] ? t[0].n : null, empate: !!(t[1] && t[0] && empatados(t)) };
   }
   function vigilar(round){
     const ahora = foto(round);
@@ -204,11 +206,12 @@
     const L = (clips, rot) => ({ q: 'lola', clips: [].concat(clips).filter(Boolean), rot });
     const C = (clips, rot) => ({ q: 'curro', clips: [].concat(clips).filter(Boolean), rot });
     const t = ahora.t;
+    const marcaT = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
     if(ahora.lider && antes.lider && norm(ahora.lider) !== norm(antes.lider) && !ahora.empate){
-      const k = claveNombre(ahora.lider), rot = '¡Nuevo líder! · <b>' + esc(corto(ahora.lider)) + '</b> ' + signo(t[0].neto) + ' neto';
+      const k = claveNombre(ahora.lider), rot = '¡Nuevo líder! · <b>' + esc(corto(ahora.lider)) + '</b> ' + marcaT(t[0]);
       avisos.push({ prio: 1, pasos: [k ? L(['l-manda', k], rot) : null, C(turno % 2 ? 'c-eso-es-golf' : 'c-como-un-tiro', rot)].filter(Boolean) });
     } else if(ahora.empate && !antes.empate){
-      avisos.push({ prio: 2, pasos: [C('c-empate', '¡Empate arriba! · <b>' + esc(corto(t[0].n)) + '</b> y <b>' + esc(corto(t[1].n)) + '</b> ' + signo(t[0].neto))] });
+      avisos.push({ prio: 2, pasos: [C('c-empate', '¡Empate arriba! · <b>' + esc(corto(t[0].n)) + '</b> y <b>' + esc(corto(t[1].n)) + '</b> ' + marcaT(t[0]))] });
     }
     const bir = nuevas.filter(x => x.d < 0).sort((a, b) => a.d - b.d)[0];
     if(bir) avisos.push({ prio: 3, pasos: [C('c-birdie', (bir.d <= -2 ? '¡Águila' : '¡Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b>! · hoyo ' + bir.h)] });
@@ -272,12 +275,13 @@
     const centro = caja.querySelector('.vt-centro');
     if(!t.length) centro.innerHTML = '<small>' + esc(round.course_name || 'Partida') + '</small><h3>Empieza enseguida</h3>';
     else {
-      const l = t[0];
+      const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
       centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
-        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + signo(l.neto) + '</b><em>' + (l.ultimo >= 18 ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
+        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.ultimo >= 18 ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
     }
     const cinta = caja.querySelector('.vt-cinta');
-    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i>' + esc(corto(x.n)) + ' <b>' + signo(x.neto) + '</b> <small>' + (x.ultimo >= 18 ? 'F' : 'h' + x.ultimo) + '</small></span>').join('');
+    const marca2 = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
+    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i>' + esc(corto(x.n)) + ' <b>' + marca2(x) + '</b> <small>' + (x.ultimo >= 18 ? 'F' : 'h' + x.ultimo) + '</small></span>').join('');
     cinta.innerHTML = items || '<span>Esperando los primeros golpes…</span>';
     cinta.classList.toggle('anda', t.length > 3);
     if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos

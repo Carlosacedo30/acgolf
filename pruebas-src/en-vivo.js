@@ -89,20 +89,23 @@
     try { if(typeof hcpCampo === 'function') return hcpCampo(h, { id: round.course_id, par: pares }, barra); } catch(e){}
     return Math.round(h);
   }
+  // Puntos Stableford de un hoyo (tabla oficial): 2 − diferencia neta sobre par, nunca menos de 0.
+  const stablefordPts = diff => Math.max(0, 2 - diff);
   function tabla(round){
     const pares = paresDe(round), si = dificultadDe(round), out = [];
+    const esPtos = round.scoring_type === 'stableford';   // Scramble y cualquier partida por puntos: manda el punto, no el golpe
     grupos(round).forEach((g, gi) => (g.players || []).forEach((n, p) => {
       if(!n) return;
       const sc = (g.scores || {})[p] || {}, hc = hcpDe(round, g, p, pares);
-      let bruto = 0, aPar = 0, neto = 0, jugados = 0, ultimo = 0;
+      let bruto = 0, aPar = 0, neto = 0, pts = 0, jugados = 0, ultimo = 0;
       Object.keys(sc).forEach(h => {
         const v = +sc[h]; if(!(v > 0)) return;
-        const par = pares[h - 1] || 4, rec = golpesRegalo(hc, si[h - 1] || 18);
-        bruto += v; aPar += v - par; neto += v - par - rec; jugados++; if(+h > ultimo) ultimo = +h;
+        const par = pares[h - 1] || 4, rec = golpesRegalo(hc, si[h - 1] || 18), diff = v - par - rec;
+        bruto += v; aPar += v - par; neto += diff; pts += stablefordPts(diff); jugados++; if(+h > ultimo) ultimo = +h;
       });
-      out.push({ n, gi, p, g, hc, bruto, aPar, neto, jugados, ultimo, sc, total: bruto - hc });
+      out.push({ n, gi, p, g, hc, bruto, aPar, neto, pts, jugados, ultimo, sc, esPtos, total: esPtos ? pts : bruto - hc });
     }));
-    return out.filter(x => x.jugados).sort((a, b) => a.neto - b.neto || a.aPar - b.aPar);
+    return out.filter(x => x.jugados).sort((a, b) => esPtos ? (b.pts - a.pts || a.bruto - b.bruto) : (a.neto - b.neto || a.aPar - b.aPar));
   }
   // Lo más destacado (para «Así va» y para el resumen)
   function momentos(round){
@@ -282,14 +285,16 @@
     }, 10000);
   }
 
-  // Arriba, fija: la clasificación neta
+  // Arriba, fija: la clasificación de verdad según se juegue la partida (puntos en Stableford, neto en Stroke Play)
   function pintarAsi(round){
     const box = document.querySelector('#vvOverlay .vv-asi'); if(!box) return;
     const t = tabla(round);
-    if(!t.length){ box.innerHTML = '<div class="vv-asi-t">Así va · neto</div><div class="vv-asi-v">Aún no hay golpes</div>'; return; }
+    const esPtos = round.scoring_type === 'stableford';
+    const titulo = esPtos ? 'puntos' : 'neto';
+    if(!t.length){ box.innerHTML = '<div class="vv-asi-t">Así va · ' + titulo + '</div><div class="vv-asi-v">Aún no hay golpes</div>'; return; }
     const fin = terminada(round);
-    box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Clasificación final · neto' : 'Así va · neto') + '</div><ol class="vv-asi-l">'
-      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (fin ? x.total : signo(x.neto)) + '</span><small>' + (fin ? x.bruto + '−' + x.hc : (x.ultimo >= 18 ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
+    box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Clasificación final · ' + titulo : 'Así va · ' + titulo) + '</div><ol class="vv-asi-l">'
+      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : (fin ? x.total : signo(x.neto))) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.ultimo >= 18 ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
       + '</ol>';
   }
 
@@ -369,8 +374,9 @@
     let lineas = [];
     if(!t.length) lineas.push('Todavía no han empezado. ¡Quédate, que esto empieza enseguida!');
     else {
-      const l = t[0];
-      lineas.push('Va ganando <strong>' + esc(corto(l.n)) + '</strong> con ' + signo(l.neto) + ' neto' + (t[1] ? ', y <strong>' + esc(corto(t[1].n)) + '</strong> le sigue con ' + signo(t[1].neto) : '') + '.');
+      const l = t[0], esPtos = l.esPtos;
+      const marca = x => esPtos ? x.pts + ' puntos' : signo(x.neto) + ' neto';
+      lineas.push('Va ganando <strong>' + esc(corto(l.n)) + '</strong> con ' + marca(l) + (t[1] ? ', y <strong>' + esc(corto(t[1].n)) + '</strong> le sigue con ' + marca(t[1]) : '') + '.');
       grupos(round).forEach((g, gi) => {
         const u = t.filter(x => x.gi === gi).reduce((a, x) => Math.max(a, x.ultimo), 0);
         if(u) lineas.push((g.time ? 'La salida de las ' + esc(g.time) : 'El grupo ' + (gi + 1)) + (u >= 18 ? ' ya ha terminado.' : ' va por el hoyo ' + (u + 1) + '.'));
@@ -449,17 +455,20 @@
       return '<div class="vv-r"><small>Hoyo ' + d.h + ' · Par ' + d.par + '</small><div class="vv-rnom">' + esc(corto(d.n)) + (ape ? ' <i>' + esc(ape) + '</i>' : '') + '</div>'
         + '<div class="vv-rres"><b class="' + col + '">' + esc(palabra) + '</b><span><big>' + d.v + '</big>golpes</span></div><div class="vv-rtira">' + tira.join('') + '</div></div>';
     }
-    if(tipo === 'apretado') return '<div class="vv-r"><small>Se decide por ' + (d.dif === 1 ? 'un golpe' : d.dif + ' golpes') + ' · neto</small><ol class="vv-rk">' + d.t.slice(0, 2).map(x => '<li><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + x.bruto + ' − ' + x.hc + '</em><b>' + x.total + '</b></li>').join('') + '</ol></div>';
+    if(tipo === 'apretado') return '<div class="vv-r"><small>Se decide por ' + (d.esPtos ? (d.dif === 1 ? 'un punto' : d.dif + ' puntos') : (d.dif === 1 ? 'un golpe' : d.dif + ' golpes') + ' · neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 2).map(x => '<li><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : x.total) + '</b></li>').join('') + '</ol></div>';
     if(tipo === 'suspense') return '<div class="vv-r"><small>Y el ganador del día es…</small><h3 class="vv-rsus">¿ ? ? ?</h3></div>';
-    if(tipo === 'ganador') return '<div class="vv-r"><small>Ganador del día 🏆</small><h3 class="vv-rwin">' + esc((corto(d.x.n) + ' ' + apellido(d.x.n)).trim()) + '</h3><p>' + d.x.total + ' netos · ' + d.x.bruto + ' golpes − ' + d.x.hc + ' de hándicap' + (d.mejor ? '<br>Mejor tarjeta: ' + esc(corto(d.mejor.n)) + ', ' + d.mejor.bruto + ' golpes' : '') + '</p></div>';
-    if(tipo === 'ranking') return '<div class="vv-r"><small>Clasificación · neto</small><ol class="vv-rk">' + d.t.slice(0, 6).map((x, i) => '<li class="' + (i === 0 ? 'win' : '') + '"><i>' + (i + 1) + '</i><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + x.bruto + ' − ' + x.hc + '</em><b>' + x.total + '</b></li>').join('') + '</ol></div>';
+    if(tipo === 'ganador') return '<div class="vv-r"><small>Ganador del día 🏆</small><h3 class="vv-rwin">' + esc((corto(d.x.n) + ' ' + apellido(d.x.n)).trim()) + '</h3><p>' + (d.esPtos ? d.x.pts + ' puntos · ' + d.x.bruto + ' golpes · hándicap ' + d.x.hc : d.x.total + ' netos · ' + d.x.bruto + ' golpes − ' + d.x.hc + ' de hándicap') + (d.mejor ? '<br>Mejor tarjeta: ' + esc(corto(d.mejor.n)) + ', ' + d.mejor.bruto + ' golpes' : '') + '</p></div>';
+    if(tipo === 'ranking') return '<div class="vv-r"><small>Clasificación · ' + (d.esPtos ? 'puntos' : 'neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 6).map((x, i) => '<li class="' + (i === 0 ? 'win' : '') + '"><i>' + (i + 1) + '</i><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : x.total) + '</b></li>').join('') + '</ol></div>';
     if(tipo === 'cta') return '<div class="vv-r vv-rcta"><small>Apunta tus partidas</small><h3>acgolf<b>.es</b></h3><p>Este resumen os lo trae <b>' + esc(PATRO.nombre) + '</b></p></div>';
     return '';
   }
 
   // El guion se hace solo con los resultados de la partida
   function guion(round){
-    const pares = paresDe(round), gs = grupos(round), t = tabla(round).slice().sort((a, b) => a.total - b.total || a.bruto - b.bruto);
+    const pares = paresDe(round), gs = grupos(round);
+    const esPtos = round.scoring_type === 'stableford';
+    // tabla() ya viene ordenada de ganador a último según se juegue: puntos (más, mejor) o neto (menos, mejor)
+    const t = tabla(round).slice();
     const pasos = [];
     const C = (k, r, v) => pasos.push({ q: 'curro', f: PC[k], r, v: v || 'curro' });
     const L = (k, r, v) => pasos.push({ q: 'lola', f: PL[k], r, v: v || 'lola' });
@@ -496,10 +505,11 @@
     });
     if(t.length){
       const mejor = t.slice().sort((a, b) => a.bruto - b.bruto)[0];
-      if(t[1] && t[1].total - t[0].total <= 2){ const r = rotulo('apretado', { t, dif: t[1].total - t[0].total }); L('ultimos', r); C('bonito', r); }
+      const dif = t[1] ? Math.abs(t[1].total - t[0].total) : null;
+      if(dif != null && dif <= 2){ const r = rotulo('apretado', { t, dif, esPtos }); L('ultimos', r); C('bonito', r); }
       C('ganadorEs', rotulo('suspense'));
-      C('enhorabuena', rotulo('ganador', { x: t[0], mejor: mejor !== t[0] ? mejor : null }));
-      L('revancha', rotulo('ranking', { t }));
+      C('enhorabuena', rotulo('ganador', { x: t[0], mejor: mejor !== t[0] ? mejor : null, esPtos }));
+      L('revancha', rotulo('ranking', { t, esPtos }));
     }
     const cta = rotulo('cta');
     C('adios', cta); L('adios', cta, 'risa');
