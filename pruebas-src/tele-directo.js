@@ -16,11 +16,16 @@
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
-  const corto = n => String(n || '').trim().split(/\s+/)[0] || String(n || '');
+  // En Foursome/Scramble cada pareja llega como un solo nombre unido: «Carlos … / Jose Moises …».
+  // corto() lo reconoce y muestra «Carlos y Jose»; la voz grabada sigue buscándose por el primer
+  // nombre de la pareja (primeraPalabra), igual que antes.
+  const primeraPalabra = n => String(n || '').trim().split(/\s+/)[0] || String(n || '');
+  const esEquipo = n => String(n || '').includes(' / ');
+  const corto = n => esEquipo(n) ? n.split(' / ').map(primeraPalabra).filter(Boolean).join(' y ') : primeraPalabra(n);
   const signo = d => d === 0 ? 'E' : (d > 0 ? '+' : '−') + Math.abs(d);
   const yo = () => (window.miPerfil && window.miPerfil.player_name) || (() => { try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } })();
   function claveNombre(n){
-    const k = norm(corto(n)).replace(/[^a-zñ]/g, '');
+    const k = norm(primeraPalabra(n)).replace(/[^a-zñ]/g, '');
     const k2 = APODOS[k] || k;
     return NOMBRES.includes(k2) ? 'n-' + k2 : null;
   }
