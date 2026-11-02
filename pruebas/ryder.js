@@ -248,6 +248,17 @@
           + '<span class="ry-rec">Golpes: ' + esc(recibeTxt(e.g)) + ' · toca para anotar</span></button>';
       }).join('') + '</div>';
     });
+    if(ryder.duelos.length){
+      h += '<div class="ry-sesion">Resumen de puntos<small>Cada partido, con el punto (o el medio punto) que da a su equipo</small></div><div class="ry-resumen-puntos">'
+        + ryder.duelos.map(d => {
+            const e = estado(ryder, d);
+            const ptsTxt = !e.terminado ? esc(e.pequeno)
+              : e.lider === 'A' ? pts(1) + ' – ' + pts(0) : e.lider === 'B' ? pts(0) + ' – ' + pts(1) : pts(.5) + ' – ' + pts(.5);
+            const col = !e.terminado ? '#3A3F46' : e.lider === 'A' ? m.colorA : e.lider === 'B' ? m.colorB : '#6B7280';
+            return '<div class="ry-rp-fila"><span class="ry-rp-nom"><b style="color:' + esc(m.colorA) + '">' + esc(lado(d.a)) + '</b> – <b style="color:' + esc(m.colorB) + '">' + esc(lado(d.b)) + '</b></span>'
+              + '<span class="ry-rp-pts" style="background:' + esc(col) + '">' + ptsTxt + '</span></div>';
+          }).join('') + '</div>';
+    }
     h += '<div class="ry-acc">'
       + (mio >= 0 ? '<button type="button" class="ry-btn" id="ryMio">Anotar mi partido</button>' : '')
       + (admin() ? '<button type="button" class="ry-btn ghost" id="ryNueva">Crear otra Ryder</button>'
