@@ -27,7 +27,23 @@
   const corto = n => { const w = String(n || '').trim().split(/\s+/); return w.length > 2 ? w.slice(0, 2).join(' ') : w.join(' '); };
   const primero = n => String(n || '').trim().split(/\s+/)[0] || '';
   const lado = l => l.length > 1 ? l.map(primero).join(' y ') : corto(l[0]);
-  const hcpDe = n => { const h = Number((typeof FAVORITE_HANDICAPS !== 'undefined' ? FAVORITE_HANDICAPS : {})[n]); return isNaN(h) ? null : h; };
+  // Jugadores para montar una Ryder: los del grupo, y en Los Iscariotes también los de Cajapollos
+  // (para poder mezclar a los dos grupos de amigos en una Ryder). Lo decide el servidor (jugadores_ryder()).
+  let ryderJugadores = null; // null = aún no cargados; se usa FAVORITE_PLAYERS mientras tanto
+  async function cargarJugadoresRyder(){
+    try {
+      const client = initSupabase(); if(!client) return;
+      const { data, error } = await client.rpc('jugadores_ryder');
+      if(error || !data) return;
+      ryderJugadores = {};
+      data.forEach(p => { ryderJugadores[p.name] = p.hcp == null ? null : Number(p.hcp); });
+      if(vista === 'crear') pintar();
+    } catch(e){ console.error('No se pudieron cargar los jugadores para la Ryder', e); }
+  }
+  const hcpDe = n => {
+    if(ryderJugadores && Object.prototype.hasOwnProperty.call(ryderJugadores, n)) return ryderJugadores[n];
+    const h = Number((typeof FAVORITE_HANDICAPS !== 'undefined' ? FAVORITE_HANDICAPS : {})[n]); return isNaN(h) ? null : h;
+  };
   // Hándicap de federación para esta Ryder: lo escribe el administrador al crearla (no se guarda en la liga).
   // Si no lo ha escrito, se usa de momento el de la liga como referencia.
   const hcpFedDe = n => {
@@ -37,7 +53,7 @@
   };
   const coma = v => v == null ? '—' : String(v).replace('.', ',');
   const campoDe = id => { const l = typeof COURSES !== 'undefined' ? COURSES : []; return l.find(c => c.id === id) || l.find(c => c.id === 'hato-verde'); };
-  const nombresGrupo = () => (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []).sort((a, b) => a.localeCompare(b, 'es'));
+  const nombresGrupo = () => (ryderJugadores ? Object.keys(ryderJugadores) : (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : [])).sort((a, b) => a.localeCompare(b, 'es'));
   const ordenHcp = (l, getHcp) => { const f = getHcp || hcpDe; return l.slice().sort((x, y) => (f(x) == null ? 99 : f(x)) - (f(y) == null ? 99 : f(y)) || x.localeCompare(y, 'es')); };
   function fechaLarga(iso){
     if(!iso) return '';
@@ -426,7 +442,7 @@
   function empezarCrear(){
     borrador = { paso: 1, titulo: 'Ryder Cup ' + ((window.miPerfil && window.miPerfil.grupo) || ''), nombreA: 'Rojos', colorA: COLORES[0][0], nombreB: 'Azules', colorB: COLORES[1][0],
       date: hoyIso(), courseId: 'hato-verde', modos: { foursome: true, fourball: true, individual: true }, equipo: {}, duelos: [], sobran: [] };
-    vista = 'crear'; pintar();
+    vista = 'crear'; ryderJugadores = null; cargarJugadoresRyder(); pintar();
   }
   // Empareja por hándicap: individuales, el 1º contra el 1º…; parejas, los dos mejores juntos contra los dos mejores del otro…
   function emparejar(){
