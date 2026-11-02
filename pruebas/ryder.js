@@ -396,8 +396,11 @@
         c.a.forEach((v, j) => { (x.ga[j] = x.ga[j] || [])[hh] = v; });
         c.b.forEach((v, j) => { (x.gb[j] = x.gb[j] || [])[hh] = v; });
       });
+      cuentas = null;
+      // En cuanto el partido queda decidido (o se acaban los 18), vuelve solo al marcador para ver la puntuación.
+      if(ok && ryder.duelos[i] && estado(ryder, ryder.duelos[i]).terminado){ vista = 'marcador'; pintar(); return; }
       if(ok && hh < g.n - 1) hoyoSel = hh + 1;
-      cuentas = null; pintar();
+      pintar();
     };
     if($('ryQuitar')) $('ryQuitar').onclick = async () => {
       if(!confirm('¿Borrar los golpes del hoyo ' + (hoyoSel + 1) + '?')) return;
