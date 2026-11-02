@@ -397,8 +397,9 @@
         c.b.forEach((v, j) => { (x.gb[j] = x.gb[j] || [])[hh] = v; });
       });
       cuentas = null;
-      // En cuanto el partido queda decidido (o se acaban los 18), vuelve solo al marcador para ver la puntuación.
-      if(ok && ryder.duelos[i] && estado(ryder, ryder.duelos[i]).terminado){ vista = 'marcador'; pintar(); return; }
+      // Al anotar el último hoyo (el 18), vuelve sola al marcador para ver la puntuación.
+      // Si el partido ya está decidido antes, se deja seguir jugando los hoyos que falten.
+      if(ok && hh >= g.n - 1){ vista = 'marcador'; pintar(); return; }
       if(ok && hh < g.n - 1) hoyoSel = hh + 1;
       pintar();
     };
