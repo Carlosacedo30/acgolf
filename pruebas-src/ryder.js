@@ -28,10 +28,17 @@
   const primero = n => String(n || '').trim().split(/\s+/)[0] || '';
   const lado = l => l.length > 1 ? l.map(primero).join(' y ') : corto(l[0]);
   const hcpDe = n => { const h = Number((typeof FAVORITE_HANDICAPS !== 'undefined' ? FAVORITE_HANDICAPS : {})[n]); return isNaN(h) ? null : h; };
+  // Hándicap de federación para esta Ryder: lo escribe el administrador al crearla (no se guarda en la liga).
+  // Si no lo ha escrito, se usa de momento el de la liga como referencia.
+  const hcpFedDe = n => {
+    const v = borrador && borrador.hcpFed && borrador.hcpFed[n];
+    if(v != null && String(v).trim() !== ''){ const x = Number(String(v).replace(',', '.')); if(!isNaN(x)) return x; }
+    return hcpDe(n);
+  };
   const coma = v => v == null ? '—' : String(v).replace('.', ',');
   const campoDe = id => { const l = typeof COURSES !== 'undefined' ? COURSES : []; return l.find(c => c.id === id) || l.find(c => c.id === 'hato-verde'); };
   const nombresGrupo = () => (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []).sort((a, b) => a.localeCompare(b, 'es'));
-  const ordenHcp = l => l.slice().sort((x, y) => (hcpDe(x) == null ? 99 : hcpDe(x)) - (hcpDe(y) == null ? 99 : hcpDe(y)) || x.localeCompare(y, 'es'));
+  const ordenHcp = (l, getHcp) => { const f = getHcp || hcpDe; return l.slice().sort((x, y) => (f(x) == null ? 99 : f(x)) - (f(y) == null ? 99 : f(y)) || x.localeCompare(y, 'es')); };
   function fechaLarga(iso){
     if(!iso) return '';
     const s = new Date(iso + 'T12:00:00').toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
@@ -307,6 +314,25 @@
     $('ryVolver').onclick = volver; $('ryInfoVolver').onclick = volver;
   }
 
+  // ---------- Aviso al crear la Ryder: al móvil y por correo a todos los jugadores apuntados ----------
+  function avisoCreacion(texto){
+    const d = document.createElement('div');
+    d.textContent = texto;
+    d.style.cssText = 'position:fixed;left:16px;right:16px;bottom:24px;z-index:9999;background:#16191D;color:#F2F4F5;padding:14px 16px;border-radius:14px;font-size:16px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.4);border:1px solid rgba(198,242,78,.4)';
+    document.body.appendChild(d);
+    setTimeout(() => d.remove(), 4500);
+  }
+  async function avisarRyderCreada(code){
+    if(window.acgolfAvisosMovil) window.acgolfAvisosMovil.partidaNueva(code).then(n => { if(n) avisoCreacion('📳 Avisados en el móvil ' + n + (n === 1 ? ' compañero' : ' compañeros')); });
+    const client = initSupabase();
+    if(!client || !client.functions) return;
+    try {
+      const { data, error } = await client.functions.invoke('avisar', { body: { code } });
+      if(error) throw error;
+      if(data && data.enviados) avisoCreacion('✉️ Avisados por correo ' + data.enviados + (data.enviados === 1 ? ' compañero' : ' compañeros'));
+    } catch(e){ console.error('No se pudo avisar por correo de la Ryder', e); }
+  }
+
   async function borrar(){
     if(!ryder || !confirm('¿Borrar esta Ryder?\nDesaparece para todos y no se puede deshacer.')) return;
     const res = typeof deleteSharedRound === 'function' ? await deleteSharedRound(ryder.code) : { ok: false };
@@ -390,7 +416,7 @@
   // Empareja por hándicap: individuales, el 1º contra el 1º…; parejas, los dos mejores juntos contra los dos mejores del otro…
   function emparejar(){
     const b = borrador;
-    const A = ordenHcp(Object.keys(b.equipo).filter(n => b.equipo[n] === 'A')), B = ordenHcp(Object.keys(b.equipo).filter(n => b.equipo[n] === 'B'));
+    const A = ordenHcp(Object.keys(b.equipo).filter(n => b.equipo[n] === 'A'), hcpFedDe), B = ordenHcp(Object.keys(b.equipo).filter(n => b.equipo[n] === 'B'), hcpFedDe);
     b.duelos = []; b.sobran = [];
     ORDEN_MODOS.forEach(t => {
       if(!b.modos[t]) return;
@@ -417,7 +443,9 @@
         + '<div class="ry-msg" id="ryMsg"></div><button type="button" class="ry-btn" id="rySig">Siguiente: elegir jugadores</button>';
     } else if(b.paso === 2){
       const n = k => Object.values(b.equipo).filter(v => v === k).length;
-      const media = k => { const hs = Object.keys(b.equipo).filter(x => b.equipo[x] === k).map(hcpDe).filter(v => v != null); return hs.length ? coma(Math.round(hs.reduce((s, v) => s + v, 0) / hs.length * 10) / 10) : '—'; };
+      const media = k => { const hs = Object.keys(b.equipo).filter(x => b.equipo[x] === k).map(hcpFedDe).filter(v => v != null); return hs.length ? coma(Math.round(hs.reduce((s, v) => s + v, 0) / hs.length * 10) / 10) : '—'; };
+      const asignados = Object.keys(b.equipo);
+      const fedVal = x => { const v = b.hcpFed && b.hcpFed[x]; if(v != null && String(v).trim() !== '') return v; const h = hcpDe(x); return h == null ? '' : String(h); };
       h += '<p class="ry-p">Toca cada nombre para pasarlo de equipo: <b style="color:' + esc(b.colorA) + '">' + esc(b.nombreA) + '</b> → <b style="color:' + esc(b.colorB) + '">' + esc(b.nombreB) + '</b> → no juega.</p>'
         + '<div class="ry-resumen"><span style="border-color:' + esc(b.colorA) + '">' + esc(b.nombreA) + ': <b>' + n('A') + '</b> · HCP medio ' + media('A') + '</span>'
         + '<span style="border-color:' + esc(b.colorB) + '">' + esc(b.nombreB) + ': <b>' + n('B') + '</b> · HCP medio ' + media('B') + '</span></div>'
@@ -425,15 +453,19 @@
             const e = b.equipo[x];
             const c = e === 'A' ? b.colorA : e === 'B' ? b.colorB : '';
             return '<button type="button" class="ry-jug' + (e ? ' en' : '') + '" data-n="' + esc(x) + '"' + (c ? ' style="background:' + esc(c) + ';border-color:' + esc(c) + '"' : '') + '>'
-              + '<span>' + esc(x) + '</span><small>' + (e ? esc(e === 'A' ? b.nombreA : b.nombreB) + ' · ' : '') + 'HCP ' + coma(hcpDe(x)) + '</small></button>';
+              + '<span>' + esc(x) + '</span><small>' + (e ? esc(e === 'A' ? b.nombreA : b.nombreB) + ' · ' : '') + 'HCP liga ' + coma(hcpDe(x)) + '</small></button>';
           }).join('') + '</div>'
+        + (asignados.length ? '<div class="ry-sub">Hándicap para esta Ryder</div>'
+          + '<p class="ry-p" style="margin-top:-6px">El de la federación, independiente del de la liga. Sale puesto el de la liga como referencia; cámbialo si quieres.</p>'
+          + '<div class="ry-fedlist">' + asignados.map(x => '<div class="ry-fed-row"><span>' + esc(corto(x)) + '</span><input class="ry-fed-inp" type="text" inputmode="decimal" data-n="' + esc(x) + '" value="' + esc(fedVal(x)) + '" aria-label="Hándicap de ' + esc(x) + ' para esta Ryder"></div>').join('') + '</div>'
+          : '')
         + '<div class="ry-msg" id="ryMsg"></div><button type="button" class="ry-btn" id="rySig">Siguiente: emparejar</button>';
     } else {
       h += '<p class="ry-p">La app ha emparejado por hándicap. Para cambiar a alguien, elígelo en la lista: se intercambia con el que estaba en ese sitio, dentro de la misma modalidad.</p>';
       ORDEN_MODOS.forEach(t => {
         const idx = b.duelos.map((d, i) => i).filter(i => b.duelos[i].tipo === t);
         if(!idx.length) return;
-        const deLado = k => { const s = new Set(); idx.forEach(i => b.duelos[i][k].forEach(n => s.add(n))); return ordenHcp([...s]); };
+        const deLado = k => { const s = new Set(); idx.forEach(i => b.duelos[i][k].forEach(n => s.add(n))); return ordenHcp([...s], hcpFedDe); };
         const LA = deLado('a'), LB = deLado('b');
         const sel = (i, k, j, lista, color) => '<select class="ry-sel" data-i="' + i + '" data-k="' + k + '" data-j="' + j + '" style="color:' + esc(color) + '">'
           + lista.map(n => '<option value="' + esc(n) + '"' + (n === b.duelos[i][k][j] ? ' selected' : '') + '>' + esc(corto(n)) + '</option>').join('') + '</select>';
@@ -462,6 +494,11 @@
       if(!e) b.equipo[n] = 'A'; else if(e === 'A') b.equipo[n] = 'B'; else delete b.equipo[n];
       const ov = $('ryOverlay'), sc = ov.scrollTop; pintar(); ov.scrollTop = sc;
     });
+    body.querySelectorAll('.ry-fed-inp').forEach(inp => inp.onchange = () => {
+      b.hcpFed = b.hcpFed || {};
+      b.hcpFed[inp.dataset.n] = inp.value;
+      const ov = $('ryOverlay'), sc = ov.scrollTop; pintar(); ov.scrollTop = sc;
+    });
     body.querySelectorAll('.ry-sel').forEach(s => s.onchange = () => {
       // intercambia ese jugador con el que estaba en ese sitio, dentro de la misma modalidad
       const i = +s.dataset.i, k = s.dataset.k, j = +s.dataset.j, nuevo = s.value, viejo = b.duelos[i][k][j], t = b.duelos[i].tipo;
@@ -488,7 +525,7 @@
       const client = initSupabase();
       const nuevo = { meta: { ryder: true, titulo: b.titulo || 'Ryder Cup', nombreA: b.nombreA, colorA: b.colorA, nombreB: b.nombreB, colorB: b.colorB, date: b.date, courseId: b.courseId },
         A: Object.keys(b.equipo).filter(n => b.equipo[n] === 'A'), B: Object.keys(b.equipo).filter(n => b.equipo[n] === 'B'),
-        duelos: b.duelos.map(d => ({ tipo: d.tipo, a: d.a, b: d.b, ha: d.a.map(hcpDe), hb: d.b.map(hcpDe), ga: [], gb: [] })) };
+        duelos: b.duelos.map(d => ({ tipo: d.tipo, a: d.a, b: d.b, ha: d.a.map(hcpFedDe), hb: d.b.map(hcpFedDe), ga: [], gb: [] })) };
       try {
         const { data, error } = await client.from('rounds').insert({
           code: genRoundCode(), course_id: null, course_name: campoDe(b.courseId).name,
@@ -496,6 +533,7 @@
         }).select('id, code, match_groups, updated_at').single();
         if(error) throw error;
         ryder = deFila(data); borrador = null; vista = 'marcador'; vigilar(); pintar();
+        avisarRyderCreada(data.code);
       } catch(e){ console.error(e); btn.disabled = false; btn.textContent = 'Crear la Ryder'; msg('No se pudo crear. Revisa la conexión.'); }
     };
   }

@@ -94,6 +94,10 @@ body.ry-abierta{ overflow:hidden; }
 .ry-jug span{ font:800 18px 'Barlow', sans-serif; }
 .ry-jug small{ font-size:14px; color:#9AA3AB; margin-top:2px; }
 .ry-jug.en small{ color:rgba(255,255,255,.88); }
+.ry-fedlist{ display:flex; flex-direction:column; gap:8px; margin-bottom:6px; }
+.ry-fed-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; border-radius:14px; background:#16191D; border:1px solid rgba(255,255,255,.12); }
+.ry-fed-row span{ font:700 17px 'Barlow', sans-serif; overflow-wrap:anywhere; }
+.ry-fed-inp{ width:76px; flex:none; font:800 19px 'Barlow', sans-serif; text-align:center; padding:10px 6px; border-radius:10px; background:#F4F5F7; color:#111316; border:0; }
 .ry-par{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; padding:10px; border-radius:14px; background:#16191D; border:1px solid rgba(255,255,255,.1); }
 .ry-par-l{ display:flex; flex-direction:column; gap:6px; min-width:0; }
 .ry-vs{ font-size:14px; color:#9AA3AB; }
