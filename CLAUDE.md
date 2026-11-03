@@ -7,3 +7,4 @@
   - Botones en forma de pastilla (`border-radius: 999px`); tarjetas con esquinas de 14–20 px. Botón principal lima; secundario grafito con borde lima suave `rgba(198,242,78,.55)`. Al pulsar: `transform: scale(.97)`.
   - Si una instrucción choca con este estilo, se adapta al estilo y se le explica a Carlos en una línea qué se cambió.
 - Los cambios se hacen primero en la versión de pruebas (`pruebas-src/`, luego `bash tools/hacer-pruebas.sh`). Si Carlos pide verlo antes, se le enseña una imagen y no se publica hasta que diga.
+- **Resumen y retransmisión (norma de Carlos, para siempre):** todo resumen, marcador en directo, Plató o tele se cuenta según el hoyo por el que salió cada grupo (`hoyoSalida`, si no hay, el 1). El último hoyo es el 18.º que se juega (si se sale por el 10, es el 9). Nunca dar por hecho 1→18 ni «ida 1–9 / vuelta 10–18». Usar `ordenDe(g)`, `posDe(g,h)` en `en-vivo.js` (`pos` en `tabla()` y `momentos()`).

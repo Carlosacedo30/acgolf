@@ -68,6 +68,16 @@
   }
   const grupos = round => (round.match_groups || []).filter(g => g && (g.players || []).filter(Boolean).length);
 
+  // REGLA PARA SIEMPRE: el resumen se cuenta según el hoyo por el que salió CADA grupo.
+  // Si salió por el 10, su primer hoyo es el 10 y el último (el 18.º que juega) es el 9.
+  // Nunca se da por hecho que se empieza en el 1 ni que se acaba en el 18.
+  const salidaDe = g => { const s = Math.round(Number(g && g.hoyoSalida)); return s >= 1 && s <= 18 ? s : 1; };
+  const ordenDe = g => { const s = salidaDe(g), o = []; for(let k = 0; k < 18; k++) o.push((s - 1 + k) % 18 + 1); return o; };
+  // Qué número de hoyo juega en orden (1.º…18.º) un hoyo concreto de ese grupo
+  const posDe = (g, h) => (((Number(h) - salidaDe(g)) % 18) + 18) % 18 + 1;
+  // Último hoyo jugado (el que va más adelante en el orden del grupo) según los golpes puestos
+  function ultimoDe(g, hoyos){ let m = 0, r = 0; (hoyos || []).forEach(h => { const k = posDe(g, h); if(k > m){ m = k; r = +h; } }); return { h: r, pos: m }; }
+
   // Contador sin nombres: quién mira (número al azar del móvil) y la partida
   function apuntar(evento, code){
     try {
@@ -97,13 +107,13 @@
     grupos(round).forEach((g, gi) => (g.players || []).forEach((n, p) => {
       if(!n) return;
       const sc = (g.scores || {})[p] || {}, hc = hcpDe(round, g, p, pares);
-      let bruto = 0, aPar = 0, neto = 0, pts = 0, jugados = 0, ultimo = 0;
+      let bruto = 0, aPar = 0, neto = 0, pts = 0, jugados = 0, ultimo = 0, pos = 0;
       Object.keys(sc).forEach(h => {
         const v = +sc[h]; if(!(v > 0)) return;
         const par = pares[h - 1] || 4, rec = golpesRegalo(hc, si[h - 1] || 18), diff = v - par - rec;
-        bruto += v; aPar += v - par; neto += diff; pts += stablefordPts(diff); jugados++; if(+h > ultimo) ultimo = +h;
+        bruto += v; aPar += v - par; neto += diff; pts += stablefordPts(diff); jugados++; if(posDe(g, h) > pos){ pos = posDe(g, h); ultimo = +h; }
       });
-      out.push({ n, gi, p, g, hc, bruto, aPar, neto, pts, jugados, ultimo, sc, esPtos, total: esPtos ? pts : bruto - hc });
+      out.push({ n, gi, p, g, hc, bruto, aPar, neto, pts, jugados, ultimo, pos, sc, esPtos, total: esPtos ? pts : bruto - hc });
     }));
     return out.filter(x => x.jugados).sort((a, b) => esPtos ? (b.pts - a.pts || a.bruto - b.bruto) : (a.neto - b.neto || a.aPar - b.aPar));
   }
@@ -112,7 +122,7 @@
     const pares = paresDe(round), out = [];
     grupos(round).forEach((g, gi) => (g.players || []).forEach((n, p) => {
       const sc = (g.scores || {})[p] || {};
-      Object.keys(sc).forEach(h => { const v = +sc[h]; if(v > 0) out.push({ n, gi, p, h: +h, v, par: pares[h - 1] || 4, d: v - (pares[h - 1] || 4), sc }); });
+      Object.keys(sc).forEach(h => { const v = +sc[h]; if(v > 0) out.push({ n, gi, p, h: +h, pos: posDe(g, h), v, par: pares[h - 1] || 4, d: v - (pares[h - 1] || 4), sc }); });
     }));
     return out;
   }
@@ -294,7 +304,7 @@
     if(!t.length){ box.innerHTML = '<div class="vv-asi-t">Así va · ' + titulo + '</div><div class="vv-asi-v">Aún no hay golpes</div>'; return; }
     const fin = terminada(round);
     box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Clasificación final · ' + titulo : 'Así va · ' + titulo) + '</div><ol class="vv-asi-l">'
-      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : (fin ? x.total : signo(x.neto))) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.ultimo >= 18 ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
+      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : (fin ? x.total : signo(x.neto))) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.pos >= 18 ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
       + '</ol>';
   }
 
@@ -308,11 +318,12 @@
     const html = gs.map((g, gi) => {
       const sc = g.scores || {};
       const nombres = g.players;
-      let actual = 0;
-      nombres.forEach((_, p) => Object.keys(sc[p] || {}).forEach(h => { if(+sc[p][h] > 0 && +h > actual) actual = +h; }));
-      const ultimo = Math.max(actual, 1);
-      const desde = Math.max(1, ultimo - 4), cols = [];
-      for(let h = desde; h <= Math.max(ultimo, desde + 4) && h <= 18; h++) cols.push(h);
+      const orden = ordenDe(g), hechos = [];
+      nombres.forEach((_, p) => Object.keys(sc[p] || {}).forEach(h => { if(+sc[p][h] > 0) hechos.push(+h); }));
+      const fin = ultimoDe(g, hechos), actual = fin.h;
+      const ultimoPos = Math.max(fin.pos, 1);
+      const desde = Math.max(1, ultimoPos - 4), cols = [];
+      for(let k = desde; k <= Math.min(18, Math.max(ultimoPos, desde + 4)); k++) cols.push(orden[k - 1]);
       const filas = nombres.map((n, p) => {
         let tot = 0, jugados = 0;
         Object.keys(sc[p] || {}).forEach(h => { const v = +sc[p][h]; if(v > 0){ tot += v - (pares[h - 1] || 4); jugados++; } });
@@ -378,10 +389,10 @@
       const marca = x => esPtos ? x.pts + ' puntos' : signo(x.neto) + ' neto';
       lineas.push('Va ganando <strong>' + esc(corto(l.n)) + '</strong> con ' + marca(l) + (t[1] ? ', y <strong>' + esc(corto(t[1].n)) + '</strong> le sigue con ' + marca(t[1]) : '') + '.');
       grupos(round).forEach((g, gi) => {
-        const u = t.filter(x => x.gi === gi).reduce((a, x) => Math.max(a, x.ultimo), 0);
-        if(u) lineas.push((g.time ? 'La salida de las ' + esc(g.time) : 'El grupo ' + (gi + 1)) + (u >= 18 ? ' ya ha terminado.' : ' va por el hoyo ' + (u + 1) + '.'));
+        const u = t.filter(x => x.gi === gi).reduce((a, x) => Math.max(a, x.pos), 0);
+        if(u) lineas.push((g.time ? 'La salida de las ' + esc(g.time) : 'El grupo ' + (gi + 1)) + (u >= 18 ? ' ya ha terminado.' : ' va por el hoyo ' + ordenDe(g)[u] + '.'));
       });
-      const mejor = m.slice().sort((a, b) => a.d - b.d || b.h - a.h)[0];
+      const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
       if(mejor && mejor.d < 0) lineas.push('Lo mejor hasta ahora: <strong>' + nombreJugada(mejor.d) + ' de ' + esc(corto(mejor.n)) + '</strong> en el hoyo ' + mejor.h + '.');
     }
     const C = window.acgolfCurro, cara = C && C.cara ? C.cara('feliz', 'curro') : '';
@@ -444,11 +455,11 @@
     if(tipo === 'salida') return '<div class="vv-r"><small>' + esc(d.titulo) + '</small><div class="vv-rchips">' + d.nombres.map(n => '<span>' + esc(corto(n)) + '</span>').join('') + '</div></div>';
     if(tipo === 'jugada'){
       const col = d.d <= -2 ? 'ag' : d.d === -1 ? 'bi' : d.d === 0 ? 'p' : d.d === 1 ? 'bo' : 'mal';
-      const lo = d.h <= 9 ? 1 : 10, tira = [];
-      for(let x = lo; x < lo + 9; x++){
-        const v = +d.sc[x], par = d.pares[x - 1] || 4, dd = v - par;
-        const c = !(v > 0) || x > d.h ? '' : dd <= -2 ? 'ag' : dd === -1 ? 'bi' : dd === 0 ? 'p' : dd === 1 ? 'bo' : 'mal';
-        tira.push('<div class="' + (x === d.h ? 'now' : '') + '"><em>' + x + '</em><b class="' + c + '">' + (v > 0 && x <= d.h ? v : '·') + '</b></div>');
+      const ord = d.orden || ordenDe({}), lo = d.pos <= 9 ? 0 : 9, tira = [];
+      for(let k = lo; k < lo + 9; k++){
+        const x = ord[k], v = +d.sc[x], par = d.pares[x - 1] || 4, dd = v - par;
+        const c = !(v > 0) || k + 1 > d.pos ? '' : dd <= -2 ? 'ag' : dd === -1 ? 'bi' : dd === 0 ? 'p' : dd === 1 ? 'bo' : 'mal';
+        tira.push('<div class="' + (x === d.h ? 'now' : '') + '"><em>' + x + '</em><b class="' + c + '">' + (v > 0 && k + 1 <= d.pos ? v : '·') + '</b></div>');
       }
       const palabra = d.d <= 2 ? nombreJugada(d.d) : '+' + d.d;
       const ape = apellido(d.n);
@@ -483,18 +494,18 @@
       const elegidos = [];
       g.players.forEach((n, p) => {
         const suyos = ms.filter(m => m.p === p); if(!suyos.length) return;
-        const bajos = suyos.filter(m => m.d < 0).sort((a, b) => a.d - b.d || a.h - b.h);
+        const bajos = suyos.filter(m => m.d < 0).sort((a, b) => a.d - b.d || a.pos - b.pos);
         bajos.slice(0, 2).forEach(m => elegidos.push(m));
-        if(!bajos.length){ const par = suyos.filter(m => m.d === 0).sort((a, b) => a.par - b.par || a.h - b.h)[0]; if(par) elegidos.push(par); }
+        if(!bajos.length){ const par = suyos.filter(m => m.d === 0).sort((a, b) => a.par - b.par || a.pos - b.pos)[0]; if(par) elegidos.push(par); }
       });
       // Solo el peor hoyo del grupo (si fue muy malo), para no repetir
-      const peor = ms.slice().sort((a, b) => b.d - a.d || a.h - b.h)[0];
+      const peor = ms.slice().sort((a, b) => b.d - a.d || a.pos - b.pos)[0];
       if(peor && peor.d >= 3) elegidos.push(peor);
       if(!elegidos.length && ms.length) elegidos.push(ms.slice().sort((a, b) => a.d - b.d)[0]);
       // Un bogui para dar juego si el grupo va escaso
       if(elegidos.length < 2){ const b = ms.find(m => m.d === 1 && !elegidos.includes(m)); if(b) elegidos.push(b); }
-      elegidos.sort((a, b) => a.h - b.h).slice(0, 5).forEach(m => {
-        const r = rotulo('jugada', Object.assign({ pares }, m));
+      elegidos.sort((a, b) => a.pos - b.pos).slice(0, 5).forEach(m => {
+        const r = rotulo('jugada', Object.assign({ pares, orden: ordenDe(g) }, m));
         if(m.d <= -2){ L('aguila', r); C('aguila', r); L('seSale', r); }
         else if(m.d === -1){ C('atencionBerdi', r); L('berdi', r); }
         else if(m.d === 0){ const k = ['c:par', 'l:parLimpito', 'l:parCuenta'][np++]; if(k){ const [q, f] = k.split(':'); if(q === 'c') C(f, r); else L(f, r); } }
