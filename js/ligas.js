@@ -114,18 +114,22 @@ function ligaProximoDia(dia){
   while(d.getDay() !== dia) d.setDate(d.getDate() + 1);
   return ligaIso(d);
 }
-// Fechas de las jornadas: cada semana (7) o cada 15 días (14) desde la primera; si se cambia una a mano, las siguientes cuentan desde ella
+// Fechas de las jornadas: cada semana (7) o cada 15 días (14) desde la primera; si se cambia una a mano, las siguientes cuentan desde ella.
+// «slot» es la casilla que se tocó para cambiar la fecha (J1, J2…, fijas de por vida en el formulario); «n» es el número
+// final de la jornada, siempre por orden de fecha, para que J1 sea la más próxima aunque se haya tocado alguna fecha a mano.
 function ligaCalendario(inicio, jornadas, campo, cada, fechas, salida){
   const out = [];
   const d = new Date(inicio + 'T12:00:00');
-  for(let n = 1; n <= jornadas; n++){
-    const courseId = campo === 'alternar' ? (n % 2 ? 'hato-verde' : 'zaudin') : campo;
-    if(fechas && fechas[n]) d.setTime(new Date(fechas[n] + 'T12:00:00').getTime()); // las siguientes siguen contando desde la cambiada
-    const j = { n, date: ligaIso(d), courseId };
+  for(let slot = 1; slot <= jornadas; slot++){
+    const courseId = campo === 'alternar' ? (slot % 2 ? 'hato-verde' : 'zaudin') : campo;
+    if(fechas && fechas[slot]) d.setTime(new Date(fechas[slot] + 'T12:00:00').getTime()); // las siguientes siguen contando desde la cambiada
+    const j = { slot, date: ligaIso(d), courseId };
     if(salida === 'tiro') j.salida = 'tiro';
     out.push(j);
     d.setDate(d.getDate() + (cada || 7));
   }
+  out.sort((a, b) => a.date.localeCompare(b.date));
+  out.forEach((j, i) => { j.n = i + 1; });
   return out;
 }
 // Salida al tiro: hoyos repartidos por el campo (8 grupos: 1, 3, 5, 7, 10, 12, 14, 16)
@@ -403,8 +407,8 @@ function ligaPintarForm(){
     + '<div class="lg-aviso">' + (f.sorteo === 'rotar' ? 'La app sortea los grupos de cada jornada procurando que todos coincidan con todos y se repita lo menos posible.' : 'La app sortea los grupos de cada jornada al azar.') + ' Luego puedes cambiarlos a mano en cada jornada.</div>'
 
     + '<div class="conv-eyebrow">Calendario <span class="lg-cuenta">toca una fecha para cambiarla</span></div>'
-    + '<div class="lg-cal">' + cal.map(j => '<label class="lg-cal-f lg-cal-ed' + (f.fechas[j.n] ? ' lg-cambiada' : '') + '"><span>J' + j.n + '</span><b>' + ligaEsc(ligaFechaLarga(j.date)) + '</b><small>' + ligaCampoCorto(j.courseId) + (f.fechas[j.n] ? ' · fecha cambiada' : '') + '</small>'
-        + '<input type="date" class="lg-cal-in" data-n="' + j.n + '" value="' + j.date + '" aria-label="Fecha de la jornada ' + j.n + '"></label>').join('') + '</div>'
+    + '<div class="lg-cal">' + cal.map(j => '<label class="lg-cal-f lg-cal-ed' + (f.fechas[j.slot] ? ' lg-cambiada' : '') + '"><span>J' + j.n + '</span><b>' + ligaEsc(ligaFechaLarga(j.date)) + '</b><small>' + ligaCampoCorto(j.courseId) + (f.fechas[j.slot] ? ' · fecha cambiada' : '') + '</small>'
+        + '<input type="date" class="lg-cal-in" data-slot="' + j.slot + '" value="' + j.date + '" aria-label="Fecha de la jornada ' + j.n + '"></label>').join('') + '</div>'
     + (Object.keys(f.fechas).length ? '<button type="button" class="conv-link" id="lgFechasAuto">Volver a las fechas automáticas</button>' : '')
     + (f.jugadores.length ? '<div class="lg-aviso">Cada ronda es una partida con todos: ' + nGrupos + (nGrupos === 1 ? ' grupo' : ' grupos') + '. Los grupos se sortean en cada ronda.</div>' : '')
     + (nGrupos > MAX_GROUPS ? '<div class="lg-aviso lg-mal">Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4. Quita jugadores.</div>' : '')
@@ -443,9 +447,9 @@ function ligaPintarForm(){
   body.querySelectorAll('[data-hoyoini]').forEach(b => b.addEventListener('click', ()=>{ f.hoyoInicio = ligaHoyoMas(f.hoyoInicio || 1, Number(b.dataset.hoyoini)); repintar(); }));
   body.querySelectorAll('.lg-cal-in').forEach(inp => inp.addEventListener('change', ()=>{
     if(!inp.value) return;
-    const n = Number(inp.dataset.n);
-    if(n === 1){ f.inicio = inp.value; const d = new Date(inp.value + 'T12:00:00').getDay(); if(d === 0 || d === 6) f.dia = d; delete f.fechas[1]; }
-    else f.fechas[n] = inp.value;
+    const slot = Number(inp.dataset.slot);
+    if(slot === 1){ f.inicio = inp.value; const d = new Date(inp.value + 'T12:00:00').getDay(); if(d === 0 || d === 6) f.dia = d; delete f.fechas[1]; }
+    else f.fechas[slot] = inp.value;
     repintar();
   }));
   const fa = document.getElementById('lgFechasAuto'); if(fa) fa.addEventListener('click', ()=>{ f.fechas = {}; repintar(); });

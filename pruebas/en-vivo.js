@@ -255,7 +255,7 @@
       + '<div class="vv-car">' + tarjetas() + '</div>'
       + '<a class="vv-patro" href="' + esc(PATRO.url) + '" target="_blank" rel="noopener"><small>Patrocinado por</small> <b>' + esc(PATRO.nombre) + '</b><span>' + PATRO.franja + '</span></a>';
     ov.querySelector('.vv-x').onclick = cerrar;
-    ov.querySelectorAll('.vv-patro, .vv-promo a').forEach(a => a.addEventListener('click', () => apuntar('patrocinio', code)));
+    // El toque en el enlace del patrocinador ya lo cuenta patro-cuenta.js en toda la app (si se contaba aquí también, salía el doble)
     pintar(round);
     apuntar('envivo', code);
     // La rueda cambia sola cada 20 s (si no la está moviendo con el dedo)

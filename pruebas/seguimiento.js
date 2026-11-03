@@ -108,7 +108,6 @@
     const nombreP = { hoy:'hoy', '7':'en los últimos 7 días', '30':'en los últimos 30 días', todo:'desde el principio' }[periodo];
     const fichas = [
       ['👀', P.visitas, 'Visitas a la web', 'personas distintas'],
-      ['⛳', P.pruebas, 'Probaron sin registro', 'con «Probar sin registrarme»'],
       ['🙋', P.registros, 'Cuentas nuevas', 'toca para ver quiénes', 'cuentas'],
       ['📲', P.instaladas, 'La instalaron', 'en el móvil'],
       ['🏌️', P.partidas, 'Partidas creadas', ''],
@@ -117,7 +116,7 @@
       ['📢', P.anuncio_vistas, 'Vieron al patrocinador', (P.anuncio_toques || 0) + ' toques · detalle abajo'],
     ];
     const P30 = (d.periodos || {})['30'] || {};
-    const emb = [['Visitan la web', P30.visitas || 0], ['Prueban sin registro', P30.pruebas || 0], ['Se registran', P30.registros || 0], ['La instalan', P30.instaladas || 0]];
+    const emb = [['Visitan la web', P30.visitas || 0], ['Se registran', P30.registros || 0], ['La instalan', P30.instaladas || 0]];
     const maxE = Math.max(1, ...emb.map(e => e[1]));
     const orig = d.por_origen || [];
     const maxO = Math.max(1, ...orig.map(o => o.visitas || 0));

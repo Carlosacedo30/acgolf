@@ -1280,7 +1280,8 @@
     if(!session){ try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){} if(yaEntroAntes() || codigoAdmin()) pantallaEntrar(sinCuentaAviso); else pantallaCrear(sinCuentaAviso); return; }
     const { data: perfil, error } = await client.rpc('mi_perfil');
     if(error){ mostrar(cabecera('Sin conexión', traducir(error)) + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
-    if(!perfil){ pantallaCompletar(session.user && session.user.email); return; }
+    // Cuenta nueva (con Google o con correo): se apunta aquí para que cuente siempre, venga por donde venga
+    if(!perfil){ evento('registro'); pantallaCompletar(session.user && session.user.email); return; }
     if(perfil.es_prueba){ try { await client.auth.signOut(); } catch(e){} pantallaCrear('Esta app ahora es solo con cuenta. Crea la tuya, es gratis y se hace en un minuto.'); return; }   // cuentas de «probar sin registro»: ya no existen
     if(!perfil.es_prueba){
       try { localStorage.setItem('acgolfYaEntro', '1'); } catch(e){}
