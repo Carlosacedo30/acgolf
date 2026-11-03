@@ -84,7 +84,7 @@
   }
   window.acgolfTraducir = t => traducir(String(t || '')) || t;
 
-  const SALTAR = /^(SCRIPT|STYLE|TEXTAREA|INPUT|SELECT|OPTION|svg|path)$/;
+  const SALTAR = /^(SCRIPT|STYLE|TEXTAREA|INPUT|SELECT|svg|path)$/;
   function fuera(el){ return !el || SALTAR.test(el.nodeName) || (el.closest && el.closest('[data-no-traducir]')); }
   function nodoTexto(n){
     if(fuera(n.parentNode)) return;
@@ -92,7 +92,8 @@
   }
   const ATRS = ['placeholder', 'aria-label', 'title'];
   function atributos(el){
-    if(fuera(el)) return;
+    // Los campos de escribir (INPUT) también se traducen en sus textos de ayuda (placeholder)
+    if(!el || (el.closest && el.closest('[data-no-traducir]'))) return;
     for(const a of ATRS){ const v = el.getAttribute && el.getAttribute(a); if(v){ const r = traducir(v); if(r != null) el.setAttribute(a, r); } }
   }
   function recorrer(raiz){

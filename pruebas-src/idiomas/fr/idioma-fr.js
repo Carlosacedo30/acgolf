@@ -365,6 +365,7 @@ window.acgolfTextosFR = {
 
 // Frases que cambian (llevan números o nombres): [patrón en español, traducción]
 window.acgolfPatronesFR = [
+  [/^(.+) \(9 hoyos\)$/, (m,n)=> n+' (9 trous)'],
   [/^(\d+) apuntados? · salidas (.+)$/, (m, n, h) => n + ' inscrit' + (n > 1 ? 's' : '') + ' · départs ' + h.replace(/ y /g, ' et ')],
   [/^(\d+) apuntados? · al tiro a las (.+)$/, (m, n, h) => n + ' inscrit' + (n > 1 ? 's' : '') + ' · départ en shotgun à ' + h],
   [/^(\d+) apuntados?$/, (m, n) => n + ' inscrit' + (n > 1 ? 's' : '')],
