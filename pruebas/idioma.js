@@ -46,7 +46,7 @@
   }
 
   // ---------- Traducción ----------
-  const T = idioma === 'en' ? Object.assign({}, window.acgolfTextosEN2 || {}, window.acgolfTextosEN || {})
+  const T = idioma === 'en' ? Object.assign({}, window.acgolfTextosEN3 || {}, window.acgolfTextosEN2 || {}, window.acgolfTextosEN || {})
           : idioma === 'fr' ? Object.assign({}, window.acgolfTextosFR2 || {}, window.acgolfTextosFR || {}) : null;
   const P = idioma === 'en' ? (window.acgolfPatronesEN || []).slice()
           : idioma === 'fr' ? (window.acgolfPatronesFR || []).slice() : [];
