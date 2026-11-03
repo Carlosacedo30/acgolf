@@ -336,4 +336,10 @@ window.acgolfTextosEN3 = {"1. Quién es el responsable":"1. Who is responsible",
 "Tienes":"You have",
 "Toca":"Tap",
 "Pulsa":"Tap",
-"Crear":"Create"};
+"Crear":"Create",
+"Nombre o ciudad":"Name or city",
+"Campos nuevos.":"New courses.",
+"Puedes quitarlos":"You can remove them",
+"todos":"all",
+"campo":"course",
+", o pulsa":", or tap"};

@@ -364,6 +364,7 @@ window.acgolfTextosEN = {
 
 // Frases que cambian (llevan números o nombres): [patrón en español, traducción]
 window.acgolfPatronesEN = [
+  [/^(\d+) jugadores · hcp medio (.+)$/, (m, n, h) => n + ' player' + (n > 1 ? 's' : '') + ' · avg hcp ' + h],
   [/^(.+) \(9 hoyos\)$/, (m, n) => n + ' (9 holes)'],
   [/^(\d+) apuntados? · salidas (.+)$/, (m, n, h) => n + ' signed up · tee times ' + h.replace(/ y /g, ' and ')],
   [/^(\d+) apuntados? · al tiro a las (.+)$/, (m, n, h) => n + ' signed up · shotgun start at ' + h],
