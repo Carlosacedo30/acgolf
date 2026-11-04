@@ -333,3 +333,17 @@ a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decorat
 .cp-vista{ position:fixed; inset:0; z-index:99999; background:#111316; display:flex; flex-direction:column; gap:10px; padding:12px; }
 .cp-vista iframe{ flex:1; width:100%; border:0; border-radius:14px; background:#fff; }
 .cg-lbl[hidden]{ display:none !important; }
+
+/* Panel general en botones · estilo Grafito deportivo */
+.pn-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.pn-b{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; text-align:left; background:#1B1E22; color:#F2F4F5; border:2px solid rgba(198,242,78,.55); border-radius:20px; padding:16px 14px; min-height:112px; cursor:pointer; touch-action:manipulation; font-family:'Barlow',sans-serif; }
+.pn-b:active{ transform:scale(.97); }
+.pn-b i{ font-style:normal; font-size:30px; line-height:1; }
+.pn-b b{ font:800 19px 'Archivo','Barlow',sans-serif; }
+.pn-b span{ font-size:14.5px; color:#9AA3AB; line-height:1.25; }
+.pn-b.pri{ background:#C6F24E; border-color:#C6F24E; color:#111316; }
+.pn-b.pri span{ color:#2c3a12; }
+.pn-b.pn-fila{ flex-direction:row; align-items:center; gap:14px; min-height:0; width:100%; box-sizing:border-box; }
+.pn-b.pn-fila div{ display:flex; flex-direction:column; gap:2px; }
+.pn-lista{ display:flex; flex-direction:column; gap:12px; }
+.pn-atras{ align-self:flex-start; background:none; border:none; color:#C6F24E; font:700 18px 'Barlow',sans-serif; padding:6px 0; cursor:pointer; touch-action:manipulation; }
