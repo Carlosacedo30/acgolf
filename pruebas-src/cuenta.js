@@ -1049,6 +1049,9 @@
       + (perfil.grupo_tipo === 'liga' ? '<label class="am-lbl"><div class="am-card"><div class="am-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6l9 -6"/></svg></div>'
         + '<div class="am-txt"><b>Avisos por correo</b><span id="cgCorreosTxt">Un correo cuando alguien de tu grupo crea una partida</span></div>'
         + '<span class="am-sw"><input type="checkbox" id="cgCorreos" role="switch" checked disabled aria-label="Avisos por correo"><i></i></span></div></label>' : '')
+      + '<label class="am-lbl"><div class="am-card"><div class="am-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l15-6v14L3 13z"/><path d="M7 14l1.5 6h3L10 15"/></svg></div>'
+        + '<div class="am-txt"><b>Novedades de acgolf</b><span id="cgNovTxt">Un correo de vez en cuando con las novedades de la app</span></div>'
+        + '<span class="am-sw"><input type="checkbox" id="cgNov" role="switch" checked disabled aria-label="Novedades de acgolf"><i></i></span></div></label>'
       + (perfil.grupo_tipo === 'liga' && window.acgolfAvisosMovil ? '<div id="cgMovil"></div>' : '')
       + (window.acgolfInstalar ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
       + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
@@ -1075,11 +1078,24 @@
         const t = $('cgCorreosTxt'); if(t) t.textContent = data ? 'Un correo cuando alguien de tu grupo crea una partida' : 'Desactivados. Actívalos para no perderte nada';
       };
     }
+    const cn = $('cgNov');
+    if(cn){
+      const txtNov = on => { const t = $('cgNovTxt'); if(t) t.textContent = on ? 'Un correo de vez en cuando con las novedades de la app' : 'Desactivadas. Actívalas para enterarte de lo nuevo'; };
+      client.rpc('mis_novedades').then(r => { if(!r.error){ cn.checked = r.data !== false; cn.disabled = false; txtNov(cn.checked); } });
+      cn.onchange = async () => {
+        cn.disabled = true;
+        const { data, error } = await client.rpc('mis_novedades', { p_quiero: cn.checked });
+        cn.disabled = false;
+        if(error){ cn.checked = !cn.checked; msg(traducir(error)); return; }
+        msg(data ? 'Recibirás las novedades de acgolf.' : 'Ya no te llegarán novedades de acgolf.', true);
+        txtNov(data);
+      };
+    }
     if($('cgMovil')) window.acgolfAvisosMovil.pintar($('cgMovil'), perfil, msg);
     if($('cgInstalar')) $('cgInstalar').onclick = () => { ocultar(); window.acgolfInstalar(); };
     if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
     if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);
-    if($('cgCorreoLibre')) $('cgCorreoLibre').onclick = () => pantallaCorreoLibre(perfil);
+    if($('cgCorreoLibre')) $('cgCorreoLibre').onclick = () => pantallaPromociones(perfil);
     if($('cgPruebaCorreo')) $('cgPruebaCorreo').onclick = e => ocupado(e.target, async () => {
       const { data, error } = await client.functions.invoke('avisar', { body: { prueba: true } });
       if(error || !data || !data.enviados){ msg('No se pudo mandar. ' + ((data && data.error) || (error && error.message) || '')); return; }
@@ -1143,6 +1159,97 @@
         + data.map(b => '<div>' + esc(b.jugador || 'Sin jugador') + ' · ' + esc(b.email) + '</div>').join('')
         + '<small>Bórralas en Supabase → Authentication → Users.</small>';
       const ref = $('cgCerrar'); if(ref) ref.parentNode.insertBefore(box, ref);
+    });
+  }
+
+  // Promociones por correo desde avisos@acgolf.es (solo el super administrador).
+  // Se elige la promoción (las fichas están en la base de datos: se añaden sin tocar la app), a quién va, y se envía.
+  // Para enviar a varias personas hay que confirmar el número exacto que se ve en pantalla.
+  async function pantallaPromociones(perfil){
+    mostrar(cabecera('Enviar un correo', 'Cargando…'));
+    const [rp, rg] = await Promise.all([client.rpc('sa_promociones'), client.rpc('sa_grupos')]);
+    if(rp.error){ mostrar(cabecera('No se pudo abrir', traducir(rp.error)) + '<button type="button" class="cg-btn" id="cgCerrar">Volver</button>'); $('cgCerrar').onclick = () => panelMiCuenta(perfil); return; }
+    const promos = rp.data || [];
+    const grupos = (rg.data || []).filter(g => g.tipo !== 'personal');
+    let alc = 'todos', n = null;
+    mostrar(cabecera('Enviar un correo', 'Sale desde avisos@acgolf.es. Si te contestan, la respuesta llega a avisos@acgolf.es.')
+      + '<div class="cp-seg" id="cpAlc"><button type="button" data-a="persona">Una persona</button><button type="button" data-a="grupo">Un grupo</button><button type="button" data-a="todos" class="on">A todos</button></div>'
+      + '<label class="cg-lbl" id="cpParaL" hidden>Para<small>El correo de la persona</small><input id="cpPara" type="email" autocomplete="off" inputmode="email"></label>'
+      + '<label class="cg-lbl" id="cpGrupoL" hidden>Grupo<select id="cpGrupo">' + grupos.map(g => '<option value="' + esc(g.id) + '">' + esc(g.nombre) + ' (' + g.miembros + ')</option>').join('') + '</select></label>'
+      + '<div class="cp-caja" id="cpCuenta">Contando…</div>'
+      + '<label class="cg-lbl">Promoción<select id="cpPromo">' + promos.map((p, i) => '<option value="' + i + '">' + esc(p.nombre) + '</option>').join('') + '</select></label>'
+      + '<div class="cp-ultimo" id="cpUltimo"></div>'
+      + '<label class="cg-lbl">Asunto<input id="cpAsunto" type="text" maxlength="150"></label>'
+      + '<label class="cg-lbl">Título del correo<input id="cpTitulo" type="text" maxlength="140"></label>'
+      + '<label class="cg-lbl">Texto de presentación<textarea id="cpIntro" rows="4" maxlength="600" class="cp-area"></textarea></label>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn ghost" id="cpVer">Ver cómo queda el correo</button>'
+      + '<button type="button" class="cg-btn ghost" id="cpPrueba">Mandarme una prueba a mí</button>'
+      + '<button type="button" class="cg-btn" id="cpEnviar">Enviar</button>'
+      + '<button type="button" class="cg-link" id="cpVolver">Volver</button>');
+    $('cpVolver').onclick = () => panelMiCuenta(perfil);
+    if(!promos.length){ $('cpEnviar').disabled = true; $('cpPrueba').disabled = true; $('cpVer').disabled = true; msg('Todavía no hay promociones preparadas.'); }
+    const actual = () => promos[+$('cpPromo').value] || {};
+    const cargarPromo = () => {
+      const p = actual();
+      $('cpAsunto').value = p.asunto || ''; $('cpTitulo').value = p.titulo || ''; $('cpIntro').value = p.intro || '';
+      const u = p.ultimo;
+      $('cpUltimo').textContent = u ? 'Ya se envió el ' + fecha(u.cuando) + ' a ' + u.correos + (u.correos === 1 ? ' persona.' : ' personas.') : 'Todavía no se ha enviado.';
+    };
+    const contenido = () => Object.assign({}, actual(), { asunto: $('cpAsunto').value.trim(), titulo: $('cpTitulo').value.trim(), intro: $('cpIntro').value.trim() });
+    const contar = async () => {
+      const caja = $('cpCuenta'); n = null;
+      if(alc === 'persona'){ n = 1; caja.innerHTML = '<b>1 persona</b> recibiría este correo'; return; }
+      caja.textContent = 'Contando…';
+      const r = await client.rpc('sa_promo_destinatarios', { p_alcance: alc, p_grupo: alc === 'grupo' ? $('cpGrupo').value : null });
+      if(r.error){ caja.textContent = 'No se pudo contar. ' + traducir(r.error); return; }
+      n = r.data.n;
+      caja.innerHTML = '<b>' + n + (n === 1 ? ' persona' : ' personas') + '</b> recibirían este correo'
+        + '<small>Un mensaje para cada una: nadie ve los correos de los demás. No reciben quienes apagaron «Novedades de acgolf» y las cuentas de acgolf.es.</small>';
+    };
+    const pintarAlc = () => {
+      gate.querySelectorAll('#cpAlc button').forEach(b => b.classList.toggle('on', b.dataset.a === alc));
+      $('cpParaL').hidden = alc !== 'persona'; $('cpGrupoL').hidden = alc !== 'grupo';
+      $('cpEnviar').textContent = alc === 'persona' ? 'Enviar a esa persona' : 'Enviar a las personas';
+      contar();
+    };
+    gate.querySelectorAll('#cpAlc button').forEach(b => b.onclick = () => { alc = b.dataset.a; pintarAlc(); });
+    $('cpGrupo').onchange = contar;
+    $('cpPromo').onchange = cargarPromo;
+    cargarPromo(); pintarAlc();
+
+    $('cpVer').onclick = e => ocupado(e.target, async () => {
+      const { data, error } = await client.functions.invoke('promocion', { body: { accion: 'ver', promo: contenido() } });
+      if(error || !data || !data.html){ msg('No se pudo mostrar. ' + ((data && data.error) || (error && error.message) || '')); return; }
+      const v = document.createElement('div'); v.className = 'cp-vista';
+      v.innerHTML = '<button type="button" class="cg-btn" id="cpCerrarVista">Cerrar la vista previa</button><iframe title="Vista previa del correo" sandbox></iframe>';
+      v.querySelector('iframe').srcdoc = data.html;
+      document.body.appendChild(v);
+      v.querySelector('#cpCerrarVista').onclick = () => v.remove();
+    });
+    $('cpPrueba').onclick = e => ocupado(e.target, async () => {
+      const { data, error } = await client.functions.invoke('promocion', { body: { accion: 'prueba', promo: contenido() } });
+      if(error || !data || !data.enviados){ msg('No se pudo mandar. ' + ((data && data.error) || (error && error.message) || '')); return; }
+      msg('Enviado a ' + data.a + '. Mira tu correo en un minuto.', true);
+    });
+    $('cpEnviar').onclick = e => ocupado(e.target, async () => {
+      const p = contenido();
+      if(!p.asunto || !p.titulo){ msg('Pon el asunto y el título.'); return; }
+      let para = '';
+      if(alc === 'persona'){
+        para = $('cpPara').value.trim().toLowerCase();
+        if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(para)){ msg('Escribe bien el correo de la persona.'); return; }
+      } else if(!(n > 0)){ msg('No hay a quién enviarlo.'); return; }
+      const quien = alc === 'persona' ? para : (n === 1 ? 'la persona' : 'las ' + n + ' personas') + (alc === 'grupo' ? ' del grupo «' + $('cpGrupo').selectedOptions[0].textContent.replace(/ \(\d+\)$/, '') + '»' : '');
+      const antes = actual().ultimo && alc !== 'persona' ? '\n\nOJO: esta promoción ya se envió el ' + fecha(actual().ultimo.cuando) + ' a ' + actual().ultimo.correos + ' personas.' : '';
+      if(!confirm('¿Enviar «' + p.asunto + '» a ' + quien + '?\n\nSale desde avisos@acgolf.es y no se puede deshacer.' + antes)) return;
+      const { data, error } = await client.functions.invoke('promocion', { body: { accion: 'enviar', promo: p, alcance: alc, grupo: alc === 'grupo' ? $('cpGrupo').value : null, para, confirmo: alc === 'persona' ? 1 : n } });
+      if(error || !data || !data.enviados){ msg('No se pudo enviar. ' + ((data && data.error) || (error && error.message) || '')); return; }
+      mostrar(cabecera('Correo enviado', 'Se ha enviado a ' + data.enviados + (data.enviados === 1 ? ' persona' : ' personas') + ' desde avisos@acgolf.es.')
+        + '<button type="button" class="cg-btn" id="cpOtro">Enviar otro</button>'
+        + '<button type="button" class="cg-link" id="cpVolver2">Volver a Mi cuenta</button>');
+      $('cpOtro').onclick = () => pantallaPromociones(perfil);
+      $('cpVolver2').onclick = () => panelMiCuenta(perfil);
     });
   }
 
