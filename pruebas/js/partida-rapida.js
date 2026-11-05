@@ -109,10 +109,7 @@
     if(prPaso === 1){
       h += '<div class="pr-q">¿Dónde jugáis?</div>'
         + '<button type="button" class="pr-campo" data-campo="hato-verde">Hato Verde</button>'
-        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>'
-        + '<button type="button" class="pr-campo" data-campo="sevilla-golf">Real Club de Golf Sevilla</button>'
-        + '<button type="button" class="pr-campo" data-campo="rc-pineda">Real Club Pineda</button>'
-        + '<button type="button" class="pr-campo" data-campo="la-cartuja">La Cartuja</button>';
+        + '<button type="button" class="pr-campo" data-campo="zaudin">Zaudín</button>';
     }
 
     if(prPaso === 2){

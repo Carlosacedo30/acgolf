@@ -42,12 +42,12 @@
       times: slots.map(g => g.time),
       groups: slots.map(g => Array.isArray(g.players) ? g.players.slice() : []),
       hoyos: slots.map(g => Number(g.hoyo) || null), // salida al tiro: hoyo por el que sale cada grupo
-      date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null, organiza: meta.organiza || null,
+      date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null, organiza: meta.organiza || null, campo: (() => { const k = meta.campo; if(k && k.id && Array.isArray(k.par) && !COURSES.some(x => x.id === k.id)) COURSES.push(Object.assign({}, k, { externo: true })); return k || null; })(),
     };
   }
   function convToGroups(c){
     return c.times.map((t, i) => Object.assign({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }, (c.hoyos && c.hoyos[i]) ? { hoyo: c.hoyos[i] } : {}))
-      .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode, organiza: c.organiza || null } }]);
+      .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode, organiza: c.organiza || null, campo: c.campo || null } }]);
   }
 
   async function convFetch(code){
@@ -412,7 +412,8 @@
     const courseId = document.getElementById('convNewCourse').value;
     const times = [...document.querySelectorAll('#convHoras .conv-hora')].map(i => i.value).filter(Boolean);
     if(!date || !times.length){ alert('Pon el día y al menos una hora.'); return; }
-    const fresh = { date, courseId, times, groups: times.map(() => []), roundCode: null, organiza: window.miPerfilId || null };
+    const fresh = { date, courseId, times, groups: times.map(() => []), roundCode: null, organiza: window.miPerfilId || null,
+      campo: (() => { const k = COURSES.find(x => x.id === courseId); return k && k.externo ? { id: k.id, name: k.name, location: k.location || '', par: k.par, hcp: k.hcp, tees: k.tees || undefined, holes9: k.holes9 || undefined } : null; })() };
     const btn = document.getElementById('convNewCreate'); btn.textContent = 'Creando…';
     try {
       const { data, error } = await client.from('rounds').insert({

@@ -899,37 +899,71 @@
       const ov = $('prOverlay'); if(ov) ov.hidden = false;
     } catch(e){ console.error(e); aviso('No se pudo elegir el campo.'); }
   }
+  // ---------- Elegir un solo campo: favoritos por defecto + «Buscar otro campo» (igual en «Crear partida» y «Organizar partido») ----------
+  // Si el jugador aún no tiene favoritos, salen Hato Verde y Zaudín.
+  const CAMPOS_DEFECTO = [['hato-verde', 'Club Hato Verde'], ['zaudin', 'Club Zaudín Golf']];
+  function opcionesCampo(extra){
+    const ops = Favoritos.leer().map(f => { const c = aCursoApp(f); return { cid: c ? c.id : null, fav: f.id, nombre: f.nombre, estrella: true }; });
+    if(!ops.length) CAMPOS_DEFECTO.forEach(d => ops.push({ cid: d[0], fav: null, nombre: d[1], estrella: false }));
+    if(extra && !ops.some(o => o.cid === extra.id)) ops.push({ cid: extra.id, fav: null, nombre: extra.name, estrella: false });
+    return ops;
+  }
+  function htmlSelectorCampo(ops, sel){
+    const sinFav = !Favoritos.leer().length;
+    return '<div class="bc-sel" role="group" aria-label="Campo">'
+      + ops.map(o => { const on = !!o.cid && o.cid === sel;
+          return '<button type="button" class="bc-sel-b' + (on ? ' on' : '') + '" data-bccid="' + esc(o.cid || '') + '" data-bcfav="' + esc(o.fav || '') + '" aria-pressed="' + on + '">'
+            + (o.estrella ? ICO.estrellaLlena : '') + '<span>' + esc(o.nombre) + '</span></button>'; }).join('')
+      + '<button type="button" class="bc-sel-b bus">' + ICO.lupa + '<span>Buscar otro campo</span></button>'
+      + (sinFav ? '<p class="bc-sel-nota">Aquí saldrán tus campos favoritos. Búscalos y toca «Favorito».</p>' : '')
+      + '</div>';
+  }
+  function manejarSelectorCampo(caja, alElegirCurso){
+    caja.addEventListener('click', e => {
+      const b = e.target.closest('.bc-sel-b'); if(!b) return;
+      if(b.classList.contains('bus')) return elegir(alElegirCurso, 'buscar');
+      let curso = null;
+      if(b.dataset.bcfav){ curso = aCursoApp(Favoritos.leer().find(x => x.id === b.dataset.bcfav)); }
+      else { curso = (listaCursos() || []).find(x => x.id === b.dataset.bccid) || null; }
+      if(!curso){ aviso('Este campo no trae el par y la dificultad de cada hoyo. Mándame su tarjeta y lo añado a acgolf.'); return; }
+      alElegirCurso(curso);
+    });
+  }
+  // «Crear partida»: se cambia la lista de campos de siempre por la de favoritos; tocar un campo pasa al siguiente paso
   function ponerEnCrearPartida(){
     const body = $('prBody'); if(!body || $('bcPr')) return;
     const campos = body.querySelectorAll(':scope > .pr-campo'); if(!campos.length) return;
-    const ultimo = campos[campos.length - 1];
-    const propios = new Set([...campos].map(b => 'acgolf:' + b.dataset.campo));
-    const favs = Favoritos.leer().filter(f => !propios.has(f.id));
     const caja = document.createElement('div');
     caja.id = 'bcPr'; caja.className = 'bc-pr';
-    caja.innerHTML = (favs.length ? '<div class="bc-pr-t">' + ICO.estrellaLlena + '<span>Tus campos favoritos</span></div>'
-        + favs.map(f => '<button type="button" class="pr-campo bc-pr-fav" data-bcfav="' + esc(f.id) + '">' + esc(f.nombre) + '</button>').join('') : '')
-      + '<button type="button" class="pr-campo bc-pr-buscar">' + ICO.lupa + '<span>Buscar otro campo</span></button>';
-    ultimo.insertAdjacentElement('afterend', caja);
-    caja.addEventListener('click', e => {
-      const b = e.target.closest('button'); if(!b) return;
-      if(b.dataset.bcfav){
-        const f = Favoritos.leer().find(x => x.id === b.dataset.bcfav);
-        const curso = aCursoApp(f);
-        if(curso) return elegirEnCrearPartida(curso);
-        aviso('Este campo no trae el par y la dificultad de cada hoyo. Mándame su tarjeta y lo añado a acgolf.');
-        return;
-      }
-      elegir(elegirEnCrearPartida, 'buscar');
-    });
+    caja.innerHTML = htmlSelectorCampo(opcionesCampo(null), null);
+    campos[0].insertAdjacentElement('beforebegin', caja);
+    campos.forEach(c => c.remove());
+    manejarSelectorCampo(caja, elegirEnCrearPartida);
   }
-  // La pantalla de «Crear partida» se repinta en cada paso: se vuelve a poner cuando hace falta
-  function vigilarCrearPartida(){
-    const body = $('prBody');
-    if(!body){ setTimeout(vigilarCrearPartida, 800); return; }
-    new MutationObserver(() => ponerEnCrearPartida()).observe(body, { childList: true });
-    ponerEnCrearPartida();
+  // «Organizar partido con amigos»: se cambia el desplegable «Campo» por los mismos botones; se elige uno solo
+  function ponerEnOrganizar(){
+    const sel = $('convNewCourse'); if(!sel || $('bcOrg')) return;
+    let extra = null;
+    const caja = document.createElement('div'); caja.id = 'bcOrg';
+    const fijar = (id, nombre) => { if(![...sel.options].some(o => o.value === id)) sel.add(new Option(nombre, id)); sel.value = id; };
+    const pintar = () => {
+      const ops = opcionesCampo(extra);
+      if(!ops.some(o => o.cid && o.cid === sel.value)){ const p = ops.find(o => o.cid); if(p) fijar(p.cid, p.nombre); }
+      caja.innerHTML = htmlSelectorCampo(ops, sel.value);
+    };
+    sel.hidden = true; sel.style.display = 'none';
+    sel.insertAdjacentElement('afterend', caja);
+    manejarSelectorCampo(caja, curso => { extra = curso; fijar(curso.id, curso.name); pintar(); });
+    pintar();
   }
+  // Las dos pantallas se repintan a menudo: se vuelve a poner cuando hace falta
+  function vigilar(id, poner){
+    const body = $(id);
+    if(!body){ setTimeout(() => vigilar(id, poner), 800); return; }
+    new MutationObserver(() => poner()).observe(body, { childList: true });
+    poner();
+  }
+  function vigilarCrearPartida(){ vigilar('prBody', ponerEnCrearPartida); vigilar('convBody', ponerEnOrganizar); }
 
   // Otra pestaña o ventana cambió los favoritos: se repinta
   window.addEventListener('storage', e => { if(e.key === CLAVE_FAV){ ponerBoton(); const o = $('bcOv'); if(o && !o.hidden) repintarTodo(); } });
