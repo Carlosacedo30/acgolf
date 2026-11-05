@@ -8,6 +8,18 @@
   const original = convCreateRound;
   const hoyIso = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 
+  // Liga de 9 hoyos: el campo de la jornada es la media vuelta elegida (Ida 1-9 o Vuelta 10-18)
+  const ligaDeConv = c => {
+    const m = /^(.+)J\d+$/.exec((c && c.code) || '');
+    return m && typeof ligasTodas !== 'undefined' ? (ligasTodas.find(l => l.code === m[1]) || null) : null;
+  };
+  window.acgolfLigaCurso = c => {
+    const l = ligaDeConv(c); if(!l || l.hoyos !== 9) return null;
+    const base = COURSES.find(x => x.id === c.courseId); if(!base) return null;
+    if(typeof cursoNueve !== 'function') return null;
+    return l.mitad === 'vuelta' ? cursoNueveVuelta(base) : cursoNueve(base);
+  };
+
   convCreateRound = async function(btn){
     if(!conv) return;
     if(typeof convAlTiro === 'function' && convAlTiro(conv)) return original(btn);
@@ -17,6 +29,7 @@
     if(!grupos.length){ alert('Todavía no se ha apuntado nadie.'); return; }
     const partido = conv, primeraHora = (conv.times.find((t, i) => (conv.groups[i] || []).length) || '08:40');
     closeConv();
+    const liga9 = ligaDeConv(partido);
     window.prAbrirDesdePartido({
       courseId: partido.courseId,
       grupos,
@@ -31,6 +44,11 @@
         if(typeof renderConvHome === 'function') renderConvHome();
       }
     });
+    // Liga de 9 hoyos: la partida sale ya a 9 hoyos y con la media vuelta de la liga
+    if(liga9 && liga9.hoyos === 9 && typeof cursoNueve === 'function'){
+      prHoyos = 9; window.acgolfMitad = liga9.mitad === 'vuelta' ? 'vuelta' : 'ida';
+      if(typeof prPintar === 'function') prPintar();
+    }
   };
 
   // El interruptor de marcador del partido ya no hace falta: está en Crear partida

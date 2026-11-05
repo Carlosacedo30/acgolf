@@ -352,9 +352,10 @@
     if(!confirm(convAlTiro(conv)
       ? '¿Crear la partida al tiro con ' + withPlayers.length + ' grupos?\nCada grupo empieza en su hoyo: ' + withPlayers.map(x => x.etq.toLowerCase()).join(', ') + '.'
       : '¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
-    const course = convCourse(conv.courseId);
+    const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
       hoyoSalida: x.hoyo || undefined,
+      nueve: course.nueve ? true : undefined,
       players: x.names.slice(0, 4),
       handicaps: x.names.slice(0, 4).map(n => (typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) ? Number(FAVORITE_HANDICAPS[n]) : 0),
       scores: {},

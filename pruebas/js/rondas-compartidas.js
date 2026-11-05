@@ -223,7 +223,7 @@
         par: (data.course_par && data.course_par.length) ? data.course_par : Array(18).fill(4),
         hcp: data.course_hcp || null,
         holes9: !!(data.course_par && data.course_par.length === 9),
-        nueve: /-9$/.test(String(data.course_id || '')), // partida de 9 hoyos (una vuelta)
+        nueve: /-9v?$/.test(String(data.course_id || '')), // partida de 9 hoyos (una vuelta)
       } : selectedCourse);
       activeGroup = 0;
       diagAnswers = {};

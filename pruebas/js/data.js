@@ -182,7 +182,25 @@
     COURSES.push(v);
     return v;
   }
+  // Liga de 9 hoyos «Vuelta»: los hoyos 10 al 18 como partida de una vuelta (en los campos de 9 hoyos solo hay una vuelta)
+  function cursoNueveVuelta(c){
+    if(!c || c.nueve) return c;
+    if(!Array.isArray(c.par) || c.par.length < 18) return cursoNueve(c);
+    const id = c.id + '-9v';
+    const ya = COURSES.find(x => x.id === id); if(ya) return ya;
+    const hcp9 = (Array.isArray(c.hcp) ? c.hcp : []).slice(9, 18).map(Number);
+    const orden = hcp9.map((v, i) => [isNaN(v) ? 99 : v, i]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const r = Array(9); orden.forEach((x, k) => { r[x[1]] = k + 1; });
+    let tees;
+    if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: Math.round(t.rating * 5) / 10, slope: t.slope }; }); }
+    const v = { id, name: c.name + ' (vuelta 10-18)', location: c.location, holes9: true, nueve: true, par: c.par.slice(9, 18), hcp: r };
+    if(tees) v.tees = tees;
+    if(c.externo) v.externo = true;
+    COURSES.push(v);
+    return v;
+  }
   COURSES.slice().forEach(c => cursoNueve(c));
+  COURSES.slice().forEach(c => cursoNueveVuelta(c));
   COURSES.forEach(c => { if(c.holes9 && !c.nueve) c.hcp = hcpNueveA18(c.hcp); });
   // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás
   function hoyosPartida(){ return (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.nueve) ? 9 : 18; }

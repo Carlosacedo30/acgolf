@@ -239,7 +239,25 @@ cambia('pruebas/js/data.js', """  let selectedCourse = null;""", """  // Campos 
     COURSES.push(v);
     return v;
   }
+  // Liga de 9 hoyos «Vuelta»: los hoyos 10 al 18 como partida de una vuelta (en los campos de 9 hoyos solo hay una vuelta)
+  function cursoNueveVuelta(c){
+    if(!c || c.nueve) return c;
+    if(!Array.isArray(c.par) || c.par.length < 18) return cursoNueve(c);
+    const id = c.id + '-9v';
+    const ya = COURSES.find(x => x.id === id); if(ya) return ya;
+    const hcp9 = (Array.isArray(c.hcp) ? c.hcp : []).slice(9, 18).map(Number);
+    const orden = hcp9.map((v, i) => [isNaN(v) ? 99 : v, i]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const r = Array(9); orden.forEach((x, k) => { r[x[1]] = k + 1; });
+    let tees;
+    if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: Math.round(t.rating * 5) / 10, slope: t.slope }; }); }
+    const v = { id, name: c.name + ' (vuelta 10-18)', location: c.location, holes9: true, nueve: true, par: c.par.slice(9, 18), hcp: r };
+    if(tees) v.tees = tees;
+    if(c.externo) v.externo = true;
+    COURSES.push(v);
+    return v;
+  }
   COURSES.slice().forEach(c => cursoNueve(c));
+  COURSES.slice().forEach(c => cursoNueveVuelta(c));
   COURSES.forEach(c => { if(c.holes9 && !c.nueve) c.hcp = hcpNueveA18(c.hcp); });
   // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás
   function hoyosPartida(){ return (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.nueve) ? 9 : 18; }
@@ -250,7 +268,7 @@ cambia('pruebas/js/scorecard.js', """hcps.push((course.hcp && course.hcp[def.off
         hcps.push((course.hcp && course.hcp[ih] !== undefined) ? course.hcp[ih] : (i + 1));""")
 # Una partida de un campo de 9 hoyos que otro móvil no conoce: se reconoce por traer 9 pares
 cambia('pruebas/js/rondas-compartidas.js', """        holes9: false,""", """        holes9: !!(data.course_par && data.course_par.length === 9),
-        nueve: /-9$/.test(String(data.course_id || '')), // partida de 9 hoyos (una vuelta)""")
+        nueve: /-9v?$/.test(String(data.course_id || '')), // partida de 9 hoyos (una vuelta)""")
 # La Cartuja: rating y slope oficiales de 9 hoyos (par 29), sacados de la tabla de hándicap de juego
 # del club (Escuela Golf La Cartuja): amarillas de caballeros y rojas de damas. Reproducen la tabla exacta.
 cambia('pruebas/js/data.js', """      hcp:[3,5,13,12,10,15,2,11,9] },""", """      hcp:[3,5,13,12,10,15,2,11,9],
@@ -304,7 +322,7 @@ cambia('pruebas/js/players.js', """    return Math.floor(h / 18) + ((h % 18) >= 
        """    const base = (typeof hoyosPartida === 'function') ? hoyosPartida() : 18; // 9 hoyos: los golpes se reparten en 9
     return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);""")
 # Crear partida: La Cartuja viene a 9 hoyos; con «9 hoyos» se juega la versión de una vuelta
-cambia('pruebas/js/partida-rapida.js', """  function prRecibe(n){""", """  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? cursoNueve(c) : c; }
+cambia('pruebas/js/partida-rapida.js', """  function prRecibe(n){""", """  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? (window.acgolfMitad === 'vuelta' ? cursoNueveVuelta(c) : cursoNueve(c)) : c; }
   function prRecibe(n){""")
 p_ = 'pruebas/js/partida-rapida.js'; t_ = open(p_, encoding='utf-8').read()
 assert t_.count("COURSES.find(c => c.id === prCampo)") == 4
@@ -442,7 +460,7 @@ cambia('pruebas/js/tarjeta-blanca.js', """    try { marcarPantalla(); if(colocar
 # Que los móviles descarguen de nuevo los archivos cambiados (no la copia guardada)
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
-for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida', 'vista-hoyo', 'resultados', 'interactions'):
+for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida', 'vista-hoyo', 'resultados', 'interactions', 'ligas', 'convocatoria'):
     s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\g<1>09"', s); assert n == 1, f
 open(p, 'w', encoding='utf-8').write(s)
 PY
@@ -459,7 +477,7 @@ s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="idioma-en-3.js?v=2"></script>\n<script src="idioma-en-2.js?v=3"></script>\n<script src="idioma-en.js?v=5"></script>\n<script src="idiomas/fr/idioma-fr.js?v=3"></script>\n<script src="idiomas/fr/idioma-fr-2.js?v=4"></script>\n<script src="idioma.js?v=8"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=5"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=6"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=5"></script>\n<script src="manual.js?v=10"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=4"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=9"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=13"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=16"></script>\n<script src="redes.js?v=7"></script>\n<script src="redes-aviso.js?v=1"></script>\n<script src="tele-directo.js?v=9"></script>\n<script src="en-vivo.js?v=12"></script>\n<script src="partido-a-partida.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="idioma-en-3.js?v=2"></script>\n<script src="idioma-en-2.js?v=3"></script>\n<script src="idioma-en.js?v=5"></script>\n<script src="idiomas/fr/idioma-fr.js?v=3"></script>\n<script src="idiomas/fr/idioma-fr-2.js?v=4"></script>\n<script src="idioma.js?v=8"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=5"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=6"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=5"></script>\n<script src="manual.js?v=10"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=4"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=9"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=13"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=16"></script>\n<script src="redes.js?v=7"></script>\n<script src="redes-aviso.js?v=1"></script>\n<script src="tele-directo.js?v=9"></script>\n<script src="en-vivo.js?v=12"></script>\n<script src="partido-a-partida.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'
@@ -500,6 +518,75 @@ cambia(f, """    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date
 """    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\\n' + (conv.roundCode ? 'También se borra la partida que se creó con los apuntados. ' : '') + 'Desaparece para todos los jugadores y no se puede deshacer.')) return;""")
 cambia(f, """    const res = await deleteSharedRound(conv.code);""", """    if(conv.roundCode){ try { await deleteSharedRound(conv.roundCode); } catch(e){} }
     const res = await deleteSharedRound(conv.code);""")
+EOF
+
+# --- Liga de 9 o 18 hoyos (etapa 1): paso «Hoyos» al crear la liga; 9 hoyos = Ida (1-9) o Vuelta (10-18) ---
+python3 - <<'EOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:70])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+L = 'pruebas/js/ligas.js'
+# el campo de una jornada de 9 hoyos («campo-9» o «campo-9v») se crea si aún no existe
+cambia(L, """function ligaCampo(id){ return COURSES.find(c => c.id === id) || COURSES.find(c => c.id === 'hato-verde'); }""",
+"""function ligaCampo(id){
+  let c = COURSES.find(x => x.id === id);
+  if(!c){
+    const m = /^(.*)-9(v?)$/.exec(String(id || '')); const b = m && COURSES.find(x => x.id === m[1]);
+    if(b && typeof cursoNueve === 'function') c = m[2] ? cursoNueveVuelta(b) : cursoNueve(b);
+  }
+  return c || COURSES.find(x => x.id === 'hato-verde');
+}""")
+# se guarda en la liga
+cambia(L, """hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [],""", """hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [],
+    hoyos: meta.hoyos === 9 ? 9 : 18, mitad: meta.mitad === 'vuelta' ? 'vuelta' : 'ida',""")
+cambia(L, """hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas,
+    frec:""", """hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas, hoyos: l.hoyos === 9 ? 9 : 18, mitad: l.mitad === 'vuelta' ? 'vuelta' : 'ida',
+    frec:""")
+cambia(L, """hoyoInicio: f.hoyoInicio || 1, jornadas: cal,""", """hoyoInicio: f.hoyoInicio || 1, jornadas: cal, hoyos: f.hoyos === 9 ? 9 : 18, mitad: f.mitad === 'vuelta' ? 'vuelta' : 'ida',""")
+# formulario
+cambia(L, """minimo: 0, sorteo: 'rotar' };
+  const f = ligaForm;""", """minimo: 0, sorteo: 'rotar', hoyos: 18, mitad: 'ida' };
+  const f = ligaForm;""")
+for a, b in [('10 · Grupos de salida', '11 · Grupos de salida'), ('9 · Mínimo para clasificar', '10 · Mínimo para clasificar'),
+             ('8 · Rondas que cuentan', '9 · Rondas que cuentan'), ('7 · Formato', '8 · Formato'), ('6 · Salida', '7 · Salida')]:
+    cambia(L, "'<div class=\"conv-eyebrow\">" + a + "</div>'", "'<div class=\"conv-eyebrow\">" + b + "</div>'")
+cambia(L, """    + '<div class="conv-eyebrow">7 · Salida</div>'""", """    + '<div class="conv-eyebrow">6 · Hoyos</div>'
+    + '<div class="lg-dos">' + [[18, '18 hoyos', 'Vuelta completa'], [9, '9 hoyos', 'Media vuelta']].map(c => '<button type="button" class="lg-opc lg-opc2' + ((f.hoyos === 9 ? 9 : 18) === c[0] ? ' on' : '') + '" data-hoyos="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
+    + (f.hoyos === 9
+        ? '<div class="lg-dos" style="margin-top:8px;">' + [['ida', 'Ida (1 al 9)'], ['vuelta', 'Vuelta (10 al 18)']].map(c => '<button type="button" class="lg-opc' + ((f.mitad === 'vuelta' ? 'vuelta' : 'ida') === c[0] ? ' on' : '') + '" data-mitad="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
+          + '<div class="lg-aviso">Cada ronda se juega a 9 hoyos y cuenta solo para la clasificación de esta liga. No cuenta para el hándicap de los jugadores. Se usa medio hándicap.</div>'
+        : '')
+    + '<div class="conv-eyebrow">7 · Salida</div>'""")
+cambia(L, """  body.querySelectorAll('[data-sorteo]').forEach(""", """  body.querySelectorAll('[data-hoyos]').forEach(b => b.addEventListener('click', ()=>{ f.hoyos = Number(b.dataset.hoyos) === 9 ? 9 : 18; repintar(); }));
+  body.querySelectorAll('[data-mitad]').forEach(b => b.addEventListener('click', ()=>{ f.mitad = b.dataset.mitad === 'vuelta' ? 'vuelta' : 'ida'; repintar(); }));
+  body.querySelectorAll('[data-sorteo]').forEach(""")
+cambia(L, """+ f.jornadas + ' rondas (' + (f.formato""", """+ f.jornadas + ' rondas de ' + (f.hoyos === 9 ? '9 hoyos (' + (f.mitad === 'vuelta' ? 'vuelta, del 10 al 18' : 'ida, del 1 al 9') + ')' : '18 hoyos') + ' (' + (f.formato""")
+# clasificación: solo los hoyos que se juegan (9 en las rondas de 9 hoyos)
+cambia(L, """      if(golpes.length < 18) return; // solo cuentan las tarjetas completas""", """      const nH = curso && curso.nueve ? 9 : 18; // rondas de 9 hoyos: media tarjeta
+      if(golpes.length < nH) return; // solo cuentan las tarjetas completas""")
+cambia(L, """      for(let h = 1; h <= 18; h++){
+        const gol = Number(sc[h]); const par = curso && curso.par ? Number(curso.par[h - 1]) : 4;
+        const rec = typeof strokesForHole === 'function' && curso && curso.hcp ? strokesForHole(recibidos, curso.hcp[h - 1]) : 0;""",
+"""      for(let h = 1; h <= nH; h++){
+        const gol = Number(sc[h]); const par = curso && curso.par ? Number(curso.par[h - 1]) : 4;
+        const rec = nH === 9 ? (curso && curso.hcp ? Math.floor(recibidos / 9) + ((recibidos % 9) >= curso.hcp[h - 1] ? 1 : 0) : 0)
+          : (typeof strokesForHole === 'function' && curso && curso.hcp ? strokesForHole(recibidos, curso.hcp[h - 1]) : 0);""")
+cambia(L, """const suma = (a, k) => a.slice(18 - k).reduce((x, y) => x + y, 0);""", """const suma = (a, k) => a.slice(nH - k).reduce((x, y) => x + y, 0);""")
+cambia(L, """const cb = [9, 12, 15, 16, 17].map(k => l.formato === 'stableford' ? -suma(ptsHoyo, k) : suma(golHoyo, k) - recibidos * k / 18);""",
+"""const cb = (nH === 9 ? [6, 3, 2, 1] : [9, 12, 15, 16, 17]).map(k => l.formato === 'stableford' ? -suma(ptsHoyo, k) : suma(golHoyo, k) - recibidos * k / nH);""")
+# la partida de la jornada (partido al tiro): campo de 9 hoyos y marca de 9 hoyos
+C = 'pruebas/js/convocatoria.js'
+cambia(C, """    const course = convCourse(conv.courseId);
+    const groups = normalizeMatchGroups(withPlayers.map(x => ({
+      hoyoSalida: x.hoyo || undefined,""", """    const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
+    const groups = normalizeMatchGroups(withPlayers.map(x => ({
+      hoyoSalida: x.hoyo || undefined,
+      nueve: course.nueve ? true : undefined,""")
+# Crear partida: se borra la mitad elegida al abrirla de nuevo
+cambia('pruebas/js/partida-rapida.js', """    prDesde = null;
+    prPaso = 1;""", """    prDesde = null; window.acgolfMitad = null;
+    prPaso = 1;""")
 EOF
 
 echo "Versión de pruebas generada en pruebas/"

@@ -75,7 +75,14 @@ function ligaFechaCortaJ(iso){
 function ligaEsAdmin(){
   return typeof isAdminDevice === 'function' ? isAdminDevice() : !!(typeof getAdminKey === 'function' && getAdminKey());
 }
-function ligaCampo(id){ return COURSES.find(c => c.id === id) || COURSES.find(c => c.id === 'hato-verde'); }
+function ligaCampo(id){
+  let c = COURSES.find(x => x.id === id);
+  if(!c){
+    const m = /^(.*)-9(v?)$/.exec(String(id || '')); const b = m && COURSES.find(x => x.id === m[1]);
+    if(b && typeof cursoNueve === 'function') c = m[2] ? cursoNueveVuelta(b) : cursoNueve(b);
+  }
+  return c || COURSES.find(x => x.id === 'hato-verde');
+}
 // Campos de la liga: los de Sevilla de siempre, los favoritos del móvil y cualquiera del buscador de campos
 const LIGA_CAMPOS_SEVILLA = [['hato-verde', 'Hato Verde'], ['zaudin', 'Zaudín'], ['sevilla-golf', 'R.C. Golf Sevilla'], ['rc-pineda', 'R.C. Pineda'], ['la-cartuja', 'La Cartuja']];
 function ligaCampoCorto(id){
@@ -188,11 +195,12 @@ function ligaDesdeFila(row){
   const meta = ((mg.find(g => g && g.meta) || {}).meta || {}).liga || {};
   return { id: row.id, code: row.code, updatedAt: row.updated_at, nombre: meta.nombre || 'Liga', jugadores: meta.jugadores || [],
     dia: meta.dia, courseId: meta.courseId, hora: meta.hora || '08:40', cada: meta.cada || 7, hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [],
+    hoyos: meta.hoyos === 9 ? 9 : 18, mitad: meta.mitad === 'vuelta' ? 'vuelta' : 'ida',
     frec: meta.frec || null, formato: meta.formato === 'stableford' ? 'stableford' : 'stroke', regla: meta.regla || 'todas', cuentan: meta.cuentan || null,
     fijas: Array.isArray(meta.fijas) ? meta.fijas : [], minimo: meta.minimo || 0, sorteo: meta.sorteo || 'azar', campos: (ligaRegistrarCampos(meta.campos), meta.campos || {}) };
 }
 function ligaAFila(l){
-  return [{ players: [], handicaps: [], scores: {}, meta: { liga: { nombre: l.nombre, jugadores: l.jugadores, dia: l.dia, courseId: l.courseId, hora: l.hora, cada: l.cada || 7, hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas,
+  return [{ players: [], handicaps: [], scores: {}, meta: { liga: { nombre: l.nombre, jugadores: l.jugadores, dia: l.dia, courseId: l.courseId, hora: l.hora, cada: l.cada || 7, hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas, hoyos: l.hoyos === 9 ? 9 : 18, mitad: l.mitad === 'vuelta' ? 'vuelta' : 'ida',
     frec: l.frec || null, formato: l.formato || 'stroke', regla: l.regla || 'todas', cuentan: l.cuentan || null, fijas: l.fijas || [], minimo: l.minimo || 0, sorteo: l.sorteo || 'azar', campos: l.campos || {} } } }];
 }
 const ligaCodigoJornada = (l, n) => l.code + 'J' + n;
@@ -265,20 +273,22 @@ async function ligaResultados(l){
       if(conCuenta && !conCuenta.has(String(n).toLowerCase())) return;
       const sc = (g.scores && g.scores[i]) || {};
       const golpes = Object.keys(sc).map(h => Number(sc[h])).filter(v => v > 0);
-      if(golpes.length < 18) return; // solo cuentan las tarjetas completas
+      const nH = curso && curso.nueve ? 9 : 18; // rondas de 9 hoyos: media tarjeta
+      if(golpes.length < nH) return; // solo cuentan las tarjetas completas
       const hcp = Number((g.handicaps || [])[i]) || 0;
       const bruto = golpes.reduce((a, b) => a + b, 0);
       const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined) : Math.round(hcp);
       // Puntos Stableford: por hoyo, 2 − (golpes − golpes recibidos − par), sin bajar de 0
       let stb = 0; const ptsHoyo = [], golHoyo = [];
-      for(let h = 1; h <= 18; h++){
+      for(let h = 1; h <= nH; h++){
         const gol = Number(sc[h]); const par = curso && curso.par ? Number(curso.par[h - 1]) : 4;
-        const rec = typeof strokesForHole === 'function' && curso && curso.hcp ? strokesForHole(recibidos, curso.hcp[h - 1]) : 0;
+        const rec = nH === 9 ? (curso && curso.hcp ? Math.floor(recibidos / 9) + ((recibidos % 9) >= curso.hcp[h - 1] ? 1 : 0) : 0)
+          : (typeof strokesForHole === 'function' && curso && curso.hcp ? strokesForHole(recibidos, curso.hcp[h - 1]) : 0);
         const pt = Math.max(0, 2 - (gol - rec - par)); stb += pt; ptsHoyo.push(pt); golHoyo.push(gol);
       }
       // Desempate (bases, punto 9): últimos 9, 12, 15, 16 y 17 hoyos, con el mismo cálculo que la ronda
-      const suma = (a, k) => a.slice(18 - k).reduce((x, y) => x + y, 0);
-      const cb = [9, 12, 15, 16, 17].map(k => l.formato === 'stableford' ? -suma(ptsHoyo, k) : suma(golHoyo, k) - recibidos * k / 18);
+      const suma = (a, k) => a.slice(nH - k).reduce((x, y) => x + y, 0);
+      const cb = (nH === 9 ? [6, 3, 2, 1] : [9, 12, 15, 16, 17]).map(k => l.formato === 'stableford' ? -suma(ptsHoyo, k) : suma(golHoyo, k) - recibidos * k / nH);
       filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb, cb });
     }));
     if(l.formato === 'stableford'){
@@ -344,7 +354,7 @@ function ligaPintarForm(){
   const body = document.getElementById('ligaCuerpo'); if(!body) return;
   ligaTitulo('Crear liga');
   if(!ligaForm) ligaForm = { nombre: '', jugadores: [], jornadas: 8, dia: 6, inicio: ligaProximoDia(6), campo: 'hato-verde', hora: '08:40', cada: 7, fechas: {}, salida: 'normal', hoyoInicio: 1,
-    formato: 'stroke', regla: 'todas', cuentan: 5, fijas: [], minimo: 0, sorteo: 'rotar' };
+    formato: 'stroke', regla: 'todas', cuentan: 5, fijas: [], minimo: 0, sorteo: 'rotar', hoyos: 18, mitad: 'ida' };
   const f = ligaForm;
   const todos = ligaJugadoresTodos();
   const cal = ligaCalendario(f.inicio, f.jornadas, f.campo, f.cada, f.fechas, f.salida);
@@ -375,20 +385,26 @@ function ligaPintarForm(){
     + '<div class="conv-eyebrow">5 · Campo</div>'
     + ligaBotonesCampo(f.campo, 'data-campo', true)
 
-    + '<div class="conv-eyebrow">6 · Salida</div>'
+    + '<div class="conv-eyebrow">6 · Hoyos</div>'
+    + '<div class="lg-dos">' + [[18, '18 hoyos', 'Vuelta completa'], [9, '9 hoyos', 'Media vuelta']].map(c => '<button type="button" class="lg-opc lg-opc2' + ((f.hoyos === 9 ? 9 : 18) === c[0] ? ' on' : '') + '" data-hoyos="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
+    + (f.hoyos === 9
+        ? '<div class="lg-dos" style="margin-top:8px;">' + [['ida', 'Ida (1 al 9)'], ['vuelta', 'Vuelta (10 al 18)']].map(c => '<button type="button" class="lg-opc' + ((f.mitad === 'vuelta' ? 'vuelta' : 'ida') === c[0] ? ' on' : '') + '" data-mitad="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
+          + '<div class="lg-aviso">Cada ronda se juega a 9 hoyos y cuenta solo para la clasificación de esta liga. No cuenta para el hándicap de los jugadores. Se usa medio hándicap.</div>'
+        : '')
+    + '<div class="conv-eyebrow">7 · Salida</div>'
     + '<div class="lg-dos">' + [['normal', 'Por un hoyo'], ['tiro', 'Al tiro']].map(c => '<button type="button" class="lg-opc' + (f.salida === c[0] ? ' on' : '') + '" data-salida="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
     + '<div class="lg-aviso">' + (f.salida === 'tiro'
         ? 'Al tiro: todos los grupos salen a la vez, cada uno por un hoyo distinto' + (nGrupos ? ' (' + ligaHoyosPorDefecto(nGrupos).join(', ') + ')' : '') + '. Los hoyos de cada grupo se pueden cambiar luego en cada jornada.'
         : (nGrupos ? 'Salidas por el hoyo ' + (f.hoyoInicio || 1) + ' cada 10 minutos: ' + ligaHoras(f.hora, nGrupos).map(t => t.replace(/^0/, '')).join(', ') + '.' : 'Salidas por el hoyo ' + (f.hoyoInicio || 1) + ' cada 10 minutos.')) + '</div>'
     + (f.salida === 'tiro' ? '' : ligaPasoHoyo(f.hoyoInicio || 1, 'lgHoyoIni'))
 
-    + '<div class="conv-eyebrow">7 · Formato</div>'
+    + '<div class="conv-eyebrow">8 · Formato</div>'
     + '<div class="lg-dos">' + [['stroke', 'Stroke Play', 'Puntos F1 por puesto'], ['stableford', 'Stableford', 'Suma de puntos']].map(c => '<button type="button" class="lg-opc lg-opc2' + (f.formato === c[0] ? ' on' : '') + '" data-formato="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
     + '<div class="lg-aviso">' + (f.formato === 'stableford'
         ? 'Stableford: en cada ronda se suman los puntos Stableford de cada jugador (con su hándicap). Gana quien más puntos sume.'
         : 'Puntos por puesto en cada ronda (por neto), como en la Fórmula 1: 25 · 18 · 15 · 12 · 10 · 8 · 6 · 4 · 2 · 1. Del 11.º en adelante y quien no juega, 0.') + '</div>'
 
-    + '<div class="conv-eyebrow">8 · Rondas que cuentan</div>'
+    + '<div class="conv-eyebrow">9 · Rondas que cuentan</div>'
     + '<div class="lg-reglas">' + LIGA_REGLAS.map(c => '<button type="button" class="lg-opc lg-opc2' + (f.regla === c[0] ? ' on' : '') + '" data-regla="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
     + ((f.regla === 'mejores' || f.regla === 'primeras')
         ? '<div class="lg-paso" style="margin-top:10px;"><button type="button" class="lg-mas" data-cuentan="-1" aria-label="Una menos">−</button><div class="lg-num"><b>' + Math.min(f.cuentan, f.jornadas) + '</b><small>cuentan</small></div><button type="button" class="lg-mas" data-cuentan="1" aria-label="Una más">+</button></div>'
@@ -398,11 +414,11 @@ function ligaPintarForm(){
           + '<div class="lg-aviso">Toca las rondas que cuentan (' + f.fijas.length + ' elegidas).</div>'
         : '<div class="lg-aviso">' + (f.regla === 'peor' ? 'Se quita la peor ronda de cada jugador: de ' + f.jornadas + ' cuentan ' + Math.max(1, f.jornadas - 1) + '.' : 'Suman todas las rondas.') + '</div>')
 
-    + '<div class="conv-eyebrow">9 · Mínimo para clasificar</div>'
+    + '<div class="conv-eyebrow">10 · Mínimo para clasificar</div>'
     + '<div class="lg-paso"><button type="button" class="lg-mas" data-minimo="-1" aria-label="Una menos">−</button><div class="lg-num"><b>' + (f.minimo || 0) + '</b><small>' + (f.minimo ? (f.minimo === 1 ? 'ronda' : 'rondas') : 'sin mínimo') + '</small></div><button type="button" class="lg-mas" data-minimo="1" aria-label="Una más">+</button></div>'
     + '<div class="lg-aviso">' + (f.minimo ? 'Quien juegue menos de ' + f.minimo + (f.minimo === 1 ? ' ronda' : ' rondas') + ' sale en la tabla en gris, sin puesto.' : 'Todos los que jueguen salen con puesto en la tabla.') + '</div>'
 
-    + '<div class="conv-eyebrow">10 · Grupos de salida</div>'
+    + '<div class="conv-eyebrow">11 · Grupos de salida</div>'
     + '<div class="lg-dos">' + [['rotar', 'Sorteo rotando', 'Todos con todos'], ['azar', 'Sorteo al azar', 'Cada jornada']].map(c => '<button type="button" class="lg-opc lg-opc2' + (f.sorteo === c[0] ? ' on' : '') + '" data-sorteo="' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></button>').join('') + '</div>'
     + '<div class="lg-aviso">' + (f.sorteo === 'rotar' ? 'La app sortea los grupos de cada jornada procurando que todos coincidan con todos y se repita lo menos posible.' : 'La app sortea los grupos de cada jornada al azar.') + ' Luego puedes cambiarlos a mano en cada jornada.</div>'
 
@@ -443,6 +459,8 @@ function ligaPintarForm(){
   body.querySelectorAll('[data-cuentan]').forEach(b => b.addEventListener('click', ()=>{ f.cuentan = Math.min(f.jornadas, Math.max(1, Math.min(f.cuentan, f.jornadas) + Number(b.dataset.cuentan))); repintar(); }));
   body.querySelectorAll('[data-fija]').forEach(b => b.addEventListener('click', ()=>{ const r = Number(b.dataset.fija); f.fijas = f.fijas.includes(r) ? f.fijas.filter(x => x !== r) : f.fijas.concat(r).sort((a, b) => a - b); repintar(); }));
   body.querySelectorAll('[data-minimo]').forEach(b => b.addEventListener('click', ()=>{ f.minimo = Math.min(f.jornadas, Math.max(0, (f.minimo || 0) + Number(b.dataset.minimo))); repintar(); }));
+  body.querySelectorAll('[data-hoyos]').forEach(b => b.addEventListener('click', ()=>{ f.hoyos = Number(b.dataset.hoyos) === 9 ? 9 : 18; repintar(); }));
+  body.querySelectorAll('[data-mitad]').forEach(b => b.addEventListener('click', ()=>{ f.mitad = b.dataset.mitad === 'vuelta' ? 'vuelta' : 'ida'; repintar(); }));
   body.querySelectorAll('[data-sorteo]').forEach(b => b.addEventListener('click', ()=>{ f.sorteo = b.dataset.sorteo; repintar(); }));
   body.querySelectorAll('[data-hoyoini]').forEach(b => b.addEventListener('click', ()=>{ f.hoyoInicio = ligaHoyoMas(f.hoyoInicio || 1, Number(b.dataset.hoyoini)); repintar(); }));
   body.querySelectorAll('.lg-cal-in').forEach(inp => inp.addEventListener('change', ()=>{
@@ -478,11 +496,11 @@ async function ligaCrear(){
   if(cal.some(j => j.date < ligaHoy())){ alert('Hay alguna jornada con fecha pasada. Revisa el calendario.'); return; }
   if(new Set(cal.map(j => j.date)).size < cal.length){ alert('Hay dos jornadas el mismo día. Revisa el calendario.'); return; }
   if(f.regla === 'fijas' && !f.fijas.filter(r => r <= f.jornadas).length){ alert('Elige qué rondas cuentan.'); return; }
-  if(!confirm('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' rondas (' + (f.formato === 'stableford' ? 'Stableford' : 'Stroke Play') + ').\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
+  if(!confirm('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' rondas de ' + (f.hoyos === 9 ? '9 hoyos (' + (f.mitad === 'vuelta' ? 'vuelta, del 10 al 18' : 'ida, del 1 al 9') + ')' : '18 hoyos') + ' (' + (f.formato === 'stableford' ? 'Stableford' : 'Stroke Play') + ').\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
   const client = initSupabase(); if(!client) return;
   btn.textContent = 'Creando…'; btn.disabled = true;
   try {
-    const l = { nombre: f.nombre, jugadores: f.jugadores.slice(), dia: f.dia, courseId: f.campo, hora: f.hora, cada: f.cada, hoyoInicio: f.hoyoInicio || 1, jornadas: cal,
+    const l = { nombre: f.nombre, jugadores: f.jugadores.slice(), dia: f.dia, courseId: f.campo, hora: f.hora, cada: f.cada, hoyoInicio: f.hoyoInicio || 1, jornadas: cal, hoyos: f.hoyos === 9 ? 9 : 18, mitad: f.mitad === 'vuelta' ? 'vuelta' : 'ida',
       frec: (LIGA_FREC.find(x => x[3] === f.cada) || [null])[0], formato: f.formato, regla: f.regla, cuentan: Math.min(f.cuentan, f.jornadas),
       fijas: f.fijas.filter(r => r <= f.jornadas), minimo: f.minimo || 0, sorteo: f.sorteo, campos: {} };
     cal.forEach(j => { const c = ligaCampoGuardable(j.courseId); if(c) l.campos[c.id] = c; });

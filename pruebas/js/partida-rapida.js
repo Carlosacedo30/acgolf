@@ -58,7 +58,7 @@
   const PR_BARRA_TXT = { blancas:'Blancas', amarillas:'Amarillas', azules:'Azules', rojas:'Rojas' };
   const prBarrasOn = () => !!window.acgolfBarras && !prParejas() && typeof BARRAS_SALIDA !== 'undefined';
   const prBarra = n => (typeof BARRAS_SALIDA !== 'undefined' && BARRAS_SALIDA.includes(prBarras[n])) ? prBarras[n] : 'amarillas';
-  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? cursoNueve(c) : c; }
+  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? (window.acgolfMitad === 'vuelta' ? cursoNueveVuelta(c) : cursoNueve(c)) : c; }
   function prRecibe(n){
     const campo = prCurso();
     return typeof hcpCampo === 'function' ? hcpCampo(prHcp(n), campo, prBarra(n)) : Math.round(prHcp(n));
@@ -88,7 +88,7 @@
 
   function prAbrir(){
     const ov = document.getElementById('prOverlay'); if(!ov) return;
-    prDesde = null;
+    prDesde = null; window.acgolfMitad = null;
     prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false; prBarras = {};
     window.acgolfTorneo = { con: false };   // partida normal por defecto; el interruptor la pasa a «con marcador»
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
