@@ -253,6 +253,7 @@
     document.body.appendChild(o);
     o.addEventListener('click', alPulsar);
     o.addEventListener('change', alCambiar);
+    o.addEventListener('input', e => { if(e.target.id !== 'bcTexto') return; clearTimeout(retardo); st.texto = e.target.value; retardo = setTimeout(() => { if(st.texto.trim().length >= 3) buscar(true); }, 350); });
     o.addEventListener('submit', e => { e.preventDefault(); if(e.target.id === 'bcForm') buscar(); });
     document.addEventListener('keydown', e => { if(e.key === 'Escape' && !o.hidden){ if(st.ficha || $('bcCapa').innerHTML) cerrarCapa(); else cerrar(); } });
     return o;
@@ -320,9 +321,8 @@
 
   function pintarBuscar(){
     let h = '<button type="button" class="bc-foto-btn" data-accion="foto">' + ICO.camara + '<span><b>' + (st.alElegir ? 'Pega tu foto de la tarjeta y a jugar' : 'Añade un campo con la foto de su tarjeta') + '</b><small>¿No encuentras el campo? Haz una foto a su tarjeta y la app la lee.</small></span></button>'
-      + '<div class="bc-seg bc-modo">'
-      + '<button type="button" class="' + (st.modo === 'texto' ? 'on' : '') + '" data-modo="texto" aria-pressed="' + (st.modo === 'texto') + '">Nombre o ciudad</button>'
-      + '<button type="button" class="' + (st.modo === 'cerca' ? 'on' : '') + '" data-modo="cerca" aria-pressed="' + (st.modo === 'cerca') + '">Cerca de un sitio</button></div>';
+      ;
+    st.modo = 'texto';   // Un solo cuadro de búsqueda: nombre, ciudad o provincia (ya no hay «Cerca de mí»)
     // (Los campos de Cádiz salen al buscar por nombre o ciudad y en «Cerca de un sitio»; ya no hay botón propio)
     if(st.modo === 'cadiz'){
       h += '<label class="bc-lbl" for="bcMun">Municipio</label><select id="bcMun" class="bc-input"><option value="">Todos los municipios</option>'
@@ -333,8 +333,8 @@
     }
     h += '<form id="bcForm" class="bc-form" novalidate>';
     if(st.modo === 'texto'){
-      h += '<label class="bc-lbl" for="bcTexto">Escribe el nombre del campo</label>'
-        + '<input id="bcTexto" class="bc-input" type="search" inputmode="search" autocomplete="off" maxlength="60" placeholder="Ej.: Valderrama, Guadalmina, Zaudín" value="' + esc(st.texto) + '">';
+      h += '<label class="bc-lbl" for="bcTexto">Escribe el campo, la ciudad o la provincia</label>'
+        + '<input id="bcTexto" class="bc-input" type="search" inputmode="search" autocomplete="off" maxlength="60" placeholder="Ej.: Zaudín, Sotogrande, Cádiz" value="' + esc(st.texto) + '">';
     } else {
       const p = st.punto;
       h += '<button type="button" class="bc-btn sec" data-accion="gps">' + ICO.diana + '<span>' + (p && p.origen === 'gps' ? 'Ubicación lista · volver a localizar' : 'Usar mi ubicación') + '</span></button>'
@@ -359,7 +359,7 @@
 
   function pintarResultados(){
     if(st.fase === 'inicio') return '<p class="bc-vacio">' + (st.modo === 'texto'
-      ? 'Escribe al menos 3 letras y toca «Buscar campos».'
+      ? 'Escribe al menos 3 letras: los campos salen según escribes.'
       : 'Toca «Usar mi ubicación» o escribe unas coordenadas, elige la distancia y busca.') + '</p>';
     if(st.fase === 'cargando') return '<div class="bc-cargando"><span class="bc-rueda" aria-hidden="true"></span>Buscando campos…</div>';
     if(st.fase === 'error') return '<div class="bc-error"><p>' + esc(st.error) + '</p><button type="button" class="bc-btn sec" data-accion="reintentar">Intentar otra vez</button></div>';
@@ -368,7 +368,7 @@
     if(!st.resultados.length){
       h += '<p class="bc-vacio">No se ha encontrado ningún campo.' + (st.modo === 'cerca'
         ? ' En «Cerca de un sitio» salen los campos que ya se han buscado alguna vez por nombre o ciudad: prueba a buscar antes la ciudad o la provincia.'
-        : ' La búsqueda va por el <b>nombre del campo</b>, no por la ciudad: prueba con una palabra del nombre, por ejemplo «Guadalmina», «Valderrama» o «Montecastillo».') + '</p>';
+        : ' Prueba con otra palabra: el nombre del campo, la ciudad o la provincia. Si no está, puedes añadirlo con la foto de su tarjeta.') + '</p>';
       return h;
     }
     if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno cumple los filtros. Cambia el municipio, el slope, el par o los hoyos.</p>';
@@ -508,15 +508,19 @@
     if($('bcLon')) st.lon = $('bcLon').value;
     if($('bcRadio')) st.radio = Number($('bcRadio').value) || 25;
   }
-  async function buscar(){
+  // Mientras se escribe solo se repinta la lista (así el cuadro no pierde el cursor)
+  function repintar(){ const r = $('bcResultados'); if(r && fuera) r.innerHTML = pintarResultados(); else pintar(); }
+  let fuera = false, retardo = null;
+  async function buscar(suave){
+    fuera = !!suave;
     leerFormulario();
     const yo = ++st.pidiendo;
     st.aviso = '';
     try {
       if(st.modo === 'texto'){
         const texto = st.texto.trim();
-        if(texto.length < 3) throw new Error('Escribe al menos 3 letras.');
-        st.fase = 'cargando'; pintar();
+        if(texto.length < 3){ if(suave) return; throw new Error('Escribe al menos 3 letras.'); }
+        st.fase = 'cargando'; repintar();
         const q = sinAcentos(texto);
         const propios = camposAcgolf().concat(camposCadiz()).filter(c => sinAcentos(c.nombre + ' ' + (c.club || '') + ' ' + (c.ciudad || '') + ' ' + (c.region || '')).includes(q));
         let remotos = [], avisoServidor = null;
@@ -556,8 +560,8 @@
       if(yo !== st.pidiendo) return;
       st.fase = 'error'; st.error = e.message || 'No se pudo buscar.';
     }
-    pintar();
-    const r = $('bcResultados'); if(r && st.fase === 'listo') r.scrollIntoView({ behavior:'smooth', block:'start' });
+    repintar();
+    const r = $('bcResultados'); if(!suave && r && st.fase === 'listo') r.scrollIntoView({ behavior:'smooth', block:'start' });
   }
   // Los campos propios de acgolf van primero; si GolfCourseAPI trae el mismo nombre, no se repite
   function juntar(propios, remotos){
