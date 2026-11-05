@@ -28,3 +28,17 @@ html[data-tema="grafito"] input[type="time"]::-webkit-calendar-picker-indicator{
   background:#C6F24E; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat; -webkit-mask-position:center; mask-position:center; -webkit-mask-size:contain; mask-size:contain; }
 html[data-tema="grafito"] input[type="date"]::-webkit-calendar-picker-indicator{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='3.5'%20y='5'%20width='17'%20height='15.5'%20rx='3'/%3E%3Cpath%20d='M8%203v4M16%203v4M3.5%2010h17'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Crect%20x='3.5'%20y='5'%20width='17'%20height='15.5'%20rx='3'/%3E%3Cpath%20d='M8%203v4M16%203v4M3.5%2010h17'/%3E%3C/svg%3E"); }
 html[data-tema="grafito"] input[type="time"]::-webkit-calendar-picker-indicator{ -webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='12'%20r='8.5'/%3E%3Cpath%20d='M12%207.5V12l3%202'/%3E%3C/svg%3E"); mask-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='black'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Ccircle%20cx='12'%20cy='12'%20r='8.5'/%3E%3Cpath%20d='M12%207.5V12l3%202'/%3E%3C/svg%3E"); }
+
+/* Pantalla de organizar partidos (horarios, huecos y botones) con el mismo diseño: gris grafito, pastillas y letra normal */
+html[data-tema="grafito"] .conv-tee{ background:#1B1E22; border:1px solid #33383E; border-radius:18px; padding:12px; }
+html[data-tema="grafito"] .conv-tee-time{ font-family:inherit; font-size:22px; font-weight:500; color:#F2F4F5; }
+html[data-tema="grafito"] .conv-tee-n{ font-family:inherit; font-size:14px; font-weight:500; color:#C6F24E; }
+html[data-tema="grafito"] .conv-seat{ font-family:inherit; font-size:16px; font-weight:400; padding:10px 14px; margin-top:6px; border-radius:999px; border:1px dashed #4A5058; background:transparent; color:#9AA3AB; }
+html[data-tema="grafito"] .conv-seat.filled{ border:1px solid rgba(198,242,78,.55); background:#24282D; color:#F2F4F5; font-weight:500; }
+html[data-tema="grafito"] .conv-seat.me{ background:#C6F24E; border-color:#C6F24E; color:#111316; }
+html[data-tema="grafito"] .conv-btn{ font-family:inherit; font-size:18px; font-weight:500; padding:14px; border-radius:999px; }
+html[data-tema="grafito"] .conv-btn.primary{ background:#C6F24E; border-color:#C6F24E; color:#111316; box-shadow:none; }
+html[data-tema="grafito"] .conv-btn.ghost{ background:transparent; border:1px solid rgba(198,242,78,.55); color:#F2F4F5; }
+html[data-tema="grafito"] #convBody .conv-mas-partida{ border:1px dashed rgba(198,242,78,.55) !important; color:#F2F4F5; font-weight:500; }
+html[data-tema="grafito"] .conv-link{ font-family:inherit; font-size:15px; color:#9AA3AB; }
+html[data-tema="grafito"] .conv-eyebrow{ font-family:inherit; color:#9AA3AB; }
