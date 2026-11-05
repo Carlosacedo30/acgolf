@@ -147,7 +147,7 @@
   function quizaAvanzar(h){
     clearTimeout(avanceTimer);
     const g = grupoEst();
-    if(!g || llegada.completo || h >= 18 || !hoyoMioCompleto(g, h)) return;
+    if(!g || llegada.completo || h >= (typeof hoyosPartida === 'function' ? hoyosPartida() : 18) || !hoyoMioCompleto(g, h)) return;
     avanceTimer = setTimeout(() => {
       if(currentHole !== h || !hoyoMioCompleto(grupoEst(), h)) return;
       currentHole = h + 1; window.renderHoleView();
@@ -236,7 +236,7 @@
     if(me < 0){ h += '<p class="fm-p">Las entregan los jugadores de este grupo desde su móvil.</p>'; }
     else if(!mia || mia.marcador_idx == null){ h += '<p class="fm-p">Has jugado sin marcador: en las partidas de una liga creada, la tarjeta solo cuenta con marcador.</p>'; }
     else if(yaHecho){ h += '<div class="fm-ok">✅ Has entregado tu tarjeta' + (misMarcados.length ? ' y confirmado la de ' + misMarcados.map(j => esc(corto(j.nombre))).join(' y ') : '') + '.<br><small>Cuenta para la liga cuando también la confirme tu marcador.</small></div>'; }
-    else if(!mia.ok || misMarcados.some(j => !j.ok)){ h += '<p class="fm-p">Para entregar, tus 18 hoyos y los del jugador que marcas tienen que coincidir con lo que apuntó el otro. Revisa los hoyos en naranja.</p>'; }
+    else if(!mia.ok || misMarcados.some(j => !j.ok)){ h += '<p class="fm-p">Para entregar, tus ' + (typeof hoyosPartida === 'function' ? hoyosPartida() : 18) + ' hoyos y los del jugador que marcas tienen que coincidir con lo que apuntó el otro. Revisa los hoyos en naranja.</p>'; }
     else { h += '<button type="button" class="fm-btn" id="mkEntregar">Entregar mi tarjeta</button>'; }
     h += '<button type="button" class="fm-link" id="mkRecargar">Comprobar otra vez</button>';
     if(aviso) h += '<p class="fm-aviso">' + esc(aviso) + '</p>';
