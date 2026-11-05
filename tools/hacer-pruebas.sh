@@ -13,12 +13,10 @@ for f in *; do
 done
 cp -R pruebas-src/. pruebas/
 
-# Base de datos de pruebas (separada de la de la liga)
-sed -i \
-  -e "s#https://qjtsjcfalettgvrlwwnr.supabase.co#https://svnkgmbfanwftncopqjg.supabase.co#" \
-  -e "s#sb_publishable_HnUJlKmYnPGw8z-CAv87nA_EyN0l-cJ#sb_publishable_7ZPtF55SSEJhiP91H14Dpw_pGqEQ3-X#" \
-  pruebas/js/rondas-compartidas.js
-grep -q svnkgmbfanwftncopqjg pruebas/js/rondas-compartidas.js || { echo "ERROR: no se cambió la base de datos"; exit 1; }
+# Base de datos de PRUEBAS: proyecto qjtsjcfalettgvrlwwnr (sin datos reales, sin correos).
+# La app real (acgolf.es) usa svnkgmbfanwftncopqjg. NUNCA mezclar.
+grep -q qjtsjcfalettgvrlwwnr pruebas/js/rondas-compartidas.js || { echo "ERROR: pruebas no apunta a la base de pruebas"; exit 1; }
+if grep -rq svnkgmbfanwftncopqjg pruebas/js/rondas-compartidas.js; then echo "ERROR: pruebas apunta a la base REAL"; exit 1; fi
 
 # Partidas de hasta 8 grupos de 4 (32 jugadores) en la versión de pruebas
 sed -i "s#const MAX_GROUPS = 4;#const MAX_GROUPS = 8;#" pruebas/js/players.js

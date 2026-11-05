@@ -11,6 +11,13 @@ find "$DEST" -mindepth 1 -maxdepth 1 ! -name .git ! -name .github ! -name .gitig
 cp -R pruebas/. "$DEST/"
 cp acgolf-es/manifest.json acgolf-es/sw.js acgolf-es/instalar.js acgolf-es/instalar.css acgolf-es/instalar.html acgolf-es/app-golf.html acgolf-es/pantalla-*.webp acgolf-es/og-acgolf.jpg acgolf-es/icon-*.png acgolf-es/video.mp4 acgolf-es/robots.txt acgolf-es/sitemap.xml acgolf-es/google*.html "$DEST/"
 echo "acgolf.es" > "$DEST/CNAME"
+# acgolf.es usa la base de datos REAL (svnkgmbfanwftncopqjg). La web de pruebas usa otra distinta.
+sed -i \
+  -e "s#https://qjtsjcfalettgvrlwwnr.supabase.co#https://svnkgmbfanwftncopqjg.supabase.co#" \
+  -e "s#sb_publishable_HnUJlKmYnPGw8z-CAv87nA_EyN0l-cJ#sb_publishable_7ZPtF55SSEJhiP91H14Dpw_pGqEQ3-X#" \
+  "$DEST/js/rondas-compartidas.js"
+grep -q svnkgmbfanwftncopqjg "$DEST/js/rondas-compartidas.js" || { echo "ERROR: acgolf.es no apunta a la base real"; exit 1; }
+if grep -rq qjtsjcfalettgvrlwwnr "$DEST/js/rondas-compartidas.js"; then echo "ERROR: acgolf.es apunta a la base de pruebas"; exit 1; fi
 touch "$DEST/.nojekyll"
 # Las direcciones de pruebas pasan a ser acgolf.es
 grep -rl "carlosacedo30.github.io/acgolf/pruebas/" "$DEST" --include=*.js --include=*.html | xargs -r sed -i "s#https://carlosacedo30.github.io/acgolf/pruebas/#https://acgolf.es/#g"

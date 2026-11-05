@@ -1,7 +1,7 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
   // --- Partidas compartidas en vivo (Supabase): código, guardado y tiempo real ---
-  const SUPABASE_URL = 'https://svnkgmbfanwftncopqjg.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_7ZPtF55SSEJhiP91H14Dpw_pGqEQ3-X';
+  const SUPABASE_URL = 'https://qjtsjcfalettgvrlwwnr.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_HnUJlKmYnPGw8z-CAv87nA_EyN0l-cJ';
   let sb = null;
   let currentRoundId = null;
   let currentRoundCode = null;
