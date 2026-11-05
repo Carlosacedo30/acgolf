@@ -1,0 +1,22 @@
+/* Casillas y desplegables con el diseño que eligió Carlos (5-nov-2026): gris grafito, borde fino y esquinas redondeadas, en todas las pantallas */
+html[data-tema="grafito"] .field input,
+html[data-tema="grafito"] .field select,
+html[data-tema="grafito"] .field textarea,
+html[data-tema="grafito"] .search-box,
+html[data-tema="grafito"] .lp-add input,
+html[data-tema="grafito"] .pr-inv-l input,
+html[data-tema="grafito"] .cg-lbl input,
+html[data-tema="grafito"] .cg-lbl select,
+html[data-tema="grafito"] .normas-firma select{
+  background-color:#24282D; border:1px solid #33383E; border-radius:12px; color:#F2F4F5; }
+html[data-tema="grafito"] .field input:focus,
+html[data-tema="grafito"] .field select:focus,
+html[data-tema="grafito"] .field textarea:focus,
+html[data-tema="grafito"] .search-box:focus-within,
+html[data-tema="grafito"] .lp-add input:focus,
+html[data-tema="grafito"] .pr-inv-l input:focus,
+html[data-tema="grafito"] .cg-lbl input:focus,
+html[data-tema="grafito"] .cg-lbl select:focus{
+  outline:none; background-color:#24282D; border-color:#C6F24E; box-shadow:0 0 0 3px rgba(198,242,78,.18); }
+html[data-tema="grafito"] .field input,
+html[data-tema="grafito"] .field select{ min-height:48px; font-size:18px; }
