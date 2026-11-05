@@ -23,6 +23,8 @@
       if(!error) modos[code] = data === true;
     } catch(e){}
   }
+  // Para que otros archivos (el caddie Curro y Lola) sepan si esta partida es de la liga con marcadores
+  window.acgolfModoMarcador = { cargar: cargarModo, con: conMarcadorEn };
 
   const yo = () => window.miPerfil && window.miPerfil.player_name;
   const grupoEst = () => (est || []).find(g => +g.grupo === +activeGroup);

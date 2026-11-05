@@ -338,7 +338,20 @@
     const h = +inp.dataset.hole; if(isNaN(h)) return;
     hoyoPendiente = h;
     clearTimeout(temporizador);
-    temporizador = setTimeout(() => { const x = hoyoPendiente; hoyoPendiente = null; if(x != null) comentarHoyo(x); }, 900);
+    temporizador = setTimeout(async () => {
+      const x = hoyoPendiente; hoyoPendiente = null;
+      if(x == null) return;
+      if(await esLigaConMarcador()) return;      // en la liga con marcadores no sale Curro ni Lola al anotar
+      comentarHoyo(x);
+    }, 900);
+  }
+  // ¿Esta partida es de la liga con marcadores? (lo decide marcador.js; si no se puede saber, se comporta como siempre)
+  async function esLigaConMarcador(){
+    const M = window.acgolfModoMarcador;
+    const code = (typeof currentRoundCode !== 'undefined') ? currentRoundCode : null;
+    if(!M || !code) return false;
+    try { await M.cargar(code); } catch(e){}
+    return M.con(code) === true;
   }
   document.addEventListener('change', alApuntar, true);
   document.addEventListener('input', alApuntar, true);
