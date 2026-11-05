@@ -347,3 +347,8 @@ a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decorat
 .pn-b.pn-fila div{ display:flex; flex-direction:column; gap:2px; }
 .pn-lista{ display:flex; flex-direction:column; gap:12px; }
 .pn-atras{ align-self:flex-start; background:none; border:none; color:#C6F24E; font:700 18px 'Barlow',sans-serif; padding:6px 0; cursor:pointer; touch-action:manipulation; }
+
+/* Marca de pruebas: franja arriba + palabra PRUEBAS de fondo. Solo sale si existe el cartel .pr-banda (acgolf.es no lo lleva, así que allí no aparece). */
+body:has(.pr-banda){ padding-top:calc(env(safe-area-inset-top, 0px) + 26px); }
+body:has(.pr-banda)::before{ content:'VERSIÓN DE PRUEBAS · NO ES LA APP REAL'; position:fixed; top:0; left:0; right:0; z-index:99999; box-sizing:border-box; padding:calc(env(safe-area-inset-top, 0px) + 5px) 8px 5px; background:#F29A5B; color:#0E1F3D; text-align:center; font:800 12px/16px 'Barlow', sans-serif; letter-spacing:.06em; pointer-events:none; }
+body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; pointer-events:none; opacity:.22; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='260'><text x='160' y='140' text-anchor='middle' transform='rotate(-28 160 130)' font-family='Archivo,Arial,sans-serif' font-weight='800' font-size='46' letter-spacing='4' fill='%23F29A5B'>PRUEBAS</text></svg>"); background-repeat:repeat; }
