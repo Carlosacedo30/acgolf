@@ -161,14 +161,14 @@ html.bc-abierto, html.bc-abierto body{ overflow:hidden; }
 .bc-barra-datos .bc-input{ min-height:52px; padding:8px; font-size:19px; text-align:center; }
 .bc-foto-error{ color:#8C1D18; font-weight:700; margin:12px 0; }
 
-/* Elegir un solo campo: favoritos por defecto + «Buscar otro campo» (Crear partida y Organizar partido) */
-.bc-sel{ display:flex; flex-direction:column; gap:10px; margin:2px 0 6px; }
-.bc-sel-b{ display:flex; align-items:center; gap:10px; width:100%; min-height:56px; padding:12px 18px; box-sizing:border-box; text-align:left;
+/* Elegir un solo campo: favoritos por defecto + «Buscar otro campo» (Crear partida y Organizar partido). Mismo diseño que el dibujo que aprobó Carlos */
+.bc-sel{ display:flex; flex-direction:column; gap:8px; margin:2px 0 6px; }
+.bc-sel-b{ display:flex; align-items:center; gap:10px; width:100%; min-height:48px; padding:13px 16px; box-sizing:border-box; text-align:left;
   border:1px solid rgba(198,242,78,.55); border-radius:999px; background:#24282D; color:#F2F4F5; cursor:pointer; touch-action:manipulation;
-  font:800 19px 'Archivo','Barlow',sans-serif; }
-.bc-sel-b .bc-ico{ width:22px; height:22px; flex:none; color:#C6F24E; }
+  font-family:inherit; font-size:18px; font-weight:500; line-height:1.2; }
+.bc-sel-b .bc-ico{ width:21px; height:21px; flex:none; color:#C6F24E; }
 .bc-sel-b:active{ transform:scale(.97); }
 .bc-sel-b.on{ background:#C6F24E; border-color:#C6F24E; color:#111316; }
 .bc-sel-b.on .bc-ico{ color:#111316; }
 .bc-sel-b.bus{ justify-content:center; background:transparent; border-style:dashed; }
-.bc-sel-nota{ margin:2px 4px 0; font:400 15px 'Barlow',sans-serif; color:#9AA3AB; }
+.bc-sel-nota{ margin:2px 4px 0; font-family:inherit; font-size:14px; font-weight:400; color:#9AA3AB; }

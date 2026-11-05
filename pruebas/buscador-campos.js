@@ -913,7 +913,7 @@
     return '<div class="bc-sel" role="group" aria-label="Campo">'
       + ops.map(o => { const on = !!o.cid && o.cid === sel;
           return '<button type="button" class="bc-sel-b' + (on ? ' on' : '') + '" data-bccid="' + esc(o.cid || '') + '" data-bcfav="' + esc(o.fav || '') + '" aria-pressed="' + on + '">'
-            + (o.estrella ? ICO.estrellaLlena : '') + '<span>' + esc(o.nombre) + '</span></button>'; }).join('')
+            + (o.estrella ? ICO.estrella : '') + '<span>' + esc(o.nombre) + '</span></button>'; }).join('')
       + '<button type="button" class="bc-sel-b bus">' + ICO.lupa + '<span>Buscar otro campo</span></button>'
       + (sinFav ? '<p class="bc-sel-nota">Aquí saldrán tus campos favoritos. Búscalos y toca «Favorito».</p>' : '')
       + '</div>';
