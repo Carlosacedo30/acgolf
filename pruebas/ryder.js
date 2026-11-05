@@ -24,7 +24,10 @@
   const $ = id => document.getElementById(id);
   const admin = () => !!(window.miPerfil && window.miPerfil.es_admin);
   const yo = () => (window.miPerfil && window.miPerfil.player_name) || '';
-  const corto = n => { const w = String(n || '').trim().split(/\s+/); return w.length > 2 ? w.slice(0, 2).join(' ') : w.join(' '); };
+  // Misma norma que las partidas normales (en-vivo.js): solo apuntan los jugadores de ese partido y el administrador.
+  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const juegaEn = d => admin() || (!!yo() && d.a.concat(d.b).some(n => norm(n) === norm(yo())));
+  const corto =n => { const w = String(n || '').trim().split(/\s+/); return w.length > 2 ? w.slice(0, 2).join(' ') : w.join(' '); };
   const primero = n => String(n || '').trim().split(/\s+/)[0] || '';
   const lado = l => l.length > 1 ? l.map(primero).join(' y ') : corto(l[0]);
   // Jugadores para montar una Ryder: los del grupo, y en Los Iscariotes también los de Cajapollos
@@ -387,9 +390,13 @@
     const col = e.lider === 'A' ? m.colorA : e.lider === 'B' ? m.colorB : '#3A3F46';
     const recibenAqui = g.BA.concat(g.BB).map(b => [b.nombre, g.enHoyo(b, hoyoSel)]).filter(x => x[1] > 0);
     const recTxt = recibenAqui.length ? recibenAqui.map(x => x[0] + ' recibe ' + (x[1] === 1 ? '1 golpe' : x[1] + ' golpes')).join(' · ') : 'Nadie recibe golpe en este hoyo';
-    const contador = (k, j, b, color) => '<div class="ry-cont"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
-      + '<div class="ry-cont-f"><button type="button" class="ry-mm" data-k="' + k + '" data-j="' + j + '" data-d="-1" aria-label="Un golpe menos">−</button><b>' + cuentas[k][j] + '</b>'
-      + '<button type="button" class="ry-mm" data-k="' + k + '" data-j="' + j + '" data-d="1" aria-label="Un golpe más">+</button></div></div>';
+    const puedo = juegaEn(d);   // quien no juega este partido solo mira: sin botones − y +, sin «Guardar hoyo»
+    const contador = (k, j, b, color) => puedo
+      ? '<div class="ry-cont"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
+        + '<div class="ry-cont-f"><button type="button" class="ry-mm" data-k="' + k + '" data-j="' + j + '" data-d="-1" aria-label="Un golpe menos">−</button><b>' + cuentas[k][j] + '</b>'
+        + '<button type="button" class="ry-mm" data-k="' + k + '" data-j="' + j + '" data-d="1" aria-label="Un golpe más">+</button></div></div>'
+      : '<div class="ry-cont"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
+        + '<div class="ry-cont-f"><b>' + (((k === 'a' ? d.ga : d.gb)[j] || [])[hoyoSel] != null ? (k === 'a' ? d.ga : d.gb)[j][hoyoSel] : '–') + '</b></div></div>';
     const hayHoyo = (d.ga[0] || [])[hoyoSel] != null || (d.gb[0] || [])[hoyoSel] != null;
     let h = '<button type="button" class="ry-volver" id="ryVolver">‹ Marcador</button>'
       + '<div class="ry-sesion">' + MODOS[d.tipo].nombre + '<small>' + MODOS[d.tipo].explica + '</small></div>'
@@ -404,9 +411,10 @@
       + (d.tipo === 'foursome' ? '<p class="ry-p ry-centro">Una bola por pareja: apunta los golpes de la pareja.</p>' : d.tipo === 'fourball' ? '<p class="ry-p ry-centro">Cada uno su bola: cuenta la mejor de cada pareja.</p>' : '')
       + '<div class="ry-conts' + (g.BA.length > 1 ? ' cuatro' : '') + '">'
       + g.BA.map((b, j) => contador('a', j, b, m.colorA)).join('') + g.BB.map((b, j) => contador('b', j, b, m.colorB)).join('') + '</div>'
-      + (e.terminado && !hayHoyo ? '<p class="ry-p">El partido ya está decidido. Podéis seguir apuntando, pero no cambia el resultado.</p>' : '')
-      + '<button type="button" class="ry-btn" id="ryGuardar">Guardar hoyo ' + (hoyoSel + 1) + '</button>'
-      + (hayHoyo ? '<button type="button" class="ry-btn ghost" id="ryQuitar">Borrar este hoyo</button>' : '');
+      + (!puedo ? '<p class="ry-p ry-centro">Solo pueden anotar los jugadores de este partido.</p>'
+        : (e.terminado && !hayHoyo ? '<p class="ry-p">El partido ya está decidido. Podéis seguir apuntando, pero no cambia el resultado.</p>' : '')
+        + '<button type="button" class="ry-btn" id="ryGuardar">Guardar hoyo ' + (hoyoSel + 1) + '</button>'
+        + (hayHoyo ? '<button type="button" class="ry-btn ghost" id="ryQuitar">Borrar este hoyo</button>' : ''));
     $('ryBody').innerHTML = h;
     $('ryVolver').onclick = () => { vista = 'marcador'; pintar(); };
     $('ryBody').querySelectorAll('.ry-h').forEach(b => b.onclick = () => { hoyoSel = +b.dataset.h; cuentas = null; pintar(); });
@@ -415,7 +423,8 @@
       l[j] = Math.max(1, Math.min(15, l[j] + (+b.dataset.d)));
       pintar();
     });
-    $('ryGuardar').onclick = async ev => {
+    if($('ryGuardar')) $('ryGuardar').onclick = async ev => {
+      if(!juegaEn(ryder.duelos[dueloIdx] || d)) return;
       const b = ev.target; b.disabled = true; b.textContent = 'Guardando…';
       const hh = hoyoSel, c = cuentas, i = dueloIdx;
       const ok = await cambiar(r => {
