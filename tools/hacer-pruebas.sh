@@ -170,14 +170,14 @@ for a, b in cambios:
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
-# Organizar partido: en los huecos de cada horario sale el nombre con un solo apellido (Carlos Acedo, no Carlos Acedo Domínguez)
+# Organizar partido: en los huecos de cada horario salen las dos primeras palabras del nombre (Carlos Acedo, no Carlos Acedo Domínguez)
 python3 - <<'PY'
 p = 'pruebas/js/convocatoria.js'
 s = open(p, encoding='utf-8').read()
 cambios = [
   ("  function convSlotOf(c, name){",
-   "  // Nombre y un apellido: con 3 palabras, la 1.ª y la 2.ª; con 4 o más, la 1.ª y la penúltima (suelen ser los dos apellidos al final)\n"
-   "  function convNombreCorto(n){ const w = String(n || '').trim().split(/\\s+/).filter(Boolean); if(w.length <= 2) return w.join(' '); return w[0] + ' ' + (w.length === 3 ? w[1] : w[w.length - 2]); }\n"
+   "  // Se enseñan las dos primeras palabras del nombre (Carlos Acedo, Juan Carlos)\n"
+   "  function convNombreCorto(n){ return String(n || '').trim().split(/\\s+/).filter(Boolean).slice(0, 2).join(' '); }\n"
    "  function convSlotOf(c, name){"),
   ("convEsc(g[k]) + '</div>'", "convEsc(convNombreCorto(g[k])) + '</div>'"),
 ]

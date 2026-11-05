@@ -122,8 +122,8 @@
   }
 
   function convHoraMas(t, n){ const [h, m] = String(t || '08:40').split(':').map(Number); const x = h * 60 + m + n; return String(Math.floor(x / 60) % 24).padStart(2, '0') + ':' + String(x % 60).padStart(2, '0'); }
-  // Nombre y un apellido: con 3 palabras, la 1.ª y la 2.ª; con 4 o más, la 1.ª y la penúltima (suelen ser los dos apellidos al final)
-  function convNombreCorto(n){ const w = String(n || '').trim().split(/\s+/).filter(Boolean); if(w.length <= 2) return w.join(' '); return w[0] + ' ' + (w.length === 3 ? w[1] : w[w.length - 2]); }
+  // Se enseñan las dos primeras palabras del nombre (Carlos Acedo, Juan Carlos)
+  function convNombreCorto(n){ return String(n || '').trim().split(/\s+/).filter(Boolean).slice(0, 2).join(' '); }
   function convSlotOf(c, name){ return c.groups.findIndex(g => g.includes(name)); }
   // Nombre de cada partida: la hora, o «Hoyo 7» si se sale al tiro
   const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean) && (new Set(c.times).size === 1 || new Set(c.hoyos).size > 1));
