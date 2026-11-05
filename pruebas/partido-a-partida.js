@@ -13,11 +13,18 @@
     const m = /^(.+)J\d+$/.exec((c && c.code) || '');
     return m && typeof ligasTodas !== 'undefined' ? (ligasTodas.find(l => l.code === m[1]) || null) : null;
   };
+  // Hoyos de esa jornada: los suyos si los cambió (j.nh / j.mitad), si no los de la liga
+  const hoyosDeConv = c => {
+    const l = ligaDeConv(c); if(!l) return null;
+    const n = Number((/J(\d+)$/.exec(c.code) || [])[1]);
+    const j = (l.jornadas || []).find(x => x.n === n) || {};
+    return { hoyos: Number(j.nh || l.hoyos) === 9 ? 9 : 18, mitad: (j.mitad || l.mitad) === 'vuelta' ? 'vuelta' : 'ida' };
+  };
   window.acgolfLigaCurso = c => {
-    const l = ligaDeConv(c); if(!l || l.hoyos !== 9) return null;
+    const h = hoyosDeConv(c); if(!h || h.hoyos !== 9) return null;
     const base = COURSES.find(x => x.id === c.courseId); if(!base) return null;
     if(typeof cursoNueve !== 'function') return null;
-    return l.mitad === 'vuelta' ? cursoNueveVuelta(base) : cursoNueve(base);
+    return h.mitad === 'vuelta' ? cursoNueveVuelta(base) : cursoNueve(base);
   };
 
   convCreateRound = async function(btn){
@@ -29,7 +36,7 @@
     if(!grupos.length){ alert('Todavía no se ha apuntado nadie.'); return; }
     const partido = conv, primeraHora = (conv.times.find((t, i) => (conv.groups[i] || []).length) || '08:40');
     closeConv();
-    const liga9 = ligaDeConv(partido);
+    const liga9 = hoyosDeConv(partido);
     window.prAbrirDesdePartido({
       courseId: partido.courseId,
       grupos,

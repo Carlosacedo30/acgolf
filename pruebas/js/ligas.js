@@ -582,7 +582,7 @@ async function ligaVer(code){
         if(filas && filas.length) txt = '🏆 ' + ligaEsc(ligaCortoN(filas[0].jugador)) + ' · ' + filas[0].neto + ' netos';
         else if(j.date < hoy) txt = 'Sin tarjetas';
         else if(j.date === hoy) txt = creada ? 'Hoy · partida en juego' : 'Hoy';
-        else txt = ligaCampoCorto(j.courseId) + ' · ' + (j.salida === 'tiro' ? 'al tiro' : 'por el ' + (j.hoyoInicio || l.hoyoInicio || 1)) + ' · ' + String(j.hora || l.hora).replace(/^0/, '');
+        else txt = ligaCampoCorto(j.courseId) + ((j.nh || l.hoyos) === 9 ? ' · 9 hoyos ' + (((j.mitad || l.mitad) === 'vuelta') ? '(vuelta)' : '(ida)') : '') + ' · ' + (j.salida === 'tiro' ? 'al tiro' : 'por el ' + (j.hoyoInicio || l.hoyoInicio || 1)) + ' · ' + String(j.hora || l.hora).replace(/^0/, '');
         const prox = !filas && proxJ === j;
         return '<button type="button" class="lg-cal-f' + (prox ? ' lg-prox' : '') + '" data-n="' + j.n + '"><span>J' + j.n + '</span><b>' + ligaEsc(ligaFechaCortaJ(j.date)) + '</b><small>' + txt + '</small></button>';
       }).join('') + '</div>'
@@ -635,6 +635,7 @@ async function ligaConfigJornada(l, n, res){
   const c = (!ronda && typeof convFetch === 'function') ? await convFetch(code).catch(()=> null) : null;
   const G = c ? c.groups.length : ligaNumGrupos(l);
   const cfg = { date: j.date, courseId: j.courseId, hora: j.hora || l.hora, salida: j.salida || 'normal', hoyoInicio: Number(j.hoyoInicio || l.hoyoInicio) || 1,
+    nh: Number(j.nh || l.hoyos) === 9 ? 9 : 18, mitad: (j.mitad || l.mitad) === 'vuelta' ? 'vuelta' : 'ida',
     hoyos: ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), G).hoyos };
   const card = body.closest('.conv-card');
   cfg.grupos = ((c && c.groups && c.groups.some(g => g && g.length)) ? c.groups : ligaGruposJornada(l, j)).map(g => (g || []).slice());
@@ -686,6 +687,10 @@ async function ligaConfigJornada(l, n, res){
         + '<div class="field-row" style="margin-top:12px;"><div class="field"><label for="ljFecha">Fecha</label><input type="date" id="ljFecha" value="' + cfg.date + '"></div>'
         + '<div class="field"><label for="ljHora">' + (cfg.salida === 'tiro' ? 'Hora del tiro' : '1ª salida') + '</label><input type="time" id="ljHora" value="' + cfg.hora + '"></div></div>'
         + '<div class="lg-aviso" style="margin-top:0;">' + ligaEsc(ligaFechaLarga(cfg.date)) + '</div>'
+        + '<div class="conv-eyebrow">Hoyos de esta jornada</div>'
+        + '<div class="lg-dos">' + [[18, '18 hoyos'], [9, '9 hoyos']].map(x => '<button type="button" class="lg-opc' + (cfg.nh === x[0] ? ' on' : '') + '" data-nh="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>'
+        + (cfg.nh === 9 ? '<div class="lg-dos" style="margin-top:8px;">' + [['ida', 'Ida (1 al 9)'], ['vuelta', 'Vuelta (10 al 18)']].map(x => '<button type="button" class="lg-opc' + (cfg.mitad === x[0] ? ' on' : '') + '" data-mi="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>' : '')
+        + '<div class="lg-aviso">Solo cambia esta jornada. Las demás siguen como las creaste.</div>'
         + '<div class="conv-eyebrow">Campo</div>'
         + ligaBotonesCampo(cfg.courseId, 'data-c', false)
         + '<div class="conv-eyebrow">Salida</div>'
@@ -717,6 +722,8 @@ async function ligaConfigJornada(l, n, res){
     body.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.courseId = b.dataset.c; pintar(); }));
     body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'buscar'); }));
     body.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.salida = b.dataset.s; pintar(); }));
+    body.querySelectorAll('[data-nh]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.nh = Number(b.dataset.nh) === 9 ? 9 : 18; pintar(); }));
+    body.querySelectorAll('[data-mi]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.mitad = b.dataset.mi === 'vuelta' ? 'vuelta' : 'ida'; pintar(); }));
     body.querySelectorAll('[data-hoyoini]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.hoyoInicio = ligaHoyoMas(cfg.hoyoInicio, Number(b.dataset.hoyoini)); pintar(); }));
     body.querySelectorAll('.lg-mas-p').forEach(b => b.addEventListener('click', ()=>{
       leer(); const i = Number(b.dataset.i);
@@ -770,6 +777,10 @@ async function ligaGuardarJornada(l, j, cfg, c, callado){
   const client = initSupabase(); if(!client) return false;
   const antes = JSON.stringify(j);
   j.date = cfg.date; j.courseId = cfg.courseId;
+  if(cfg.nh){
+    if(cfg.nh !== (l.hoyos === 9 ? 9 : 18)) j.nh = cfg.nh; else delete j.nh;
+    if(cfg.nh === 9 && cfg.mitad !== (l.mitad === 'vuelta' ? 'vuelta' : 'ida')) j.mitad = cfg.mitad; else delete j.mitad;
+  }
   { const cg = ligaCampoGuardable(cfg.courseId); if(cg){ l.campos = l.campos || {}; l.campos[cg.id] = cg; } }
   if(cfg.hora && cfg.hora !== l.hora) j.hora = cfg.hora; else delete j.hora;
   if(cfg.grupos) j.grupos = cfg.grupos.map(g => g.slice());
