@@ -36,6 +36,14 @@
     if(crear && conv && crear.nextElementSibling !== conv) conv.parentNode.insertBefore(crear, conv);
   }
 
+  // Etiqueta «Jornada de liga» o «Jornada de Ryder» cuando el partido sale de una liga o de una Ryder Cup
+  function jornada(c){
+    let t = '';
+    if(c.ryder) t = 'Jornada de Ryder';
+    else if(c.liga || (typeof ligaDeConv === 'function' && ligaDeConv(c.code))) t = 'Jornada de liga';
+    return t ? '<div class="ip-jornada">' + t + '</div>' : '';
+  }
+
   window.renderConvHomeCards = function(box){
     ordenar();
     const isAdmin = !!getAdminKey();
@@ -73,7 +81,7 @@
       const cambiar = mi >= 0 && !c.roundCode && abierta !== c.code ? '<button type="button" class="ip-cambiar" data-apuntar="' + esc(c.code) + '">Cambiar hora o decir que no voy</button>' : '';
       return '<div class="ip-card' + (esHoy ? ' hoy' : '') + '">'
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
-        + '<div class="ip-eti">' + etiqueta + '</div><div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
+        + '<div class="ip-eti">' + etiqueta + '</div>' + jornada(c) + '<div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
         + derecha + '</div>' + elegir + cambiar
         // Partida ya creada: el administrador o quien lo organizó puede abrir el partido para borrarlo
         + (c.roundCode && (isAdmin || (c.organiza && c.organiza === window.miPerfilId)) ? '<button type="button" class="ip-cambiar" data-gestionar="' + esc(c.code) + '">Ver o borrar el partido</button>' : '')

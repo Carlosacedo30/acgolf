@@ -57,3 +57,5 @@ html #convHomeNew .ip-logo-grupo.ip-escudo svg{ max-width:54px; max-height:54px;
 .pr-marc.on .pr-marc-sw{ background:#C6F24E; }
 .pr-marc.on .pr-marc-sw i{ transform:translateX(24px); background:#111316; }
 .pr-marc:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
+
+.ip-jornada{ display:inline-block; margin:6px 0 2px; padding:3px 12px; border-radius:999px; background:#2F3A1C; border:1px solid #C6F24E; color:#C6F24E; font:800 14px 'Archivo', sans-serif; }
