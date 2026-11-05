@@ -170,6 +170,23 @@ for a, b in cambios:
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
+# Organizar partido: en los huecos de cada horario sale el nombre con un solo apellido (Carlos Acedo, no Carlos Acedo Domínguez)
+python3 - <<'PY'
+p = 'pruebas/js/convocatoria.js'
+s = open(p, encoding='utf-8').read()
+cambios = [
+  ("  function convSlotOf(c, name){",
+   "  // Nombre y un apellido: con 3 palabras, la 1.ª y la 2.ª; con 4 o más, la 1.ª y la penúltima (suelen ser los dos apellidos al final)\n"
+   "  function convNombreCorto(n){ const w = String(n || '').trim().split(/\\s+/).filter(Boolean); if(w.length <= 2) return w.join(' '); return w[0] + ' ' + (w.length === 3 ? w[1] : w[w.length - 2]); }\n"
+   "  function convSlotOf(c, name){"),
+  ("convEsc(g[k]) + '</div>'", "convEsc(convNombreCorto(g[k])) + '</div>'"),
+]
+for a, b in cambios:
+    assert s.count(a) == 1, a
+    s = s.replace(a, b)
+open(p, 'w', encoding='utf-8').write(s)
+PY
+
 # Campo nuevo solo en acgolf.es: Real Club de Golf La Peñaza (Zaragoza). Tarjeta de 1golf.eu; rating y slope
 # sacados de la tabla oficial de hándicap de juego del club (blancas y amarillas de caballeros, azules y rojas de damas).
 python3 - <<'PY'
