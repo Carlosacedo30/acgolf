@@ -477,7 +477,7 @@ s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n
 # El aviso «ahora es acgolf.es» solo va en la app antigua de la liga
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="idioma-en-3.js?v=2"></script>\n<script src="idioma-en-2.js?v=3"></script>\n<script src="idioma-en.js?v=5"></script>\n<script src="idiomas/fr/idioma-fr.js?v=3"></script>\n<script src="idiomas/fr/idioma-fr-2.js?v=4"></script>\n<script src="idioma.js?v=8"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=6"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=6"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=5"></script>\n<script src="manual.js?v=10"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=4"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=9"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=13"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=16"></script>\n<script src="redes.js?v=7"></script>\n<script src="redes-aviso.js?v=1"></script>\n<script src="tele-directo.js?v=10"></script>\n<script src="en-vivo.js?v=14"></script>\n<script src="partido-a-partida.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="idioma-en-3.js?v=2"></script>\n<script src="idioma-en-2.js?v=3"></script>\n<script src="idioma-en.js?v=5"></script>\n<script src="idiomas/fr/idioma-fr.js?v=3"></script>\n<script src="idiomas/fr/idioma-fr-2.js?v=4"></script>\n<script src="idioma.js?v=8"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=6"></script>\n<script src="js/tarjeta-blanca.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=6"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=2"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=5"></script>\n<script src="manual.js?v=10"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=1"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=4"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=9"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=13"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=16"></script>\n<script src="aviso-cerrada.js?v=1"></script>\n<script src="redes.js?v=7"></script>\n<script src="redes-aviso.js?v=1"></script>\n<script src="tele-directo.js?v=10"></script>\n<script src="en-vivo.js?v=14"></script>\n<script src="partido-a-partida.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'
@@ -611,6 +611,26 @@ cambia(L, """  j.date = cfg.date; j.courseId = cfg.courseId;
   }
 """)
 cambia(L, """txt = ligaCampoCorto(j.courseId) + ' · ' + (j.salida""", """txt = ligaCampoCorto(j.courseId) + ((j.nh || l.hoyos) === 9 ? ' · 9 hoyos ' + (((j.mitad || l.mitad) === 'vuelta') ? '(vuelta)' : '(ida)') : '') + ' · ' + (j.salida""")
+# Partida cerrada (más de 12 horas): si alguien intenta cambiar un golpe, se le avisa de que no se ha guardado
+cambia('pruebas/js/rondas-compartidas.js', """      } catch(e){
+        console.error('No se pudo guardar solo el grupo; se guarda la partida entera', e);
+        try {
+          await client.from('rounds').update({
+            match_groups: matchGroups,
+            updated_at: new Date().toISOString(),
+          }).eq('id', currentRoundId);
+        } catch(e2){ console.error('No se pudo guardar la partida', e2); }
+      }""", """      } catch(e){
+        if(/cerrada|entregada|ya no se puede/i.test(String((e && e.message) || e))){ if(window.acgolfAvisoCerrada) window.acgolfAvisoCerrada(); setTimeout(()=>{ suppressRemoteEcho = false; }, 400); return; }
+        console.error('No se pudo guardar solo el grupo; se guarda la partida entera', e);
+        try {
+          const r2 = await client.from('rounds').update({
+            match_groups: matchGroups,
+            updated_at: new Date().toISOString(),
+          }).eq('id', currentRoundId);
+          if(r2 && r2.error && /cerrada|entregada|ya no se puede/i.test(String(r2.error.message || ''))){ if(window.acgolfAvisoCerrada) window.acgolfAvisoCerrada(); }
+        } catch(e2){ console.error('No se pudo guardar la partida', e2); }
+      }""")
 EOF
 
 echo "Versión de pruebas generada en pruebas/"

@@ -337,12 +337,14 @@
         });
         if(error) throw error;
       } catch(e){
+        if(/cerrada|entregada|ya no se puede/i.test(String((e && e.message) || e))){ if(window.acgolfAvisoCerrada) window.acgolfAvisoCerrada(); setTimeout(()=>{ suppressRemoteEcho = false; }, 400); return; }
         console.error('No se pudo guardar solo el grupo; se guarda la partida entera', e);
         try {
-          await client.from('rounds').update({
+          const r2 = await client.from('rounds').update({
             match_groups: matchGroups,
             updated_at: new Date().toISOString(),
           }).eq('id', currentRoundId);
+          if(r2 && r2.error && /cerrada|entregada|ya no se puede/i.test(String(r2.error.message || ''))){ if(window.acgolfAvisoCerrada) window.acgolfAvisoCerrada(); }
         } catch(e2){ console.error('No se pudo guardar la partida', e2); }
       }
       setTimeout(()=>{ suppressRemoteEcho = false; }, 400);
