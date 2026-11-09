@@ -246,9 +246,10 @@
   // ---------- La pantalla En vivo ----------
   let timer = null, previo = null, codigoAbierto = null, bannerT = null, rondaAbierta = null;
   let destacados = [];   // lo último destacado (birdie, águila, racha): máximo 2
+  let girar = null;   // cada 5 s alterna los dos bloques de 9 hoyos
   let ultimoGolpe = 0, ultimoRelleno = 0, ticks = 0, rueda = null, toqueRueda = 0, rellenoN = 0;
   function cerrar(){
-    clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null; destacados = [];
+    clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null; destacados = []; clearInterval(girar); girar = null;
     paraPlato();
     try { if(window.acgolfTele) window.acgolfTele.quitar(); } catch(e){}
     const ov = document.getElementById('vvOverlay'); if(ov){ ov.hidden = true; ov.innerHTML = ''; }
@@ -288,6 +289,11 @@
     if(fin) entradaResumen(round, !!verResumen);
     else if(window.acgolfTele && ov.querySelector('.vt-sitio')) window.acgolfTele.montar(code, round);   // acgolf TV (tele-directo.js)
     else resumenEntrada(round);
+    clearInterval(girar);
+    girar = setInterval(() => {
+      if(document.hidden) return;
+      ov.querySelectorAll('.vv-tab[data-rot] .vv-bl').forEach(t => t.classList.toggle('oculta'));
+    }, 5000);
     clearInterval(timer);
     timer = setInterval(async () => {
       if(codigoAbierto !== code || document.hidden) return;
@@ -322,6 +328,7 @@
     const pares = paresDe(round);
     const gs = grupos(round);
     const nuevos = [];
+    const tb = tabla(round);   // resultado NETO (con el hándicap de cada uno) o puntos si se juega Stableford
     const html = gs.map((g, gi) => {
       const sc = g.scores || {};
       const nombres = g.players;
@@ -329,35 +336,51 @@
       nombres.forEach((_, p) => Object.keys(sc[p] || {}).forEach(h => { if(+sc[p][h] > 0) hechos.push(+h); }));
       const fin = ultimoDe(g, hechos), actual = fin.h;
       const ultimoPos = Math.max(fin.pos, 1);
-      const desde = Math.max(1, ultimoPos - 4), cols = [];
-      for(let k = desde; k <= Math.min(nHoyos(g), Math.max(ultimoPos, desde + 4)); k++) cols.push(orden[k - 1]);
-      const filas = nombres.map((n, p) => {
-        let tot = 0, jugados = 0;
-        Object.keys(sc[p] || {}).forEach(h => { const v = +sc[p][h]; if(v > 0){ tot += v - (pares[h - 1] || 4); jugados++; } });
-        const celdas = cols.map(h => {
-          const v = +((sc[p] || {})[h]); const par = pares[h - 1] || 4;
-          const clave = gi + ':' + p + ':' + h;
-          if(v > 0 && previo && !previo[clave]){
-            nuevos.push({ n: corto(n), g: v, par, h });
-            // Aviso destacado: birdie o mejor, o tercer par seguido (siguiendo el orden de salida de ESTE grupo)
-            if(v - par <= -1) apuntaDest({ q: 'curro', t: v - par <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(n) + ', en el ' + h, f: v - par <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' });
-            else if(v === par){
-              const o = ordenDe(g), k = posDe(g, h);
-              const seguidos = k >= 3 && [1, 2].every(d => { const hh = o[k - 1 - d]; const x = +((sc[p] || {})[hh]); return x > 0 && x === (pares[hh - 1] || 4); });
-              if(seguidos) apuntaDest({ q: 'lola', t: 'RACHA', n: corto(n) + ', 3 pares seguidos', f: 'Así me gusta, sin sustos.' });
+      // Bloques fijos de 9 hoyos, en el orden en que juega ESTE grupo (1.º-9.º jugados, luego 10.º-18.º).
+      // Cuando el grupo ya ha pasado al segundo bloque, cada 5 segundos se alternan los dos para poder seguir la partida entera.
+      const bloqueActual = Math.floor((ultimoPos - 1) / 9);
+      const hacer = (b, detectar, oculta) => {
+        const desde = b * 9 + 1, cols = [];
+        for(let k = desde; k <= Math.min(nHoyos(g), desde + 8); k++) cols.push(orden[k - 1]);
+        const filas = nombres.map((n, p) => {
+          const fila = tb.find(x => x.gi === gi && x.p === p);
+          const celdas = cols.map(h => {
+            const v = +((sc[p] || {})[h]); const par = pares[h - 1] || 4;
+            const clave = gi + ':' + p + ':' + h;
+            if(detectar && v > 0 && previo && !previo[clave]){
+              nuevos.push({ n: corto(n), g: v, par, h });
+              // Aviso destacado: birdie o mejor, o tercer par seguido (siguiendo el orden de salida de ESTE grupo)
+              if(v - par <= -1) apuntaDest({ q: 'curro', t: v - par <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(n) + ', en el ' + h, f: v - par <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' });
+              else if(v === par){
+                const o = ordenDe(g), k = posDe(g, h);
+                const seguidos = k >= 3 && [1, 2].every(d => { const hh = o[k - 1 - d]; const x = +((sc[p] || {})[hh]); return x > 0 && x === (pares[hh - 1] || 4); });
+                if(seguidos) apuntaDest({ q: 'lola', t: 'RACHA', n: corto(n) + ', 3 pares seguidos', f: 'Así me gusta, sin sustos.' });
+              }
             }
-          }
-          const cls = !(v > 0) ? 'vacio' : v < par ? 'bajo' : v > par ? 'alto' : '';
-          return '<td class="' + cls + (h === actual ? ' ahora' : '') + '">' + (v > 0 ? v : '—') + '</td>';
+            const d = v - par, nota = !(v > 0) ? '' : d <= -2 ? 'ag' : d === -1 ? 'bi' : d === 0 ? 'pa' : d === 1 ? 'bo' : 'db';
+            return '<td class="' + (v > 0 ? '' : 'vacio') + (h === actual ? ' ahora' : '') + '">' + (v > 0 ? '<span class="nt ' + nota + '">' + v + '</span>' : '—') + '</td>';
+          }).join('');
+          const t = fila ? (fila.esPtos ? fila.pts : signo(fila.neto)) : '·';
+          const hcp = fila ? '<small class="hc">hcp ' + fila.hc + '</small>' : '';
+          return '<tr><td class="nom">' + esc(corto(n)) + hcp + '</td>' + celdas + '<td class="tot">' + t + '</td></tr>';
         }).join('');
-        const t = jugados ? signo(tot) : '·';
-        return '<tr><td class="nom">' + esc(corto(n)) + '</td>' + celdas + '<td class="tot">' + t + '</td></tr>';
-      }).join('');
+        return '<table class="vv-bl' + (oculta ? ' oculta' : '') + '" data-b="' + b + '">'
+          + (bloqueActual > 0 && nHoyos(g) > 9 ? '<caption>' + (b === 0 ? 'Primeros 9 hoyos' : 'Últimos 9 hoyos') + '</caption>' : '')
+          + '<tr><th></th>' + cols.map(h => '<th>' + h + '</th>').join('') + '<th>' + (round.scoring_type === 'stableford' ? 'Pts' : 'Neto') + '</th></tr>' + filas + '</table>';
+      };
+      const tablas = bloqueActual > 0 && nHoyos(g) > 9 ? [hacer(0, false, true), hacer(bloqueActual, true, false)] : [hacer(bloqueActual, true, false)];
       const hora = g.time ? 'Salida ' + esc(g.time) : (gs.length > 1 ? 'Partida ' + (gi + 1) : '');
-      return '<div class="vv-tab"><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div>'
-        + '<table><tr><th></th>' + cols.map(h => '<th>' + h + '</th>').join('') + '<th>±</th></tr>' + filas + '</table></div>';
+      const salida = 'Sale por el ' + salidaDe(g) + ' · ' + (nHoyos(g) === 9 ? '9 hoyos' : '18 hoyos') + ' · termina en el ' + orden[nHoyos(g) - 1];   // siempre según el hoyo de salida de ESTE grupo
+      return '<div class="vv-tab"' + (tablas.length > 1 ? ' data-rot="1"' : '') + '><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
+        + tablas.join('') + '</div>';
     }).join('');
     ov.querySelector('.vv-tableros').innerHTML = html || '<div class="vv-tab vv-vacia">Todavía no hay jugadores en esta partida.</div>';
+    // Si entras con la partida ya empezada, «Lo último» arranca con los últimos birdies/águilas (el más reciente según el orden de cada grupo)
+    if(!previo){
+      (m0 => m0.filter(x => x.d <= -1 && x.pos >= Math.max(...m0.map(y => y.pos)) - 3))(momentos(round)).sort((x, y) => y.pos - x.pos || x.gi - y.gi).slice(0, 2).reverse()
+        .forEach(x => apuntaDest({ q: 'curro', t: x.d <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(x.n) + ', en el ' + x.h, f: x.d <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' }));
+      pintarDest(ov);
+    }
     // Recordar lo que había, para saber qué golpe es nuevo
     const ahora = {};
     gs.forEach((g, gi) => (g.players || []).forEach((_, p) => Object.keys((g.scores || {})[p] || {}).forEach(h => { if(+g.scores[p][h] > 0) ahora[gi + ':' + p + ':' + h] = 1; })));

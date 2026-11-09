@@ -177,9 +177,9 @@
       else { if(k2) L(['l-sigue', k2], rot2); if(dif >= 3) C('c-diferencia', rot2); }
     }
     // 5. Birdies y hoyos para olvidar
-    const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.h - a.h)[0];
+    const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
     if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b> en el hoyo ' + bir.h; L('l-birdie', r); C('c-birdie', r); }
-    const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.h - a.h)[0];
+    const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
     if(malo) { const r = 'Hoyo ' + malo.h + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); C('c-atragantado', r); }
     // 6. Predicción y broma
     C(visitas % 2 ? 'c-prediccion-greens' : 'c-prediccion-putts', 'La predicción de <b>Curro</b>');
@@ -279,16 +279,18 @@
     const centro = caja.querySelector('.vt-centro');
     if(!t.length) centro.innerHTML = '<small>' + esc(round.course_name || 'Partida') + '</small><h3>Empieza enseguida</h3>';
     else {
-      const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
+      const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
       centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
         + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
     }
     const cinta = caja.querySelector('.vt-cinta');
-    const marca2 = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
-    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i>' + esc(corto(x.n)) + ' <b>' + marca2(x) + '</b> <small>' + (x.pos >= NH(t) ? 'F' : 'h' + x.ultimo) + '</small></span>').join('');
-    cinta.innerHTML = items || '<span>Esperando los primeros golpes…</span>';
+    const marca2 = x => x.esPtos ? x.pts : signo(x.neto);
+    const nombreLargo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García»; las parejas «Carlos y Jose»
+    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(nombreLargo(x.n)) + '</em><b>' + marca2(x) + '</b><small>' + (x.esPtos ? 'pts' : 'neto') + ' · ' + (x.pos >= NH(t) ? 'FIN' : 'H' + x.ultimo) + '</small></span>').join('');
+    const rotulo = '<span class="rot">ASÍ VA · ' + (t[0] && t[0].esPtos ? 'PUNTOS' : 'NETO') + '</span>';
+    cinta.innerHTML = items ? rotulo + items : '<span>Esperando los primeros golpes…</span>';
     cinta.classList.toggle('anda', t.length > 3);
-    if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos
+    if(t.length > 3) cinta.innerHTML += rotulo + items;   // dos veces, para que la cinta corra sin saltos
     pintarReloj();
   }
   function quitar(){ parar(); hablando = false; avisos = []; antes = null; clearTimeout(avisoT); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
