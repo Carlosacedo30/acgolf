@@ -400,7 +400,11 @@
     const res = x => esPtos ? x.pts + ' pts' : signo(x.neto);
     const nombreCompleto = n => esEquipo2(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');
     let h = '<div class="vv-gan"><span class="c">🏆</span><h2>' + esc(nombreCompleto(g0.n)) + '</h2><p>' + (esPtos ? g0.pts + ' puntos' : signo(g0.neto) + ' neto') + ' · ' + g0.bruto + ' golpes</p><small>Ganador del día · hándicap ' + g0.hc + '</small></div>';
-    h += '<h5>Clasificación · ' + (esPtos ? 'puntos' : 'neto') + '</h5><div class="vv-fcl">' + t.map((x, i) => '<div><i>' + (i + 1) + '</i><span>' + esc(nombreCompleto(x.n)) + '<small>hcp ' + x.hc + ' · ' + x.bruto + ' golpes</small></span><b>' + res(x) + '</b></div>').join('') + '</div>';
+    // Las cervezas, igual que en la pantalla de apuntar golpes: paga la mitad de abajo (si son impares, el del medio se libra)
+    const pagan = t.length >= 2 ? Math.floor(t.length / 2) : 0;
+    const paga = i => pagan > 0 && i >= t.length - pagan;
+    h += '<h5>Clasificación · ' + (esPtos ? 'puntos' : 'neto') + '</h5><div class="vv-fcl">' + t.map((x, i) => '<div><i>' + (i + 1) + '</i><span>' + (paga(i) ? '<em class="vv-birra" aria-label="Paga cerveza">🍺</em>' : '') + esc(nombreCompleto(x.n)) + '<small>hcp ' + x.hc + ' · ' + x.bruto + ' golpes</small></span><b>' + res(x) + '</b></div>').join('') + '</div>';
+    if(pagan > 0) h += '<div class="vv-fbir">🍺 Hoy pagan las cervezas: <b>' + t.slice(t.length - pagan).map(x => esc(corto(x.n))).join(', ') + '</b></div>';
     const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
     const peor = m.slice().sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
     const tarj = [];
