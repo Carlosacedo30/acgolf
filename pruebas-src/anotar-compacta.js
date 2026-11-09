@@ -1,35 +1,11 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // Pantalla de anotar más compacta (pedida por Carlos):
-// · al elegir los golpes de un jugador, el teclado salta solo al siguiente que falte
 // · aviso «Hoyo completo» cuando ya están todos apuntados
 // · debajo de los jugadores, solo la media tarjeta (ida o vuelta) según el hoyo
 (function(){
-  if(typeof openNumPad !== 'function' || typeof renderHoleView !== 'function') return;
+  if(typeof renderHoleView !== 'function') return;
 
-  // ---- 1. El teclado salta al siguiente jugador sin golpes ----
-  const abrirOrig = openNumPad;
-  window.openNumPad = function(o){
-    const pick = o.onPick;
-    const mio = o.name;
-    const nuevo = Object.assign({}, o, { onPick: function(v){
-      pick(v);
-      if(v === '' || v == null) return;
-      // el hoyo se repinta al apuntar: esperamos un momento y abrimos el siguiente que falte
-      setTimeout(function(){
-        try {
-          const cajas = [].slice.call(document.querySelectorAll('#hvPlayers .stroke-box'));
-          const i = players.indexOf(mio);
-          const orden = cajas.filter(function(c){ return +c.dataset.holeInputFor !== i; })
-            .sort(function(a, b){ return ((+a.dataset.holeInputFor - i + 99) % 99) - ((+b.dataset.holeInputFor - i + 99) % 99); });
-          const falta = orden.find(function(c){ return c.value === ''; });
-          if(falta) falta.click();
-        } catch(e){}
-      }, 120);
-    } });
-    return abrirOrig.call(this, nuevo);
-  };
-
-  // ---- 2. Aviso «Hoyo completo» ----
+  // ---- 1. Aviso «Hoyo completo» ----
   function aviso(){
     const w = document.getElementById('hvPlayers');
     if(!w) return;
@@ -42,7 +18,7 @@
     w.after(b);
   }
 
-  // ---- 3. Media tarjeta: la mitad donde está el hoyo ----
+  // ---- 2. Media tarjeta: la mitad donde está el hoyo ----
   function media(){
     const t = document.getElementById('tbTira');
     if(!t) return;
