@@ -361,7 +361,7 @@
     ov.querySelector('.vv-tableros').innerHTML = html || '<div class="vv-tab vv-vacia">Todavía no hay jugadores en esta partida.</div>';
     // Si entras con la partida ya empezada, «Lo último» arranca con los últimos birdies/águilas (el más reciente según el orden de cada grupo)
     if(!previo){
-      momentos(round).filter(x => x.d <= -1).sort((x, y) => y.pos - x.pos || x.gi - y.gi).slice(0, 2).reverse()
+      (m0 => m0.filter(x => x.d <= -1 && x.pos >= Math.max(...m0.map(y => y.pos)) - 3))(momentos(round)).sort((x, y) => y.pos - x.pos || x.gi - y.gi).slice(0, 2).reverse()
         .forEach(x => apuntaDest({ q: 'curro', t: x.d <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(x.n) + ', en el ' + x.h, f: x.d <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' }));
       pintarDest(ov);
     }
