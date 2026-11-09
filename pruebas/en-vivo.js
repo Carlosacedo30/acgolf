@@ -330,8 +330,8 @@
       nombres.forEach((_, p) => Object.keys(sc[p] || {}).forEach(h => { if(+sc[p][h] > 0) hechos.push(+h); }));
       const fin = ultimoDe(g, hechos), actual = fin.h;
       const ultimoPos = Math.max(fin.pos, 1);
-      const desde = Math.max(1, ultimoPos - 8), cols = [];   // siempre una línea de 9 hoyos, en el orden en que juega ESTE grupo
-      for(let k = desde; k <= Math.min(nHoyos(g), Math.max(ultimoPos, desde + 8)); k++) cols.push(orden[k - 1]);
+      const desde = Math.floor((ultimoPos - 1) / 9) * 9 + 1, cols = [];   // bloques fijos de 9 hoyos, en el orden en que juega ESTE grupo (1.º-9.º jugados, luego 10.º-18.º)
+      for(let k = desde; k <= Math.min(nHoyos(g), desde + 8); k++) cols.push(orden[k - 1]);
       const filas = nombres.map((n, p) => {
         const fila = tb.find(x => x.gi === gi && x.p === p);
         const celdas = cols.map(h => {
