@@ -389,3 +389,7 @@ body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; 
 .gc-fila b{ font:800 19px 'Archivo','Barlow',sans-serif; }
 .gc-fila i{ font-style:normal; color:#C6F24E; font-weight:700; }
 .gc-fila small{ color:#9AA3AB; font-size:15px; }
+.inv-tarjeta{ position:relative; }
+.inv-x{ position:absolute; top:8px; right:8px; width:44px; height:44px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:#111316; color:#F2F4F5; font:800 18px/1 Archivo,sans-serif; cursor:pointer; }
+.inv-x:active{ transform:scale(.97); }
+.inv-tarjeta .inv-et{ padding-right:52px; }

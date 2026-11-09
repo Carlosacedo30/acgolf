@@ -1423,23 +1423,27 @@
     try {
       if(!perfil.es_admin || perfil.solo_control || perfil.grupo_tipo !== 'liga' || !perfil.grupo_id) return;
       if(document.getElementById('invTarjeta')) return;
+      const claveX = 'acgolf_inv_x_' + perfil.grupo_id;
+      try { const x = parseInt(localStorage.getItem(claveX) || '0', 10); if(x && Date.now() - x < 7*24*3600*1000) return; } catch(e){}   // la cerró hace menos de 7 días
       const conv = document.getElementById('convHome'); if(!conv) return;
       const rm = await client.rpc('ga_miembros', { p_grupo: perfil.grupo_id });
-      if(rm.error || !Array.isArray(rm.data) || rm.data.length > 1) return;   // ya hay amigos dentro: no sale
+      if(rm.error || !Array.isArray(rm.data) || rm.data.length >= 4) return;   // con 4 jugadores o más el grupo ya está completo: no sale
+      const nJug = rm.data.length;
       const ri = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: false });
       const inv = ri.data; if(ri.error || !inv || !inv.codigo) return;
       const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
       const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
       const t = document.createElement('div');
       t.className = 'inv-tarjeta'; t.id = 'invTarjeta';
-      t.innerHTML = '<div class="inv-et">Tu grupo</div>'
-        + '<div class="inv-tit">«' + esc(inv.grupo) + '» está esperando a tus amigos</div>'
+      t.innerHTML = '<button type="button" class="inv-x" id="invX" aria-label="Cerrar">✕</button><div class="inv-et">Tu grupo</div>'
+        + '<div class="inv-tit">' + (nJug > 1 ? '«' + esc(inv.grupo) + '»: ¡invita a más amigos!' : '«' + esc(inv.grupo) + '» está esperando a tus amigos') + '</div>'
         + '<p class="inv-txt">Este es tu sitio de juego: aquí jugáis tú y tus amigos. Mándales la invitación y entran directos, sin escribir nada.</p>'
         + '<a class="inv-btn pri" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Invitar por WhatsApp</a>'
         + '<button type="button" class="inv-btn" id="invQR">Enseñar el código QR</button>'
         + '<div class="inv-ok" id="invOk" aria-live="polite"></div>';
       conv.insertAdjacentElement('afterend', t);
       $('invQR').onclick = () => panelMiCuenta(perfil);
+      $('invX').onclick = () => { try { localStorage.setItem(claveX, String(Date.now())); } catch(e){} t.remove(); };
     } catch(e){}
   }
 
