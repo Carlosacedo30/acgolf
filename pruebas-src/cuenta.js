@@ -766,7 +766,7 @@
         if(!inv || !box){ if(box) box.remove(); return; }
         const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
         const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
-        box.innerHTML = '<b>Invitar a «' + esc(inv.grupo) + '»</b>'
+        box.innerHTML = '<b>Invita a tus amigos a «' + esc(inv.grupo) + '»</b>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
           + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
@@ -1097,7 +1097,7 @@
   function panelMiCuenta(perfil){
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
       + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
-      + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invitar a tu grupo</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
+      + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
       + (window.acgolfAvatares ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
       + (perfil.es_super ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
@@ -1187,8 +1187,8 @@
         if(!inv){ box.remove(); return; }
         const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
         const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
-        box.innerHTML = '<b>Invitar a «' + esc(inv.grupo) + '»</b>'
-          + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a los de tu grupo. Al abrirlo y crear su cuenta, entran directamente.</div>'
+        box.innerHTML = '<b>Invita a tus amigos a «' + esc(inv.grupo) + '»</b>'
+          + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a tus amigos. Al abrirlo y crear su cuenta, entran directamente en tu grupo.</div>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
           + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
@@ -1337,6 +1337,36 @@
   // Barra de arriba: «Ir a mi cuenta» (botón principal) y el nombre de mi grupo (secundario, abre la lista de grupos)
   const ICO_PERSONA = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
   const ICO_GRUPO = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.8"/><path d="M17.5 13.6a5 5 0 0 1 4 4.9"/></svg>';
+  // Tarjeta del Inicio: mientras el grupo tiene un solo jugador, anima al administrador a invitar a sus amigos
+  async function tarjetaInvitar(perfil){
+    try {
+      if(!perfil.es_admin || perfil.solo_control || perfil.grupo_tipo !== 'liga' || !perfil.grupo_id) return;
+      if(document.getElementById('invTarjeta')) return;
+      const conv = document.getElementById('convHome'); if(!conv) return;
+      const rm = await client.rpc('ga_miembros', { p_grupo: perfil.grupo_id });
+      if(rm.error || !Array.isArray(rm.data) || rm.data.length > 1) return;   // ya hay amigos dentro: no sale
+      const ri = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: false });
+      const inv = ri.data; if(ri.error || !inv || !inv.codigo) return;
+      const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
+      const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
+      const t = document.createElement('div');
+      t.className = 'inv-tarjeta'; t.id = 'invTarjeta';
+      t.innerHTML = '<div class="inv-et">Tu grupo</div>'
+        + '<div class="inv-tit">«' + esc(inv.grupo) + '» está esperando a tus amigos</div>'
+        + '<p class="inv-txt">Este es tu sitio de juego: aquí jugáis tú y tus amigos. Mándales tu enlace y entran directos, sin escribir nada.</p>'
+        + '<a class="inv-btn pri" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Invitar por WhatsApp</a>'
+        + '<button type="button" class="inv-btn" id="invCopiar">Copiar el enlace</button>'
+        + '<button type="button" class="inv-btn" id="invQR">Enseñar el código QR</button>'
+        + '<div class="inv-ok" id="invOk" aria-live="polite"></div>';
+      conv.insertAdjacentElement('afterend', t);
+      $('invCopiar').onclick = async () => {
+        const ok = $('invOk');
+        try { await navigator.clipboard.writeText(enlace); ok.textContent = '✔ Enlace copiado. Pégalo en un mensaje.'; } catch(e){ prompt('Copia el enlace:', enlace); }
+      };
+      $('invQR').onclick = () => panelMiCuenta(perfil);
+    } catch(e){}
+  }
+
   function botonMiCuenta(perfil){
     const barra = document.createElement('div');
     barra.className = 'cg-barra';
@@ -1480,5 +1510,6 @@
       }
     }
     ocultar();
+    tarjetaInvitar(perfil);
   })();
 })();

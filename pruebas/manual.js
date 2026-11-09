@@ -189,7 +189,7 @@
       'La app te guía en unos pasos: <b>campo</b> donde soléis jugar, <b>colores</b> de la app, <b>escudo</b> con las iniciales y <b>patrocinador</b> (opcional).',
       'Pulsa <b>«Guardar la portada»</b>. Se puede cambiar cuando quieras desde «Mi cuenta» → <b>«Cambiar la portada del grupo»</b>.' ]},
     { ico:'enlace', t:'Invitar a los jugadores', sub:'Un enlace para todo el grupo', pasos:[
-      'Abre <b>«Mi cuenta»</b> (toca tu nombre arriba). Arriba sale <b>«Invitar a tu grupo»</b>.',
+      'Abre <b>«Mi cuenta»</b> (toca tu nombre arriba). Arriba sale <b>«Invita a tus amigos»</b>.',
       'Pulsa <b>«Enviar por WhatsApp»</b> y mándalo al grupo, o <b>«Copiar el enlace»</b>.',
       'Al abrirlo y crear su cuenta, cada jugador <b>entra directamente</b> en tu grupo.',
       'Si el enlace llega a quien no debe, pulsa <b>«Cambiar el enlace»</b>: el anterior deja de valer.',

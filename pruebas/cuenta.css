@@ -352,3 +352,13 @@ a.cg-btn{ display:flex; align-items:center; justify-content:center; text-decorat
 body:has(.pr-banda){ padding-top:calc(env(safe-area-inset-top, 0px) + 26px); }
 body:has(.pr-banda)::before{ content:'VERSIÓN DE PRUEBAS · NO ES LA APP REAL'; position:fixed; top:0; left:0; right:0; z-index:99999; box-sizing:border-box; padding:calc(env(safe-area-inset-top, 0px) + 5px) 8px 5px; background:#F29A5B; color:#0E1F3D; text-align:center; font:800 12px/16px 'Barlow', sans-serif; letter-spacing:.06em; pointer-events:none; }
 body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; pointer-events:none; opacity:.22; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='260'><text x='160' y='140' text-anchor='middle' transform='rotate(-28 160 130)' font-family='Archivo,Arial,sans-serif' font-weight='800' font-size='46' letter-spacing='4' fill='%23F29A5B'>PRUEBAS</text></svg>"); background-repeat:repeat; }
+
+/* Tarjeta del Inicio: «Tu grupo está esperando a tus amigos» (solo con un jugador en el grupo) */
+.inv-tarjeta{ margin:14px 16px; padding:18px; border-radius:18px; border:1.5px solid #C6F24E; background:#2F3A1C; color:#F2F4F5; }
+.inv-et{ font:800 13px 'Archivo', sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#C6F24E; }
+.inv-tit{ font:800 24px/1.2 'Archivo', sans-serif; margin:6px 0 8px; }
+.inv-txt{ font:500 18px/1.45 'Barlow', sans-serif; margin:0 0 12px; color:#F2F4F5; }
+.inv-btn{ display:flex; align-items:center; justify-content:center; width:100%; box-sizing:border-box; min-height:52px; margin-top:10px; padding:12px 18px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:#1B1E22; color:#F2F4F5; font:800 18px 'Archivo', sans-serif; text-decoration:none; cursor:pointer; }
+.inv-btn.pri{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
+.inv-btn:active{ transform:scale(.97); }
+.inv-ok{ min-height:20px; margin-top:8px; font:600 16px 'Barlow', sans-serif; color:#C6F24E; text-align:center; }
