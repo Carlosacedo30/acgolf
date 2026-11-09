@@ -247,9 +247,10 @@
   let timer = null, previo = null, codigoAbierto = null, bannerT = null, rondaAbierta = null;
   let destacados = [];   // lo último destacado (birdie, águila, racha): máximo 2
   let girar = null;   // cada 5 s alterna los dos bloques de 9 hoyos
+  let masT = null;    // vigila si hay que enseñar la flecha «Ver resultados»
   let ultimoGolpe = 0, ultimoRelleno = 0, ticks = 0, rueda = null, toqueRueda = 0, rellenoN = 0;
   function cerrar(){
-    clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null; destacados = []; clearInterval(girar); girar = null;
+    clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null; destacados = []; clearInterval(girar); girar = null; clearInterval(masT); masT = null;
     paraPlato();
     try { if(window.acgolfTele) window.acgolfTele.quitar(); } catch(e){}
     const ov = document.getElementById('vvOverlay'); if(ov){ ov.hidden = true; ov.innerHTML = ''; }
@@ -271,8 +272,21 @@
       + '<div class="vv-asi"></div><div class="vv-plato-sitio"></div><div class="vv-final"></div>'
       + '<div class="vv-tableros"></div><div class="vv-ult" aria-live="polite"></div><div class="vv-dest"></div>'
       + '<div class="vv-car">' + tarjetas() + '</div>'
+      + '<button type="button" class="vv-mas" aria-label="Bajar para ver los resultados"><span>Ver resultados</span><i aria-hidden="true">⌄</i></button>'
       + '<a class="vv-patro" href="' + esc(PATRO.url) + '" target="_blank" rel="noopener"><small>Patrocinado por</small> <b>' + esc(PATRO.nombre) + '</b><span>' + PATRO.franja + '</span></a>';
     ov.querySelector('.vv-x').onclick = cerrar;
+    // Flecha «Ver resultados»: avisa de que hay más contenido debajo de la tele y baja sola al pulsarla
+    const mas = ov.querySelector('.vv-mas');
+    const vista = () => {
+      const hayMas = ov.scrollHeight > ov.clientHeight + 120 && ov.scrollTop < 60;
+      mas.classList.toggle('ver', hayMas);
+    };
+    mas.onclick = () => {
+      const meta = ['.vv-final', '.vv-tableros', '.vv-asi'].map(q => ov.querySelector(q)).find(x => x && x.offsetHeight > 0 && x.offsetTop > 120);
+      ov.scrollTo({ top: meta ? Math.max(0, meta.offsetTop - 64) : ov.clientHeight * 0.8, behavior: 'smooth' });
+    };
+    ov.addEventListener('scroll', vista, { passive: true });
+    clearInterval(masT); masT = setInterval(vista, 1500); setTimeout(vista, 400);
     // El toque en el enlace del patrocinador ya lo cuenta patro-cuenta.js en toda la app (si se contaba aquí también, salía el doble)
     pintar(round);
     apuntar('envivo', code);
