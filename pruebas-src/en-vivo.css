@@ -130,3 +130,14 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 
 .vv td.nom{ line-height:1.05; } .vv td.nom .hc{ display:block; font:600 11px 'Barlow',sans-serif; color:#8FA59A; }
 .vv td.tot{ width:54px; }
+
+/* Con la tele en pantalla, la clasificación va en su tira que se mueve: no se repite la de arriba */
+.vv:has(.vt) .vv-asi{ display:none; }
+/* Una línea de 9 hoyos: círculos algo más pequeños para que quepan */
+.vv .vv-tab{ padding:10px 6px; }
+.vv td .nt{ width:25px; height:25px; font-size:15px; }
+.vv td .nt.pa{ width:23px; height:23px; border-width:2px; }
+.vv td.nom{ width:64px; font-size:15px; }
+.vv td.nom .hc{ font-size:10px; }
+.vv td.tot{ width:40px; font-size:20px; }
+.vv th{ font-size:11px; }

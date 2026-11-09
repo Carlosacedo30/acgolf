@@ -67,3 +67,5 @@
 @media (prefers-reduced-motion: reduce){ .vt-cinta.anda{ animation:none; } .vt-live i{ animation:none; } }
 /* Botón del administrador en la portada */
 .vt-admin-btn{ margin-top:8px; background:#0B0D10 !important; color:#C6F24E !important; border:2px solid #C6F24E !important; }
+
+.vt-cinta span.rot{ background:#C6F24E; color:#111316; padding:0 .8em; font:900 .8em 'Archivo','Barlow',sans-serif; letter-spacing:.08em; }

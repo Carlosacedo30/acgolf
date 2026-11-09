@@ -287,9 +287,10 @@
     const marca2 = x => x.esPtos ? x.pts : signo(x.neto);
     const nombreLargo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García»; las parejas «Carlos y Jose»
     const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(nombreLargo(x.n)) + '</em><b>' + marca2(x) + '</b><small>' + (x.esPtos ? 'pts' : 'neto') + ' · ' + (x.pos >= NH(t) ? 'FIN' : 'H' + x.ultimo) + '</small></span>').join('');
-    cinta.innerHTML = items || '<span>Esperando los primeros golpes…</span>';
+    const rotulo = '<span class="rot">ASÍ VA · ' + (t[0] && t[0].esPtos ? 'PUNTOS' : 'NETO') + '</span>';
+    cinta.innerHTML = items ? rotulo + items : '<span>Esperando los primeros golpes…</span>';
     cinta.classList.toggle('anda', t.length > 3);
-    if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos
+    if(t.length > 3) cinta.innerHTML += rotulo + items;   // dos veces, para que la cinta corra sin saltos
     pintarReloj();
   }
   function quitar(){ parar(); hablando = false; avisos = []; antes = null; clearTimeout(avisoT); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
