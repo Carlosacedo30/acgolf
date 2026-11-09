@@ -245,9 +245,10 @@
 
   // ---------- La pantalla En vivo ----------
   let timer = null, previo = null, codigoAbierto = null, bannerT = null, rondaAbierta = null;
+  let destacados = [];   // lo último destacado (birdie, águila, racha): máximo 2
   let ultimoGolpe = 0, ultimoRelleno = 0, ticks = 0, rueda = null, toqueRueda = 0, rellenoN = 0;
   function cerrar(){
-    clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null;
+    clearInterval(timer); timer = null; clearInterval(rueda); rueda = null; codigoAbierto = null; previo = null; rondaAbierta = null; destacados = [];
     paraPlato();
     try { if(window.acgolfTele) window.acgolfTele.quitar(); } catch(e){}
     const ov = document.getElementById('vvOverlay'); if(ov){ ov.hidden = true; ov.innerHTML = ''; }
@@ -260,14 +261,14 @@
       document.body.appendChild(ov);
     }
     ov.hidden = false; document.body.classList.add('vv-abierto');
-    codigoAbierto = code; previo = null; rondaAbierta = round; ultimoGolpe = Date.now(); ultimoRelleno = Date.now(); ticks = 0;
+    codigoAbierto = code; previo = null; destacados = []; rondaAbierta = round; ultimoGolpe = Date.now(); ultimoRelleno = Date.now(); ticks = 0;
     const fin = terminada(round) && !window.__teleForzada;   // #vivo=CÓDIGO: la tele también con la partida terminada (para verla)
     ov.innerHTML = '<div class="vv-top"><span class="vv-live' + (fin ? ' vv-fin' : '') + '"><i></i>' + (fin ? 'FINAL' : 'EN DIRECTO') + '</span>'
       + '<div class="vv-tit"><b>' + esc(round.round_name || 'Partida') + '</b>' + esc(round.course_name || '') + '</div>'
       + '<button type="button" class="vv-x" aria-label="Cerrar">✕</button></div>'
       + (!fin && window.acgolfTele ? '<div class="vt-sitio"></div>' : '')
       + '<div class="vv-asi"></div><div class="vv-plato-sitio"></div>'
-      + '<div class="vv-tableros"></div><div class="vv-ult" aria-live="polite"></div>'
+      + '<div class="vv-tableros"></div><div class="vv-ult" aria-live="polite"></div><div class="vv-dest"></div>'
       + '<div class="vv-car">' + tarjetas() + '</div>'
       + '<a class="vv-patro" href="' + esc(PATRO.url) + '" target="_blank" rel="noopener"><small>Patrocinado por</small> <b>' + esc(PATRO.nombre) + '</b><span>' + PATRO.franja + '</span></a>';
     ov.querySelector('.vv-x').onclick = cerrar;
@@ -336,7 +337,16 @@
         const celdas = cols.map(h => {
           const v = +((sc[p] || {})[h]); const par = pares[h - 1] || 4;
           const clave = gi + ':' + p + ':' + h;
-          if(v > 0 && previo && !previo[clave]) nuevos.push({ n: corto(n), g: v, par, h });
+          if(v > 0 && previo && !previo[clave]){
+            nuevos.push({ n: corto(n), g: v, par, h });
+            // Aviso destacado: birdie o mejor, o tercer par seguido (siguiendo el orden de salida de ESTE grupo)
+            if(v - par <= -1) apuntaDest({ q: 'curro', t: v - par <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(n) + ', en el ' + h, f: v - par <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' });
+            else if(v === par){
+              const o = ordenDe(g), k = posDe(g, h);
+              const seguidos = k >= 3 && [1, 2].every(d => { const hh = o[k - 1 - d]; const x = +((sc[p] || {})[hh]); return x > 0 && x === (pares[hh - 1] || 4); });
+              if(seguidos) apuntaDest({ q: 'lola', t: 'RACHA', n: corto(n) + ', 3 pares seguidos', f: 'Así me gusta, sin sustos.' });
+            }
+          }
           const cls = !(v > 0) ? 'vacio' : v < par ? 'bajo' : v > par ? 'alto' : '';
           return '<td class="' + cls + (h === actual ? ' ahora' : '') + '">' + (v > 0 ? v : '—') + '</td>';
         }).join('');
@@ -352,9 +362,17 @@
     const ahora = {};
     gs.forEach((g, gi) => (g.players || []).forEach((_, p) => Object.keys((g.scores || {})[p] || {}).forEach(h => { if(+g.scores[p][h] > 0) ahora[gi + ':' + p + ':' + h] = 1; })));
     previo = ahora;
+    pintarDest(ov);
     if(nuevos.length){ ultimoGolpe = Date.now(); comentar(nuevos[nuevos.length - 1]); }
   }
 
+  // «Lo último»: tarjetas fijas con los dos últimos avisos (sin audios ni imágenes nuevas)
+  function apuntaDest(x){ destacados.unshift(x); destacados = destacados.slice(0, 2); }
+  function pintarDest(ov){
+    const box = ov.querySelector('.vv-dest'); if(!box) return;
+    box.innerHTML = destacados.length ? '<h5>Lo último</h5>' + destacados.map((x, i) =>
+      '<div class="vv-dst' + (i ? ' viej' : '') + '"><img src="' + (x.q === 'lola' ? 'lola.webp?v=1' : 'curro-risa.webp?v=1') + '" alt=""><div><b>' + esc(x.t) + '</b><strong>' + esc(x.n) + '</strong><span>' + esc(x.f) + '</span></div></div>').join('') : '';
+  }
   function burbuja(quien, titulo, texto, animo, segundos){
     const box = document.querySelector('#vvOverlay .vv-ult'); if(!box) return;
     const C = window.acgolfCurro;
