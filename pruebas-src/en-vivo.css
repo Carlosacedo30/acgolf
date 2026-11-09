@@ -168,3 +168,7 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 .vv th.hh.ahora{ background:#C6F24E; }
 .vv th.hh.ahora b, .vv th.hh.ahora small{ color:#111316; }
 .vv table.vv-bl{ border-collapse:separate; border-spacing:2px 0; }
+
+.vv-birra{ font-style:normal; margin-right:6px; }
+.vv-fbir{ margin:8px 12px 0; background:#2F3A1C; border:1.5px solid rgba(198,242,78,.55); border-radius:14px; padding:10px 12px; font:600 16px/1.4 'Barlow',sans-serif; color:#E3ECE6; }
+.vv-fbir b{ color:#C6F24E; }
