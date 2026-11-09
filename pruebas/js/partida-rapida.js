@@ -90,7 +90,7 @@
     const ov = document.getElementById('prOverlay'); if(!ov) return;
     prDesde = null; window.acgolfMitad = null;
     prPaso = 1; prCampo = null; prInvitados = []; prHcpInv = {}; prFormInv = false; prBarras = {};
-    window.acgolfTorneo = { con: false };   // partida normal por defecto; el interruptor la pasa a «con marcador»
+    window.acgolfTorneo = null;   // las partidas normales nunca llevan marcador; solo las de una liga (Ligas) lo llevan solas
     prPunt = 'strokeplay'; prHoyos = 18; prModal = 'Individual'; prNGrupos = 1; prGrupo = 0;
     const yo = prYo();
     prGrupos = [yo ? [yo] : []];
@@ -121,11 +121,6 @@
         + fila('Puntuación', 'punt', PR_PUNT, prPunt)
         + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
         + fila('Modalidad', 'modal', PR_MODAL, prModal)
-        + (window.acgolfTorneo ? '<div class="pr-op-t">Partida con marcador</div>'
-            + '<button type="button" class="pr-marc' + (window.acgolfTorneo.con ? ' on' : '') + '" id="prMarc" role="switch" aria-checked="' + (window.acgolfTorneo.con ? 'true' : 'false') + '">'
-            + '<span class="pr-marc-t"><b>' + (window.acgolfTorneo.con ? 'Con marcador' : 'Partida normal') + '</b><small>'
-            + (window.acgolfTorneo.con ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga. La tarjeta es oficial cuando la confirma su marcador.' : 'Cada uno apunta sus golpes, sin marcador.')
-            + '</small></span><span class="pr-marc-sw" aria-hidden="true"><i></i></span></button>' : '')
         + (MAX_GROUPS > GRUPOS_EN_PESTANAS
             ? '<div class="pr-op-t">Grupos</div><div class="pr-npaso"><button type="button" class="pr-tecla pr-nmas" data-d="-1" aria-label="Un grupo menos"' + (prNGrupos > 1 ? '' : ' disabled') + '>−</button>'
               + '<div class="pr-nnum"><b>' + prNGrupos + '</b><small>hasta ' + (prNGrupos * PR_MAX) + ' jugadores</small></div>'
