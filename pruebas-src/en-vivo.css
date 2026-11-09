@@ -172,3 +172,12 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 .vv-birra{ font-style:normal; margin-right:6px; }
 .vv-fbir{ margin:8px 12px 0; background:#2F3A1C; border:1.5px solid rgba(198,242,78,.55); border-radius:14px; padding:10px 12px; font:600 16px/1.4 'Barlow',sans-serif; color:#E3ECE6; }
 .vv-fbir b{ color:#C6F24E; }
+
+/* Flecha «Ver resultados»: sale abajo mientras el espectador está arriba, en la tele, y avisa de que hay más debajo */
+.vv-mas{ position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom, 0px) + 76px); transform:translate(-50%, 10px); z-index:9700; display:flex; flex-direction:column; align-items:center; gap:0; padding:7px 22px 4px; box-shadow:0 4px 18px rgba(0,0,0,.55); border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:#2F3A1C; color:#F2F4F5; font:900 17px Archivo, sans-serif; letter-spacing:.02em; cursor:pointer; opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; }
+.vv-mas.ver{ opacity:1; pointer-events:auto; transform:translate(-50%, 0); }
+.vv-mas:active{ transform:translate(-50%, 0) scale(.97); }
+.vv-mas span{ color:#C6F24E; }
+.vv-mas i{ font-style:normal; font-size:30px; line-height:.7; color:#C6F24E; animation:vv-mas-bota 1.4s ease-in-out infinite; }
+@keyframes vv-mas-bota{ 0%,100%{ transform:translateY(-3px); } 50%{ transform:translateY(4px); } }
+@media (prefers-reduced-motion:reduce){ .vv-mas i{ animation:none; } }
