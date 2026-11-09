@@ -15,7 +15,7 @@
   // mientras el golpe siga anotado en esa celda
   const PAR_MESSAGE = '¡Qué bueno eres!';
   const BIRDIE_MESSAGE = 'Te como los huevos';
-  const WINNER_MESSAGE = 'Hoy te hacen el chivito';
+  const WINNER_MESSAGE = 'Ganador de la partida';
 
   // Aviso emergente (~4s) cuando aparece un mensaje NUEVO (no al restaurar golpes ya guardados)
   const shownMessageKeys = new Set();
@@ -23,8 +23,7 @@
   let toastShowing = false;
   function toastKey(m){ return activeGroup + '|' + m.hole + '|' + m.player + '|' + m.text; }
   function showMessageToast(m){
-    toastQueue.push(m);
-    processToastQueue();
+    // aviso antiguo quitado (decisión de Carlos, 9-nov-2026)
   }
   function processToastQueue(){
     if(typeof current !== 'undefined' && current !== 3){ toastQueue = []; return; } // solo en la pantalla de anotar
@@ -72,8 +71,7 @@
             const netDiff = (golpes - recibidos) - par; // ajustado a su hándicap: para el color de la celda
             cell.classList.add(netDiff > 0 ? 'result-over' : 'result-par');
             let msg = null, icon = null;
-            if(diff === 0){ msg = PAR_MESSAGE; icon = '👍'; }
-            else if(diff === -1){ msg = BIRDIE_MESSAGE; icon = '🥚'; }
+            // mensajes antiguos (👍/🥚) quitados: ahora comentan solo Curro y Lola
             if(msg){
               const badge = document.createElement('span');
               badge.className = 'msg-badge';

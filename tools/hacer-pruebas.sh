@@ -354,6 +354,13 @@ for a, b in [
 ]:
     cambia('pruebas/js/vista-hoyo.js', a, b)
 # Resultados y «Finalizar ronda»
+# Fuera el aviso antiguo de abajo («Hoyo 8 · Pepe — Te como los huevos», «¡Qué bueno eres!»): ahora solo comentan Curro y Lola
+cambia('pruebas/js/resultados.js', """    toastQueue.push(m);
+    processToastQueue();""", """    // aviso antiguo quitado (decisión de Carlos, 9-nov-2026)""")
+# Fuera también los iconos 👍/🥚 de las casillas, la lista de «mensajes» y la frase «Hoy te hacen el chivito»
+cambia('pruebas/js/resultados.js', """            if(diff === 0){ msg = PAR_MESSAGE; icon = '👍'; }
+            else if(diff === -1){ msg = BIRDIE_MESSAGE; icon = '🥚'; }""", """            // mensajes antiguos (👍/🥚) quitados: ahora comentan solo Curro y Lola""")
+cambia('pruebas/js/resultados.js', """const WINNER_MESSAGE = 'Hoy te hacen el chivito';""", """const WINNER_MESSAGE = 'Ganador de la partida';""")
 cambia('pruebas/js/resultados.js', """s.holesFilled + '/18 hoyos · Recibe '""", """s.holesFilled + '/' + hoyosPartida() + ' hoyos · Recibe '""")
 cambia('pruebas/js/resultados.js', """summaries.every(s => s.holesFilled >= 18);""", """summaries.every(s => s.holesFilled >= hoyosPartida());""")
 cambia('pruebas/js/resultados.js', """(summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : '')""", """(summaries[i].holesFilled < hoyosPartida() ? ' · ' + summaries[i].holesFilled + '/' + hoyosPartida() + ' hoyos' : '')""")
@@ -461,7 +468,7 @@ cambia('pruebas/js/tarjeta-blanca.js', """    try { marcarPantalla(); if(colocar
 import re
 p = 'pruebas/index.html'; s = open(p, encoding='utf-8').read()
 for f in ('data', 'scorecard', 'rondas-compartidas', 'players', 'partida-rapida', 'vista-hoyo', 'resultados', 'interactions', 'ligas', 'convocatoria'):
-    s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\g<1>09"', s); assert n == 1, f
+    s, n = re.subn(r'(js/' + f + r'\.js\?v=\d+)"', r'\g<1>10"', s); assert n == 1, f
 open(p, 'w', encoding='utf-8').write(s)
 PY
 
