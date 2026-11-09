@@ -1,6 +1,6 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // Pantalla de anotar más compacta (pedida por Carlos):
-// · al elegir los golpes de un jugador, el teclado salta solo al siguiente que falte
+// · al elegir los golpes de un jugador, el teclado salta solo al siguiente que falte (solo entre los que apunta este móvil)
 // · aviso «Hoyo completo» cuando ya están todos apuntados
 // · debajo de los jugadores, solo la media tarjeta (ida o vuelta) según el hoyo
 (function(){
@@ -21,7 +21,12 @@
           const i = players.indexOf(mio);
           const orden = cajas.filter(function(c){ return +c.dataset.holeInputFor !== i; })
             .sort(function(a, b){ return ((+a.dataset.holeInputFor - i + 99) % 99) - ((+b.dataset.holeInputFor - i + 99) % 99); });
-          const falta = orden.find(function(c){ return c.value === ''; });
+          // Solo salta entre los jugadores que apunta ESTE móvil (la app ya los recuerda).
+          // Si este móvil solo apunta a uno, o aún no se sabe, no salta a nadie.
+          let mios = null;
+          try { if(typeof syncMyPlayers === 'function') syncMyPlayers(); if(typeof myPlayers !== 'undefined') mios = myPlayers; } catch(e){}
+          if(!mios || mios.size < 2) return;
+          const falta = orden.find(function(c){ return c.value === '' && mios.has(players[+c.dataset.holeInputFor]); });
           if(falta) falta.click();
         } catch(e){}
       }, 120);
