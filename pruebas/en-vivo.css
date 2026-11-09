@@ -145,3 +145,26 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 /* Dos bloques de 9 hoyos que se alternan cada 5 segundos */
 .vv table.vv-bl.oculta{ display:none; }
 .vv table.vv-bl caption{ caption-side:top; text-align:left; font:800 12px 'Archivo','Barlow',sans-serif; letter-spacing:.06em; color:#C6F24E; text-transform:uppercase; padding:2px 0 4px; }
+
+/* Resumen final de un vistazo */
+.vv-gan{ margin:10px 12px 0; background:linear-gradient(160deg,#2F3A1C,#1B1E22); border:2px solid #C6F24E; border-radius:20px; padding:16px; text-align:center; }
+.vv-gan .c{ font-size:34px; } .vv-gan h2{ margin:4px 0 0; font:900 30px 'Archivo','Barlow',sans-serif; color:#F2F4F5; }
+.vv-gan p{ margin:4px 0 0; font:700 19px 'Barlow',sans-serif; color:#C6F24E; } .vv-gan small{ display:block; margin-top:4px; color:#B8C0C7; font:600 14px 'Barlow',sans-serif; }
+.vv-final h5{ margin:16px 14px 6px; font:800 13px 'Archivo','Barlow',sans-serif; letter-spacing:.08em; color:#9AA3AB; text-transform:uppercase; }
+.vv-fcl{ margin:0 12px; background:#1B1E22; border-radius:16px; overflow:hidden; }
+.vv-fcl div{ display:flex; align-items:center; padding:10px 12px; border-bottom:1px solid #33383E; font:700 18px 'Barlow',sans-serif; color:#F2F4F5; }
+.vv-fcl div:last-child{ border:0; } .vv-fcl i{ font:900 18px 'Archivo',sans-serif; font-style:normal; width:28px; color:#C6F24E; }
+.vv-fcl span{ flex:1; } .vv-fcl small{ display:block; font:600 12px 'Barlow',sans-serif; color:#8FA59A; } .vv-fcl b{ font:900 21px 'Archivo',sans-serif; color:#C6F24E; }
+.vv-fm{ margin:6px 12px; display:flex; gap:12px; align-items:center; background:#1B1E22; border:1.5px solid #33383E; border-radius:16px; padding:10px 12px; }
+.vv-fm img{ width:54px; height:54px; border-radius:50%; object-fit:cover; border:2px solid #C6F24E; flex:0 0 auto; }
+.vv-fm b{ display:block; font:900 13px 'Archivo',sans-serif; color:#C6F24E; letter-spacing:.06em; } .vv-fm.o b{ color:#9AA3AB; }
+.vv-fm strong{ display:block; font:800 18px/1.2 'Archivo',sans-serif; color:#F2F4F5; } .vv-fm span{ font:600 15px 'Barlow',sans-serif; color:#E3ECE6; }
+.vv-fg{ margin:0 12px; background:#1B1E22; border-radius:16px; padding:10px 12px; font:600 16px/1.5 'Barlow',sans-serif; color:#E3ECE6; } .vv-fg b{ color:#C6F24E; }
+
+/* Números de hoyo reforzados: fichas con el número grande y el par debajo; el hoyo en juego en lima */
+.vv th.hh{ background:#0B2417; border-radius:7px; padding:3px 0 2px; }
+.vv th.hh b{ display:block; font:900 16px/1.1 'Archivo','Barlow',sans-serif; color:#F2F4F5; }
+.vv th.hh small{ display:block; font:700 9.5px/1.2 'Barlow',sans-serif; color:#8FA59A; }
+.vv th.hh.ahora{ background:#C6F24E; }
+.vv th.hh.ahora b, .vv th.hh.ahora small{ color:#111316; }
+.vv table.vv-bl{ border-collapse:separate; border-spacing:2px 0; }
