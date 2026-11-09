@@ -769,11 +769,9 @@
         box.innerHTML = '<b>Invita a tus amigos a «' + esc(inv.grupo) + '»</b>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
-          + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
           + (window.acgolfQR ? '<div class="qr-caja"><b>Código QR de tu grupo</b><img id="cgQR" alt="Código QR para unirse a «' + esc(inv.grupo) + '»"><small>Ya está hecho: imprímelo o enséñalo en el móvil. Al escanearlo entran directamente en el grupo.</small>'
               + '<a class="cg-btn ghost" id="cgQRBajar" download="QR-' + esc(String(inv.grupo).replace(/[^\wÀ-ÿ]+/g, '-')) + '.png">Descargar el QR</a></div>' : '')
           + '<p class="cg-p" style="font-size:16px;margin-top:4px;">El enlace y el QR también los tienes siempre en «Mi cuenta».</p>';
-        $('cgCopiar').onclick = async () => { try { await navigator.clipboard.writeText(enlace); msg('Enlace copiado.', true); } catch(e){ prompt('Copia el enlace:', enlace); } };
         if(window.acgolfQR && $('cgQR')){ try { const png = window.acgolfQR.lamina(enlace, inv.grupo); $('cgQR').src = png; $('cgQRBajar').href = png; } catch(e){ const c = box.querySelector('.qr-caja'); if(c) c.remove(); } }
       } catch(e){ const box = $('cgInvita'); if(box) box.remove(); }
     }
@@ -1193,11 +1191,9 @@
           + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a tus amigos. Al abrirlo y crear su cuenta, entran directamente en tu grupo.</div>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
-          + '<button type="button" class="cg-btn ghost" id="cgCopiar">Copiar el enlace</button>'
           + (window.acgolfQR ? '<div class="qr-caja"><b>Código QR del grupo</b><img id="cgQR" alt="Código QR para unirse a «' + esc(inv.grupo) + '»"><small>Para imprimir o enseñar en el móvil: al escanearlo entran directamente en el grupo.</small>'
               + '<a class="cg-btn ghost" id="cgQRBajar" download="QR-' + esc(String(inv.grupo).replace(/[^\wÀ-ÿ]+/g, '-')) + '.png">Descargar el QR</a></div>' : '')
           + '<button type="button" class="cg-link" id="cgNuevoEnlace">Cambiar el enlace (el anterior deja de valer)</button>';
-        $('cgCopiar').onclick = async () => { try { await navigator.clipboard.writeText(enlace); msg('Enlace copiado.', true); } catch(e){ prompt('Copia el enlace:', enlace); } };
         if(window.acgolfQR && $('cgQR')){ try { const png = window.acgolfQR.lamina(enlace, inv.grupo); $('cgQR').src = png; $('cgQRBajar').href = png; } catch(e){ const c = box.querySelector('.qr-caja'); if(c) c.remove(); } }
         $('cgNuevoEnlace').onclick = async () => {
           if(!confirm('¿Cambiar el enlace de invitación?\nEl enlace anterior dejará de funcionar.')) return;
@@ -1438,16 +1434,11 @@
       t.className = 'inv-tarjeta'; t.id = 'invTarjeta';
       t.innerHTML = '<div class="inv-et">Tu grupo</div>'
         + '<div class="inv-tit">«' + esc(inv.grupo) + '» está esperando a tus amigos</div>'
-        + '<p class="inv-txt">Este es tu sitio de juego: aquí jugáis tú y tus amigos. Mándales tu enlace y entran directos, sin escribir nada.</p>'
+        + '<p class="inv-txt">Este es tu sitio de juego: aquí jugáis tú y tus amigos. Mándales la invitación y entran directos, sin escribir nada.</p>'
         + '<a class="inv-btn pri" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Invitar por WhatsApp</a>'
-        + '<button type="button" class="inv-btn" id="invCopiar">Copiar el enlace</button>'
         + '<button type="button" class="inv-btn" id="invQR">Enseñar el código QR</button>'
         + '<div class="inv-ok" id="invOk" aria-live="polite"></div>';
       conv.insertAdjacentElement('afterend', t);
-      $('invCopiar').onclick = async () => {
-        const ok = $('invOk');
-        try { await navigator.clipboard.writeText(enlace); ok.textContent = '✔ Enlace copiado. Pégalo en un mensaje.'; } catch(e){ prompt('Copia el enlace:', enlace); }
-      };
       $('invQR').onclick = () => panelMiCuenta(perfil);
     } catch(e){}
   }
