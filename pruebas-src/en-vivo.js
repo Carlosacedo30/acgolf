@@ -268,7 +268,7 @@
       + '<div class="vv-tit"><b>' + esc(round.round_name || 'Partida') + '</b>' + esc(round.course_name || '') + '</div>'
       + '<button type="button" class="vv-x" aria-label="Cerrar">✕</button></div>'
       + (!fin && window.acgolfTele ? '<div class="vt-sitio"></div>' : '')
-      + '<div class="vv-asi"></div><div class="vv-plato-sitio"></div>'
+      + '<div class="vv-asi"></div><div class="vv-plato-sitio"></div><div class="vv-final"></div>'
       + '<div class="vv-tableros"></div><div class="vv-ult" aria-live="polite"></div><div class="vv-dest"></div>'
       + '<div class="vv-car">' + tarjetas() + '</div>'
       + '<a class="vv-patro" href="' + esc(PATRO.url) + '" target="_blank" rel="noopener"><small>Patrocinado por</small> <b>' + esc(PATRO.nombre) + '</b><span>' + PATRO.franja + '</span></a>';
@@ -317,13 +317,14 @@
     if(!t.length){ box.innerHTML = '<div class="vv-asi-t">Así va · ' + titulo + '</div><div class="vv-asi-v">Aún no hay golpes</div>'; return; }
     const fin = terminada(round);
     box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Clasificación final · ' + titulo : 'Así va · ' + titulo) + '</div><ol class="vv-asi-l">'
-      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : (fin ? x.total : signo(x.neto))) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.pos >= nHoyos(x.g) ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
+      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : signo(x.neto)) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.pos >= nHoyos(x.g) ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
       + '</ol>';
   }
 
   function pintar(round){
     const ov = document.getElementById('vvOverlay'); if(!ov) return;
     pintarAsi(round);
+    pintarFinal(ov, round);
     try { if(window.acgolfTele && ov.querySelector('.vt')) window.acgolfTele.actualizar(round); } catch(e){}
     const pares = paresDe(round);
     const gs = grupos(round);
@@ -388,6 +389,31 @@
     pintarDest(ov);
     if(nuevos.length){ ultimoGolpe = Date.now(); comentar(nuevos[nuevos.length - 1]); }
   }
+
+  // Resumen final de un vistazo (sin sonido): ganador, clasificación, mejor y peor hoyo, y cómo jugó cada grupo
+  function pintarFinal(ov, round){
+    const box = ov.querySelector('.vv-final'); if(!box) return;
+    if(!terminada(round) || window.__teleForzada){ box.innerHTML = ''; return; }
+    const t = tabla(round), m = momentos(round);
+    if(!t.length){ box.innerHTML = ''; return; }
+    const g0 = t[0], esPtos = g0.esPtos;
+    const res = x => esPtos ? x.pts + ' pts' : signo(x.neto);
+    const nombreCompleto = n => esEquipo2(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');
+    let h = '<div class="vv-gan"><span class="c">🏆</span><h2>' + esc(nombreCompleto(g0.n)) + '</h2><p>' + (esPtos ? g0.pts + ' puntos' : signo(g0.neto) + ' neto') + ' · ' + g0.bruto + ' golpes</p><small>Ganador del día · hándicap ' + g0.hc + '</small></div>';
+    h += '<h5>Clasificación · ' + (esPtos ? 'puntos' : 'neto') + '</h5><div class="vv-fcl">' + t.map((x, i) => '<div><i>' + (i + 1) + '</i><span>' + esc(nombreCompleto(x.n)) + '<small>hcp ' + x.hc + ' · ' + x.bruto + ' golpes</small></span><b>' + res(x) + '</b></div>').join('') + '</div>';
+    const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
+    const peor = m.slice().sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
+    const tarj = [];
+    if(mejor && mejor.d < 0) tarj.push('<div class="vv-fm"><img src="curro-risa.webp?v=1" alt=""><div><b>MEJOR HOYO</b><strong>' + (mejor.d <= -2 ? 'Águila' : 'Birdie') + ' de ' + esc(corto(mejor.n)) + ' en el ' + mejor.h + '</strong><span>«Birdie de categoría.»</span></div></div>');
+    if(peor && peor.d >= 2) tarj.push('<div class="vv-fm o"><img src="lola.webp?v=1" alt=""><div><b>HOYO PARA OLVIDAR</b><strong>' + esc(corto(peor.n)) + ', ' + peor.v + ' golpes en el ' + peor.h + '</strong><span>«Ese hoyo lo borramos y aquí no ha pasado nada.»</span></div></div>');
+    if(tarj.length) h += '<h5>Lo mejor y lo peor</h5>' + tarj.join('');
+    h += '<h5>Cómo jugó cada grupo</h5><div class="vv-fg">' + grupos(round).map((g, gi) => {
+      const o = ordenDe(g);
+      return '<div><b>' + (g.time ? 'Salida ' + esc(g.time) : 'Grupo ' + (gi + 1)) + '</b> · salió por el ' + salidaDe(g) + ' y terminó en el ' + o[nHoyos(g) - 1] + '.</div>';
+    }).join('') + '</div>';
+    box.innerHTML = h;
+  }
+  const esEquipo2 = n => String(n || '').includes(' / ');
 
   // «Lo último»: tarjetas fijas con los dos últimos avisos (sin audios ni imágenes nuevas)
   function apuntaDest(x){ destacados.unshift(x); destacados = destacados.slice(0, 2); }
@@ -513,10 +539,10 @@
       return '<div class="vv-r"><small>Hoyo ' + d.h + ' · Par ' + d.par + '</small><div class="vv-rnom">' + esc(corto(d.n)) + (ape ? ' <i>' + esc(ape) + '</i>' : '') + '</div>'
         + '<div class="vv-rres"><b class="' + col + '">' + esc(palabra) + '</b><span><big>' + d.v + '</big>golpes</span></div><div class="vv-rtira">' + tira.join('') + '</div></div>';
     }
-    if(tipo === 'apretado') return '<div class="vv-r"><small>Se decide por ' + (d.esPtos ? (d.dif === 1 ? 'un punto' : d.dif + ' puntos') : (d.dif === 1 ? 'un golpe' : d.dif + ' golpes') + ' · neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 2).map(x => '<li><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : x.total) + '</b></li>').join('') + '</ol></div>';
+    if(tipo === 'apretado') return '<div class="vv-r"><small>Se decide por ' + (d.esPtos ? (d.dif === 1 ? 'un punto' : d.dif + ' puntos') : (d.dif === 1 ? 'un golpe' : d.dif + ' golpes') + ' · neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 2).map(x => '<li><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : signo(x.neto)) + '</b></li>').join('') + '</ol></div>';
     if(tipo === 'suspense') return '<div class="vv-r"><small>Y el ganador del día es…</small><h3 class="vv-rsus">¿ ? ? ?</h3></div>';
-    if(tipo === 'ganador') return '<div class="vv-r"><small>Ganador del día 🏆</small><h3 class="vv-rwin">' + esc((corto(d.x.n) + ' ' + apellido(d.x.n)).trim()) + '</h3><p>' + (d.esPtos ? d.x.pts + ' puntos · ' + d.x.bruto + ' golpes · hándicap ' + d.x.hc : d.x.total + ' netos · ' + d.x.bruto + ' golpes − ' + d.x.hc + ' de hándicap') + (d.mejor ? '<br>Mejor tarjeta: ' + esc(corto(d.mejor.n)) + ', ' + d.mejor.bruto + ' golpes' : '') + '</p></div>';
-    if(tipo === 'ranking') return '<div class="vv-r"><small>Clasificación · ' + (d.esPtos ? 'puntos' : 'neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 6).map((x, i) => '<li class="' + (i === 0 ? 'win' : '') + '"><i>' + (i + 1) + '</i><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : x.total) + '</b></li>').join('') + '</ol></div>';
+    if(tipo === 'ganador') return '<div class="vv-r"><small>Ganador del día 🏆</small><h3 class="vv-rwin">' + esc((corto(d.x.n) + ' ' + apellido(d.x.n)).trim()) + '</h3><p>' + (d.esPtos ? d.x.pts + ' puntos · ' + d.x.bruto + ' golpes · hándicap ' + d.x.hc : signo(d.x.neto) + ' neto · ' + d.x.bruto + ' golpes − ' + d.x.hc + ' de hándicap') + (d.mejor ? '<br>Mejor tarjeta: ' + esc(corto(d.mejor.n)) + ', ' + d.mejor.bruto + ' golpes' : '') + '</p></div>';
+    if(tipo === 'ranking') return '<div class="vv-r"><small>Clasificación · ' + (d.esPtos ? 'puntos' : 'neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 6).map((x, i) => '<li class="' + (i === 0 ? 'win' : '') + '"><i>' + (i + 1) + '</i><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : signo(x.neto)) + '</b></li>').join('') + '</ol></div>';
     if(tipo === 'cta') return '<div class="vv-r vv-rcta"><small>Apunta tus partidas</small><h3>acgolf<b>.es</b></h3><p>Este resumen os lo trae <b>' + esc(PATRO.nombre) + '</b></p></div>';
     return '';
   }
