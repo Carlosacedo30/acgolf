@@ -1,0 +1,6 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Pantalla de anotar compacta: aviso «Hoyo completo» y nombres bien grandes */
+.hv-completo{ margin:8px 0 0; padding:10px 14px; border-radius:14px; background:#2F3A1C; border:2px solid #C6F24E; color:#F2F4F5; display:flex; flex-direction:column; gap:2px; text-align:center; }
+.hv-completo b{ font:900 20px 'Archivo', sans-serif; color:#C6F24E; letter-spacing:.02em; }
+.hv-completo span{ font:600 16px 'Barlow', sans-serif; color:#F2F4F5; }
+html.tb-on .screen[data-screen="3"] #hvPlayers .hv-n{ font-size:20px !important; font-weight:800 !important; white-space:normal !important; line-height:1.1 !important; }
