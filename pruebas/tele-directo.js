@@ -177,9 +177,9 @@
       else { if(k2) L(['l-sigue', k2], rot2); if(dif >= 3) C('c-diferencia', rot2); }
     }
     // 5. Birdies y hoyos para olvidar
-    const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.h - a.h)[0];
+    const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
     if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b> en el hoyo ' + bir.h; L('l-birdie', r); C('c-birdie', r); }
-    const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.h - a.h)[0];
+    const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
     if(malo) { const r = 'Hoyo ' + malo.h + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); C('c-atragantado', r); }
     // 6. Predicción y broma
     C(visitas % 2 ? 'c-prediccion-greens' : 'c-prediccion-putts', 'La predicción de <b>Curro</b>');
