@@ -366,7 +366,7 @@
         }).join('');
         return '<table class="vv-bl' + (oculta ? ' oculta' : '') + '" data-b="' + b + '">'
           + (bloqueActual > 0 && nHoyos(g) > 9 ? '<caption>' + (b === 0 ? 'Primeros 9 hoyos' : 'Últimos 9 hoyos') + '</caption>' : '')
-          + '<tr><th></th>' + cols.map(h => '<th>' + h + '</th>').join('') + '<th>' + (round.scoring_type === 'stableford' ? 'Pts' : 'Neto') + '</th></tr>' + filas + '</table>';
+          + '<tr><th></th>' + cols.map(h => '<th class="hh' + (h === actual ? ' ahora' : '') + '"><b>' + h + '</b><small>P' + (pares[h - 1] || 4) + '</small></th>').join('') + '<th>' + (round.scoring_type === 'stableford' ? 'Pts' : 'Neto') + '</th></tr>' + filas + '</table>';
       };
       const tablas = bloqueActual > 0 && nHoyos(g) > 9 ? [hacer(0, false, true), hacer(bloqueActual, true, false)] : [hacer(bloqueActual, true, false)];
       const hora = g.time ? 'Salida ' + esc(g.time) : (gs.length > 1 ? 'Partida ' + (gi + 1) : '');

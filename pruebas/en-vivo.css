@@ -145,3 +145,11 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 /* Dos bloques de 9 hoyos que se alternan cada 5 segundos */
 .vv table.vv-bl.oculta{ display:none; }
 .vv table.vv-bl caption{ caption-side:top; text-align:left; font:800 12px 'Archivo','Barlow',sans-serif; letter-spacing:.06em; color:#C6F24E; text-transform:uppercase; padding:2px 0 4px; }
+
+/* Números de hoyo reforzados: fichas con el número grande y el par debajo; el hoyo en juego en lima */
+.vv th.hh{ background:#0B2417; border-radius:7px; padding:3px 0 2px; }
+.vv th.hh b{ display:block; font:900 16px/1.1 'Archivo','Barlow',sans-serif; color:#F2F4F5; }
+.vv th.hh small{ display:block; font:700 9.5px/1.2 'Barlow',sans-serif; color:#8FA59A; }
+.vv th.hh.ahora{ background:#C6F24E; }
+.vv th.hh.ahora b, .vv th.hh.ahora small{ color:#111316; }
+.vv table.vv-bl{ border-collapse:separate; border-spacing:2px 0; }
