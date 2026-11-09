@@ -141,3 +141,7 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 .vv td.nom .hc{ font-size:10px; }
 .vv td.tot{ width:40px; font-size:20px; }
 .vv th{ font-size:11px; }
+
+/* Dos bloques de 9 hoyos que se alternan cada 5 segundos */
+.vv table.vv-bl.oculta{ display:none; }
+.vv table.vv-bl caption{ caption-side:top; text-align:left; font:800 12px 'Archivo','Barlow',sans-serif; letter-spacing:.06em; color:#C6F24E; text-transform:uppercase; padding:2px 0 4px; }
