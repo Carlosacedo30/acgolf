@@ -23,8 +23,7 @@
   let toastShowing = false;
   function toastKey(m){ return activeGroup + '|' + m.hole + '|' + m.player + '|' + m.text; }
   function showMessageToast(m){
-    toastQueue.push(m);
-    processToastQueue();
+    // aviso antiguo quitado (decisión de Carlos, 9-nov-2026)
   }
   function processToastQueue(){
     if(typeof current !== 'undefined' && current !== 3){ toastQueue = []; return; } // solo en la pantalla de anotar
