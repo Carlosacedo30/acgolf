@@ -279,14 +279,14 @@
     const centro = caja.querySelector('.vt-centro');
     if(!t.length) centro.innerHTML = '<small>' + esc(round.course_name || 'Partida') + '</small><h3>Empieza enseguida</h3>';
     else {
-      const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
+      const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
       centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
         + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
     }
     const cinta = caja.querySelector('.vt-cinta');
-    const marca2 = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
+    const marca2 = x => x.esPtos ? x.pts : signo(x.neto);
     const nombreLargo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García»; las parejas «Carlos y Jose»
-    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(nombreLargo(x.n)) + '</em><b>' + marca2(x) + '</b><small>' + (x.pos >= NH(t) ? 'FIN' : 'H' + x.ultimo) + '</small></span>').join('');
+    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(nombreLargo(x.n)) + '</em><b>' + marca2(x) + '</b><small>' + (x.esPtos ? 'pts' : 'neto') + ' · ' + (x.pos >= NH(t) ? 'FIN' : 'H' + x.ultimo) + '</small></span>').join('');
     cinta.innerHTML = items || '<span>Esperando los primeros golpes…</span>';
     cinta.classList.toggle('anda', t.length > 3);
     if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos

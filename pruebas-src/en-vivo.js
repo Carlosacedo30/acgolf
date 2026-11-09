@@ -322,6 +322,7 @@
     const pares = paresDe(round);
     const gs = grupos(round);
     const nuevos = [];
+    const tb = tabla(round);   // resultado NETO (con el hándicap de cada uno) o puntos si se juega Stableford
     const html = gs.map((g, gi) => {
       const sc = g.scores || {};
       const nombres = g.players;
@@ -332,8 +333,7 @@
       const desde = Math.max(1, ultimoPos - 4), cols = [];
       for(let k = desde; k <= Math.min(nHoyos(g), Math.max(ultimoPos, desde + 4)); k++) cols.push(orden[k - 1]);
       const filas = nombres.map((n, p) => {
-        let tot = 0, jugados = 0;
-        Object.keys(sc[p] || {}).forEach(h => { const v = +sc[p][h]; if(v > 0){ tot += v - (pares[h - 1] || 4); jugados++; } });
+        const fila = tb.find(x => x.gi === gi && x.p === p);
         const celdas = cols.map(h => {
           const v = +((sc[p] || {})[h]); const par = pares[h - 1] || 4;
           const clave = gi + ':' + p + ':' + h;
@@ -350,13 +350,14 @@
           const d = v - par, nota = !(v > 0) ? '' : d <= -2 ? 'ag' : d === -1 ? 'bi' : d === 0 ? 'pa' : d === 1 ? 'bo' : 'db';
           return '<td class="' + (v > 0 ? '' : 'vacio') + (h === actual ? ' ahora' : '') + '">' + (v > 0 ? '<span class="nt ' + nota + '">' + v + '</span>' : '—') + '</td>';
         }).join('');
-        const t = jugados ? signo(tot) : '·';
-        return '<tr><td class="nom">' + esc(corto(n)) + '</td>' + celdas + '<td class="tot">' + t + '</td></tr>';
+        const t = fila ? (fila.esPtos ? fila.pts : signo(fila.neto)) : '·';
+        const hcp = fila ? '<small class="hc">hcp ' + fila.hc + '</small>' : '';
+        return '<tr><td class="nom">' + esc(corto(n)) + hcp + '</td>' + celdas + '<td class="tot">' + t + '</td></tr>';
       }).join('');
       const hora = g.time ? 'Salida ' + esc(g.time) : (gs.length > 1 ? 'Partida ' + (gi + 1) : '');
       const salida = 'Sale por el ' + salidaDe(g) + ' · ' + (nHoyos(g) === 9 ? '9 hoyos' : '18 hoyos') + ' · termina en el ' + orden[nHoyos(g) - 1];   // siempre según el hoyo de salida de ESTE grupo
       return '<div class="vv-tab"><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
-        + '<table><tr><th></th>' + cols.map(h => '<th>' + h + '</th>').join('') + '<th>±</th></tr>' + filas + '</table></div>';
+        + '<table><tr><th></th>' + cols.map(h => '<th>' + h + '</th>').join('') + '<th>' + (round.scoring_type === 'stableford' ? 'Pts' : 'Neto') + '</th></tr>' + filas + '</table></div>';
     }).join('');
     ov.querySelector('.vv-tableros').innerHTML = html || '<div class="vv-tab vv-vacia">Todavía no hay jugadores en esta partida.</div>';
     // Si entras con la partida ya empezada, «Lo último» arranca con los últimos birdies/águilas (el más reciente según el orden de cada grupo)

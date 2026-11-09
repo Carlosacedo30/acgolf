@@ -127,3 +127,6 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 .vv td .nt.bo{ background:#8DB8FF; color:#111316; border-radius:6px; }
 .vv td .nt.db{ background:#2F5BD3; color:#fff; border-radius:6px; }
 .vv td.ahora:not(.vacio){ background:rgba(198,242,78,.18); color:inherit; }
+
+.vv td.nom{ line-height:1.05; } .vv td.nom .hc{ display:block; font:600 11px 'Barlow',sans-serif; color:#8FA59A; }
+.vv td.tot{ width:54px; }
