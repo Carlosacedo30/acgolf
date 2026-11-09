@@ -394,19 +394,34 @@
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
   }
+  // Saca el código de lo que peguen: el enlace entero, el mensaje de WhatsApp entero o solo el código
+  function codigoDeTexto(t){
+    const s = String(t || '').trim();
+    const m = s.match(/unirse=([A-Za-z0-9]+)/i);
+    if(m) return m[1].toUpperCase();
+    const solo = s.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    return (solo.length >= 6 && solo.length <= 10 && s.length <= 14) ? solo : '';
+  }
   // Escribir el código de la invitación (si no se abrió el enlace)
   function pantallaTengoInvitacion(email, perfil){
-    mostrar(cabecera('📩 Tu invitación', 'Escribe el código que te mandó tu amigo.')
-      + '<div class="cg-ayuda"><b>¿Dónde está el código?</b><span>Son 8 letras y números que vienen al final del enlace. Por ejemplo: <code>AB12CD34</code></span>'
-      +   '<span>Si tienes el enlace, también puedes tocarlo en el mensaje y entras directamente.</span></div>'
-      + '<label class="cg-lbl">Código<input id="cgCodigo" class="cg-codigo" type="text" autocapitalize="characters" autocomplete="off" maxlength="40" placeholder="AB12CD34"></label>'
+    mostrar(cabecera('📩 Tu invitación', 'Pega aquí lo que te mandó tu amigo. Vale el enlace entero o solo el código.')
+      + '<div class="cg-ayuda"><b>¿Qué pego?</b><span>Puedes pegar el <b>enlace</b>, todo el <b>mensaje</b> o solo el <b>código</b>. La app busca el código sola.</span>'
+      +   '<span>El código son 8 letras y números. Por ejemplo: <code>AB12CD34</code></span></div>'
+      + '<label class="cg-lbl">Enlace o código<input id="cgCodigo" class="cg-codigo" type="text" autocapitalize="characters" autocomplete="off" placeholder="AB12CD34"></label>'
+      + '<div id="cgHallado" class="cg-msg ok" style="display:none;"></div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgUnirme">Seguir</button>'
       + '<button type="button" class="cg-link" id="cgVolver">‹ Volver</button>');
     $('cgVolver').onclick = () => perfil ? pantallaMisGrupos(perfil) : pantallaBienvenida(email);
+    const avisar = () => {
+      const c = codigoDeTexto($('cgCodigo').value), h = $('cgHallado');
+      if(c){ h.textContent = '✔ Código encontrado: ' + c; h.style.display = ''; msg(''); } else { h.style.display = 'none'; }
+    };
+    $('cgCodigo').oninput = avisar;
+    $('cgCodigo').onpaste = () => setTimeout(avisar, 0);
     $('cgUnirme').onclick = () => {
-      const c = $('cgCodigo').value.trim().toUpperCase().replace(/.*UNIRSE=/, '').replace(/[^A-Z0-9]/g, '');
-      if(!c){ msg('Escribe el código.'); return; }
+      const c = codigoDeTexto($('cgCodigo').value);
+      if(!c){ msg($('cgCodigo').value.trim() ? 'No encuentro el código. Pega el enlace o escribe solo las 8 letras y números.' : 'Pega el enlace o escribe el código.'); return; }
       try { localStorage.setItem('acgolfInvitacion', c); } catch(e){}
       pantallaUnirse(email || (perfil && perfil.email), c);
     };
@@ -750,7 +765,7 @@
         const inv = r.data; const box = $('cgInvita');
         if(!inv || !box){ if(box) box.remove(); return; }
         const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
-        const texto = '⛳ Te invito a «' + inv.grupo + '» en la app de golf. Crea tu cuenta desde este enlace y entrarás directamente en el grupo:\n' + enlace;
+        const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
         box.innerHTML = '<b>Invitar a «' + esc(inv.grupo) + '»</b>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
@@ -1171,7 +1186,7 @@
         const box = $('cgInvita'); if(!box) return;
         if(!inv){ box.remove(); return; }
         const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
-        const texto = '⛳ Te invito a «' + inv.grupo + '» en la app de golf. Crea tu cuenta desde este enlace y entrarás directamente en el grupo:\n' + enlace;
+        const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
         box.innerHTML = '<b>Invitar a «' + esc(inv.grupo) + '»</b>'
           + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a los de tu grupo. Al abrirlo y crear su cuenta, entran directamente.</div>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
