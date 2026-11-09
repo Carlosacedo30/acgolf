@@ -362,3 +362,30 @@ body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; 
 .inv-btn.pri{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
 .inv-btn:active{ transform:scale(.97); }
 .inv-ok{ min-height:20px; margin-top:8px; font:600 16px 'Barlow', sans-serif; color:#C6F24E; text-align:center; }
+
+/* Correos de bienvenida: guía, recordatorio y elegir a mano (Grafito deportivo) */
+.cp-seg{ flex-wrap:wrap; }
+.cp-seg button{ flex:1 1 44%; }
+.cp-recuerda{ background:#2F3A1C; border:1.5px solid #C6F24E; border-radius:14px; padding:12px 14px; font:600 17px/1.45 'Barlow',sans-serif; color:#F2F4F5; }
+.cp-recuerda b{ color:#C6F24E; }
+.cp-et{ font:800 14px 'Archivo',sans-serif; letter-spacing:.08em; text-transform:uppercase; color:#9AA3AB; margin:6px 0 4px; }
+.cp-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.cp-chip{ font:800 15px 'Archivo','Barlow',sans-serif; padding:9px 14px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:#1B1E22; color:#F2F4F5; cursor:pointer; }
+.cp-chip.on{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
+.cp-chip:active{ transform:scale(.97); }
+.cp-buscar{ width:100%; box-sizing:border-box; font:500 18px 'Barlow',sans-serif; padding:12px 14px; border-radius:12px; border:2px solid #33383E; background:#1B1E22; color:#F2F4F5; }
+.cp-marcar{ display:flex; justify-content:space-between; gap:10px; margin:6px 0; }
+.cp-lista{ display:flex; flex-direction:column; border-top:1px solid #33383E; margin-bottom:12px; }
+.cp-fila{ display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:12px 4px; background:none; border:0; border-bottom:1px solid #33383E; color:#F2F4F5; cursor:pointer; font:500 17px 'Barlow',sans-serif; }
+.cp-fila.dis{ opacity:.45; cursor:default; }
+.cp-ch{ flex:none; width:30px; height:30px; border-radius:8px; border:2px solid #4A5058; display:flex; align-items:center; justify-content:center; font:800 18px 'Archivo',sans-serif; color:#111316; }
+.cp-ch.on{ background:#C6F24E; border-color:#C6F24E; }
+.cp-fila-t{ display:flex; flex-direction:column; gap:3px; }
+.cp-fila-t b{ font:800 18px 'Archivo','Barlow',sans-serif; }
+.cp-tag{ font:800 12px 'Archivo',sans-serif; font-style:normal; margin-left:8px; padding:2px 9px; border-radius:999px; background:#24282D; color:#C6F24E; border:1px solid rgba(198,242,78,.4); vertical-align:middle; }
+.cp-fila-t small{ color:#9AA3AB; font-size:15px; }
+.gc-lista{ display:flex; flex-direction:column; gap:10px; margin:12px 0; }
+.gc-fila{ display:flex; flex-direction:column; gap:4px; background:#1B1E22; border:1.5px solid rgba(198,242,78,.4); border-radius:16px; padding:14px 16px; color:#F2F4F5; font:500 17px/1.4 'Barlow',sans-serif; }
+.gc-fila b{ font:800 19px 'Archivo','Barlow',sans-serif; }
+.gc-fila i{ font-style:normal; color:#C6F24E; font-weight:700; }
+.gc-fila small{ color:#9AA3AB; font-size:15px; }
