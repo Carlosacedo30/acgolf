@@ -101,6 +101,13 @@ Deno.serve(async (req) => {
   if (b.accion !== "enviar") return res({ error: "Acción no válida" }, 400);
 
   let para: { email: string; nombre: string; grupo?: string; user_id?: string }[] = [];
+  // Para cada correo: nombre del jugador, nombre de su grupo (o el grupo elegido) y su identificador
+  const completar = async (lista: typeof para, g: string | null) => {
+    if (!lista.length) return lista;
+    const { data } = await admin.rpc("_promo_completar", { p_emails: lista.map((x) => x.email), p_grupo: g });
+    const m = new Map((data || []).map((r: any) => [String(r.email).toLowerCase(), r]));
+    return lista.map((x) => { const r: any = m.get(x.email.toLowerCase()); return r ? { email: x.email, nombre: x.nombre || r.nombre || "", grupo: r.grupo || undefined, user_id: r.user_id } : x; });
+  };
   const alcance = String(b.alcance || "");
   const pid = /^[0-9a-f-]{36}$/.test(String(p.id || "")) ? String(p.id) : null;
   let grupo: string | null = null;
@@ -108,6 +115,7 @@ Deno.serve(async (req) => {
     const e = String(b.para || "").trim().toLowerCase();
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return res({ error: "El correo del destinatario no es válido" }, 400);
     para = [{ email: e, nombre: "" }];
+    para = await completar(para, null);
   } else if (alcance === "personas") {
     const ids = (Array.isArray(b.ids) ? b.ids : []).map((x: unknown) => String(x)).filter((x: string) => /^[0-9a-f-]{36}$/.test(x)).slice(0, 500);
     if (!ids.length) return res({ error: "No has elegido a nadie" }, 400);
@@ -121,6 +129,7 @@ Deno.serve(async (req) => {
     const { data, error } = await admin.rpc("_promo_para", { p_alcance: alcance, p_grupo: grupo });
     if (error) return res({ error: error.message }, 400);
     para = (data || []) as { email: string; nombre: string }[];
+    para = await completar(para, grupo);   // pone el grupo de cada persona y su identificador
     // Solo se envía si el número coincide con el que se enseñó en pantalla
     if (Number(b.confirmo) !== para.length) return res({ error: "La lista ha cambiado (ahora son " + para.length + "). Vuelve a mirarla y confirma." }, 409);
   } else return res({ error: "Alcance no válido" }, 400);
