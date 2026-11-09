@@ -357,6 +357,10 @@ for a, b in [
 # Fuera el aviso antiguo de abajo («Hoyo 8 · Pepe — Te como los huevos», «¡Qué bueno eres!»): ahora solo comentan Curro y Lola
 cambia('pruebas/js/resultados.js', """    toastQueue.push(m);
     processToastQueue();""", """    // aviso antiguo quitado (decisión de Carlos, 9-nov-2026)""")
+# Fuera también los iconos 👍/🥚 de las casillas, la lista de «mensajes» y la frase «Hoy te hacen el chivito»
+cambia('pruebas/js/resultados.js', """            if(diff === 0){ msg = PAR_MESSAGE; icon = '👍'; }
+            else if(diff === -1){ msg = BIRDIE_MESSAGE; icon = '🥚'; }""", """            // mensajes antiguos (👍/🥚) quitados: ahora comentan solo Curro y Lola""")
+cambia('pruebas/js/resultados.js', """const WINNER_MESSAGE = 'Hoy te hacen el chivito';""", """const WINNER_MESSAGE = 'Ganador de la partida';""")
 cambia('pruebas/js/resultados.js', """s.holesFilled + '/18 hoyos · Recibe '""", """s.holesFilled + '/' + hoyosPartida() + ' hoyos · Recibe '""")
 cambia('pruebas/js/resultados.js', """summaries.every(s => s.holesFilled >= 18);""", """summaries.every(s => s.holesFilled >= hoyosPartida());""")
 cambia('pruebas/js/resultados.js', """(summaries[i].holesFilled < 18 ? ' · ' + summaries[i].holesFilled + '/18 hoyos' : '')""", """(summaries[i].holesFilled < hoyosPartida() ? ' · ' + summaries[i].holesFilled + '/' + hoyosPartida() + ' hoyos' : '')""")
