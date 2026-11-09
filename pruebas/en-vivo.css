@@ -117,3 +117,13 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 .vv-dst span{ font:600 16px/1.3 'Barlow',sans-serif; color:#E3ECE6; }
 .vv-dst.viej{ background:#1B1E22; border-color:#4A5058; }
 .vv-dst.viej b{ color:#9AA3AB; }
+
+/* Marcador de hoyos con la notación de golf y por dónde sale cada grupo */
+.vv-sale{ font:600 13px 'Barlow',sans-serif; color:#B8C0C7; margin:-2px 0 6px; }
+.vv td .nt{ display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; font:900 20px 'Archivo','Barlow',sans-serif; line-height:1; color:#F2F4F5; }
+.vv td .nt.ag{ background:#F5B83D; color:#111316; border-radius:50%; }
+.vv td .nt.bi{ background:#E5484D; color:#fff; border-radius:50%; }
+.vv td .nt.pa{ border:2px solid #8A939B; border-radius:50%; width:30px; height:30px; }
+.vv td .nt.bo{ background:#8DB8FF; color:#111316; border-radius:6px; }
+.vv td .nt.db{ background:#2F5BD3; color:#fff; border-radius:6px; }
+.vv td.ahora:not(.vacio){ background:rgba(198,242,78,.18); color:inherit; }

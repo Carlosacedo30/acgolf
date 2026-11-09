@@ -285,7 +285,8 @@
     }
     const cinta = caja.querySelector('.vt-cinta');
     const marca2 = x => x.esPtos ? x.pts + ' pts' : signo(x.neto);
-    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i>' + esc(corto(x.n)) + ' <b>' + marca2(x) + '</b> <small>' + (x.pos >= NH(t) ? 'F' : 'h' + x.ultimo) + '</small></span>').join('');
+    const nombreLargo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García»; las parejas «Carlos y Jose»
+    const items = t.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(nombreLargo(x.n)) + '</em><b>' + marca2(x) + '</b><small>' + (x.pos >= NH(t) ? 'FIN' : 'H' + x.ultimo) + '</small></span>').join('');
     cinta.innerHTML = items || '<span>Esperando los primeros golpes…</span>';
     cinta.classList.toggle('anda', t.length > 3);
     if(t.length > 3) cinta.innerHTML += items;   // dos veces, para que la cinta corra sin saltos

@@ -347,14 +347,15 @@
               if(seguidos) apuntaDest({ q: 'lola', t: 'RACHA', n: corto(n) + ', 3 pares seguidos', f: 'Así me gusta, sin sustos.' });
             }
           }
-          const cls = !(v > 0) ? 'vacio' : v < par ? 'bajo' : v > par ? 'alto' : '';
-          return '<td class="' + cls + (h === actual ? ' ahora' : '') + '">' + (v > 0 ? v : '—') + '</td>';
+          const d = v - par, nota = !(v > 0) ? '' : d <= -2 ? 'ag' : d === -1 ? 'bi' : d === 0 ? 'pa' : d === 1 ? 'bo' : 'db';
+          return '<td class="' + (v > 0 ? '' : 'vacio') + (h === actual ? ' ahora' : '') + '">' + (v > 0 ? '<span class="nt ' + nota + '">' + v + '</span>' : '—') + '</td>';
         }).join('');
         const t = jugados ? signo(tot) : '·';
         return '<tr><td class="nom">' + esc(corto(n)) + '</td>' + celdas + '<td class="tot">' + t + '</td></tr>';
       }).join('');
       const hora = g.time ? 'Salida ' + esc(g.time) : (gs.length > 1 ? 'Partida ' + (gi + 1) : '');
-      return '<div class="vv-tab"><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div>'
+      const salida = 'Sale por el ' + salidaDe(g) + ' · ' + (nHoyos(g) === 9 ? '9 hoyos' : '18 hoyos') + ' · termina en el ' + orden[nHoyos(g) - 1];   // siempre según el hoyo de salida de ESTE grupo
+      return '<div class="vv-tab"><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
         + '<table><tr><th></th>' + cols.map(h => '<th>' + h + '</th>').join('') + '<th>±</th></tr>' + filas + '</table></div>';
     }).join('');
     ov.querySelector('.vv-tableros').innerHTML = html || '<div class="vv-tab vv-vacia">Todavía no hay jugadores en esta partida.</div>';
