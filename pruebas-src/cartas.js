@@ -78,6 +78,7 @@
   let borrador = null;  // creando una partida
   let sel = { c: null, o: null };  // carta y jugador elegidos en el hoyo
   let robando = false, abriendo = false, editando = false, mensaje = '';
+  let tecl = null, rev = { k: '', e: 0, n: 0 }, revTimer = null;
 
   // ---------- Base de datos ----------
   // Una fila de "rounds": primer grupo = datos de la partida; después, un grupo por jugador.
@@ -85,13 +86,13 @@
     const mg = Array.isArray(row.match_groups) ? row.match_groups : [];
     const meta = (mg.find(g => g && g.meta) || {}).meta || {};
     const jug = mg.filter(g => g && g.jug).map(g => ({ nombre: g.nombre, hcp: g.hcp == null ? null : Number(g.hcp), abierto: !!g.abierto, fuera: !!g.fuera,
-      sorteo: (g.sorteo || []).slice(), golpes: Object.assign({}, g.golpes || {}), elige: JSON.parse(JSON.stringify(g.elige || {})) }));
+      sorteo: (g.sorteo || []).slice(), golpes: Object.assign({}, g.golpes || {}), marca: Object.assign({}, g.marca || {}), elige: JSON.parse(JSON.stringify(g.elige || {})) }));
     return { id: row.id, code: row.code, updatedAt: row.updated_at, createdAt: row.created_at, meta, jug };
   }
   function aGrupos(r){
     const v = () => ({ scores: {}, handicaps: [] });
     return [Object.assign({ meta: r.meta, players: [] }, v())].concat(r.jug.map(j => Object.assign({ jug: true, nombre: j.nombre, players: [j.nombre], hcp: j.hcp,
-      abierto: !!j.abierto, fuera: !!j.fuera, sorteo: j.sorteo || [], golpes: j.golpes || {}, elige: j.elige || {} }, v())));
+      abierto: !!j.abierto, fuera: !!j.fuera, sorteo: j.sorteo || [], golpes: j.golpes || {}, marca: j.marca || {}, elige: j.elige || {} }, v())));
   }
   const COLS = 'id, code, match_groups, updated_at, created_at';
   async function traerMias(){
@@ -133,6 +134,29 @@
       }).subscribe();
   }
 
+  // ---------- Marcadores, como en la liga: cada uno apunta sus golpes y los del jugador al que marca ----------
+  function marcadoresDe(r){
+    const act = r.jug.filter(j => !j.fuera), cust = (r.meta && r.meta.marca) || {}, m = {};
+    act.forEach((x, i) => { m[x.nombre] = act[(i + act.length - 1) % act.length].nombre; });
+    const ok = act.length > 1 && act.every(x => cust[x.nombre] && cust[x.nombre] !== x.nombre && act.some(y => y.nombre === cust[x.nombre])) && new Set(act.map(x => cust[x.nombre])).size === act.length;
+    return ok ? Object.fromEntries(act.map(x => [x.nombre, cust[x.nombre]])) : m;
+  }
+  const marcadorDe = (n, r) => marcadoresDe(r || partida)[n];
+  const marcadoPor = (n, r) => { const m = marcadoresDe(r || partida); return Object.keys(m).find(k => m[k] === n); };
+  // 'ok' coincide · 'no' no coincide · 'falta' solo ha apuntado uno · 'nada'
+  function estadoMarca(r, x, pos){
+    const k = r.jug.find(y => y.nombre === marcadorDe(x.nombre, r)), a = (x.golpes || {})[pos], b = k ? (k.marca || {})[pos] : undefined;
+    if(a == null && b == null) return 'nada';
+    if(a == null || b == null) return 'falta';
+    return a === b ? 'ok' : 'no';
+  }
+  // Solo cuentan los golpes en los que coinciden el jugador y su marcador
+  function golpesValidos(r, x){
+    if(!r.meta.marcador) return x.golpes || {};
+    const out = {}; Object.keys(x.golpes || {}).forEach(p => { if(estadoMarca(r, x, p) === 'ok') out[p] = x.golpes[p]; });
+    return out;
+  }
+
   // ---------- Paso de los datos de la partida a las cuentas ----------
   function aEstado(r){
     const campo = campoDe(r.meta.courseId), n = r.meta.n, desde = r.meta.desde || 1, total = campo.par.length;
@@ -145,7 +169,7 @@
       const h = typeof hcpCampo === 'function' ? hcpCampo(j.hcp == null ? 0 : j.hcp, campo, BARRA) : Math.round(j.hcp || 0);
       return n === 9 ? Math.round(h / 2) : h;
     };
-    return { code: r.code, n, par, rango, campo, reales, jug: r.jug.map(j => ({ nombre: j.nombre, hcp: hcpJuego(j), golpes: j.golpes, elige: j.elige, sorteo: j.sorteo, fuera: j.fuera })) };
+    return { code: r.code, n, par, rango, campo, reales, jug: r.jug.map(j => ({ nombre: j.nombre, hcp: hcpJuego(j), golpes: golpesValidos(r, j), elige: j.elige, sorteo: j.sorteo, fuera: j.fuera })) };
   }
   const calcular = () => { const est = aEstado(partida); return { est, sim: M.simular(est) }; };
   const activos = () => partida.jug.filter(j => !j.fuera);
@@ -266,7 +290,7 @@
     if(nueve){ b.n = 9; b.desde = 1; }
     const nombres = nombresGrupo();
     let h = '<button type="button" class="ca-volver" id="caVolver">‹ Mis partidas</button><div class="ca-tit">Crear partida de cartas</div>'
-      + '<div class="ca-aviso"><b>Cada jugador, con su móvil.</b> Las cartas son secretas: cada uno anota en el suyo y solo ve sus cartas. Hace falta tener cuenta.</div>'
+      + '<div class="ca-aviso"><b>Cada jugador, con su móvil.</b> Las cartas son secretas: solo ves las tuyas. Como en la liga con marcador: cada uno apunta sus golpes y los del jugador al que marca, y la app dice si coinciden. Hace falta tener cuenta.</div>'
       + '<label class="ca-lbl">Nombre (como quieras)<input id="caTitulo" type="text" maxlength="40" placeholder="Los de siempre" value="' + esc(b.titulo) + '"></label>'
       + '<label class="ca-lbl">Campo<select id="caCampo">' + campos.map(c => '<option value="' + esc(c.id) + '"' + (c.id === b.courseId ? ' selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</select></label>';
     if(!nueve) h += '<div class="ca-lbl">Hoyos</div><div class="ca-opc">'
@@ -293,9 +317,9 @@
     const client = initSupabase();
     const oro = false;
     const yoJ = yo();
-    const nuevo = { meta: { cartas: true, titulo: b.titulo || 'Partida de cartas', date: b.date, courseId: b.courseId, n: b.n, desde: b.desde, creador: yoJ },
+    const nuevo = { meta: { cartas: true, titulo: b.titulo || 'Partida de cartas', date: b.date, courseId: b.courseId, n: b.n, desde: b.desde, creador: yoJ, marcador: true },
       jug: nombres.map(n => { const o = soyYo(n); const sorteo = []; if(o) while(sorteo.length < M.INICIALES) sorteo.push(M.sacarCarta(sorteo, oro));
-        return { nombre: n, hcp: hcpDe(n), abierto: o, fuera: false, sorteo, golpes: {}, elige: {} }; }) };
+        return { nombre: n, hcp: hcpDe(n), abierto: o, fuera: false, sorteo, golpes: {}, marca: {}, elige: {} }; }) };
     try {
       const { data, error } = await client.from('rounds').insert({
         code: genRoundCode(), course_id: null, course_name: campoDe(b.courseId).name,
@@ -331,6 +355,29 @@
         + (t.sinUsar ? '<small>+' + t.sinUsar + ' por cartas sin usar</small>' : '') + '<span class="ca-pts">' + t.total + '</span></div>';
     }).join('') + '</div>';
   }
+  // Clasificación como en una liga: puntos acumulados tras k hoyos, con flechas respecto al hoyo anterior
+  function acumulado(sim, k){
+    const t = {}; sim.clasificacion.forEach(n => { t[n] = 0; });
+    sim.hoyos.slice(0, k).forEach(h => Object.keys(h.jug).forEach(n => { t[n] = (t[n] || 0) + h.jug[n].fin; }));
+    return Object.keys(t).sort((x, y) => t[y] - t[x] || sim.clasificacion.indexOf(x) - sim.clasificacion.indexOf(y)).map((n, i) => ({ n, pts: t[n], pos: i + 1 }));
+  }
+  function liga(sim, k){
+    const ahora = acumulado(sim, k), antes = k > 1 ? acumulado(sim, k - 1) : null, lider = ahora[0].pts;
+    return '<div class="ca-liga">' + ahora.map(f => {
+      const pa = antes ? antes.find(x => x.n === f.n).pos : f.pos, d = pa - f.pos;
+      const flecha = d > 0 ? '<i class="sube">▲' + d + '</i>' : d < 0 ? '<i class="baja">▼' + (-d) + '</i>' : '<i class="igual">•</i>';
+      const medalla = f.pos === 1 ? '🥇' : f.pos === 2 ? '🥈' : f.pos === 3 ? '🥉' : f.pos;
+      return '<div class="ca-liga-f' + (soyYo(f.n) ? ' yo' : '') + (f.pos === 1 ? ' lider' : '') + '"><span class="ca-liga-p">' + medalla + '</span><span class="ca-liga-n">' + esc(corto(f.n)) + '<small>' + (f.pos === 1 ? 'Líder' : 'a ' + (lider - f.pts) + ' de la cabeza') + '</small></span>' + flecha + '<b>' + f.pts + '</b></div>';
+    }).join('') + '</div>';
+  }
+  // Clasificación general en una fila, para verla arriba mientras se juega el hoyo
+  function barraLiga(sim){
+    if(!sim.cerrados) return '';
+    const f = acumulado(sim, sim.cerrados), lider = f[0].pts;
+    return '<div class="ca-top"><div class="ca-top-t">Clasificación · tras el hoyo ' + sim.cerrados + '</div><div class="ca-top-f">' + f.map(x =>
+      '<div class="ca-top-c' + (soyYo(x.n) ? ' yo' : '') + (x.pos === 1 ? ' lider' : '') + '"><i>' + (x.pos === 1 ? '🥇' : x.pos === 2 ? '🥈' : x.pos === 3 ? '🥉' : x.pos + 'º') + '</i><b>' + esc(corto(x.n).split(' ')[0]) + '</b><em>' + x.pts + '</em>'
+      + (x.pos > 1 ? '<small>−' + (lider - x.pts) + '</small>' : '<small>líder</small>') + '</div>').join('') + '</div></div>';
+  }
   function premios(est, sim){
     let peor = null;
     sim.hoyos.forEach(h => Object.keys(h.jug).forEach(n => { const g = h.jug[n].golpes; if(g < M.NO_PUNTUA && (!peor || g > peor.g)) peor = { n, g, real: holeReal(est, h.pos) }; }));
@@ -357,6 +404,12 @@
     h += '<div class="ca-sub">Jugadores</div><div class="ca-estado">' + r.jug.map(j =>
       '<div class="ca-est-f' + (j.fuera ? ' fuera' : '') + '"><span>' + esc(corto(j.nombre)) + (soyYo(j.nombre) ? ' (tú)' : '') + '</span><em>' + (j.fuera ? 'Fuera de la partida' : j.abierto ? 'Listo en su móvil' : 'Sin abrir') + '</em>'
       + (puedeGestionar() && !j.fuera && !soyYo(j.nombre) ? '<button type="button" class="ca-quitar" data-n="' + esc(j.nombre) + '">Quitar</button>' : '') + '</div>').join('') + '</div>';
+    if(!sim.terminada && sim.cerrados === 0 && m.marcador && activos().length > 1){
+      const mm = marcadoresDe(r);
+      h += '<div class="ca-sub">Quién marca a quién</div><div class="ca-mqs">' + activos().map(x => '<div class="ca-mq"><span><b>' + esc(corto(mm[x.nombre])) + '</b> marca a <b>' + esc(corto(x.nombre)) + '</b></span>'
+        + (activos().length > 2 ? '<button type="button" class="ca-mq-b" data-n="' + esc(x.nombre) + '">Cambiar</button>' : '') + '</div>').join('') + '</div>'
+        + '<p class="ca-nota">Cada uno apunta sus golpes y los del jugador al que marca. Si no coinciden, la app lo avisa.</p>';
+    }
     if(!sim.terminada){
       if(!yoJ || yoJ.fuera) h += '<p class="ca-aviso">No estás en esta partida.</p>';
       else if(!abiertos){
@@ -380,6 +433,7 @@
     if($('caJugar')) $('caJugar').onclick = () => { sel = { c: null, o: null }; vista = 'hoyo'; pintar(); subir(); };
     if($('caAvisar')) $('caAvisar').onclick = avisar;
     body.querySelectorAll('.ca-quitar').forEach(b => b.onclick = () => quitar(b.dataset.n));
+    body.querySelectorAll('.ca-mq-b').forEach(b => b.onclick = () => cambiarMarcador(b.dataset.n));
   }
   function avisar(){
     const texto = 'Te he apuntado a una partida de cartas en acgolf. Abre la app, pulsa «Cartas» y entra en la partida «' + (partida.meta.titulo || 'Partida de cartas') + '».';
@@ -417,22 +471,15 @@
     asegurarCartas(sim);
     const ack = ackGet();
     // Primero se enseña lo que pasó en el hoyo que acaba de cerrarse
-    if(sim.cerrados > ack){
-      const h = sim.hoyos[ack];
-      body.innerHTML = '<button type="button" class="ca-volver" id="caVolver">‹ Partida</button><div class="ca-tit">Hoyo ' + holeReal(est, h.pos) + ': cartas destapadas</div>' + tablaHoyo(h, est)
-        + '<div class="ca-sub">Copa de las Cartas</div>' + copaHtml(sim)
-        + '<button type="button" class="ca-btn" id="caSig">' + (h.pos >= est.n ? 'Ver el final' : 'Siguiente hoyo') + '</button>';
-      $('caVolver').onclick = () => { vista = 'partida'; pintar(); subir(); };
-      $('caSig').onclick = () => { ackSet(ack + 1); sel = { c: null, o: null }; if(h.pos >= est.n) vista = 'partida'; pintar(); subir(); };
-      return;
-    }
+    ventana().classList.toggle('ca-claro', !(sim.cerrados > ack));
+    if(sim.cerrados > ack){ return pintarRevelar(sim.hoyos[ack], est, sim, ack, body); }
     if(sim.terminada){ vista = 'partida'; return pintar(); }
     if(!todosAbiertos()){ vista = 'partida'; return pintar(); }
     const pos = sim.posActual, real = holeReal(est, pos), par = est.par[pos - 1];
     const ej = est.jug.find(j => soyYo(j.nombre));
     const rec = M.golpesRecibidos(ej.hcp, est.rango[pos - 1], est.n);
     const eleccion = (yoJ.elige || {})[pos], golpes = (yoJ.golpes || {})[pos];
-    let h = '<button type="button" class="ca-volver" id="caVolver">‹ Partida</button>'
+    let h = '<button type="button" class="ca-volver" id="caVolver">‹ Partida</button>' + barraLiga(sim)
       + '<div class="ca-hoyo"><div><span>Hoyo</span><b>' + real + '</b></div><div><span>Par</span><b>' + par + '</b></div><div><span>Te dan</span><b>' + rec + '</b></div></div>';
     if(!eleccion){
       // 1. Elegir carta antes de salir del tee
@@ -454,18 +501,8 @@
         h += '<button type="button" class="ca-btn" id="caOk"' + (listo ? '' : ' disabled') + '>' + (sel.c ? 'Jugar ' + esc(M.CARTAS[sel.c].n) + (sel.o ? ' a ' + esc(corto(sel.o)) : '') : 'Elige una carta') + '</button>';
       }
       h += '<button type="button" class="ca-btn ghost" id="caNo">Sin carta este hoyo</button><p class="ca-nota">Tu carta es secreta hasta que todos hayan anotado el hoyo.</p>';
-    } else if(golpes == null || editando){
-      // 2. Anotar los golpes
-      h += '<div class="ca-tit peq">¿Cuántos golpes has hecho?</div>'
-        + (eleccion.c ? '<div class="ca-chip">' + ico(ICO_DE[eleccion.c], 20) + '<span>Carta jugada: ' + esc(M.CARTAS[eleccion.c].n) + (eleccion.o ? ' → ' + esc(corto(eleccion.o)) : '') + '</span></div>' : '<div class="ca-chip">Sin carta en este hoyo</div>')
-        + '<div class="ca-teclado">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => '<button type="button" class="ca-tecla' + (golpes === n ? ' on' : '') + '" data-g="' + n + '">' + n + '</button>').join('')
-        + '<button type="button" class="ca-tecla ancha' + (golpes === M.NO_PUNTUA ? ' on' : '') + '" data-g="' + M.NO_PUNTUA + '">Recogí la bola</button></div>';
     } else {
-      // 3. Esperar a los demás
-      const faltan = activos().filter(j => (j.golpes || {})[pos] == null).map(j => corto(j.nombre));
-      h += '<div class="ca-tit peq">Anotado</div><div class="ca-hecho">' + (golpes >= M.NO_PUNTUA ? 'Recogiste la bola' : golpes + ' golpes') + '</div>'
-        + '<p class="ca-p">Esperando a: <b>' + esc(faltan.join(', ')) + '</b>. Cuando anoten todos, se destapan las cartas.</p>'
-        + '<button type="button" class="ca-btn ghost" id="caCambiar">Cambiar mis golpes</button>';
+      h += marcadorLiga(est, sim, yoJ, pos, par);
     }
     h += '<div class="ca-msg" id="caMsg">' + esc(mensaje) + '</div>';
     body.innerHTML = h;
@@ -475,18 +512,161 @@
     if($('caOk')) $('caOk').onclick = () => guardarEleccion(pos, sel.c, sel.o);
     if($('caNo')) $('caNo').onclick = () => guardarEleccion(pos, null, null);
     body.querySelectorAll('.ca-tecla').forEach(b => b.onclick = () => guardarGolpes(pos, +b.dataset.g));
-    if($('caCambiar')) $('caCambiar').onclick = () => { editando = true; pintar(); };
+    body.querySelectorAll('.ca-box.edit, .ca-adm').forEach(bx => bx.onclick = () => { tecl = { n: bx.dataset.n, par: +bx.dataset.par, modo: bx.dataset.modo }; pintar(); });
+    body.querySelectorAll('.ca-key').forEach(k => k.onclick = () => { const g = +k.dataset.g, t = tecl; tecl = null; guardarGolpes(pos, t.n, t.modo, g); });
+    if($('caTcerrar')) $('caTcerrar').onclick = () => { tecl = null; pintar(); };
   }
   async function guardarEleccion(pos, carta, objetivo){
     const ok = await cambiar(r => { const j = r.jug.find(x => soyYo(x.nombre)); if(!j) return false; j.elige[pos] = { c: carta, o: objetivo || null }; });
     sel = { c: null, o: null }; pintar();
     if(!ok) msg(mensaje);
   }
-  async function guardarGolpes(pos, g){
-    const ok = await cambiar(r => { const j = r.jug.find(x => soyYo(x.nombre)); if(!j) return false; j.golpes[pos] = g; });
+  // Marcador como el de la liga con marcador (tira de hoyos, una fila por jugador, casilla grande, resultado y ✅/⚠️), con el diseño de Cartas.
+  // Aquí no se ve ningún punto ni efecto de carta: eso es la sorpresa del final del hoyo.
+  function marcadorLiga(est, sim, yoJ, pos, par){
+    const marc = !!partida.meta.marcador, act = activos(), adm = puedeGestionar();
+    const miMarcado = marc ? marcadoPor(yoJ.nombre) : null;
+    let h = '<div class="ca-tira">';
+    for(let p = 1; p <= est.n; p++){
+      const llenos = act.filter(x => (x.golpes || {})[p] != null).length;
+      const st = p <= sim.cerrados ? ' done' : p === pos ? ' current' : llenos ? ' partial' : '';
+      h += '<span class="ca-ch' + st + '">' + holeReal(est, p) + '</span>' + (p === 9 && est.n > 9 ? '<span class="ca-ch-sep"></span>' : '');
+    }
+    h += '</div><div class="ca-filas">';
+    const faltan = [], extras = [];
+    act.forEach(x => {
+      const ej = est.jug.find(e => e.nombre === x.nombre), mio = soyYo(x.nombre), loMarco = marc && x.nombre === miMarcado;
+      const rec = M.golpesRecibidos(ej.hcp, est.rango[pos - 1], est.n);
+      const st = marc ? estadoMarca(partida, x, pos) : ((x.golpes || {})[pos] != null ? 'ok' : 'nada');
+      if(st !== 'ok') faltan.push(corto(x.nombre));
+      // Lo que se ve en la casilla: lo mío, o lo que yo apunto del que marco, o lo que dice cada uno
+      const g = loMarco ? (yoJ.marca || {})[pos] : (x.golpes || {})[pos];
+      let res = '—', cls = '';
+      if(g != null){
+        if(g >= M.NO_PUNTUA){ res = '✕'; cls = ' over'; }
+        else { const d = g - rec - par; res = d === 0 ? 'PAR' : d > 0 ? '+' + d : '−' + (-d); cls = d < 0 ? ' under' : d > 0 ? ' over' : ' par'; }
+      }
+      const modo = mio ? 'propio' : loMarco ? 'marca' : (adm && marc && st !== 'ok') ? 'admin' : '';
+      const etiqueta = !marc ? '' : mio ? '✍️ Te marca ' + esc(corto(marcadorDe(x.nombre))) : loMarco ? '✍️ Tú le marcas' : '✍️ Le marca ' + esc(corto(marcadorDe(x.nombre)));
+      const k = marc ? partida.jug.find(y => y.nombre === marcadorDe(x.nombre)) : null, kv = k ? (k.marca || {})[pos] : null, xv = (x.golpes || {})[pos];
+      const vtxt = v => v >= M.NO_PUNTUA ? 'recogió' : v;
+      const badge = !marc ? '' : st === 'ok' ? '<span class="ca-ok">✅ Coincide</span>'
+        : st === 'no' ? '<span class="ca-no">⚠️ No coincide: dice ' + vtxt(xv) + ', su marcador ' + vtxt(kv) + '</span>'
+        : st === 'falta' ? '<span class="ca-fa">⏳ ' + (xv == null ? 'Falta que apunte ' + esc(corto(x.nombre)) : 'Falta su marcador') + '</span>' : '';
+      const valor = g == null ? '' : g >= M.NO_PUNTUA ? '✕' : g;
+      const fila = '<div class="ca-fila-l' + (mio ? ' yo' : '') + (loMarco ? ' apunto' : '') + '"><div class="ca-fl-info"><b>' + esc(corto(x.nombre)) + (mio ? ' (tú)' : '') + '</b>'
+        + '<span>Recibe ' + Math.round(ej.hcp) + ' · Tu par <em>' + (par + rec) + '</em></span>' + (etiqueta ? '<span class="ca-fl-ap">' + etiqueta + '</span>' : '') + (badge ? '<span class="ca-fl-st">' + badge + '</span>' : '') + '</div>'
+        + (modo ? '<button type="button" class="ca-box edit' + (g != null ? ' lleno' : '') + '" data-n="' + esc(x.nombre) + '" data-modo="' + modo + '" data-par="' + (par + rec) + '" aria-label="Golpes de ' + esc(corto(x.nombre)) + '">' + (valor === '' ? '+' : valor) + '</button>'
+          : '<div class="ca-box fijo' + (g != null ? ' lleno' : '') + '">' + (valor === '' ? '·' : valor) + '</div>')
+        + '<div class="ca-res-l' + cls + '">' + res + '</div></div>';
+      // Como en la liga: solo se ve tu fila y la del jugador al que marcas
+      if(!marc || mio || loMarco) h += fila;
+      else if(adm && st !== 'ok') extras.push('<button type="button" class="ca-btn ghost ca-adm ca-box edit-b" data-n="' + esc(x.nombre) + '" data-modo="admin" data-par="' + (par + rec) + '">Decidir los golpes de ' + esc(corto(x.nombre)) + '</button>');
+    });
+    h += '</div>';
+    h += marc ? '<p class="ca-p">Toca tu casilla y la de <b>' + esc(corto(miMarcado)) + '</b>, el jugador al que marcas. Si no coinciden, hablad y corregid.</p>' : '<p class="ca-p">Toca tu casilla para apuntar tus golpes.</p>';
+    h += faltan.length ? '<p class="ca-p">Falta por cuadrar: <b>' + esc(faltan.join(', ')) + '</b>. Cuando coincidan todos, se destapan las cartas.</p>' : '';
+    if(extras.length) h += '<div class="ca-sub">Si no se ponen de acuerdo (administrador)</div>' + extras.join('');
+    if(tecl){
+      const n = tecl.n;
+      h += '<div class="ca-tec" id="caTec"><div class="ca-tec-c"><div class="ca-tit peq">' + esc(corto(n)) + '</div><div class="ca-tec-s">Hoyo ' + holeReal(est, pos) + ' · Par ' + par + ' · <b>Tu par ' + tecl.par + '</b></div><div class="ca-teclado">'
+        + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(k => '<button type="button" class="ca-key' + (k === tecl.par ? ' par' : '') + '" data-g="' + k + '">' + k + (k === tecl.par ? '<small>tu par</small>' : '') + '</button>').join('')
+        + '</div><button type="button" class="ca-btn ghost ca-key" data-g="' + M.NO_PUNTUA + '" id="caRecoge">Recogió la bola</button><button type="button" class="ca-btn ghost" id="caTcerrar">Cerrar</button></div></div>';
+    }
+    return h;
+  }
+  async function guardarGolpes(pos, nombre, modo, g){
+    const ok = await cambiar(r => {
+      const yoJ = r.jug.find(x => soyYo(x.nombre));
+      if(modo === 'propio'){ if(!yoJ) return false; yoJ.golpes[pos] = g; }
+      else if(modo === 'marca'){ if(!yoJ) return false; yoJ.marca[pos] = g; }
+      else { // el administrador decide: pone el mismo número a los dos
+        const x = r.jug.find(y => y.nombre === nombre), k = r.jug.find(y => y.nombre === marcadorDe(nombre, r)); if(!x) return false;
+        x.golpes[pos] = g; if(k) k.marca[pos] = g;
+      }
+    });
     editando = false; pintar();
     if(!ok) msg(mensaje);
   }
+  // Antes de empezar: quién marca a quién (toca para cambiar). Se intercambia para que cada uno marque a uno solo.
+  async function cambiarMarcador(nombre){
+    await cambiar(r => {
+      const m = marcadoresDe(r), act = r.jug.filter(j => !j.fuera).map(j => j.nombre), c = m[nombre];
+      const cands = act.filter(n => n !== nombre && n !== c);
+      for(const sig of cands){
+        const y = Object.keys(m).find(k => m[k] === sig);
+        if(y === c) continue;
+        m[nombre] = sig; m[y] = c; r.meta.marca = m; return;
+      }
+      return false;
+    });
+    pintar();
+  }
+
+  // El momento sorpresa: se giran las cartas una a una y luego salen los puntos
+  function pintarRevelar(h, est, sim, ack, body){
+    const nombres = Object.keys(h.jug), conCarta = nombres.filter(n => h.jug[n].carta);
+    const k = partida.code + ':' + ack; if(rev.k !== k){ clearTimeout(revTimer); rev = { k, e: 0, n: 0 }; }
+    const real = holeReal(est, h.pos), final = h.pos >= est.n;
+    const volver = '<button type="button" class="ca-volver" id="caVolver">‹ Partida</button>';
+    const irA = e => { clearTimeout(revTimer); rev.e = e; rev.n = 0; rev.c = null; pintar(); subir(); };
+    // Etapa 0: pantalla completa del hoyo, con los golpes de todos (3 o 4 jugadores) ya cuadrados
+    if(rev.e === 0){
+      const par = est.par[h.pos - 1];
+      body.innerHTML = volver + '<div class="ca-tit ca-rev-t">Hoyo ' + real + ' completo</div><div class="ca-rev-h">✅ Coinciden los ' + nombres.length + ' jugadores</div><div class="ca-filas">'
+        + nombres.map(n => {
+          const ej = est.jug.find(e => e.nombre === n), rec = M.golpesRecibidos(ej.hcp, est.rango[h.pos - 1], est.n), g = h.jug[n].golpes;
+          let res, cls = '';
+          if(g >= M.NO_PUNTUA){ res = '✕'; cls = ' over'; } else { const d = g - rec - par; res = d === 0 ? 'PAR' : d > 0 ? '+' + d : '−' + (-d); cls = d < 0 ? ' under' : d > 0 ? ' over' : ' par'; }
+          return '<div class="ca-fila-l comp' + (soyYo(n) ? ' yo' : '') + '"><div class="ca-fl-info"><b>' + esc(corto(n)) + (soyYo(n) ? ' (tú)' : '') + '</b><span>Recibe ' + Math.round(ej.hcp) + ' · Tu par <em>' + (par + rec) + '</em></span><span class="ca-fl-st"><span class="ca-ok">✅ Coincide</span></span></div>'
+            + '<div class="ca-box fijo lleno">' + (g >= M.NO_PUNTUA ? '✕' : g) + '</div><div class="ca-res-l' + cls + '">' + res + '</div></div>';
+        }).join('') + '</div>'
+        + '<p class="ca-p">Ahora llega la sorpresa. Se destapan las cartas en <b id="caCuenta">5</b>…</p><button type="button" class="ca-btn" id="caSig">Destapar ya</button>';
+      $('caVolver').onclick = () => { clearTimeout(revTimer); vista = 'partida'; pintar(); subir(); };
+      const sig = () => irA(conCarta.length ? 1 : 2);
+      $('caSig').onclick = sig;
+      clearTimeout(revTimer);
+      if(typeof rev.c !== 'number') rev.c = 5;
+      const tic = () => { const el = $('caCuenta'); if(!el || rev.k !== k || rev.e !== 0) return; el.textContent = rev.c; if(rev.c <= 0){ rev.c = null; return sig(); } rev.c--; revTimer = setTimeout(tic, 1000); };
+      tic();
+      return;
+    }
+    // Etapa 1: las cartas se giran solas, una a una
+    if(rev.e === 1){
+      clearTimeout(revTimer);
+      if(rev.n >= conCarta.length){ revTimer = setTimeout(() => { if(rev.k === k && rev.e === 1) irA(2); }, 1600); }
+      else revTimer = setTimeout(() => { if(rev.k === k && rev.e === 1 && !ventana().hidden){ rev.n++; pintar(); } }, rev.n === 0 ? 1300 : 1500);
+      body.innerHTML = volver + '<div class="ca-tit ca-rev-t">¡Se destapan las cartas!</div><div class="ca-rev-h">Hoyo ' + real + '</div><div class="ca-grid">'
+        + conCarta.map((n, i) => { const j = h.jug[n]; return i < rev.n
+          ? '<div class="ca-gc giro">' + tarjetaCarta(j.carta) + '<span class="ca-gn">' + esc(corto(n)) + (j.objetivo ? ' → ' + esc(corto(j.objetivo)) : '') + '</span></div>'
+          : '<div class="ca-gc"><div class="ca-dorso"><b>?</b></div></div>'; }).join('') + '</div>'
+        + '<p class="ca-sorp">' + (rev.n >= conCarta.length ? '¡Ya están todas! Ahora los puntos…' : 'Girando las cartas…') + '</p><button type="button" class="ca-btn ghost" id="caSalta">Saltar</button>';
+      $('caVolver').onclick = () => { clearTimeout(revTimer); vista = 'partida'; pintar(); subir(); };
+      $('caSalta').onclick = () => irA(2);
+      return;
+    }
+    const orden = nombres.slice().sort((a, b) => h.jug[b].fin - h.jug[a].fin);
+    body.innerHTML = volver + '<div class="ca-tit ca-rev-t">Puntos del hoyo ' + real + '</div><div class="ca-rev-h">Así queda tras las cartas</div>'
+      + orden.map(n => {
+        const j = h.jug[n], d = j.fin - j.base;
+        const efecto = d ? '<span class="' + (d > 0 ? 'mas' : 'menos') + '">' + (d > 0 ? '+' : '−') + Math.abs(d) + ' ' + esc(j.notas && j.notas.length ? corto2(j.notas, h) : 'cartas') + '</span>' : (j.carta ? 'sin efecto' : 'sin carta');
+        const gtxt = x => !h.jug[x] ? '' : h.jug[x].golpes >= M.NO_PUNTUA ? 'recogió la bola' : h.jug[x].golpes + (h.jug[x].golpes === 1 ? ' golpe' : ' golpes');
+        const marc = !!partida.meta.marcador, marcador = marcadorDe(n), marcado = marcadoPor(n);
+        const tarjeta = !marc || !marcador ? '' : '<small class="ca-tj">' + (soyYo(n)
+          ? '✍️ Te marcó ' + esc(corto(marcador)) + ': <b>' + esc(gtxt(n)) + '</b><br>✍️ Tú marcaste a ' + esc(corto(marcado)) + ': <b>' + esc(gtxt(marcado)) + '</b>'
+          : '✍️ ' + esc(gtxt(n)) + ' · lo marcó ' + esc(corto(marcador))) + '</small>';
+        return '<div class="ca-res' + (soyYo(n) ? ' yo' : '') + '"><div><b>' + esc(corto(n)) + (soyYo(n) ? ' (tú)' : '') + '</b><small>' + j.base + (j.base === 1 ? ' pto' : ' pts') + ' · ' + efecto + '</small>' + tarjeta + '</div><div class="ca-n" data-b="' + j.base + '" data-f="' + j.fin + '">' + j.base + '</div></div>';
+      }).join('')
+      + '<div class="ca-sub">Clasificación tras el hoyo ' + real + '</div>' + liga(sim, ack + 1)
+      + '<button type="button" class="ca-btn" id="caSig">' + (final ? 'Ver el final' : 'Siguiente hoyo') + '</button>';
+    $('caVolver').onclick = () => { vista = 'partida'; pintar(); subir(); };
+    $('caSig').onclick = () => { ackSet(ack + 1); sel = { c: null, o: null }; if(final) vista = 'partida'; pintar(); subir(); };
+    body.querySelectorAll('.ca-n').forEach(el => {
+      const b = +el.dataset.b, f = +el.dataset.f; if(b === f) return;
+      let t = 0; const paso = f > b ? 1 : -1; const iv = setInterval(() => { b + paso * (++t) === f ? (el.textContent = f, clearInterval(iv)) : (el.textContent = b + paso * t); if(!el.isConnected) clearInterval(iv); }, 350);
+    });
+  }
+  const corto2 = (notas, h) => Object.keys(h.jug).reduce((t, m) => t.split(m).join(corto(m)), String(notas[0]).replace(/^[+\-−]?\d+\s*/, ''));
 
   // ---------- Cómo se juega ----------
   function pintarInfo(){

@@ -167,10 +167,10 @@
     { ico:'cartas', t:'Cartas · Para reírse', sub:'Un juego de cartas para pasarlo bien', pasos:[
       'Es un juego <b>solo para reírse</b>: no cuenta para el hándicap, ni para la liga, ni para ninguna clasificación. Tus golpes de verdad no cambian nunca.',
       'En el Inicio pulsa <b>«Cartas · Para reírse»</b> y luego <b>«Crear partida de cartas»</b>. Elige el día, el campo y los jugadores.',
-      '<b>Cada jugador usa su propio móvil.</b> Cada uno ve solo sus cartas. Se puede empezar, pero no se puede anotar hasta que todos hayan abierto la partida en su móvil.',
+      '<b>Cada jugador usa su propio móvil.</b> Cada uno ve solo sus cartas. Se puede empezar, pero no se puede anotar hasta que todos hayan abierto la partida en su móvil. Antes de empezar, el grupo elige <b>quién marca a quién</b> (toca <b>«Cambiar»</b>), como en las jornadas de una liga.',
       'Al empezar tienes <b>3 cartas</b> y recibes <b>una nueva cada 3 hoyos</b>. Son al azar y distintas para cada uno. Hay tres familias: <b>Ventaja</b> (verde), <b>Travesura</b> (rosa) y <b>Comodín</b> (morado). La <b>Carta Oro</b> es la más rara.',
       'Antes de salir de cada hoyo, <b>elige una carta</b> (o ninguna). Si la carta va contra otro jugador, te pregunta <b>«¿A quién?»</b>. Tu carta es <b>secreta</b> hasta que todos hayan anotado el hoyo.',
-      'Después del hoyo, anota tus golpes con los números grandes. Cuando todos han anotado, <b>se destapan las cartas</b> y se ven los puntos de cada uno.',
+      'Después del hoyo, apunta <b>tus golpes y los del jugador al que marcas</b>, con los números grandes. La app avisa con <b>✅ Coincide</b> o <b>⚠️ No coincide</b>; si no coincide, hablad y corregid (si no os ponéis de acuerdo, decide el administrador). Cuando cuadran todos sale el <b>hoyo completo</b>, <b>se destapan las cartas solas</b> y se ven los puntos de cada uno y la <b>clasificación general</b>, que también ves arriba mientras juegas.',
       'Los puntos de juego son los del Stableford neto, más lo que den o quiten las cartas. Se ven aparte, en la <b>Copa de las Cartas</b>.',
       'Las cartas que no uses al final valen <b>1 punto</b> cada una. Gana la Copa quien más puntos tenga. También hay premios graciosos, como <b>El Cangrejo</b> y <b>El Consuelo</b>.',
       'Si un jugador se va, quien creó la partida (o el administrador) puede pulsar <b>«Quitar»</b>. Si vuelve, entra con 3 cartas nuevas y 0 puntos.',
