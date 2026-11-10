@@ -512,7 +512,7 @@
     if($('caOk')) $('caOk').onclick = () => guardarEleccion(pos, sel.c, sel.o);
     if($('caNo')) $('caNo').onclick = () => guardarEleccion(pos, null, null);
     body.querySelectorAll('.ca-tecla').forEach(b => b.onclick = () => guardarGolpes(pos, +b.dataset.g));
-    body.querySelectorAll('.ca-box.edit, .ca-adm').forEach(bx => bx.onclick = () => { tecl = { n: bx.dataset.n, par: +bx.dataset.par, modo: bx.dataset.modo }; pintar(); });
+    body.querySelectorAll('.ca-box.edit').forEach(bx => bx.onclick = () => { tecl = { n: bx.dataset.n, par: +bx.dataset.par, modo: bx.dataset.modo }; pintar(); });
     body.querySelectorAll('.ca-key').forEach(k => k.onclick = () => { const g = +k.dataset.g, t = tecl; tecl = null; guardarGolpes(pos, t.n, t.modo, g); });
     if($('caTcerrar')) $('caTcerrar').onclick = () => { tecl = null; pintar(); };
   }
@@ -524,7 +524,7 @@
   // Marcador como el de la liga con marcador (tira de hoyos, una fila por jugador, casilla grande, resultado y ✅/⚠️), con el diseño de Cartas.
   // Aquí no se ve ningún punto ni efecto de carta: eso es la sorpresa del final del hoyo.
   function marcadorLiga(est, sim, yoJ, pos, par){
-    const marc = !!partida.meta.marcador, act = activos(), adm = puedeGestionar();
+    const marc = !!partida.meta.marcador, act = activos();
     const miMarcado = marc ? marcadoPor(yoJ.nombre) : null;
     let h = '<div class="ca-tira">';
     for(let p = 1; p <= est.n; p++){
@@ -533,7 +533,7 @@
       h += '<span class="ca-ch' + st + '">' + holeReal(est, p) + '</span>' + (p === 9 && est.n > 9 ? '<span class="ca-ch-sep"></span>' : '');
     }
     h += '</div><div class="ca-filas">';
-    const faltan = [], extras = [];
+    const faltan = [];
     act.forEach(x => {
       const ej = est.jug.find(e => e.nombre === x.nombre), mio = soyYo(x.nombre), loMarco = marc && x.nombre === miMarcado;
       const rec = M.golpesRecibidos(ej.hcp, est.rango[pos - 1], est.n);
@@ -546,7 +546,7 @@
         if(g >= M.NO_PUNTUA){ res = '✕'; cls = ' over'; }
         else { const d = g - rec - par; res = d === 0 ? 'PAR' : d > 0 ? '+' + d : '−' + (-d); cls = d < 0 ? ' under' : d > 0 ? ' over' : ' par'; }
       }
-      const modo = mio ? 'propio' : loMarco ? 'marca' : (adm && marc && st !== 'ok') ? 'admin' : '';
+      const modo = mio ? 'propio' : loMarco ? 'marca' : '';
       const etiqueta = !marc ? '' : mio ? '✍️ Te marca ' + esc(corto(marcadorDe(x.nombre))) : loMarco ? '✍️ Tú le marcas' : '✍️ Le marca ' + esc(corto(marcadorDe(x.nombre)));
       const k = marc ? partida.jug.find(y => y.nombre === marcadorDe(x.nombre)) : null, kv = k ? (k.marca || {})[pos] : null, xv = (x.golpes || {})[pos];
       const vtxt = v => v >= M.NO_PUNTUA ? 'recogió' : v;
@@ -561,12 +561,10 @@
         + '<div class="ca-res-l' + cls + '">' + res + '</div></div>';
       // Como en la liga: solo se ve tu fila y la del jugador al que marcas
       if(!marc || mio || loMarco) h += fila;
-      else if(adm && st !== 'ok') extras.push('<button type="button" class="ca-btn ghost ca-adm ca-box edit-b" data-n="' + esc(x.nombre) + '" data-modo="admin" data-par="' + (par + rec) + '">Decidir los golpes de ' + esc(corto(x.nombre)) + '</button>');
     });
     h += '</div>';
     h += marc ? '<p class="ca-p">Toca tu casilla y la de <b>' + esc(corto(miMarcado)) + '</b>, el jugador al que marcas. Si no coinciden, hablad y corregid.</p>' : '<p class="ca-p">Toca tu casilla para apuntar tus golpes.</p>';
     h += faltan.length ? '<p class="ca-p">Falta por cuadrar: <b>' + esc(faltan.join(', ')) + '</b>. Cuando coincidan todos, se destapan las cartas.</p>' : '';
-    if(extras.length) h += '<div class="ca-sub">Si no se ponen de acuerdo (administrador)</div>' + extras.join('');
     if(tecl){
       const n = tecl.n;
       h += '<div class="ca-tec" id="caTec"><div class="ca-tec-c"><div class="ca-tit peq">' + esc(corto(n)) + '</div><div class="ca-tec-s">Hoyo ' + holeReal(est, pos) + ' · Par ' + par + ' · <b>Tu par ' + tecl.par + '</b></div><div class="ca-teclado">'
@@ -580,10 +578,6 @@
       const yoJ = r.jug.find(x => soyYo(x.nombre));
       if(modo === 'propio'){ if(!yoJ) return false; yoJ.golpes[pos] = g; }
       else if(modo === 'marca'){ if(!yoJ) return false; yoJ.marca[pos] = g; }
-      else { // el administrador decide: pone el mismo número a los dos
-        const x = r.jug.find(y => y.nombre === nombre), k = r.jug.find(y => y.nombre === marcadorDe(nombre, r)); if(!x) return false;
-        x.golpes[pos] = g; if(k) k.marca[pos] = g;
-      }
     });
     editando = false; pintar();
     if(!ok) msg(mensaje);
