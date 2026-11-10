@@ -1830,6 +1830,7 @@ window.acgolfTextosEN2 = {
 "No me llega el correo:": "The email doesn't arrive:",
 "No se pierde nada": "Nothing gets lost",
 "Novedades de octubre": "What's new in October",
+"Novedades": "What's new",
 "Organizar un partido con amigos": "Organising a game with friends",
 "Panel de super administrador": "Super admin panel",
 "Para borrar el grupo entero:": "To delete the whole group:",

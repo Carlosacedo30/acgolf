@@ -24,6 +24,7 @@
     balanza: '<path d="M12 3v18"/><path d="M5 7h14"/><path d="m5 7-3 7a4 4 0 0 0 6 0Z"/><path d="m19 7-3 7a4 4 0 0 0 6 0Z"/><path d="M8 21h8"/>',
     medalla: '<circle cx="12" cy="15" r="6"/><path d="M8.5 10 6 2h4l2 5 2-5h4l-2.5 8"/>',
     ryder: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18"/>',
+    cartas: '<rect x="8" y="3" width="12" height="16" rx="2.5"/><path d="M4 7v12a2 2 0 0 0 2 2h9"/><path d="M14 8.5v4"/><path d="M12 10.5h4"/>',
     persona: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
     ayuda: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7v.5"/><path d="M12 17h.01"/>',
     escudo: '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6Z"/>',
@@ -40,7 +41,8 @@
   const ico = n => '<svg class="ico rg-ico" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICOS[n] || '') + '</svg>';
 
   // ---------- MANUAL DEL JUGADOR ----------
-  const NOVEDADES = { t:'Novedades de octubre', items:[
+  const NOVEDADES = { t:'Novedades', items:[
+    '<b>Nuevo: «Cartas · Para reírse».</b> Un juego de cartas para jugar con tus amigos, con premios graciosos. No cuenta para el hándicap ni para la liga. Lo tienes en un botón nuevo del Inicio.',
     '<b>«¿Cómo jugué?» con gráficas.</b> Ahora solo sale tu juego, en tres pestañas: <b>Mi partida</b>, <b>Mi evolución</b> (gráficas mes a mes) y <b>Comparar</b> con otro jugador del grupo.',
     '<b>Campos nuevos.</b> En el botón <b>«Campos de golf»</b> del Inicio están los campos de <b>Sevilla, Huelva y Cádiz</b> con su par, la dificultad de cada hoyo y el slope de cada barra. Puedes jugar en ellos con <b>«Buscar otro campo»</b> al crear la partida.',
     '<b>Anotar más claro.</b> La tarjeta de arriba sale siempre entera, con un <b>punto verde</b> en los hoyos donde recibes golpe de hándicap.',
@@ -70,6 +72,7 @@
       'Debajo, los <b>partidos organizados</b> con amigos, para apuntarte.',
       '<b>«Clasificación liga»</b>, <b>«Ganadores de la semana»</b>, <b>«Medallas nuevas»</b>, <b>«Mi hándicap»</b>, <b>«¿Cómo jugué?»</b> y <b>«Últimas partidas»</b>: toda la información de la liga.',
       '<b>«Ryder Cup»</b>: el torneo por equipos del grupo.',
+      '<b>«Cartas · Para reírse»</b>: un juego de cartas con tus amigos, solo por diversión.',
       '<b>«Campos de golf»</b>: buscar campos y guardar tus favoritos.',
       '<b>«Reglas de golf»</b>, <b>«Consejos de golf»</b> e <b>«Historia del golf»</b>: para consultar y aprender.',
       'Desde cualquier pantalla, el botón <b>«‹ Volver al inicio»</b> te devuelve aquí.' ]},
@@ -160,6 +163,18 @@
       'Los organiza el administrador del grupo. Tú solo tienes que apuntarte y jugar.',
       'En la <b>Ryder Cup</b> ves los dos equipos, el marcador y tu partido. Dentro tienes <b>«Qué es y cómo se gana»</b> explicado fácil.',
       'En una <b>liga</b>, cada jornada te sale en el Inicio como un partido más, con tu hora y tu grupo ya puestos.' ]},
+
+    { ico:'cartas', t:'Cartas · Para reírse', sub:'Un juego de cartas para pasarlo bien', pasos:[
+      'Es un juego <b>solo para reírse</b>: no cuenta para el hándicap, ni para la liga, ni para ninguna clasificación. Tus golpes de verdad no cambian nunca.',
+      'En el Inicio pulsa <b>«Cartas · Para reírse»</b> y luego <b>«Crear partida de cartas»</b>. Elige el día, el campo y los jugadores.',
+      '<b>Cada jugador usa su propio móvil.</b> Cada uno ve solo sus cartas. Se puede empezar, pero no se puede anotar hasta que todos hayan abierto la partida en su móvil.',
+      'Al empezar tienes <b>3 cartas</b> y recibes <b>una nueva cada 3 hoyos</b>. Son al azar y distintas para cada uno. Hay tres familias: <b>Ventaja</b> (verde), <b>Travesura</b> (rosa) y <b>Comodín</b> (morado). La <b>Carta Oro</b> es la más rara.',
+      'Antes de salir de cada hoyo, <b>elige una carta</b> (o ninguna). Si la carta va contra otro jugador, te pregunta <b>«¿A quién?»</b>. Tu carta es <b>secreta</b> hasta que todos hayan anotado el hoyo.',
+      'Después del hoyo, anota tus golpes con los números grandes. Cuando todos han anotado, <b>se destapan las cartas</b> y se ven los puntos de cada uno.',
+      'Los puntos de juego son los del Stableford neto, más lo que den o quiten las cartas. Se ven aparte, en la <b>Copa de las Cartas</b>.',
+      'Las cartas que no uses al final valen <b>1 punto</b> cada una. Gana la Copa quien más puntos tenga. También hay premios graciosos, como <b>El Cangrejo</b> y <b>El Consuelo</b>.',
+      'Si un jugador se va, quien creó la partida (o el administrador) puede pulsar <b>«Quitar»</b>. Si vuelve, entra con 3 cartas nuevas y 0 puntos.',
+      'En <b>«Cómo se juega»</b>, dentro de Cartas, tienes la lista de todas las cartas y lo que hace cada una.' ]},
 
     { sec:'Tu cuenta' },
     { ico:'persona', t:'Mi cuenta', sub:'Toca tu nombre arriba', pasos:[
