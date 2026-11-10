@@ -371,8 +371,10 @@
     }
     if(sim.hoyos.length) h += '<div class="ca-sub">Hoyos jugados</div>' + sim.hoyos.slice().reverse().map(x => filaHoyo(x, est)).join('');
     h += '<div class="ca-msg" id="caMsg">' + esc(mensaje) + '</div>'
-      + '<button type="button" class="ca-info-btn" id="caInfo"><span aria-hidden="true">i</span>Cómo se juega y cuáles son las cartas</button>';
+      + '<button type="button" class="ca-info-btn" id="caInfo"><span aria-hidden="true">i</span>Cómo se juega y cuáles son las cartas</button>'
+      + (admin() ? '<button type="button" class="ca-borrar" id="caBorrar">Borrar esta partida</button>' : '');
     body.innerHTML = h;
+    if($('caBorrar')) $('caBorrar').onclick = borrarPartida;
     $('caVolver').onclick = async () => { vista = 'lista'; partida = null; try { lista = await traerMias(); } catch(e){} pintar(); subir(); };
     $('caInfo').onclick = () => { vista = 'info'; pintar(); subir(); };
     if($('caJugar')) $('caJugar').onclick = () => { sel = { c: null, o: null }; vista = 'hoyo'; pintar(); subir(); };
@@ -383,6 +385,19 @@
     const texto = 'Te he apuntado a una partida de cartas en acgolf. Abre la app, pulsa «Cartas» y entra en la partida «' + (partida.meta.titulo || 'Partida de cartas') + '».';
     if(navigator.share){ navigator.share({ text: texto }).catch(() => {}); }
     else if(navigator.clipboard){ navigator.clipboard.writeText(texto).then(() => msg('Mensaje copiado: pégalo en WhatsApp.')); }
+  }
+  async function borrarPartida(){
+    if(!partida) return;
+    const empezada = calcular().sim.cerrados > 0;
+    if(!confirm('¿Borrar esta partida de cartas?\n' + (empezada ? 'Ya se ha jugado algún hoyo: se pierden las cartas y los puntos. ' : '') + 'Desaparece para todos y no se puede deshacer.')) return;
+    const b = $('caBorrar'); if(b){ b.disabled = true; b.textContent = 'Borrando…'; }
+    const res = typeof deleteSharedRound === 'function' ? await deleteSharedRound(partida.code) : { ok: false };
+    if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar.'); if(b){ b.disabled = false; b.textContent = 'Borrar esta partida'; } return; }
+    const client = initSupabase();
+    if(canal && client){ try { client.removeChannel(canal); } catch(e){} canal = null; }
+    partida = null; vista = 'lista';
+    try { lista = await traerMias(); } catch(e){}
+    pintar(); subir();
   }
   async function quitar(nombre){
     if(!confirm('¿Quitar a ' + nombre + ' de la partida?')) return;
