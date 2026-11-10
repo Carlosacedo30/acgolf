@@ -497,7 +497,13 @@
     if(!ref) return;
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'home-menu-btn hm-cartas'; b.id = 'hmCartas';
-    b.innerHTML = ico('carta', 24) + '<span>Cartas<small>Para reírse</small></span>' + (typeof icono === 'function' ? icono('flecha', 'hm-flecha') : '');
+    const MINI = (c, p) => '<i class="hc-m ' + c + '"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg></i>';
+    b.innerHTML = '<span class="hc-nuevo">NUEVO</span><span class="hc-tit">Cartas</span><span class="hc-sub">Para reírse</span>'
+      + '<span class="hc-abanico" aria-hidden="true">'
+      + MINI('rosa', '<path d="M12 2v20M4 7l16 10M4 17L20 7"/>')
+      + MINI('verde', '<path d="M12 3l7 3v5c0 5-3.2 8.5-7 10-3.8-1.5-7-5-7-10V6z"/>')
+      + MINI('oro', '<path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/>') + '</span><i class="hc-bri"></i>';
+    b.setAttribute('aria-label', 'Cartas, para reírse');
     b.onclick = abrir;
     ref.parentNode.insertBefore(b, ref.nextSibling);
   }
