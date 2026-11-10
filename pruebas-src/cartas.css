@@ -239,3 +239,6 @@ html body .hm-cartas > svg{ display:none !important; }
 @keyframes hcFl{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
 @media (prefers-reduced-motion:reduce){ .hc-abanico,.hc-bri{ animation:none; } }
 @media (max-width:380px){ .hc-tit{ font-size:30px; top:54px; } .hc-sub{ font-size:15px; } .hc-m.rosa{ right:100px; } .hc-m.oro{ right:54px; } .hc-m{ width:54px; height:78px; } }
+
+.ca-borrar{ display:block; width:100%; margin:18px 0 6px; min-height:52px; border-radius:999px; border:2px solid #FF5FA2; background:rgba(255,95,162,.12); color:#FFB3D1; font:800 16px 'Archivo', sans-serif; cursor:pointer; }
+.ca-borrar:active{ transform:scale(.97); }
