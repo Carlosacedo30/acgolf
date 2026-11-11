@@ -73,7 +73,7 @@
     return bs.some(b => parValido(b.par_hoyos) && hcpValido(b.hcp_hoyos, b.par_hoyos.length));
   }
   function pasaTodo(campo){
-    if(st.listos && !listoParaJugar(campo)) return false;
+    if(!listoParaJugar(campo)) return false;   // los campos sin tarjeta (par y dificultad de cada hoyo) no se enseñan: no se pueden jugar
     if(!pasaFiltro(campo, st.genero, st.min, st.max)) return false;
     if(st.par && !paresDe(campo).includes(st.par)) return false;
     if(st.hoyos && hoyosDe(campo) !== st.hoyos) return false;
@@ -243,7 +243,7 @@
     pestana: 'buscar', modo: 'texto', texto: '', lat: '', lon: '', radio: 25,
     genero: 'm', min: SLOPE_MIN, max: SLOPE_MAX,
     par: 0, hoyos: 0,       // 0 = todos
-    prov: '', listos: false, // búsqueda avanzada: provincia elegida · solo campos listos para jugar
+    prov: '', // búsqueda avanzada: provincia elegida
     municipio: '',          // solo en «Provincia de Cádiz»
     punto: null,            // { lat, lon, origen:'gps'|'manual' } para calcular distancias
     fase: 'inicio',         // inicio · cargando · error · listo
@@ -366,10 +366,9 @@
       + '<label class="bc-lbl" for="bcProv">Provincia</label><select id="bcProv" class="bc-input"><option value="">Elige una provincia</option>'
       + PROVINCIAS.map(x => '<option' + (x === st.prov ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select>'
       + '<div class="bc-chips">'
-      + chip(!st.hoyos && !st.listos, 'data-avz="todos"', 'Todos')
+      + chip(!st.hoyos, 'data-avz="todos"', 'Todos')
       + chip(st.hoyos === 18, 'data-hoyos="18"', '18 hoyos')
       + chip(st.hoyos === 9, 'data-hoyos="9"', '9 hoyos')
-      + chip(st.listos, 'data-accion="listos"', 'Listos para jugar')
       + '</div></div>';
   }
   const PROV_ACGOLF = id => id === 'acgolf:la-penaza' ? 'Zaragoza' : 'Sevilla';
@@ -425,8 +424,10 @@
         : ' Prueba con otra palabra: el nombre del campo, la ciudad o la provincia.') + '</p>';
       return h + pintarPedir(true);
     }
-    if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno cumple los filtros. Prueba con «Todos» o cambia el slope, el par o los hoyos.</p>';
-    h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (st.prov ? ' en ' + esc(st.prov) : '') + (lista.length < st.resultados.length ? ' (de ' + st.resultados.length + ')' : '') + '</p>';
+    const conTarjeta = st.resultados.filter(listoParaJugar).length;
+    if(!conTarjeta) return h + '<p class="bc-vacio">Hemos encontrado ' + st.resultados.length + (st.resultados.length === 1 ? ' campo' : ' campos') + ', pero todavía no tienen la tarjeta (el par y la dificultad de cada hoyo), así que no se pueden jugar. Dinos cuál es tu campo y lo grabamos con prioridad.</p>' + pintarPedir(true);
+    if(!lista.length) return h + '<p class="bc-vacio">Hay ' + conTarjeta + ' campos, pero ninguno cumple los filtros. Prueba con «Todos» o cambia el slope, el par o los hoyos.</p>';
+    h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (st.prov ? ' en ' + esc(st.prov) : '') + (lista.length < conTarjeta ? ' (de ' + conTarjeta + ')' : '') + '</p>';
     return h + '<div class="bc-lista">' + lista.map(c => tarjeta(c, 'resultado')).join('') + '</div>' + pintarPedir(false);
   }
 
@@ -505,11 +506,10 @@
       + (hoyosDe(c) === 9 ? '<span class="bc-dato"><small>Hoyos</small><b>9</b></span>' : '')
       + (nv ? '<span class="bc-nivel ' + nv.cls + '">' + esc(nv.txt) + '</span>' : '<span class="bc-nivel sin">Sin datos de ' + (st.genero === 'f' ? 'damas' : 'caballeros') + '</span>')
       + '</span>'
-      + '<span class="' + (listoParaJugar(c) ? 'bc-listo' : 'bc-falta') + '">' + (listoParaJugar(c) ? 'Listo para jugar' : 'Falta la tarjeta') + '</span>'
       + (c.fuente === 'acgolf' ? '<span class="bc-fuente">Datos oficiales de acgolf</span>' : '')
       + (esOrientativo(c) ? '<span class="bc-fuente bc-orient">Datos orientativos: confírmalos con la tarjeta del club</span>' : '')
       + '</button>'
-      + (st.alElegir ? '<div class="bc-acciones">' + (listoParaJugar(c) ? '<button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button>' : '<button type="button" class="bc-btn sec" data-accion="foto">' + ICO.camara + '<span>Subir foto de la tarjeta</span></button>') + '</div>' : '')
+      + (st.alElegir ? '<div class="bc-acciones">' + '<button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button>' + '</div>' : '')
       + '<div class="bc-acciones">';
     if(donde === 'favorito'){
       h += '<button type="button" class="bc-btn sec" data-ficha="' + esc(c.id) + '">Ver ficha</button>'
@@ -921,7 +921,7 @@
       }
       return pintar();
     }
-    if(d.avz === 'todos'){ leerFormulario(); st.hoyos = 0; st.listos = false; return pintar(); }
+    if(d.avz === 'todos'){ leerFormulario(); st.hoyos = 0; return pintar(); }
     if(d.par != null){ leerFormulario(); st.detAbierto = true; st.par = Number(d.par) || 0; return pintar(); }
     if(d.hoyos != null){ leerFormulario(); st.hoyos = Number(d.hoyos) || 0; return pintar(); }
     if(d.genero){ leerFormulario(); st.detAbierto = true; st.genero = d.genero; return pintar(); }
@@ -949,7 +949,6 @@
       case 'foto-otra': leerFoto(); st.foto.paso = 'elegir'; return pintar();
       case 'foto-barra': leerFoto(); st.foto.d.barras.push(barraVacia()); return pintar();
       case 'foto-guardar': return guardarTarjeta();
-      case 'listos': leerFormulario(); st.listos = !st.listos; return pintar();
       case 'pedir-abrir': leerFormulario(); st.pedir.abierto = true; repintarPedir(); return;
       case 'pedir-cerrar': st.pedir = { abierto:false, nombre:'', tocado:false, pueblo:'', provincia:'', prio:true, fase:'', error:'' }; repintarPedir(); return;
       case 'pedir-prio': leerPedir(); st.pedir.prio = !st.pedir.prio; st.pedir.error = ''; repintarPedir(); return;
