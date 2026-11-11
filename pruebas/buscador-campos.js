@@ -65,7 +65,15 @@
     if(campo && campo.par) ps.push(Number(campo.par));
     return ps;
   }
+  // ¿Trae el par y la dificultad de cada hoyo? (si no, la app no puede usarlo para jugar)
+  function listoParaJugar(c){
+    if(!c) return false;
+    if(c.fuente === 'acgolf') return true;
+    const bs = Array.isArray(c.barras) ? c.barras : [];
+    return bs.some(b => parValido(b.par_hoyos) && hcpValido(b.hcp_hoyos, b.par_hoyos.length));
+  }
   function pasaTodo(campo){
+    if(st.listos && !listoParaJugar(campo)) return false;
     if(!pasaFiltro(campo, st.genero, st.min, st.max)) return false;
     if(st.par && !paresDe(campo).includes(st.par)) return false;
     if(st.hoyos && hoyosDe(campo) !== st.hoyos) return false;
@@ -235,11 +243,13 @@
     pestana: 'buscar', modo: 'texto', texto: '', lat: '', lon: '', radio: 25,
     genero: 'm', min: SLOPE_MIN, max: SLOPE_MAX,
     par: 0, hoyos: 0,       // 0 = todos
+    prov: '', listos: false, // búsqueda avanzada: provincia elegida · solo campos listos para jugar
     municipio: '',          // solo en «Provincia de Cádiz»
     punto: null,            // { lat, lon, origen:'gps'|'manual' } para calcular distancias
     fase: 'inicio',         // inicio · cargando · error · listo
     error: '', aviso: '', resultados: [], ficha: null, pidiendo: 0, ultimoQuitado: null,
     alElegir: null,         // si viene de «Crear partida»: a quién avisar del campo elegido
+    pedir: { abierto:false, nombre:'', tocado:false, pueblo:'', provincia:'', prio:true, fase:'', error:'' },   // «¿Cuál es tu campo habitual?»
   };
 
   function ov(){
@@ -307,8 +317,7 @@
       + '<p class="bc-nota">El slope va de 55 a 155. Un campo normal tiene 113: cuanto más alto, más difícil para el jugador aficionado.</p>'
       + '<div class="bc-fila-lbl">Par</div><div class="bc-chips">'
       + [0].concat(PARES).map(p => '<button type="button" class="bc-chip' + (st.par === p ? ' on' : '') + '" data-par="' + p + '">' + (p ? 'Par ' + p : 'Todos') + '</button>').join('') + '</div>'
-      + '<div class="bc-fila-lbl">Hoyos</div><div class="bc-chips">'
-      + [0].concat(HOYOS).map(n => '<button type="button" class="bc-chip' + (st.hoyos === n ? ' on' : '') + '" data-hoyos="' + n + '">' + (n ? n + ' hoyos' : 'Todos') + '</button>').join('') + '</div></div>';
+      + '</div>';
     return h;
   }
   function opcionesSlope(sel){
@@ -345,9 +354,54 @@
         + RADIOS.map(r => '<option value="' + r + '"' + (r === st.radio ? ' selected' : '') + '>' + r + ' km</option>').join('') + '</select>';
     }
     h += '<button type="submit" class="bc-btn" ' + (st.fase === 'cargando' ? 'disabled' : '') + '>' + ICO.lupa + '<span>' + (st.fase === 'cargando' ? 'Buscando…' : 'Buscar campos') + '</span></button></form>';
+    h += pintarAvanzada();
     h += '<details class="bc-det"' + (hayFiltros() ? ' open' : '') + '><summary>Filtros' + resumenFiltro() + '</summary>' + pintarFiltros() + '</details>';
     h += '<div id="bcResultados" aria-live="polite">' + pintarResultados() + '</div>';
     return h;
+  }
+  // Búsqueda avanzada: elegir provincia y filtrar por hoyos / listos para jugar
+  function pintarAvanzada(){
+    const chip = (on, attr, txt) => '<button type="button" class="bc-chip' + (on ? ' on' : '') + '" ' + attr + '>' + txt + '</button>';
+    return '<div class="bc-avanz"><div class="bc-fila-lbl">Búsqueda avanzada</div>'
+      + '<label class="bc-lbl" for="bcProv">Provincia</label><select id="bcProv" class="bc-input"><option value="">Elige una provincia</option>'
+      + PROVINCIAS.map(x => '<option' + (x === st.prov ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select>'
+      + '<div class="bc-chips">'
+      + chip(!st.hoyos && !st.listos, 'data-avz="todos"', 'Todos')
+      + chip(st.hoyos === 18, 'data-hoyos="18"', '18 hoyos')
+      + chip(st.hoyos === 9, 'data-hoyos="9"', '9 hoyos')
+      + chip(st.listos, 'data-accion="listos"', 'Listos para jugar')
+      + '</div></div>';
+  }
+  const PROV_ACGOLF = id => id === 'acgolf:la-penaza' ? 'Zaragoza' : 'Sevilla';
+  async function buscarProvincia(prov){
+    const yo = ++st.pidiendo;
+    st.prov = prov; st.texto = ''; st.aviso = '';
+    if($('bcTexto')) $('bcTexto').value = '';
+    if(!prov){ st.fase = 'inicio'; st.resultados = []; return repintar(); }
+    st.fase = 'cargando'; fuera = true; repintar();
+    try {
+      const q = sinAcentos(prov);
+      const propios = camposAcgolf().filter(c => PROV_ACGOLF(c.id) === prov)
+        .concat(camposCadiz().filter(c => sinAcentos(c.region || 'cadiz') === q));
+      let remotos = [];
+      if(navigator.onLine === false) st.aviso = 'Sin conexión: solo se ven los campos guardados en la app.';
+      else {
+        const client = typeof initSupabase === 'function' ? initSupabase() : null;
+        if(!client) throw new Error('No se puede conectar con la base de datos.');
+        const { data, error } = await client.from('campos_golf')
+          .select('id, fuente, club, nombre, direccion, ciudad, region, pais, lat, lon, barras, slope_min, slope_max')
+          .ilike('region', prov).order('nombre').limit(150);
+        if(error) throw new Error(await mensajeDeError(error));
+        remotos = Array.isArray(data) ? data : [];
+      }
+      if(yo !== st.pidiendo) return;
+      st.resultados = juntar(propios, remotos);
+      st.fase = 'listo';
+    } catch(e){
+      if(yo !== st.pidiendo) return;
+      st.fase = 'error'; st.error = e.message || 'No se pudo cargar la provincia.';
+    }
+    fuera = true; repintar();
   }
   function resumenFiltro(){
     const partes = [st.genero === 'f' ? 'Damas' : 'Caballeros'];
@@ -368,12 +422,61 @@
     if(!st.resultados.length){
       h += '<p class="bc-vacio">No se ha encontrado ningún campo.' + (st.modo === 'cerca'
         ? ' En «Cerca de un sitio» salen los campos que ya se han buscado alguna vez por nombre o ciudad: prueba a buscar antes la ciudad o la provincia.'
-        : ' Prueba con otra palabra: el nombre del campo, la ciudad o la provincia. Si no está, puedes añadirlo con la foto de su tarjeta.') + '</p>';
-      return h;
+        : ' Prueba con otra palabra: el nombre del campo, la ciudad o la provincia.') + '</p>';
+      return h + pintarPedir(true);
     }
-    if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno cumple los filtros. Cambia el municipio, el slope, el par o los hoyos.</p>';
-    h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (lista.length < st.resultados.length ? ' (de ' + st.resultados.length + ')' : '') + '</p>';
-    return h + '<div class="bc-lista">' + lista.map(c => tarjeta(c, 'resultado')).join('') + '</div>';
+    if(!lista.length) return h + '<p class="bc-vacio">Hay ' + st.resultados.length + ' campos, pero ninguno cumple los filtros. Prueba con «Todos» o cambia el slope, el par o los hoyos.</p>';
+    h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (st.prov ? ' en ' + esc(st.prov) : '') + (lista.length < st.resultados.length ? ' (de ' + st.resultados.length + ')' : '') + '</p>';
+    return h + '<div class="bc-lista">' + lista.map(c => tarjeta(c, 'resultado')).join('') + '</div>' + pintarPedir(false);
+  }
+
+  // ---------- «¿Cuál es tu campo habitual?» (cuando el campo no sale) ----------
+  const PROVINCIAS = ['Álava','Albacete','Alicante','Almería','Asturias','Ávila','Badajoz','Illes Balears','Barcelona','Bizkaia','Burgos','Cáceres','Cádiz','Cantabria','Castellón','Ceuta','Ciudad Real','Córdoba','A Coruña','Cuenca','Gipuzkoa','Girona','Granada','Guadalajara','Huelva','Huesca','Jaén','León','Lleida','Lugo','Madrid','Málaga','Melilla','Murcia','Navarra','Ourense','Palencia','Las Palmas','Pontevedra','La Rioja','Salamanca','Santa Cruz de Tenerife','Segovia','Sevilla','Soria','Tarragona','Teruel','Toledo','Valencia','Valladolid','Zamora','Zaragoza'];
+  function leerPedir(){
+    const P = st.pedir;
+    if($('bcPNombre')){ P.nombre = $('bcPNombre').value; P.tocado = P.nombre.trim() !== '' && P.nombre.trim() !== st.texto.trim(); }
+    if($('bcPPueblo')) P.pueblo = $('bcPPueblo').value;
+    if($('bcPProv')) P.provincia = $('bcPProv').value;
+  }
+  function pintarPedir(abiertoSolo){
+    const P = st.pedir;
+    if(P.fase === 'enviado') return '<div class="bc-pedir"><h3 class="bc-pedir-t">¡Gracias!</h3><p class="bc-pedir-p">Hemos avisado a acgolf. Grabaremos <b>' + esc(P.nombre) + '</b> con prioridad y te avisaremos cuando esté listo.</p>'
+      + '<button type="button" class="bc-btn sec" data-accion="pedir-cerrar">Seguir buscando</button></div>';
+    if(!abiertoSolo && !P.abierto) return '<button type="button" class="bc-enlace bc-pedir-enlace" data-accion="pedir-abrir">¿No es tu campo? Dinos cuál es</button>';
+    const nombre = P.tocado ? P.nombre : (st.texto || P.nombre);
+    return '<div class="bc-pedir"><h3 class="bc-pedir-t">¿Cuál es tu campo habitual?</h3><p class="bc-pedir-p">Cuéntanoslo y lo añadimos a acgolf.</p>'
+      + '<label class="bc-lbl" for="bcPNombre">Nombre del campo</label><input id="bcPNombre" class="bc-input" maxlength="80" autocomplete="off" value="' + esc(nombre) + '">'
+      + '<label class="bc-lbl" for="bcPPueblo">Pueblo</label><input id="bcPPueblo" class="bc-input" maxlength="60" autocomplete="off" value="' + esc(P.pueblo) + '">'
+      + '<label class="bc-lbl" for="bcPProv">Provincia</label><select id="bcPProv" class="bc-input"><option value="">Elige la provincia</option>'
+      + PROVINCIAS.map(x => '<option' + (x === P.provincia ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '<option' + (P.provincia === 'Fuera de España' ? ' selected' : '') + '>Fuera de España</option></select>'
+      + '<button type="button" class="bc-pedir-marca' + (P.prio ? ' on' : '') + '" data-accion="pedir-prio" aria-pressed="' + P.prio + '"><span class="bc-pedir-cuadro" aria-hidden="true">' + (P.prio ? '✓' : '') + '</span>'
+      + '<span>Quiero que acgolf grabe este campo <b>con prioridad</b> y me avise cuando esté listo.</span></button>'
+      + (P.error ? '<p class="bc-pedir-error">' + esc(P.error) + '</p>' : '')
+      + '<button type="button" class="bc-btn lima" data-accion="pedir-enviar"' + (P.fase === 'enviando' ? ' disabled' : '') + '><span>' + (P.fase === 'enviando' ? 'Enviando…' : 'Enviar a acgolf') + '</span></button>'
+      + '<button type="button" class="bc-btn sec" data-accion="foto">' + ICO.camara + '<span>Prefiero subir la foto de su tarjeta</span></button></div>';
+  }
+  function repintarPedir(){ const r = $('bcResultados'); if(r){ fuera = true; r.innerHTML = pintarResultados(); } }
+  async function enviarPedir(){
+    leerPedir();
+    const P = st.pedir;
+    const nombre = P.nombre.trim(), pueblo = P.pueblo.trim();
+    P.error = '';
+    if(nombre.length < 3) P.error = 'Escribe el nombre del campo.';
+    else if(!P.provincia) P.error = 'Elige la provincia.';
+    else if(!P.prio) P.error = 'Marca la casilla para que acgolf reciba el aviso.';
+    if(P.error) return repintarPedir();
+    const client = typeof initSupabase === 'function' ? initSupabase() : null;
+    if(!client){ P.error = 'No se puede conectar. Inténtalo otra vez.'; return repintarPedir(); }
+    P.fase = 'enviando'; repintarPedir();
+    try {
+      const { data, error } = await client.functions.invoke('pedir-campo', { body: { nombre, pueblo, provincia: P.provincia, prioridad: true } });
+      if(error) throw new Error(await mensajeDeError(error));
+      if(!data || data.ok !== true) throw new Error((data && data.error) || 'No se pudo enviar.');
+      P.fase = 'enviado'; P.nombre = nombre;
+    } catch(e){
+      P.fase = ''; P.error = e.message || 'No se pudo enviar. Inténtalo otra vez.';
+    }
+    repintarPedir();
   }
 
   function pintarFavoritos(){
@@ -402,10 +505,11 @@
       + (hoyosDe(c) === 9 ? '<span class="bc-dato"><small>Hoyos</small><b>9</b></span>' : '')
       + (nv ? '<span class="bc-nivel ' + nv.cls + '">' + esc(nv.txt) + '</span>' : '<span class="bc-nivel sin">Sin datos de ' + (st.genero === 'f' ? 'damas' : 'caballeros') + '</span>')
       + '</span>'
+      + '<span class="' + (listoParaJugar(c) ? 'bc-listo' : 'bc-falta') + '">' + (listoParaJugar(c) ? 'Listo para jugar' : 'Falta la tarjeta') + '</span>'
       + (c.fuente === 'acgolf' ? '<span class="bc-fuente">Datos oficiales de acgolf</span>' : '')
       + (esOrientativo(c) ? '<span class="bc-fuente bc-orient">Datos orientativos: confírmalos con la tarjeta del club</span>' : '')
       + '</button>'
-      + (st.alElegir ? '<div class="bc-acciones"><button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button></div>' : '')
+      + (st.alElegir ? '<div class="bc-acciones">' + (listoParaJugar(c) ? '<button type="button" class="bc-btn lima" data-jugar="' + esc(c.id) + '">' + ICO.bandera + '<span>Jugar aquí</span></button>' : '<button type="button" class="bc-btn sec" data-accion="foto">' + ICO.camara + '<span>Subir foto de la tarjeta</span></button>') + '</div>' : '')
       + '<div class="bc-acciones">';
     if(donde === 'favorito'){
       h += '<button type="button" class="bc-btn sec" data-ficha="' + esc(c.id) + '">Ver ficha</button>'
@@ -519,6 +623,7 @@
     try {
       if(st.modo === 'texto'){
         const texto = st.texto.trim();
+        if(st.prov && texto){ st.prov = ''; if($('bcProv')) $('bcProv').value = ''; }
         if(texto.length < 3){ if(suave) return; throw new Error('Escribe al menos 3 letras.'); }
         st.fase = 'cargando'; repintar();
         const q = sinAcentos(texto);
@@ -816,8 +921,9 @@
       }
       return pintar();
     }
+    if(d.avz === 'todos'){ leerFormulario(); st.hoyos = 0; st.listos = false; return pintar(); }
     if(d.par != null){ leerFormulario(); st.detAbierto = true; st.par = Number(d.par) || 0; return pintar(); }
-    if(d.hoyos != null){ leerFormulario(); st.detAbierto = true; st.hoyos = Number(d.hoyos) || 0; return pintar(); }
+    if(d.hoyos != null){ leerFormulario(); st.hoyos = Number(d.hoyos) || 0; return pintar(); }
     if(d.genero){ leerFormulario(); st.detAbierto = true; st.genero = d.genero; return pintar(); }
     if(d.atajo){ leerFormulario(); st.detAbierto = true; const a = ATAJOS.find(x => x.id === d.atajo); if(a){ st.min = a.min; st.max = a.max; } return pintar(); }
     if(d.jugar) return jugarAqui(d.jugar);
@@ -843,6 +949,11 @@
       case 'foto-otra': leerFoto(); st.foto.paso = 'elegir'; return pintar();
       case 'foto-barra': leerFoto(); st.foto.d.barras.push(barraVacia()); return pintar();
       case 'foto-guardar': return guardarTarjeta();
+      case 'listos': leerFormulario(); st.listos = !st.listos; return pintar();
+      case 'pedir-abrir': leerFormulario(); st.pedir.abierto = true; repintarPedir(); return;
+      case 'pedir-cerrar': st.pedir = { abierto:false, nombre:'', tocado:false, pueblo:'', provincia:'', prio:true, fase:'', error:'' }; repintarPedir(); return;
+      case 'pedir-prio': leerPedir(); st.pedir.prio = !st.pedir.prio; st.pedir.error = ''; repintarPedir(); return;
+      case 'pedir-enviar': return enviarPedir();
       case 'cerrar-capa': return cerrarCapa();
       case 'gps': return localizar();
       case 'reintentar': return buscar();
@@ -854,6 +965,7 @@
   function alCambiar(e){
     const t = e.target;
     if(t.id === 'bcFotoCam' || t.id === 'bcFotoGal'){ anadirFotos(t.files); t.value = ''; return; }
+    if(t.id === 'bcProv'){ leerFormulario(); return buscarProvincia(t.value); }
     if(t.id === 'bcMun'){ st.municipio = t.value; return pintar(); }
     if(t.id === 'bcMin' || t.id === 'bcMax'){
       leerFormulario(); st.detAbierto = true;
