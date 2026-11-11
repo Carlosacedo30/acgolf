@@ -329,8 +329,11 @@
   }
 
   function pintarBuscar(){
-    let h = '<button type="button" class="bc-foto-btn" data-accion="foto">' + ICO.camara + '<span><b>' + (st.alElegir ? 'Pega tu foto de la tarjeta y a jugar' : 'Añade un campo con la foto de su tarjeta') + '</b><small>¿No encuentras el campo? Haz una foto a su tarjeta y la app la lee.</small></span></button>'
-      ;
+    let h = '<section class="bc-foto-card" aria-label="Foto de la tarjeta">'
+      + '<h2 class="bc-foto-card-t">' + (st.alElegir ? 'Empieza con la foto de la tarjeta' : 'Lo más seguro: la foto de la tarjeta de tu campo') + '</h2>'
+      + '<p class="bc-foto-card-p">Úsala con tu campo habitual: así tus tarjetas salen exactas y los datos del campo están siempre al día.</p>'
+      + '<button type="button" class="bc-btn lima bc-foto-card-btn" data-accion="foto">' + ICO.camara + '<span>' + (st.alElegir ? 'Hacer foto y a jugar' : 'Hacer foto de la tarjeta') + '</span></button></section>'
+      + '<p class="bc-o bc-o-busca">o busca tu campo</p>';
     st.modo = 'texto';   // Un solo cuadro de búsqueda: nombre, ciudad o provincia (ya no hay «Cerca de mí»)
     // (Los campos de Cádiz salen al buscar por nombre o ciudad y en «Cerca de un sitio»; ya no hay botón propio)
     if(st.modo === 'cadiz'){
@@ -413,7 +416,7 @@
   function pintarResultados(){
     if(st.fase === 'inicio') return '<p class="bc-vacio">' + (st.modo === 'texto'
       ? 'Escribe al menos 3 letras: los campos salen según escribes.'
-      : 'Toca «Usar mi ubicación» o escribe unas coordenadas, elige la distancia y busca.') + '</p>';
+      : 'Toca «Usar mi ubicación» o escribe unas coordenadas, elige la distancia y busca.') + '</p>' + pintarPedir(false);
     if(st.fase === 'cargando') return '<div class="bc-cargando"><span class="bc-rueda" aria-hidden="true"></span>Buscando campos…</div>';
     if(st.fase === 'error') return '<div class="bc-error"><p>' + esc(st.error) + '</p><button type="button" class="bc-btn sec" data-accion="reintentar">Intentar otra vez</button></div>';
     const lista = st.resultados.filter(pasaTodo);
@@ -425,7 +428,7 @@
       return h + pintarPedir(true);
     }
     const conTarjeta = st.resultados.filter(listoParaJugar).length;
-    if(!conTarjeta) return h + '<p class="bc-vacio">Hemos encontrado ' + st.resultados.length + (st.resultados.length === 1 ? ' campo, pero todavía no tiene' : ' campos, pero todavía no tienen') + ' la tarjeta (el par y la dificultad de cada hoyo), así que no ' + (st.resultados.length === 1 ? 'se puede' : 'se pueden') + ' jugar. Dinos cuál es tu campo y lo grabamos con prioridad.</p>' + pintarPedir(true);
+    if(!conTarjeta) return h + '<p class="bc-vacio">' + (st.resultados.length === 1 ? 'Ese campo está pendiente' : 'Esos campos están pendientes') + ' de actualizar. Con la foto de su tarjeta lo tienes listo al momento; o infórmanos y lo grabamos con prioridad.</p>' + pintarPedir(true);
     if(!lista.length) return h + '<p class="bc-vacio">Hay ' + conTarjeta + ' campos, pero ninguno cumple los filtros. Prueba con «Todos» o cambia el slope, el par o los hoyos.</p>';
     h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (st.prov ? ' en ' + esc(st.prov) : '') + (lista.length < conTarjeta ? ' (de ' + conTarjeta + ')' : '') + '</p>';
     return h + '<div class="bc-lista">' + lista.map(c => tarjeta(c, 'resultado')).join('') + '</div>' + pintarPedir(false);
@@ -443,7 +446,7 @@
     const P = st.pedir;
     if(P.fase === 'enviado') return '<div class="bc-pedir"><h3 class="bc-pedir-t">¡Gracias!</h3><p class="bc-pedir-p">Hemos avisado a acgolf. Grabaremos <b>' + esc(P.nombre) + '</b> con prioridad y te avisaremos cuando esté listo.</p>'
       + '<button type="button" class="bc-btn sec" data-accion="pedir-cerrar">Seguir buscando</button></div>';
-    if(!abiertoSolo && !P.abierto) return '<button type="button" class="bc-enlace bc-pedir-enlace" data-accion="pedir-abrir">¿No es tu campo? Dinos cuál es</button>';
+    if(!abiertoSolo && !P.abierto) return '<button type="button" class="bc-enlace bc-pedir-enlace" data-accion="pedir-abrir">¿No encuentras tu campo? Infórmanos</button>';
     const nombre = P.tocado ? P.nombre : (st.texto || P.nombre);
     return '<div class="bc-pedir"><h3 class="bc-pedir-t">¿Cuál es tu campo habitual?</h3><p class="bc-pedir-p">Cuéntanoslo y lo añadimos a acgolf.</p>'
       + '<label class="bc-lbl" for="bcPNombre">Nombre del campo</label><input id="bcPNombre" class="bc-input" maxlength="80" autocomplete="off" value="' + esc(nombre) + '">'
