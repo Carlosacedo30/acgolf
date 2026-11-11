@@ -425,7 +425,7 @@
       return h + pintarPedir(true);
     }
     const conTarjeta = st.resultados.filter(listoParaJugar).length;
-    if(!conTarjeta) return h + '<p class="bc-vacio">Hemos encontrado ' + st.resultados.length + (st.resultados.length === 1 ? ' campo' : ' campos') + ', pero todavía no tienen la tarjeta (el par y la dificultad de cada hoyo), así que no se pueden jugar. Dinos cuál es tu campo y lo grabamos con prioridad.</p>' + pintarPedir(true);
+    if(!conTarjeta) return h + '<p class="bc-vacio">Hemos encontrado ' + st.resultados.length + (st.resultados.length === 1 ? ' campo, pero todavía no tiene' : ' campos, pero todavía no tienen') + ' la tarjeta (el par y la dificultad de cada hoyo), así que no ' + (st.resultados.length === 1 ? 'se puede' : 'se pueden') + ' jugar. Dinos cuál es tu campo y lo grabamos con prioridad.</p>' + pintarPedir(true);
     if(!lista.length) return h + '<p class="bc-vacio">Hay ' + conTarjeta + ' campos, pero ninguno cumple los filtros. Prueba con «Todos» o cambia el slope, el par o los hoyos.</p>';
     h += '<p class="bc-cuenta">' + lista.length + (lista.length === 1 ? ' campo' : ' campos') + (st.prov ? ' en ' + esc(st.prov) : '') + (lista.length < conTarjeta ? ' (de ' + conTarjeta + ')' : '') + '</p>';
     return h + '<div class="bc-lista">' + lista.map(c => tarjeta(c, 'resultado')).join('') + '</div>' + pintarPedir(false);
