@@ -141,6 +141,7 @@
     if(glow){ c.shadowColor = glow; c.shadowBlur = 16; pasada(); c.shadowBlur = 34; pasada(); c.shadowBlur = 0; }
     pasada(); c.restore();
   }
+  window.acgolfNeon = neon; // lo reutiliza la imagen de la clasificación de las ligas
   function imagenComp(){
     const T = tablaComp; if(!T || !T.t.length) return null;
     const W = 720, fila = 58, H = 250 + T.t.length * fila + 120, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');

@@ -1,0 +1,10 @@
+/* Compartir la clasificación de la liga (mismo estilo que El hoyo 19) */
+.lg-comp { display: block; width: 100%; margin: 12px 0 4px; padding: 15px; border-radius: 999px; border: 0; background: #C6F24E; color: #10140a; font-weight: 800; font-size: 17px; }
+.lg-comp-n { text-align: center; color: #8a8f98; font-size: 13px; margin-bottom: 6px; }
+.lgc-modal { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.85); display: flex; align-items: flex-end; justify-content: center; }
+.lgc-hoja { width: 100%; max-width: 520px; max-height: 94%; overflow: auto; background: #1b1f24; color: #F2F4F5; border-radius: 22px 22px 0 0; padding: 16px 14px 18px; box-sizing: border-box; }
+.lgc-hoja h3 { margin: 0 0 4px; font-size: 22px; font-weight: 900; }
+.lgc-hoja p { margin: 0 0 10px; color: #aab; font-size: 15px; }
+.lgc-hoja img { width: 100%; border-radius: 10px; margin-bottom: 12px; }
+.lgc-hoja button { display: block; width: 100%; padding: 15px; border-radius: 999px; border: 1px solid rgba(198,242,78,.55); background: #24282D; color: #F2F4F5; font-weight: 800; font-size: 17px; margin-top: 8px; }
+.lgc-hoja button.pri { background: #C6F24E; color: #111316; border-color: #C6F24E; }
