@@ -118,9 +118,11 @@
   // ---- Voto del día: un toque, un solo voto por jugador ----
   const dosPalabras = n => String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');
   function pintarVoto(){
+    // Carlos pidió quitar la votación del mejor jugador (12-nov-2026): ya no se pinta la tarjeta.
     const lista = el && el.querySelector('#h19Lista'); if(!lista) return;
     let c = el.querySelector('#h19Voto');
-    if(jugadores.length < 2){ if(c) c.remove(); return; }
+    if(c) c.remove();
+    return;
     if(!c){ c = document.createElement('div'); c.id = 'h19Voto'; c.className = 'h19h-tarj'; lista.insertBefore(c, lista.firstChild); }
     const n = {}; votos.forEach(v => n[v.jugador] = v.n); const tot = votos.reduce((a, v) => a + v.n, 0) || 1;
     c.innerHTML = '<h4>Voto del día</h4><p class="sub">' + (miVoto ? 'Gracias, ya has votado.' : '¿Quién ha sido el mejor hoy? Un toque y listo.') + '</p>'

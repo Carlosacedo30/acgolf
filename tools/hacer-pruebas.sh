@@ -701,3 +701,11 @@ for a, b in [('marcador.js?v=7', 'marcador.js?v=8'), ('hoyo19.js?v=4', 'hoyo19.j
     s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+
+# --- Hoyo 19: sin votación al mejor jugador (hoyo19-hilo.js v9) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('hoyo19-hilo.js?v=8') == 1
+open(p, 'w', encoding='utf-8').write(s.replace('hoyo19-hilo.js?v=8', 'hoyo19-hilo.js?v=9'))
+EOF
