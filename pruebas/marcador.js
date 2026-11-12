@@ -40,6 +40,19 @@
     return v == null ? null : +v;
   }
   const marcados = g => g ? g.jugadores.filter(j => +j.marcador_idx === miIdx()).map(j => +j.idx) : [];
+  const nHoyos = () => typeof hoyosPartida === 'function' ? hoyosPartida() : 18;
+  // ¿En este hoyo, lo que apunto yo (o lo que apunto de quien marco) NO coincide con lo del otro?
+  function malEn(g, h){
+    return [miIdx()].concat(marcados(g)).some(i => { const a = propio(i, h), b = marca(g, i, h); return a != null && b != null && a !== b; });
+  }
+  function primerMal(g){ for(let h = 1; h <= nHoyos(); h++) if(malEn(g, h)) return h; return null; }
+  const soyJugador = g => !!g && miIdx() >= 0 && g.jugadores.some(j => +j.idx === miIdx() && j.marcador_idx != null);
+  // Mis hoyos y los de quien marco, todos apuntados por mí
+  function todoApuntado(g){
+    const ids = [miIdx()].concat(marcados(g));
+    for(let h = 1; h <= nHoyos(); h++) if(propio(miIdx(), h) == null || marcados(g).some(i => marca(g, i, h) == null)) return false;
+    return ids.length > 0;
+  }
 
   async function cargar(forzar){
     if(!currentRoundCode || cargando) return;
@@ -58,7 +71,7 @@
       const json = JSON.stringify(data || []);
       const cambio = json !== estJson || estCode !== currentRoundCode;
       est = data || []; estCode = currentRoundCode; estJson = json;
-      if(cambio || forzar){ repintarHoyo(); pintarEntrega(); }
+      if(cambio || forzar){ repintarHoyo(); pintarEntrega(); pintarFirma(); }
     } catch(e){}
     cargando = false;
   }
@@ -147,9 +160,9 @@
   function quizaAvanzar(h){
     clearTimeout(avanceTimer);
     const g = grupoEst();
-    if(!g || llegada.completo || h >= (typeof hoyosPartida === 'function' ? hoyosPartida() : 18) || !hoyoMioCompleto(g, h)) return;
+    if(!g || llegada.completo || h >= nHoyos() || !hoyoMioCompleto(g, h) || malEn(g, h)) return;
     avanceTimer = setTimeout(() => {
-      if(currentHole !== h || !hoyoMioCompleto(grupoEst(), h)) return;
+      if(currentHole !== h || !hoyoMioCompleto(grupoEst(), h) || malEn(grupoEst(), h)) return;
       currentHole = h + 1; window.renderHoleView();
     }, 1500);
   }
@@ -159,6 +172,8 @@
       const h = +c.dataset.hole;
       const mal = [me].concat(marcados(g)).some(i => { const a = propio(i, h), b = marca(g, i, h); return a != null && b != null && a !== b; });
       c.classList.toggle('mk-mal', mal);
+      const pm = primerMal(g);
+      c.classList.toggle('mk-bloq', pm != null && h > pm);
     });
   }
 
@@ -196,6 +211,9 @@
     }
     const me = miIdx();
     if(me < 0) return; // marcadores ya confirmados, pero este usuario no juega en este grupo: se ve como siempre
+    // BLOQUEO: no se puede pasar del primer hoyo que no coincide hasta arreglarlo
+    const pm = primerMal(g);
+    if(pm != null && currentHole > pm){ currentHole = pm; window.renderHoleView(); return; }
     const h = currentHole;
     const input0 = document.querySelector('.golpes-input[data-hole="' + h + '"]');
     const par = input0 ? parseInt(input0.dataset.par, 10) : null;
@@ -205,7 +223,111 @@
     div.innerHTML = htmlColumnas(g, h, par, isNaN(si) ? null : si);
     scores.replaceWith(div.firstElementChild);
     enlazarColumnas(wrap, g, h, par, isNaN(si) ? null : si); marcarFichasHoyos(g);
+    const cols = wrap.querySelector('.mk-cols');
+    if(cols && malEn(g, h)){
+      const b = document.createElement('div'); b.className = 'tf-mal';
+      b.innerHTML = '<b>⚠️ NO COINCIDE</b><span>El hoyo ' + (h + 1 <= nHoyos() ? (h + 1) : 'siguiente') + ' queda BLOQUEADO hasta que lo arregléis. Cada uno corrige solo su número.</span>'
+        + '<button type="button" id="tfArreglar">ARREGLAR EL HOYO ' + h + '</button>';
+      cols.parentNode.insertBefore(b, cols);
+      b.querySelector('#tfArreglar').onclick = () => { const bx = wrap.querySelector('.mk-col.mal .mk-box'); if(bx) bx.click(); };
+    }
+    pintarFirma();
   }
+
+  // ---------- FIRMAR LA TARJETA: pantalla grande al terminar (estilo GolfDirecto) ----------
+  let firmaOculta = '', mostrarEntregada = false, firmando = false;
+  const pantallaActiva = n => document.querySelector('.screen.active[data-screen="' + n + '"]');
+  const entregadaYa = g => { const mia = g && g.jugadores.find(j => +j.idx === miIdx()); return !!mia && mia.entregada && marcados(g).every(i => (g.jugadores.find(j => +j.idx === i) || {}).confirmada); };
+  const tarjetaCuadra = g => { const mia = g && g.jugadores.find(j => +j.idx === miIdx()); return !!mia && mia.ok && marcados(g).every(i => (g.jugadores.find(j => +j.idx === i) || {}).ok); };
+  function sumaPropia(a, b){ let t = 0; for(let h = a; h <= b; h++) t += propio(miIdx(), h) || 0; return t; }
+  function faltanTodos(){ const l = []; (est || []).forEach(gr => gr.jugadores.forEach(j => { if(!j.validada) l.push(corto(j.nombre)); })); return l; }
+  function cerrarFirma(){ const e = document.getElementById('tfFirma'); if(e) e.remove(); }
+  function pintarFirma(){
+    try {
+      const g = grupoEst();
+      const enHoyo = pantallaActiva(3), enResumen = pantallaActiva(4);
+      if(!currentRoundCode || !conMarcadorEn(currentRoundCode) || !g || !soyJugador(g) || (!enHoyo && !enResumen)){ cerrarFirma(); return; }
+      let estado = null;
+      if(mostrarEntregada && entregadaYa(g)) estado = 'entregada';
+      else if(!entregadaYa(g) && todoApuntado(g)){
+        if(tarjetaCuadra(g)) estado = enHoyo && firmaOculta === currentRoundCode ? null : 'firmar';
+        else if(enResumen) estado = 'bloqueo';
+      }
+      if(!estado){ cerrarFirma(); return; }
+      let f = document.getElementById('tfFirma');
+      const clave = estado + ':' + (est ? estJson.length : 0) + ':' + (aviso || '') + ':' + firmando;
+      if(f && f.dataset.clave === clave) return;
+      if(!f){ f = document.createElement('div'); f.id = 'tfFirma'; f.className = 'tf-fondo'; document.body.appendChild(f); }
+      f.dataset.clave = clave;
+      const n = nHoyos();
+      let h = '';
+      if(estado === 'firmar'){
+        h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">REVISA TU TARJETA</div>'
+          + (n > 9 ? '<div class="tf-fila"><span>Ida (9 hoyos)</span><b>' + sumaPropia(1, 9) + '</b></div><div class="tf-fila"><span>Vuelta (9 hoyos)</span><b>' + sumaPropia(10, n) + '</b></div>' : '')
+          + '<div class="tf-fila tot"><span>TOTAL' + (n <= 9 ? ' (' + n + ' hoyos)' : '') + '</span><b>' + sumaPropia(1, n) + '</b></div>'
+          + '<div class="tf-bien">Todo coincide con tu marcador.</div>'
+          + '<button type="button" class="tf-btn" id="tfFirmar"' + (firmando ? ' disabled' : '') + '>' + (firmando ? 'FIRMANDO…' : 'FIRMAR MI TARJETA') + '</button>'
+          + '<p class="tf-p">Una vez firmada, nadie la puede cambiar. Es la entrega oficial. Sin firmarla no cuenta para la liga ni para el hándicap.</p>'
+          + (aviso ? '<p class="tf-aviso">' + esc(aviso) + '</p>' : '')
+          + '<button type="button" class="tf-link" id="tfMirar">Volver a mirar mis hoyos</button></div>';
+      } else if(estado === 'bloqueo'){
+        h = '<div class="tf-caja"><div class="tf-ic mal">!</div><div class="tf-t">PRIMERO ENTREGA TU TARJETA</div>'
+          + '<p class="tf-p">' + (primerMal(g) ? 'El hoyo ' + primerMal(g) + ' no coincide con tu marcador. Arréglalo y después firma.' : 'Tu marcador todavía no ha apuntado todos los hoyos. Cuando coincidan, podrás firmar.') + '</p>'
+          + '<button type="button" class="tf-btn naranja" id="tfVolver">VOLVER A LA PARTIDA</button></div>';
+      } else {
+        const faltan = faltanTodos();
+        const txt = 'Faltan por firmar la tarjeta de la liga: ' + faltan.join(', ') + '. Abrid acgolf y pulsad FIRMAR MI TARJETA.';
+        h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">TARJETA ENTREGADA</div><div class="tf-sub">Firmada por ti y por tu marcador</div>'
+          + (faltan.length ? '<div class="tf-lista"><div class="tf-sub">Falta que entreguen:</div>' + faltan.map(x => '<div class="tf-fila"><span>' + esc(x) + '</span><b class="mal">falta</b></div>').join('') + '</div>'
+              + '<a class="tf-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(txt) + '">AVISAR A LOS QUE FALTAN</a>'
+            : '<div class="tf-bien">¡Todas las tarjetas entregadas!</div>')
+          + '<button type="button" class="tf-btn gris" id="tfResumen">VER EL RESUMEN</button></div>';
+      }
+      f.innerHTML = h;
+      const q = id => f.querySelector('#' + id);
+      if(q('tfMirar')) q('tfMirar').onclick = () => { firmaOculta = currentRoundCode; cerrarFirma(); };
+      if(q('tfVolver')) q('tfVolver').onclick = () => { cerrarFirma(); const b = document.getElementById('s4Back'); if(b) b.click(); };
+      if(q('tfResumen')) q('tfResumen').onclick = () => { mostrarEntregada = false; cerrarFirma(); };
+      if(q('tfFirmar')) q('tfFirmar').onclick = async () => {
+        if(firmando) return;
+        firmando = true; aviso = ''; pintarFirma();
+        const { data, error } = await initSupabase().rpc('entregar_tarjeta', { p_code: currentRoundCode, p_grupo: +activeGroup });
+        firmando = false;
+        if(error) aviso = String(error.message || 'No se pudo firmar. Revisa la cobertura y vuelve a pulsar.');
+        else { est = data || []; estJson = JSON.stringify(est); estCode = currentRoundCode; mostrarEntregada = true; }
+        pintarFirma(); pintarEntrega();
+      };
+    } catch(e){ console.error(e); }
+  }
+  setInterval(() => { if(document.visibilityState === 'visible') pintarFirma(); }, 2000);
+  // el Hoyo 19 y el resumen no se abren con una tarjeta sin firmar
+  window.acgolfTarjetaPendiente = () => pendientesInicio.find(p => p.mia_pendiente) || null;
+
+  // ---------- Cartel rojo en el Inicio ----------
+  let pendientesInicio = [];
+  async function cargarPendientes(){
+    try {
+      if(!window.miPerfilId || !pantallaActiva(0)) return;
+      const { data, error } = await initSupabase().rpc('mis_tarjetas_pendientes');
+      if(error) return;
+      pendientesInicio = Array.isArray(data) ? data : [];
+      pintarInicio();
+    } catch(e){}
+  }
+  function pintarInicio(){
+    const home = pantallaActiva(0);
+    let c = document.getElementById('tfInicio');
+    if(!home || !pendientesInicio.length){ if(c) c.remove(); return; }
+    if(!c){ c = document.createElement('div'); c.id = 'tfInicio'; home.insertBefore(c, home.firstChild); }
+    c.innerHTML = pendientesInicio.map(p => '<div class="tf-banda' + (p.mia_pendiente ? '' : ' suave') + '">'
+      + '<b>' + (p.mia_pendiente ? '✍️ FALTA ENTREGAR TU TARJETA' : '⏳ FALTAN TARJETAS POR ENTREGAR') + '</b>'
+      + '<span>' + esc(p.nombre || 'Liga') + ' · faltan: ' + esc((p.faltan || []).map(corto).join(', ')) + '</span>'
+      + (p.mia_pendiente ? '<button type="button" class="tf-btn" data-code="' + esc(p.code) + '">ENTREGAR AHORA</button>' : '') + '</div>').join('');
+    c.querySelectorAll('button[data-code]').forEach(b => b.onclick = () => { location.href = location.pathname + '?partida=' + encodeURIComponent(b.dataset.code); });
+  }
+  setInterval(() => { if(document.visibilityState === 'visible') cargarPendientes(); }, 20000);
+  setTimeout(cargarPendientes, 3000);
+  setTimeout(cargarPendientes, 8000);
 
   // ---------- Entregar la tarjeta (pantalla de resultados) ----------
   const share = document.getElementById('s4ShareSection');

@@ -69,6 +69,19 @@
   }
 
   function abrir(){
+    // Con la tarjeta sin firmar no se abre: primero se entrega
+    const pend = window.acgolfTarjetaPendiente && window.acgolfTarjetaPendiente();
+    if(pend){
+      if(document.getElementById('h19Aviso')) return;
+      const f0 = document.createElement('div');
+      f0.id = 'h19Aviso'; f0.className = 'h19-fondo';
+      f0.innerHTML = '<div class="h19-caja" role="alertdialog" aria-modal="true"><h3>Primero entrega tu tarjeta</h3>'
+        + '<p>El Hoyo 19 se abre cuando firmas tu tarjeta de la liga.</p><button type="button" id="h19Firma">ENTREGAR AHORA</button></div>';
+      f0.querySelector('#h19Firma').onclick = () => { location.href = location.pathname + '?partida=' + encodeURIComponent(pend.code); };
+      f0.onclick = e => { if(e.target === f0) f0.remove(); };
+      document.body.appendChild(f0);
+      return;
+    }
     if(window.acgolfHilo19 && partida && partida.code) return window.acgolfHilo19.abrir(partida.code, partida);
     if(document.getElementById('h19Aviso')) return;
     const f = document.createElement('div');
