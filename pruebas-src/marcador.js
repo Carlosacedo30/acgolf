@@ -102,7 +102,7 @@
   function htmlColumnas(g, h, par, si){
     const me = miIdx();
     const cols = [me].concat(marcados(g));
-    const tuPar = i => par != null ? par + Math.max(0, si != null ? strokesForHole(playerHandicaps[i], si) : 0) : '—';
+    const tuPar = i => par != null ? par + Math.max(0, si != null ? strokesForHole(hcpJuego(i), si) : 0) : '—';
     return '<div class="mk-cols" style="--n:' + cols.length + '">' + cols.map((i, k) => {
       const esYo = k === 0;
       const val = esYo ? propio(i, h) : marca(g, i, h);
@@ -121,7 +121,7 @@
   function enlazarColumnas(wrap, g, h, par, si){
     wrap.querySelectorAll('.mk-box').forEach(b => b.onclick = () => {
       const i = +b.dataset.i, esYo = b.dataset.yo === '1';
-      const rec = si != null ? strokesForHole(playerHandicaps[i], si) : 0;
+      const rec = si != null ? strokesForHole(hcpJuego(i), si) : 0;
       const actual = esYo ? propio(i, h) : marca(g, i, h);
       openNumPad({ name: esYo ? players[i] + ' (tú)' : players[i] + ' · le marcas tú', hole: h, par: par, tuPar: par != null ? par + Math.max(0, rec) : null, value: actual == null ? '' : String(actual),
         onPick: v => esYo ? apuntarPropio(i, h, v) : apuntarMarca(g, i, h, v) });
