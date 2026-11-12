@@ -234,6 +234,7 @@ cambia('pruebas/js/data.js', """  let selectedCourse = null;""", """  // Campos 
     let tees;
     if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: de18 ? Math.round(t.rating * 5) / 10 : t.rating, slope: t.slope }; }); }
     const v = { id, name: c.name + ' (9 hoyos)', location: c.location, holes9: true, nueve: true, par: c.par.slice(0, 9), hcp: r };
+    if(c.tees9 && c.tees9.ida){ tees = tees || {}; Object.keys(c.tees9.ida).forEach(k => { tees[k] = c.tees9.ida[k]; }); }
     if(tees) v.tees = tees;
     if(c.externo) v.externo = true;
     COURSES.push(v);
@@ -251,6 +252,7 @@ cambia('pruebas/js/data.js', """  let selectedCourse = null;""", """  // Campos 
     let tees;
     if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: Math.round(t.rating * 5) / 10, slope: t.slope }; }); }
     const v = { id, name: c.name + ' (vuelta 10-18)', location: c.location, holes9: true, nueve: true, par: c.par.slice(9, 18), hcp: r };
+    if(c.tees9 && c.tees9.vuelta){ tees = tees || {}; Object.keys(c.tees9.vuelta).forEach(k => { tees[k] = c.tees9.vuelta[k]; }); }
     if(tees) v.tees = tees;
     if(c.externo) v.externo = true;
     COURSES.push(v);
