@@ -131,3 +131,16 @@ body:has(.pr-banda) .h19f { padding-top: 40px; }
 .h19h-b.foto { max-width: 100%; width: 100%; }
 .h19h-b.foto .h19h-cuerpo { flex: 1; min-width: 0; padding: 6px 8px 8px; }
 .h19h-b.foto .h19h-foto { width: 100%; min-height: 0; aspect-ratio: 4 / 5; object-fit: cover; }
+
+/* ===== Voto del día ===== */
+.h19h-tarj { align-self: stretch; background: rgba(27,30,34,.96); border: 1px solid var(--linea2); border-radius: 16px; padding: 12px; animation: h19hEntra .35s ease both; }
+.h19h-tarj h4 { font-family: 'Archivo', system-ui, sans-serif; font-weight: 900; font-size: 18px; margin: 0 0 2px; }
+.h19h-tarj .sub { font-size: 14px; color: var(--suave); margin: 0 0 6px; }
+.h19h-voto { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 6px; padding: 7px 10px; border-radius: 12px; background: var(--tarj2); color: var(--texto); border: 1px solid transparent; overflow: hidden; text-align: left; }
+.h19h-voto .bar { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(198,242,78,.2); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.h19h-voto > * { position: relative; }
+.h19h-voto .bar { position: absolute; }
+.h19h-voto .h19h-av { width: 30px; height: 30px; font-size: 13px; }
+.h19h-voto b { flex: 1; font-size: 17px; font-family: 'Barlow', system-ui, sans-serif; }
+.h19h-voto .n { font-family: 'Archivo', system-ui, sans-serif; font-weight: 900; font-size: 18px; }
+.h19h-voto.mio { border-color: var(--lima); }
