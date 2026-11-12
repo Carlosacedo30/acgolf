@@ -144,3 +144,15 @@ body:has(.pr-banda) .h19f { padding-top: 40px; }
 .h19h-voto b { flex: 1; font-size: 17px; font-family: 'Barlow', system-ui, sans-serif; }
 .h19h-voto .n { font-family: 'Archivo', system-ui, sans-serif; font-weight: 900; font-size: 18px; }
 .h19h-voto.mio { border-color: var(--lima); }
+
+/* ===== Compartir al WhatsApp ===== */
+.h19h-fila { display: flex; align-items: center; justify-content: space-between; }
+.h19h-comp { width: 44px; height: 44px; border-radius: 50%; background: var(--tarj2); color: var(--texto); border: 1px solid var(--linea2); display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+.h19h-comp svg { width: 22px; height: 22px; }
+.h19h-modal { position: absolute; inset: 0; z-index: 6; background: rgba(0,0,0,.85); display: flex; align-items: flex-end; justify-content: center; }
+.h19h-hoja { width: 100%; max-height: 94%; overflow: auto; background: var(--tarj); border-radius: 22px 22px 0 0; padding: 16px 14px 18px; }
+.h19h-hoja h3 { margin: 0 0 4px; font-family: 'Archivo', system-ui, sans-serif; font-weight: 900; font-size: 22px; }
+.h19h-hoja p { margin: 0 0 10px; color: var(--suave); font-size: 15px; }
+.h19h-hoja img { display: block; width: 100%; max-width: 360px; margin: 0 auto 12px; border-radius: 10px; }
+.h19h-hoja button { width: 100%; padding: 14px; margin-top: 8px; border-radius: 999px; border: 1px solid rgba(198,242,78,.55); background: var(--tarj2); color: var(--texto); font-weight: 800; font-size: 17px; }
+.h19h-hoja button.pri { background: var(--lima); color: #111316; border-color: var(--lima); }

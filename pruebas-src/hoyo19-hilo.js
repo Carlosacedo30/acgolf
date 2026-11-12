@@ -19,13 +19,14 @@
   const cliente = () => (typeof initSupabase === 'function') ? initSupabase() : null;
 
   let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null, vueltas = 0, infoPartida = {}, fotosLocal = {}, colaFotos = Promise.resolve(),
-    jugadores = [], ganador = '', terminada = false, votos = [], miVoto = null, hayChivito = false;
+    jugadores = [], tablaComp = null, ganador = '', terminada = false, votos = [], miVoto = null, hayChivito = false;
 
   function raiz(){
     if(!document.getElementById('h19Defs')) document.body.insertAdjacentHTML('beforeend', DEFS);
     el = document.createElement('div'); el.id = 'h19Hilo'; el.className = 'h19h'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
     el.innerHTML =
-      '<div class="h19h-cab"><button type="button" class="h19h-volver" id="h19Volver">‹ Volver</button>'
+      '<div class="h19h-cab"><div class="h19h-fila"><button type="button" class="h19h-volver" id="h19Volver">‹ Volver</button>'
+      + '<button type="button" class="h19h-comp" id="h19Comp" aria-label="Compartir al WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 16a3 3 0 00-2.2 1L9 13.5a3 3 0 000-3L15.8 7A3 3 0 1015 5a3 3 0 00.1.8L8.3 9.3a3 3 0 100 5.400l6.800 3.500A3 3 0 1018 16z"/></svg></button></div>'
       + '<h1 class="h19h-titulo">El hoyo 19</h1><p class="h19h-sub" id="h19Sub"></p></div>'
       + '<div class="h19h-clasif" id="h19Clasif" hidden></div>'
       + '<div class="h19h-borra" id="h19Borra"></div>'
@@ -39,6 +40,7 @@
       + '<div class="h19h-toast" id="h19Toast"></div>';
     document.body.appendChild(el);
     el.querySelector('#h19Volver').onclick = cerrar;
+    el.querySelector('#h19Comp').onclick = compartir;
     el.querySelector('#h19Tabs').onclick = e => { const t = e.target.dataset && e.target.dataset.t; if(!t) return; tab = t; el.querySelectorAll('#h19Tabs button').forEach(b => b.classList.toggle('on', b === e.target)); frases(); };
     const txt = el.querySelector('#h19Txt');
     txt.oninput = () => { const n = txt.value.length, c = el.querySelector('#h19Cont'); c.textContent = n + ' de 80 letras'; c.classList.toggle('max', n >= 80); };
@@ -80,7 +82,8 @@
       const acabados = t.every(x => x.pos >= nh(x.g));
       jugadores = t.map(x => x.n); ganador = t[0].n; terminada = acabados; pintarVoto(); pintarChivito();
       caja.hidden = false; const muchos = t.length > 4, pagan = t.length >= 2 ? Math.floor(t.length / 2) : 0;   // pagan la mitad de abajo (impares: redondeo hacia abajo), igual que En vivo
-       caja.classList.toggle('muchos', muchos); if(muchos) caja.classList.add('min');
+      tablaComp = { t, pts, acabados, pagan, ronda };
+      caja.classList.toggle('muchos', muchos); if(muchos) caja.classList.add('min');
       caja.innerHTML = '<div class="t">CLASIFICACIÓN (' + (pts ? 'PUNTOS' : 'NETO') + ')' + (acabados ? '' : ' · PROVISIONAL') + '</div><div class="fila">'
         + t.map((x, i) => '<div class="pl' + (i === 0 ? ' g' : '') + '"><i>' + (i + 1) + '</i>' + av(x.n) + '<b>' + esc(primera(x.n)) + (pagan > 0 && i >= t.length - pagan ? ' 🍺' : '') + '</b><span>' + (pts ? x.pts : signo(x.neto)) + '</span></div>').join('') + '</div>';
     } catch(e){ /* sin clasificación la conversación sigue igual */ }
@@ -126,6 +129,55 @@
     const cl = cliente(); if(!cl) return;
     try { const r = await cl.rpc('hoyo19_votar', { p_code: code, p_jugador: j }); if(r.error) throw r.error; miVoto = j; aviso('Voto enviado'); await leer(false); }
     catch(e){ aviso(String(e && e.message || 'No se pudo votar')); }
+  }
+
+  // ---- Compartir al WhatsApp: la imagen se hace en el móvil (nombre y apellidos, campo, sin nombre de grupo) ----
+  function neon(c, t, x, y, px, color, glow, esp){
+    c.save(); c.font = '900 ' + px + 'px Archivo, Barlow, Arial, sans-serif'; c.textBaseline = 'alphabetic'; c.fillStyle = color;
+    const an = [...t].map(ch => c.measureText(ch).width), tot = an.reduce((a, b) => a + b, 0) + esp * (t.length - 1); let cx = x - tot / 2;
+    const pasada = () => { let q = cx; [...t].forEach((ch, i) => { c.fillText(ch, q, y); q += an[i] + esp; }); };
+    if(glow){ c.shadowColor = glow; c.shadowBlur = 16; pasada(); c.shadowBlur = 34; pasada(); c.shadowBlur = 0; }
+    pasada(); c.restore();
+  }
+  function imagenComp(){
+    const T = tablaComp; if(!T || !T.t.length) return null;
+    const W = 720, fila = 58, H = 250 + T.t.length * fila + 120, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
+    c.fillStyle = '#1a120c'; c.fillRect(0, 0, W, H);
+    c.strokeStyle = '#6b4a2b'; c.lineWidth = 10; c.strokeRect(5, 5, W - 10, H - 10);
+    neon(c, 'EL HOYO 19', W / 2, 96, 64, '#F7FFD9', '#C6F24E', 12);
+    const r = T.ronda || {}, f = new Date(r.updated_at || Date.now()), fecha = f.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
+    c.fillStyle = '#EDEBDD'; c.font = '600 26px Barlow, Arial, sans-serif'; c.textAlign = 'center';
+    c.fillText([r.round_name, r.course_name, fecha].filter(Boolean).join(' · '), W / 2, 142, W - 60);
+    c.fillStyle = '#C6F24E'; c.font = '800 20px Archivo, Arial, sans-serif'; c.fillText('CLASIFICACIÓN (' + (T.pts ? 'PUNTOS' : 'NETO') + ')' + (T.acabados ? '' : ' · PROVISIONAL'), W / 2, 196);
+    T.t.forEach((x, i) => {
+      const y = 220 + i * fila;
+      c.fillStyle = i === 0 ? 'rgba(198,242,78,.16)' : 'rgba(255,255,255,.06)'; c.beginPath(); c.roundRect ? c.roundRect(34, y, W - 68, fila - 8, 12) : c.rect(34, y, W - 68, fila - 8); c.fill();
+      if(i === 0){ c.strokeStyle = '#C6F24E'; c.lineWidth = 2; c.stroke(); }
+      c.textAlign = 'left'; c.fillStyle = '#C6F24E'; c.font = '900 26px Archivo, Arial, sans-serif'; c.fillText(String(i + 1), 54, y + 36);
+      c.fillStyle = '#EDEBDD'; c.font = '700 26px Archivo, Arial, sans-serif';
+      const nom = String(x.n || '') + (T.pagan > 0 && i >= T.t.length - T.pagan ? ' 🍺' : ''); c.fillText(nom, 100, y + 36, W - 260);
+      c.textAlign = 'right'; c.font = '900 30px Archivo, Arial, sans-serif'; c.fillStyle = '#fff'; c.fillText(T.pts ? x.pts + ' pts' : signo(x.neto), W - 54, y + 37);
+    });
+    c.textAlign = 'center'; c.fillStyle = '#C6F24E'; c.font = '800 24px Archivo, Arial, sans-serif';
+    if(T.pagan > 0) { c.fillStyle = '#EDEBDD'; c.font = '600 22px Barlow, Arial, sans-serif'; c.fillText('Hoy pagan la ronda los ' + T.pagan + ' últimos 🍺', W / 2, H - 70); }
+    c.fillStyle = '#C6F24E'; c.font = '800 26px Archivo, Arial, sans-serif'; c.fillText('acgolf.es', W / 2, H - 28);
+    return cv;
+  }
+  function compartir(){
+    const cv = imagenComp(); if(!cv) return aviso('Todavía no hay clasificación para compartir');
+    const url = cv.toDataURL('image/jpeg', .9), m = document.createElement('div'); m.className = 'h19h-modal';
+    m.innerHTML = '<div class="h19h-hoja"><h3>Compartir al WhatsApp</h3><p>Se crea esta imagen en tu móvil y eliges el grupo de WhatsApp.</p><img alt="Imagen para compartir">'
+      + '<button type="button" class="pri" id="h19Wa">Enviar a WhatsApp</button><button type="button" id="h19Cer">Cerrar</button></div>';
+    m.querySelector('img').src = url; el.appendChild(m);
+    m.querySelector('#h19Cer').onclick = () => m.remove();
+    m.querySelector('#h19Wa').onclick = () => cv.toBlob(async blob => {
+      const file = new File([blob], 'el-hoyo-19.jpg', { type: 'image/jpeg' });
+      try {
+        if(navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: 'El hoyo 19 · acgolf.es' }); m.remove(); return; }
+      } catch(e){ if(e && e.name === 'AbortError') return; }
+      const a = document.createElement('a'); a.href = url; a.download = 'el-hoyo-19.jpg'; document.body.appendChild(a); a.click(); a.remove();   // sin «compartir imagen»: se guarda para enviarla desde WhatsApp
+      aviso('Imagen guardada: envíala desde WhatsApp');
+    }, 'image/jpeg', .9);
   }
 
   function aviso(t){
