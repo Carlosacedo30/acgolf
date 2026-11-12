@@ -101,7 +101,7 @@
     try {
       // El campo completo (con sus barras) si lo conocemos; en 9 hoyos, medio hándicap
       const c = (typeof COURSES !== 'undefined' ? COURSES : []).find(x => x.id === round.course_id) || { id: round.course_id, par: pares, nueve: nHoyos(g) === 9 };
-      if(typeof hcpCampo === 'function') return hcpCampo(h, c, barra);
+      if(typeof hcpCampo === 'function') return hcpCampo(h, c, barra, nHoyos(g) === 9 && (!g.modo || g.modo === 'individual') ? 0.95 : undefined); // 9 hoyos individual: 95 % (Federación)
     } catch(e){}
     return nHoyos(g) === 9 ? Math.round(h / 2) : Math.round(h);
   }

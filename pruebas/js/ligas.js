@@ -277,7 +277,7 @@ async function ligaResultados(l){
       if(golpes.length < nH) return; // solo cuentan las tarjetas completas
       const hcp = Number((g.handicaps || [])[i]) || 0;
       const bruto = golpes.reduce((a, b) => a + b, 0);
-      const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined) : Math.round(hcp);
+      const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined, curso && curso.nueve ? 0.95 : undefined) : Math.round(hcp);
       // Puntos Stableford: por hoyo, 2 − (golpes − golpes recibidos − par), sin bajar de 0
       let stb = 0; const ptsHoyo = [], golHoyo = [];
       for(let h = 1; h <= nH; h++){
@@ -289,7 +289,7 @@ async function ligaResultados(l){
       // Desempate (bases, punto 9): últimos 9, 12, 15, 16 y 17 hoyos, con el mismo cálculo que la ronda
       const suma = (a, k) => a.slice(nH - k).reduce((x, y) => x + y, 0);
       const cb = (nH === 9 ? [6, 3, 2, 1] : [9, 12, 15, 16, 17]).map(k => l.formato === 'stableford' ? -suma(ptsHoyo, k) : suma(golHoyo, k) - recibidos * k / nH);
-      filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb, cb });
+      filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb, cb, nH });
     }));
     if(l.formato === 'stableford'){
       filas.sort((a, b) => b.stb - a.stb || a.hcp - b.hcp || ligaCompararCb(a.cb, b.cb));
@@ -527,13 +527,13 @@ function ligaTabla(l, res, regla){
   const hoy = ligaHoy();
   const filas = l.jugadores.map(n => {
     const rs = [];
-    l.jornadas.forEach(j => (res[j.n] || []).forEach(f => { if(f.jugador === n) rs.push({ n: j.n, v: f.puntos, stb: f.stb, neto: f.neto, pos: f.pos }); }));
+    l.jornadas.forEach(j => (res[j.n] || []).forEach(f => { if(f.jugador === n) rs.push({ n: j.n, v: f.puntos, stb: f.stb, neto: f.neto, pos: f.pos, nH: f.nH || 18 }); }));
     const validas = ligaValidas(rs, regla, l);
     const vset = new Set(validas.map(x => x.n));
     const stb = rs.map(x => x.stb).filter(v => v != null);
     const media = stb.length ? stb.reduce((a, b) => a + b, 0) / stb.length : null;
     return { jugador: n, hcp: ligaHcp(n), puntos: validas.reduce((a, x) => a + x.v, 0), validas: validas.length, jugadas: rs.length,
-      victorias: rs.filter(x => x.pos === 1).length, mejor: stb.length ? Math.max(...stb) : null, media, dif: media == null ? null : media - 36,
+      victorias: rs.filter(x => x.pos === 1).length, mejor: stb.length ? Math.max(...stb) : null, media, dif: stb.length ? rs.filter(x => x.stb != null).reduce((a, x) => a + x.stb - 2 * x.nH, 0) / stb.length : null,
       descartadas: rs.filter(x => !vset.has(x.n)), entra: rs.length >= (l.minimo || 0) && rs.length > 0 };
   });
   filas.sort((a, b) => (b.entra - a.entra) || b.puntos - a.puntos || (a.hcp ?? 99) - (b.hcp ?? 99));
