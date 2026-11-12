@@ -18,7 +18,7 @@
   const color = n => { let h = 0; for(const c of String(n)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORES[h % COLORES.length]; };
   const cliente = () => (typeof initSupabase === 'function') ? initSupabase() : null;
 
-  let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null, vueltas = 0;
+  let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null, vueltas = 0, infoPartida = {}, fotosLocal = {}, colaFotos = Promise.resolve();
 
   function raiz(){
     if(!document.getElementById('h19Defs')) document.body.insertAdjacentHTML('beforeend', DEFS);
@@ -44,7 +44,13 @@
     txt.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); enviarTexto(); } };
     el.querySelector('#h19Env').onclick = enviarTexto;
     el.querySelector('#h19Conf').onclick = () => enviar('confeti');
-    el.querySelector('#h19Foto').onclick = () => aviso('La foto con marco llega en el siguiente paso');
+    el.querySelector('#h19Foto').onclick = () => {
+      if(quedanFotos <= 0) return aviso('Ya no quedan fotos en esta partida');
+      if(!window.acgolfFoto19) return aviso('La cámara no está disponible');
+      const f = new Date(infoPartida.fecha || Date.now());
+      window.acgolfFoto19.abrir({ quedan: quedanFotos, campo: infoPartida.campo || '', fecha: f.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', ''),
+        enviar: dataUrl => enviar('foto', null, null, dataUrl) });
+    };
     el.querySelector('#h19Chiv').onclick = () => aviso('El chivito lo manda solo el ganador (muy pronto)');
     el.querySelector('#h19Lista').onclick = clicLista;
     // La pizarra se encoge a una línea al subir por la conversación y vuelve a crecer al bajar (con margen para que no parpadee)
@@ -73,6 +79,19 @@
       caja.innerHTML = '<div class="t">CLASIFICACIÓN (' + (pts ? 'PUNTOS' : 'NETO') + ')' + (acabados ? '' : ' · PROVISIONAL') + '</div><div class="fila">'
         + t.map((x, i) => '<div class="pl' + (i === 0 ? ' g' : '') + '"><i>' + (i + 1) + '</i>' + av(x.n) + '<b>' + esc(primera(x.n)) + (pagan > 0 && i >= t.length - pagan ? ' 🍺' : '') + '</b><span>' + (pts ? x.pts : signo(x.neto)) + '</span></div>').join('') + '</div>';
     } catch(e){ /* sin clasificación la conversación sigue igual */ }
+  }
+
+  // Las fotos no viajan con el hilo: se piden una a una (y la mía ya la tengo)
+  function cargarFoto(id){
+    const poner = d => { const i = el && el.querySelector('img[data-fid="' + id + '"]'); if(i && d){ i.src = d; i.onclick = () => ampliar(d); } };
+    if(fotosLocal[id]) return poner(fotosLocal[id]);
+    colaFotos = colaFotos.then(async () => {
+      const cl = cliente(); if(!cl || !el) return;
+      try { const r = await cl.rpc('hoyo19_foto', { p_mensaje: id }); if(!r.error && r.data){ fotosLocal[id] = r.data; poner(r.data); } } catch(e){}
+    });
+  }
+  function ampliar(d){
+    const z = document.createElement('div'); z.className = 'h19h-zoom'; z.innerHTML = '<img alt="Foto ampliada">'; z.firstChild.src = d; z.onclick = () => z.remove(); el.appendChild(z);
   }
 
   function aviso(t){
@@ -105,8 +124,8 @@
       d.innerHTML = '<svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s' + s + '"/></svg><div class="h19h-cuerpo"><span class="h19h-quien">' + nombre + '</span>' + esc(TEXTO[s] || '') + '<div data-reac="' + m.id + '"></div></div>';
       return d;
     }
-    d.className = 'h19h-b' + (m.mio ? ' yo' : '');
-    d.innerHTML = (m.mio ? '' : av(m.jugador)) + '<div class="h19h-cuerpo"><span class="h19h-quien">' + nombre + '</span>' + (m.tipo === 'texto' ? esc(m.texto) : 'Foto') + '<div data-reac="' + m.id + '"></div></div>';
+    d.className = 'h19h-b' + (m.mio ? ' yo' : '') + (m.tipo === 'foto' ? ' foto' : '');
+    d.innerHTML = (m.mio || m.tipo === 'foto' ? '' : av(m.jugador)) + '<div class="h19h-cuerpo"><span class="h19h-quien">' + nombre + '</span>' + (m.tipo === 'texto' ? esc(m.texto) : '<img class="h19h-foto" data-fid="' + m.id + '" alt="Foto del hoyo 19"><span class="h19h-nota">Foto reducida · se borra con el hilo</span>') + '<div data-reac="' + m.id + '"></div></div>';
     return d;
   }
   function pintarReac(){
@@ -125,6 +144,7 @@
       (d.mensajes || []).forEach(m => {
         if(pintados[m.id]) return; pintados[m.id] = 1; ultimo = Math.max(ultimo, m.id);
         lista.appendChild(burbuja(m));
+        if(m.tipo === 'foto') cargarFoto(m.id);
         if(m.tipo === 'confeti' && Date.now() - Date.parse(m.creado_en) < 15000) confeti();
       });
       pintarReac();
@@ -138,11 +158,12 @@
     ocupado = false;
   }
 
-  async function enviar(tipo, frase, texto){
+  async function enviar(tipo, frase, texto, foto){
     const cl = cliente(); if(!cl) return false;
     try {
-      const r = await cl.rpc('hoyo19_enviar', { p_code: code, p_tipo: tipo, p_frase: frase == null ? null : frase, p_texto: texto || null, p_foto: null });
+      const r = await cl.rpc('hoyo19_enviar', { p_code: code, p_tipo: tipo, p_frase: frase == null ? null : frase, p_texto: texto || null, p_foto: foto || null });
       if(r.error) throw r.error;
+      if(foto && r.data) fotosLocal[r.data] = foto;
       await leer(false); return true;
     } catch(e){ aviso(String(e && e.message || 'No se pudo enviar')); return false; }
   }
@@ -173,7 +194,8 @@
 
   function abrir(codigo, partida){
     if(el) return;
-    code = codigo; ultimo = 0; pintados = {}; reacc = {};
+    code = codigo; ultimo = 0; pintados = {}; reacc = {}; fotosLocal = {};
+    infoPartida = { campo: partida && partida.course_name, fecha: partida && partida.updated_at };
     raiz();
     const donde = [partida && partida.round_name, partida && partida.course_name].filter(Boolean).join(' · ');
     el.querySelector('#h19Sub').textContent = donde;

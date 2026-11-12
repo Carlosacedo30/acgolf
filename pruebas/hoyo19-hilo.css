@@ -78,3 +78,56 @@ body:has(.pr-banda) .h19h-cab { padding-top: 38px; }
 /* Más de 4 jugadores (liga con varios grupos): siempre una línea, que se desliza hacia los lados */
 .h19h-clasif.muchos .fila { scroll-snap-type: x proximity; }
 .h19h-clasif.muchos .pl { scroll-snap-align: start; white-space: nowrap; }
+
+/* ===== Foto con marco ===== */
+.h19h-foto { display: block; width: 210px; max-width: 100%; border-radius: 10px; margin-top: 4px; background: #0b0907; min-height: 120px; cursor: zoom-in; }
+.h19h-nota { display: block; font-size: 12px; color: var(--suave); margin-top: 2px; }
+.h19h-zoom { position: absolute; inset: 0; z-index: 5; background: rgba(0,0,0,.92); display: flex; align-items: center; justify-content: center; padding: 14px; }
+.h19h-zoom img { max-width: 100%; max-height: 100%; border-radius: 8px; }
+.h19f { --lima:#C6F24E; position: fixed; inset: 0; z-index: 9100; max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 10px; padding: 12px 14px 18px; overflow-y: auto;
+  background: #111316 repeating-linear-gradient(90deg,#1c120b 0 38px,#170e08 38px 40px); color: #F2F4F5; font-family: 'Barlow', system-ui, sans-serif; }
+body:has(.pr-banda) .h19f { padding-top: 40px; }
+.h19f button { font-family: 'Archivo', system-ui, sans-serif; cursor: pointer; }
+.h19f-top button { background: none; border: 0; color: var(--lima); font-weight: 800; font-size: 17px; padding: 4px 0; display: block; }
+.h19f-top h2 { margin: 0; font-size: 22px; font-weight: 900; }
+.h19f-top span { font-size: 14px; color: #9AA3AB; }
+.h19f-lienzo { position: relative; width: 100%; max-width: 360px; margin: 0 auto; aspect-ratio: 4/5; background: #0b0907; border-radius: 6px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.6); }
+.h19f-foto { position: absolute; inset: 0; }
+.h19f-foto video, .h19f-foto .h19f-res { width: 100%; height: 100%; object-fit: cover; display: block; }
+.h19f-res { display: none; }
+.h19f-lienzo.fija .h19f-res { display: block; } .h19f-lienzo.fija video { display: none; }
+/* La foto fija ya lleva el marco dibujado dentro: no se repite encima */
+.h19f-lienzo.fija .mar { display: none; } .h19f-lienzo.fija .h19f-foto { inset: 0 !important; box-shadow: none !important; }
+.h19f-lienzo.conm .h19f-foto { left: 5.5%; right: 5.5%; top: 13.5%; bottom: 23%; box-shadow: 0 0 0 1.5px #C6F24E; }
+.h19f-lienzo .mar { position: absolute; inset: 0; pointer-events: none; }
+.mar .fino { position: absolute; inset: 7px; border: 1px solid rgba(198,242,78,.35); border-radius: 3px; }
+.mar .esq { position: absolute; width: 16px; height: 16px; border: 2px solid #C6F24E; filter: drop-shadow(0 0 4px #C6F24E); }
+.mar .e1 { left: 7px; top: 7px; border-right: 0; border-bottom: 0; } .mar .e2 { right: 7px; top: 7px; border-left: 0; border-bottom: 0; }
+.mar .e3 { left: 7px; bottom: 7px; border-right: 0; border-top: 0; } .mar .e4 { right: 7px; bottom: 7px; border-left: 0; border-top: 0; }
+.mar .neon { position: absolute; left: 0; right: 0; text-align: center; font-family: 'Archivo', system-ui, sans-serif; }
+.mar .tit { top: 3.4%; font-weight: 900; font-size: 26px; letter-spacing: 6px; color: #F7FFD9; text-shadow: 0 0 4px #fff, 0 0 10px #C6F24E, 0 0 22px #9BD11F, 0 0 38px rgba(198,242,78,.6); }
+.mar .frase { bottom: 8%; line-height: 1; color: #F3E6CC; font-weight: 700; }
+.mar .frase small { display: block; font-size: 10px; letter-spacing: 4px; } .mar .frase b { display: block; font-size: 25px; letter-spacing: 3px; margin: 3px 0; font-weight: 900; color: #FFD54F; }
+.mar .rem { position: absolute; left: 0; right: 0; bottom: 3.6%; text-align: center; font-size: 11px; letter-spacing: 2px; color: #cdbf9b; text-transform: uppercase; }
+.h19f-err { background: #2a1c10; border: 1px solid #6b4a2b; border-radius: 12px; padding: 10px 12px; font-size: 15px; }
+.h19f-sw { display: flex; gap: 8px; }
+.h19f .chip { flex: 1; padding: 13px 6px; border-radius: 999px; border: 1px solid #4A5058; background: #24282D; color: #F2F4F5; font-weight: 800; font-size: 16px; }
+.h19f .chip.on { background: var(--lima); color: #111316; border-color: var(--lima); }
+.h19f-cam { display: flex; align-items: center; justify-content: space-between; padding: 4px 10px; }
+.h19f-cam .disp { width: 76px; height: 76px; border-radius: 50%; background: transparent; border: 4px solid #fff; display: flex; align-items: center; justify-content: center; padding: 0; }
+.h19f-cam .disp i { width: 56px; height: 56px; border-radius: 50%; background: var(--lima); display: block; }
+.h19f-cam .disp:active i { transform: scale(.9); }
+.h19f-cam .giro { width: 52px; height: 52px; border-radius: 50%; border: 1px solid #4A5058; background: #24282D; color: #F2F4F5; font-size: 26px; }
+.h19f-cam .plan-b { font-weight: 800; font-size: 15px; color: var(--lima); text-align: center; width: 70px; cursor: pointer; }
+.h19f-cam .plan-b input { display: none; }
+.h19f-acc { display: flex; gap: 8px; }
+.h19f-acc button { flex: 1; padding: 15px 8px; border-radius: 999px; border: 1px solid rgba(198,242,78,.55); background: #24282D; color: #F2F4F5; font-weight: 800; font-size: 17px; }
+.h19f-acc button.pri { background: var(--lima); color: #111316; border-color: var(--lima); }
+.h19f-nota { font-size: 13px; color: #9AA3AB; text-align: center; margin: 0; }
+.h19f [hidden] { display: none !important; }
+.h19f-foto .h19f-res { display: none; }
+.h19f-lienzo.fija .h19f-foto .h19f-res { display: block; }
+/* La foto de grupo ocupa casi todo el ancho del hilo (lo demás no cambia) */
+.h19h-b.foto { max-width: 100%; width: 100%; }
+.h19h-b.foto .h19h-cuerpo { flex: 1; min-width: 0; padding: 6px 8px 8px; }
+.h19h-b.foto .h19h-foto { width: 100%; min-height: 0; aspect-ratio: 4 / 5; object-fit: cover; }
