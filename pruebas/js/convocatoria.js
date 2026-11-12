@@ -8,6 +8,7 @@
   const CONV_DEFAULT_TIMES = ['08:40', '08:50'];
   const APP_URL = 'https://carlosacedo30.github.io/acgolf/pruebas/';
   let conv = null;            // { id, code, updatedAt, times:[], groups:[[names]], date, courseId, roundCode }
+  const convTerminadas = new Set(); // códigos de convocatorias cuya partida ya está terminada (no vuelven al Inicio)
   let convActivas = [];       // todas las convocatorias de hoy en adelante, de la más próxima a la más lejana
   let convChannel = null;
   let convMarc = false;       // interruptor «Partida con marcador» al crear la partida de un partido organizado
@@ -76,6 +77,7 @@
     if(codigos.length){
       const { data: rondas } = await client.from('rounds').select('code, match_groups').in('code', codigos);
       const terminadas = new Set((rondas || []).filter(r => isRoundFinished(r.match_groups)).map(r => r.code));
+      lista.forEach(c => { if(c.roundCode && terminadas.has(c.roundCode)) convTerminadas.add(c.code); else convTerminadas.delete(c.code); });
       lista = lista.filter(c => !terminadas.has(c.roundCode));
       // Si la partida creada se borró, el partido vuelve a estar «sin crear» (así se puede abrir, rehacer o borrar)
       if(rondas){ const existen = new Set(rondas.map(r => r.code)); lista.forEach(c => { if(c.roundCode && !existen.has(c.roundCode)) c.roundCode = null; }); }
@@ -95,7 +97,7 @@
   function convSyncActiva(c){
     if(!c) return;
     const i = convActivas.findIndex(x => x.code === c.code);
-    const activa = c.date && c.date >= convIsoToday() && !convYaPasada(c);
+    const activa = c.date && c.date >= convIsoToday() && !convYaPasada(c) && !convTerminadas.has(c.code);
     if(i >= 0){ if(activa) convActivas[i] = c; else convActivas.splice(i, 1); }
     else if(activa){ convActivas.push(c); }
     convActivas.sort((a, b) => a.date.localeCompare(b.date));
