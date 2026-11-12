@@ -1,12 +1,12 @@
 // © 2026 Carlos Acedo Domínguez. Todos los derechos reservados.
 // El hoyo 19 · botón del Inicio.
-//  · Despierto (pancarta grande, ARRIBA del menú): si el grupo tiene una partida de los últimos 5 días.
+//  · Despierto (pancarta grande, ARRIBA del menú): si el grupo tiene una partida de HOY (el hilo se cierra a las 12 de la noche).
 //  · Dormido (franja pequeña, junto a Cartas): el resto del tiempo.
 // Solo se pregunta a la base de datos UNA vez al abrir la app (y otra al volver a ella pasado un minuto). Nunca mientras se anota.
 (function(){
   'use strict';
   if(window.acgolfHoyo19) return;
-  const DIAS = 5;                       // días que dura el hilo (el mismo límite que la base de datos)
+  // El hilo dura solo el día de la partida: a las 12 de la noche se cierra (igual que en la base de datos)
   const NUEVO_HASTA = Date.parse('2026-12-31'); // «NUEVO» las primeras semanas
   let btn = null, estado = '', ultimaConsulta = 0, partida = null;
 
@@ -59,7 +59,7 @@
     ultimaConsulta = Date.now();
     let est = 'dormido';
     try {
-      const desde = new Date(Date.now() - DIAS * 864e5).toISOString();
+      const hoy0 = new Date(); hoy0.setHours(0, 0, 0, 0); const desde = hoy0.toISOString();
       const r = await client.from('rounds').select('code, course_name, round_name, updated_at')
         .not('course_id', 'is', null).gt('updated_at', desde).order('updated_at', { ascending: false }).limit(1);
       if(!r.error && r.data && r.data.length){ partida = r.data[0]; est = 'despierto'; }
