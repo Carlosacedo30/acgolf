@@ -18,7 +18,7 @@
   const color = n => { let h = 0; for(const c of String(n)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORES[h % COLORES.length]; };
   const cliente = () => (typeof initSupabase === 'function') ? initSupabase() : null;
 
-  let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null;
+  let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null, vueltas = 0;
 
   function raiz(){
     if(!document.getElementById('h19Defs')) document.body.insertAdjacentHTML('beforeend', DEFS);
@@ -26,6 +26,7 @@
     el.innerHTML =
       '<div class="h19h-cab"><button type="button" class="h19h-volver" id="h19Volver">‹ Volver al inicio</button>'
       + '<h1 class="h19h-titulo">El hoyo 19</h1><p class="h19h-sub" id="h19Sub"></p></div>'
+      + '<div class="h19h-clasif" id="h19Clasif" hidden></div>'
       + '<div class="h19h-borra" id="h19Borra"></div>'
       + '<div class="h19h-hilo" id="h19Lista" aria-live="polite"></div>'
       + '<div class="h19h-barra"><div class="h19h-tabs" id="h19Tabs">'
@@ -46,7 +47,32 @@
     el.querySelector('#h19Foto').onclick = () => aviso('La foto con marco llega en el siguiente paso');
     el.querySelector('#h19Chiv').onclick = () => aviso('El chivito lo manda solo el ganador (muy pronto)');
     el.querySelector('#h19Lista').onclick = clicLista;
+    // La pizarra se encoge a una línea al subir por la conversación y vuelve a crecer al bajar (con margen para que no parpadee)
+    const lst = el.querySelector('#h19Lista');
+    lst.addEventListener('scroll', () => {
+      const lejos = lst.scrollHeight - lst.scrollTop - lst.clientHeight, c = el.querySelector('#h19Clasif');
+      if(lejos > 200) c.classList.add('min'); else if(lejos < 60 && !c.classList.contains('muchos')) c.classList.remove('min');
+    }, { passive: true });
     frases();
+  }
+
+
+  // Clasificación fija arriba: sale del mismo cálculo que «En vivo» (neto con hándicap, o puntos en Stableford)
+  const signo = d => d === 0 ? 'E' : (d > 0 ? '+' : '−') + Math.abs(d);
+  const primera = n => String(n || '').trim().split(/\s+/)[0] || '?';
+  async function clasificacion(){
+    const EV = window.acgolfEnVivo, caja = el && el.querySelector('#h19Clasif');
+    if(!EV || !EV.leerRonda || !EV.tabla || !caja) return;
+    try {
+      const ronda = await EV.leerRonda(code); if(!ronda || !el) return;
+      const t = EV.tabla(ronda); if(!t.length){ caja.hidden = true; return; }
+      const pts = t[0].esPtos, nh = g => (g && g.nueve) ? 9 : 18;
+      const acabados = t.every(x => x.pos >= nh(x.g));
+      caja.hidden = false; const muchos = t.length > 4, pagan = t.length >= 2 ? Math.floor(t.length / 2) : 0;   // pagan la mitad de abajo (impares: redondeo hacia abajo), igual que En vivo
+       caja.classList.toggle('muchos', muchos); if(muchos) caja.classList.add('min');
+      caja.innerHTML = '<div class="t">CLASIFICACIÓN (' + (pts ? 'PUNTOS' : 'NETO') + ')' + (acabados ? '' : ' · PROVISIONAL') + '</div><div class="fila">'
+        + t.map((x, i) => '<div class="pl' + (i === 0 ? ' g' : '') + '"><i>' + (i + 1) + '</i>' + av(x.n) + '<b>' + esc(primera(x.n)) + (pagan > 0 && i >= t.length - pagan ? ' 🍺' : '') + '</b><span>' + (pts ? x.pts : signo(x.neto)) + '</span></div>').join('') + '</div>';
+    } catch(e){ /* sin clasificación la conversación sigue igual */ }
   }
 
   function aviso(t){
@@ -155,8 +181,8 @@
     el.querySelector('#h19Borra').textContent = 'Se borra el ' + borra.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
     el.querySelector('#h19Lista').innerHTML = '<div class="h19h-sep" id="h19Vacio">Aquí empieza el hoyo 19. ¡Brinda con tu grupo!</div>';
     document.documentElement.classList.add('h19h-abierto');
-    leer(true);
-    timer = setInterval(() => { if(document.visibilityState === 'visible') leer(false); }, REFRESCO);
+    leer(true); clasificacion();
+    timer = setInterval(() => { if(document.visibilityState === 'visible'){ leer(false); if(++vueltas % 8 === 0) clasificacion(); } }, REFRESCO);
   }
   function cerrar(){
     clearInterval(timer); timer = null;
