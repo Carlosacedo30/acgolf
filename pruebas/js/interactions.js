@@ -214,6 +214,7 @@
   function startNewRoundNow(){
     roundMarkedFinished = false;
     currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior
+    window.acgolfRondaCreada = null;
     leagueHandicapUpdateScheduled = false; // ronda nueva: permitir recalcular la liga cuando esta también termine
     const rcSection = document.getElementById('roundCodeSection');
     if(rcSection) rcSection.style.display = 'none';

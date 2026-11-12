@@ -141,7 +141,7 @@
     const hc = v => typeof hcpCampo === 'function' ? hcpCampo(v == null ? 0 : v, campo, BARRA) : Math.round(v || 0);
     // hándicap de juego de cada bola según la modalidad
     const juego = b => d.tipo === 'foursome' ? Math.round((b.hcp || []).reduce((s, v) => s + hc(v), 0) / 2)
-      : d.tipo === 'fourball' ? Math.round(hc(b.hcp) * 0.9) : hc(b.hcp);
+      : d.tipo === 'fourball' ? (typeof hcpCampo === 'function' ? hcpCampo(b.hcp == null ? 0 : b.hcp, campo, BARRA, 0.9) : Math.round(hc(b.hcp) * 0.9)) : hc(b.hcp);
     const BA = bolas(d, 'a'), BB = bolas(d, 'b');
     BA.concat(BB).forEach(b => { b.juego = juego(b); });
     const minimo = Math.min.apply(null, BA.concat(BB).map(b => b.juego));

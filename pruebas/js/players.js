@@ -2,9 +2,10 @@
   let playerHandicaps = [0];
   // Golpes de regalo que le tocan a un hándicap en un hoyo de un índice de dificultad dado (1-18)
   function strokesForHole(handicap, strokeIndex){
-    if(isNaN(handicap) || handicap <= 0) return 0;
+    if(isNaN(handicap) || Math.round(handicap) === 0) return 0;
     const h = Math.round(handicap);
     const base = (typeof hoyosPartida === 'function') ? hoyosPartida() : 18; // 9 hoyos: los golpes se reparten en 9
+    if(h < 0){ const a = -h; return -(Math.floor(a / base) + ((a % base) >= (base + 1 - strokeIndex) ? 1 : 0)); } // plus: devuelve golpes en los hoyos más fáciles
     return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);
   }
 
@@ -56,22 +57,38 @@
     const v = Number(h) || 0;
     const c = curso || (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
     const d = c && dificultadCampo(c, barra || BARRA_DEFECTO);
-    if(!d || !Array.isArray(c.par)) return v;
+    if(!d || !Array.isArray(c.par)) return v * (c && c.nueve ? 0.5 : 1) * (pct || 1); // sin datos del campo: el hándicap tal cual (en 9 hoyos, la mitad)
     const vueltas = c.holes9 && c.par.length === 9 && !c.nueve ? 2 : 1; // 9 hoyos: se juegan dos vueltas
     const mitad = c.nueve ? 0.5 : 1; // partida de 9 hoyos: medio hándicap (regla de la Federación para 9 hoyos)
     const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0) * vueltas;
-    return Math.round((v * mitad * d.slope / 113 + (d.rating * vueltas - par)) * (pct || 1));
+    return Math.round((v * mitad * d.slope / 113 + (d.rating * vueltas - par)) * (pct || 1) + 1e-9); // +1e-9: el medio golpe exacto sube, como en la base de datos
   }
   // Hándicap con el que se juega de verdad: el del campo (según su barra) y, encima, el porcentaje de la modalidad
+  // Porcentaje del hándicap de campo (sin redondear) según la Federación: individual 95 % (stroke play y Stableford),
+  // mejor bola 85 % (90 % en Match Play), Match Play individual 100 %. Parejas y Scramble traen ya sus golpes calculados.
+  // En 18 hoyos el 95 % vale para las partidas desde el 13-nov-2026 (las anteriores se quedan como se jugaron).
+  const DESDE_95_18 = '2026-11-13T00:00:00+01:00';
+  function pctJuego(modo, scoring, nueve, fecha){
+    modo = modo || 'individual';
+    if(modo === 'fourball') return scoring === 'matchplay' ? 0.9 : 0.85;
+    if(modo !== 'individual' || scoring === 'matchplay') return undefined;
+    if(nueve) return 0.95;
+    const t = fecha ? Date.parse(fecha) : NaN;
+    return (isNaN(t) || t >= Date.parse(DESDE_95_18)) ? 0.95 : undefined;
+  }
   function ajusteHcp(h, barra){
     const c9 = (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
-    const v = hcpCampo(h, null, barra, c9 && c9.nueve && modoPartida() === 'individual' ? 0.95 : undefined);
-    const f = factorHcpModo();
-    return f === 1 ? v : Math.round(v * f * 10) / 10;
+    return hcpCampo(h, null, barra, pctJuego(modoPartida(), typeof scoringType !== 'undefined' ? scoringType : undefined, !!(c9 && c9.nueve), window.acgolfRondaCreada));
   }
   function hcpJuego(pIndex){
     const g = (typeof matchGroups !== 'undefined' && typeof activeGroup !== 'undefined') ? matchGroups[activeGroup] : null;
-    return ajusteHcp(playerHandicaps[pIndex], barraDe(g, pIndex));
+    let v = ajusteHcp(playerHandicaps[pIndex], barraDe(g, pIndex));
+    // Match Play: el de menos golpes juega con cero y los demás reciben la diferencia (en los hoyos más difíciles)
+    if(g && typeof scoringType !== 'undefined' && scoringType === 'matchplay'){
+      const todos = (playerHandicaps || []).map((hh, i) => (g.players && g.players[i]) ? ajusteHcp(hh, barraDe(g, i)) : null).filter(x => x != null);
+      if(todos.length > 1) v -= Math.min.apply(null, todos);
+    }
+    return v;
   }
   // Parejas de un grupo en Fourball: [[0,1],[2,3]] (solo las posiciones con jugador)
   function parejasFourball(lista){

@@ -728,3 +728,101 @@ for a, b in [('hoyo19-hilo.js?v=9', 'hoyo19-hilo.js?v=10'), ('hoyo19-hilo.css?v=
     s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+
+# --- Norma de la Federación en los marcadores (auditoría 12-nov-2026) ---
+#  · 95 % del hándicap de campo en juego individual (stroke play y Stableford), también en 18 hoyos (partidas desde el 13-nov-2026)
+#  · Mejor bola 85 % / 90 % con UN solo redondeo; medio golpe exacto bien redondeado
+#  · Match Play: el de menos golpes juega con cero y los demás reciben la diferencia
+#  · Hándicap de juego negativo (plus): devuelve golpes en los hoyos más fáciles
+#  · 9 hoyos en un campo sin slope: medio hándicap
+python3 - <<'EOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:70])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+P = 'pruebas/js/players.js'
+# 1) golpes por hoyo, también con hándicap de juego negativo
+cambia(P, "if(isNaN(handicap) || handicap <= 0) return 0;\n    const h = Math.round(handicap);", "if(isNaN(handicap) || Math.round(handicap) === 0) return 0;\n    const h = Math.round(handicap);")
+cambia(P, "    return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);", "    if(h < 0){ const a = -h; return -(Math.floor(a / base) + ((a % base) >= (base + 1 - strokeIndex) ? 1 : 0)); } // plus: devuelve golpes en los hoyos más fáciles\n    return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);")
+# 2) hándicap de campo: un solo redondeo, medio golpe exacto, 9 hoyos sin slope
+cambia(P, "if(!d || !Array.isArray(c.par)) return v;", "if(!d || !Array.isArray(c.par)) return v * (c && c.nueve ? 0.5 : 1) * (pct || 1); // sin datos del campo: el hándicap tal cual (en 9 hoyos, la mitad)")
+cambia(P, "(d.rating * vueltas - par)) * (pct || 1));", "(d.rating * vueltas - par)) * (pct || 1) + 1e-9); // +1e-9: el medio golpe exacto sube, como en la base de datos")
+# 3) porcentaje de cada modalidad (un solo sitio) y hándicap de juego
+cambia(P, """  function ajusteHcp(h, barra){
+    const c9 = (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
+    const v = hcpCampo(h, null, barra, c9 && c9.nueve && modoPartida() === 'individual' ? 0.95 : undefined);
+    const f = factorHcpModo();
+    return f === 1 ? v : Math.round(v * f * 10) / 10;
+  }""", """  // Porcentaje del hándicap de campo (sin redondear) según la Federación: individual 95 % (stroke play y Stableford),
+  // mejor bola 85 % (90 % en Match Play), Match Play individual 100 %. Parejas y Scramble traen ya sus golpes calculados.
+  // En 18 hoyos el 95 % vale para las partidas desde el 13-nov-2026 (las anteriores se quedan como se jugaron).
+  const DESDE_95_18 = '2026-11-13T00:00:00+01:00';
+  function pctJuego(modo, scoring, nueve, fecha){
+    modo = modo || 'individual';
+    if(modo === 'fourball') return scoring === 'matchplay' ? 0.9 : 0.85;
+    if(modo !== 'individual' || scoring === 'matchplay') return undefined;
+    if(nueve) return 0.95;
+    const t = fecha ? Date.parse(fecha) : NaN;
+    return (isNaN(t) || t >= Date.parse(DESDE_95_18)) ? 0.95 : undefined;
+  }
+  function ajusteHcp(h, barra){
+    const c9 = (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
+    return hcpCampo(h, null, barra, pctJuego(modoPartida(), typeof scoringType !== 'undefined' ? scoringType : undefined, !!(c9 && c9.nueve), window.acgolfRondaCreada));
+  }""")
+cambia(P, """    return ajusteHcp(playerHandicaps[pIndex], barraDe(g, pIndex));
+  }""", """    let v = ajusteHcp(playerHandicaps[pIndex], barraDe(g, pIndex));
+    // Match Play: el de menos golpes juega con cero y los demás reciben la diferencia (en los hoyos más difíciles)
+    if(g && typeof scoringType !== 'undefined' && scoringType === 'matchplay'){
+      const todos = (playerHandicaps || []).map((hh, i) => (g.players && g.players[i]) ? ajusteHcp(hh, barraDe(g, i)) : null).filter(x => x != null);
+      if(todos.length > 1) v -= Math.min.apply(null, todos);
+    }
+    return v;
+  }""")
+# 4) fecha de la partida (para el 95 % en 18 hoyos): una partida nueva vale hoy; una abierta con código, su fecha
+cambia('pruebas/js/interactions.js', "    currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior", "    currentRoundId = null; // ronda nueva: cortar cualquier guardado que aún apunte a la partida anterior\n    window.acgolfRondaCreada = null;")
+cambia('pruebas/js/rondas-compartidas.js', "      currentRoundId = data.id;\n      leagueHandicapUpdateScheduled = false; // ronda distinta", "      currentRoundId = data.id;\n      window.acgolfRondaCreada = data.created_at || null;\n      leagueHandicapUpdateScheduled = false; // ronda distinta")
+# 5) lo que enseña cada pantalla: golpes que da el hándicap (también negativos) sin recortar a 0
+T = 'pruebas/js/tarjetas.js'
+cambia(T, "const rec = isNaN(si) ? 0 : Math.max(0, strokesForHole(hcp, si));", "const rec = isNaN(si) ? 0 : strokesForHole(hcp, si);")
+cambia(T, "const rec = Math.max(0, strokesForHole(hcpJuego(pIndex), parseInt(inp.dataset.strokeIndex, 10)));", "const rec = strokesForHole(hcpJuego(pIndex), parseInt(inp.dataset.strokeIndex, 10));")
+cambia('pruebas/js/vista-hoyo.js', "par: par, tuPar: par != null ? par + Math.max(0, recibidos) : null,", "par: par, tuPar: par != null ? par + recibidos : null,")
+cambia('pruebas/js/tarjeta-blanca.js', "try { return Math.max(0, strokesForHole(hcpJ, si)); } catch(e){ return 0; }", "try { return strokesForHole(hcpJ, si); } catch(e){ return 0; }")
+# 6) pantallas que calculaban su propio hándicap de juego
+cambia('pruebas/js/partida-rapida.js', "campo && campo.nueve && !prParejas() ? 0.95 : undefined)", "pctJuego(modoDesdeTexto(prModal), prPunt, !!(campo && campo.nueve)))")
+L = 'pruebas/js/ligas.js'
+cambia(L, "select('code, course_id, match_groups').in('code', rc)", "select('code, course_id, match_groups, scoring_type, created_at').in('code', rc)")
+cambia(L, "curso && curso.nueve ? 0.95 : undefined)", "pctJuego((g && g.modo) || 'individual', (r && r.scoring_type) || 'stableford', !!(curso && curso.nueve), r && r.created_at))")
+# 7) texto de ayuda
+cambia('pruebas/js/handicap.js', "tu hándicap × slope ÷ 113 + (rating − par)", "tu hándicap × slope ÷ 113 + (rating − par), y en juego individual el 95 % de eso (norma de la Federación)")
+EOF
+python3 - <<'EOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:70])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+E = 'pruebas/en-vivo.js'
+cambia(E, "if(typeof hcpCampo === 'function') return hcpCampo(h, c, barra, nHoyos(g) === 9 && (!g.modo || g.modo === 'individual') ? 0.95 : undefined); // 9 hoyos individual: 95 % (Federación)",
+          "if(typeof hcpCampo === 'function') return Math.round(hcpCampo(h, c, barra, typeof pctJuego === 'function' ? pctJuego(g.modo || 'individual', round.scoring_type, nHoyos(g) === 9, round.created_at) : undefined) + 1e-9); // % de la Federación según la modalidad")
+cambia(E, "rec = nHoyos(g) === 9 ? Math.floor(hc / 9) + ((hc % 9) >= (si[h - 1] || 9) ? 1 : 0) : golpesRegalo(hc, si[h - 1] || 18), diff",
+          "rec = recibeEV(hc, si[h - 1] || nHoyos(g), nHoyos(g)), diff")
+cambia(E, "  function hcpDe(round, g, p, pares){", """  // Golpes que recibe un hándicap de juego en un hoyo de dificultad «si» entre n hoyos (también negativos: plus)
+  function recibeEV(hc, si, n){
+    hc = Math.round(Number(hc) || 0); if(!hc) return 0;
+    if(hc < 0){ const a = -hc; return -(Math.floor(a / n) + ((a % n) >= (n + 1 - si) ? 1 : 0)); }
+    return Math.floor(hc / n) + ((hc % n) >= si ? 1 : 0);
+  }
+  function hcpDe(round, g, p, pares){""")
+R = 'pruebas/ryder.js'
+cambia(R, ": d.tipo === 'fourball' ? Math.round(hc(b.hcp) * 0.9) : hc(b.hcp);", ": d.tipo === 'fourball' ? (typeof hcpCampo === 'function' ? hcpCampo(b.hcp == null ? 0 : b.hcp, campo, BARRA, 0.9) : Math.round(hc(b.hcp) * 0.9)) : hc(b.hcp);")
+EOF
+# --- Versiones nuevas para que los móviles cojan los cambios de la norma de la Federación ---
+python3 - <<'EOF'
+import re
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+for f in ['js/players.js', 'js/tarjetas.js', 'js/vista-hoyo.js', 'js/tarjeta-blanca.js', 'js/partida-rapida.js', 'js/ligas.js', 'js/handicap.js', 'js/interactions.js', 'js/rondas-compartidas.js', 'en-vivo.js', 'ryder.js']:
+    rx = re.compile('(' + re.escape(f) + r'\?v=)(\d+)')
+    assert len(rx.findall(s)) == 1, f
+    s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 1), s)
+open(p, 'w', encoding='utf-8').write(s)
+EOF

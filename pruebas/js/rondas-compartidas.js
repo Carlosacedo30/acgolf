@@ -213,6 +213,7 @@
       const { data, error } = await client.from('rounds').select('*').eq('code', code).single();
       if(error || !data) return { ok: false, msg: 'No encontramos ninguna partida con ese código.' };
       currentRoundId = data.id;
+      window.acgolfRondaCreada = data.created_at || null;
       leagueHandicapUpdateScheduled = false; // ronda distinta: permitir recalcular la liga cuando esta termine
       roundName = data.round_name || '';
       matchGroups = (data.match_groups && data.match_groups.length) ? normalizeMatchGroups(data.match_groups) : matchGroups;
