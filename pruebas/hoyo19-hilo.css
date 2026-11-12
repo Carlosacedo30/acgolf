@@ -156,3 +156,51 @@ body:has(.pr-banda) .h19f { padding-top: 40px; }
 .h19h-hoja img { display: block; width: 100%; max-width: 360px; margin: 0 auto 12px; border-radius: 10px; }
 .h19h-hoja button { width: 100%; padding: 14px; margin-top: 8px; border-radius: 999px; border: 1px solid rgba(198,242,78,.55); background: var(--tarj2); color: var(--texto); font-weight: 800; font-size: 17px; }
 .h19h-hoja button.pri { background: var(--lima); color: #111316; border-color: var(--lima); }
+
+/* ===== Más sitio para el chat: cabecera, pizarra y botones más pequeños ===== */
+.h19h-cab { padding: max(4px, env(safe-area-inset-top)) 12px 4px; }
+body:has(.pr-banda) .h19h-cab { padding-top: 34px; }
+.h19h-volver { font-size: 15px; padding: 2px 0; }
+.h19h-comp { width: 34px; height: 34px; }
+.h19h-comp svg { width: 18px; height: 18px; }
+.h19h-fila { margin-bottom: -34px; position: relative; z-index: 1; }
+.h19h-titulo { font-size: 22px; text-align: center; margin: 0; line-height: 1.1; }
+.h19h-sub { font-size: 13px; text-align: center; }
+.h19h-clasif { margin: 4px 8px 0; padding: 3px 6px; border-width: 3px; border-radius: 10px; }
+.h19h-clasif .t, .h19h-clasif .h19h-av { display: none; }
+.h19h-clasif .fila { gap: 5px; padding: 1px; }
+.h19h-clasif .pl, .h19h-clasif.min .pl { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 2px 8px; border-radius: 10px; }
+.h19h-clasif .pl i { display: inline; font-size: 13px; }
+.h19h-clasif b, .h19h-clasif.min b { display: inline; margin: 0; font-size: 14px; }
+.h19h-clasif span:last-child, .h19h-clasif.min span:last-child { font-size: 15px; }
+.h19h-borra { margin: 2px 0 0; padding: 0; border: 0; background: none; font-size: 11px; align-self: center; }
+.h19h-hilo { margin-top: 2px; }
+.h19h-barra { padding: 5px 8px 8px; }
+.h19h-tabs { gap: 5px; margin-bottom: 5px; }
+.h19h-tabs button { font-size: 13px; padding: 5px 2px; }
+.h19h-frase { font-size: 14px; padding: 3px 10px 3px 4px; gap: 5px; }
+.h19h-frase svg { width: 24px; height: 24px; }
+.h19h-esc { margin-top: 5px; gap: 6px; }
+.h19h-esc input { font-size: 16px; padding: 7px 10px; border-radius: 12px; }
+.h19h-esc button { font-size: 15px; padding: 7px 14px; }
+.h19h-cont { display: none; }
+.h19h-acc { margin-top: 5px; gap: 6px; }
+.h19h-acc button { font-size: 13px; padding: 5px 2px; }
+.h19h-acc svg { width: 20px; height: 20px; }
+
+/* ===== Barra plegable: solo la línea de escribir; los botones salen con el «+» ===== */
+.h19h-panel { display: none; }
+.h19h-barra.abierta .h19h-panel { display: block; }
+.h19h-barra { padding: 4px 8px 6px; }
+.h19h-esc { margin-top: 0; }
+.h19h-barra.abierta .h19h-esc { margin-top: 4px; }
+.h19h-mas { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(198,242,78,.55); background: var(--tarj2); color: var(--lima); font-size: 24px; font-weight: 800; line-height: 1; padding: 0; }
+.h19h-esc input { padding: 6px 10px; }
+.h19h-esc button#h19Env { padding: 6px 12px; font-size: 14px; }
+.h19h-tabs { margin-bottom: 4px; }
+.h19h-tabs button { font-size: 12px; padding: 3px 2px; }
+.h19h-frase { font-size: 13px; padding: 2px 8px 2px 3px; }
+.h19h-frase svg { width: 20px; height: 20px; }
+.h19h-acc { margin-top: 4px; }
+.h19h-acc button { font-size: 12px; padding: 3px 2px; }
+.h19h-acc svg { width: 18px; height: 18px; }
