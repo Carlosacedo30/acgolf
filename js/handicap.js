@@ -5,7 +5,9 @@
   //  · tarjetas_liga_whs: cada tarjeta de la liga con sus golpes ajustados y su diferencial
   //  · handicap_historial: cada cambio, con el hándicap de antes y el de después
   // Regla: últimas 20 tarjetas; si hay menos, las que faltan cuentan como el hándicap de salida; media de las 8 mejores.
-  const HCP_CAMPOS = { 'hato-verde': { n: 'Hato Verde', cr: 68.3, sl: 122 }, 'zaudin': { n: 'Zaudín', cr: 70.5, sl: 133 } };
+  const HCP_CAMPOS = { 'hato-verde': { n: 'Hato Verde', cr: 68.3, sl: 122 }, 'zaudin': { n: 'Zaudín', cr: 70.5, sl: 133 },
+    // Rondas de 9 hoyos (cuentan igual: diferencial de 9 hoyos + lo esperado en los otros 9). Solo para poner el nombre.
+    'hato-verde-9': { n: 'Hato Verde · Ida (9 hoyos)', nueve: true }, 'hato-verde-9v': { n: 'Hato Verde · Vuelta (9 hoyos)', nueve: true } };
   let hcpDatos = null;     // { jugadores, tarjetas, historial }
   let hcpVer = '';         // jugador que se está viendo
 
@@ -120,16 +122,17 @@
 
       + (c.tarjetas.length ? '<div class="hp-sec-t">Tus tarjetas de la liga</div><div class="hp-tarjetas">' + c.tarjetas.map(t => {
           const cp = HCP_CAMPOS[t.course_id] || { n: t.course_id };
-          return '<div class="hp-tj"><span>' + hFecha(t.played_at) + ' · ' + hEsc(cp.n) + '</span><span>' + t.ags + ' golpes aj.</span><b>' + hNum(t.diferencial) + '</b></div>';
+          return '<div class="hp-tj"><span>' + hFecha(t.played_at) + ' · ' + hEsc(cp.n) + '</span><span>' + t.ags + ' golpes aj.' + (cp.nueve ? ' (9 hoyos)' : '') + '</span><b>' + hNum(t.diferencial) + '</b></div>';
         }).join('') + '</div>' : '')
 
-      + '<details class="rg-item hp-como"><summary><span class="rg-st"><b>¿Cómo se calcula? Explicado fácil</b><small>La regla de la Federación, en 5 pasos</small></span><span class="rg-mas" aria-hidden="true"></span></summary>'
+      + '<details class="rg-item hp-como"><summary><span class="rg-st"><b>¿Cómo se calcula? Explicado fácil</b><small>La regla de la Federación, en 6 pasos</small></span><span class="rg-mas" aria-hidden="true"></span></summary>'
       + '<ul class="rg-pasos">'
       + '<li><b>Golpes ajustados.</b> En cada hoyo, como máximo cuenta un doble bogey más los golpes que te regala tu hándicap. Así un hoyo desastroso no te hunde.</li>'
       + '<li><b>La dificultad del campo.</b> Cada campo tiene dos números: Hato Verde 68,3 y 122; Zaudín 70,5 y 133. Zaudín es más difícil, así que el mismo resultado allí vale más.</li>'
       + '<li><b>El diferencial.</b> Con eso, cada tarjeta da un número: (golpes ajustados − 68,3) × 113 ÷ 122 en Hato Verde. Cuanto más bajo, mejor jugaste.</li>'
       + '<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
       + '<li><b>Los golpes de regalo.</b> En cada partida recibes los golpes que te tocan en ese campo: tu hándicap × slope ÷ 113 + (rating − par). En Hato Verde salen casi los mismos que tu hándicap; en Zaudín, unos cuantos más porque es más difícil.</li>'
+      + '<li><b>Si juegas solo 9 hoyos.</b> También cuenta. Se calcula el diferencial de esos 9 hoyos y se le suma lo que se espera que harías en los otros 9 según tu hándicap (0,52 × tu hándicap + 1,2). Así sale una tarjeta de 18 hoyos, como manda la Federación. Hoy cuentan los 9 hoyos de Hato Verde (Ida y Vuelta, amarillas).</li>'
       + '</ul></details>'
 
       + hcpTodos();
