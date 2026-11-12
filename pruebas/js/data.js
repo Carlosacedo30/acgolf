@@ -124,7 +124,10 @@
         amarillas:{ rating:68.3, slope:122 }, // medición actual, con el hoyo 6 ya de par 3 (antes 69,5 / 119)
         azules:   { rating:67.5, slope:115 },
         rojas:    { rating:66.0, slope:113 },
-      } },
+      },
+      // Valoración OFICIAL de cada vuelta de 9 hoyos (RFEG, vía Golf Direct, 14 partidas de 9 hoyos): primeros 9 y segundos 9
+      // tienen su propio valor de campo y slope (tienen distinta dificultad). Solo barras amarillas; el resto se estima.
+      tees9:{ ida:{ amarillas:{ rating:32.8, slope:120 } }, vuelta:{ amarillas:{ rating:35.6, slope:124 } } } },
     { id:'la-penaza', name:'Real Club de Golf La Peñaza', location:'Zaragoza',
       par:[4,4,3,4,5,3,5,4,4, 4,5,3,4,4,3,5,4,4],
       hcp:[12,8,14,2,18,10,6,16,4, 11,9,15,1,7,5,13,3,17],
@@ -177,6 +180,7 @@
     let tees;
     if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: de18 ? Math.round(t.rating * 5) / 10 : t.rating, slope: t.slope }; }); }
     const v = { id, name: c.name + ' (9 hoyos)', location: c.location, holes9: true, nueve: true, par: c.par.slice(0, 9), hcp: r };
+    if(c.tees9 && c.tees9.ida){ tees = tees || {}; Object.keys(c.tees9.ida).forEach(k => { tees[k] = c.tees9.ida[k]; }); }
     if(tees) v.tees = tees;
     if(c.externo) v.externo = true;
     COURSES.push(v);
@@ -194,6 +198,7 @@
     let tees;
     if(c.tees){ tees = {}; Object.keys(c.tees).forEach(k => { const t = c.tees[k]; tees[k] = { rating: Math.round(t.rating * 5) / 10, slope: t.slope }; }); }
     const v = { id, name: c.name + ' (vuelta 10-18)', location: c.location, holes9: true, nueve: true, par: c.par.slice(9, 18), hcp: r };
+    if(c.tees9 && c.tees9.vuelta){ tees = tees || {}; Object.keys(c.tees9.vuelta).forEach(k => { tees[k] = c.tees9.vuelta[k]; }); }
     if(tees) v.tees = tees;
     if(c.externo) v.externo = true;
     COURSES.push(v);

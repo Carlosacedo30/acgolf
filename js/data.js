@@ -47,7 +47,10 @@
         amarillas:{ rating:68.3, slope:122 }, // medición actual, con el hoyo 6 ya de par 3 (antes 69,5 / 119)
         azules:   { rating:67.5, slope:115 },
         rojas:    { rating:66.0, slope:113 },
-      } },
+      },
+      // Valoración OFICIAL de cada vuelta de 9 hoyos (RFEG, vía Golf Direct, 14 partidas de 9 hoyos): primeros 9 y segundos 9
+      // tienen su propio valor de campo y slope (tienen distinta dificultad). Solo barras amarillas; el resto se estima.
+      tees9:{ ida:{ amarillas:{ rating:32.8, slope:120 } }, vuelta:{ amarillas:{ rating:35.6, slope:124 } } } },
     { id:'la-cartuja', name:'Instalaciones Deportivas La Cartuja', location:'Sevilla', holes9:true,
       par:[4,3,3,3,3,3,4,3,3],
       hcp:[3,5,13,12,10,15,2,11,9] },
