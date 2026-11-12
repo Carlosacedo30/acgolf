@@ -1,0 +1,33 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. */
+/* El hoyo 19 · botón del Inicio (despierto = pancarta grande; dormido = franja pequeña). Estilo «el bar del club». */
+html body .hm-hoyo19.h19-despierto{ grid-column:1 / -1; position:relative; display:block !important; flex-direction:row; text-align:left; font-weight:400; width:100%; height:132px; min-height:132px; padding:0 !important; box-sizing:border-box; border-radius:20px; overflow:hidden; text-align:left; cursor:pointer;
+  border:1.5px solid rgba(198,242,78,.7) !important; color:#F2F4F5 !important;
+  background:repeating-linear-gradient(90deg,#2d2017 0 40px,#221810 40px 42px,#33251b 42px 82px,#221810 82px 84px) !important;
+  box-shadow:0 0 22px rgba(198,242,78,.25), inset 0 0 40px rgba(0,0,0,.55); transition:transform .12s; }
+.hm-hoyo19.h19-despierto:active{ transform:scale(.97); }
+.hm-hoyo19.h19-despierto > svg.h19-flecha{ display:none !important; }
+.hm-hoyo19 > span{ width:auto !important; text-align:left; justify-content:flex-start; margin:0; }
+.hm-hoyo19 .h19-nuevo{ right:auto; width:auto !important; display:inline-block !important; transform:none;  position:absolute; left:20px; top:14px; padding:4px 12px; border-radius:999px; background:#C6F24E; color:#111316; font:900 11px 'Archivo',sans-serif; letter-spacing:.16em; }
+.hm-hoyo19 .h19-tit{ display:block !important; max-width:calc(100% - 120px); white-space:nowrap; position:absolute; left:20px; top:40px; font:900 clamp(26px,8vw,34px)/1 'Archivo',sans-serif; text-transform:uppercase; color:#fff; letter-spacing:.05em;
+  text-shadow:0 0 4px #fff,0 0 10px #C6F24E,0 0 22px #C6F24E,0 0 38px rgba(198,242,78,.6); animation:h19Neon 3.5s ease-in-out infinite; }
+@keyframes h19Neon{ 0%,100%{opacity:1} 46%{opacity:1} 48%{opacity:.55} 50%{opacity:1} 52%{opacity:.7} 54%{opacity:1} }
+.hm-hoyo19 .h19-sub{ display:block !important; max-width:calc(100% - 120px); white-space:nowrap; position:absolute; left:20px; top:82px; font:600 clamp(15px,4.4vw,18px) 'Barlow',sans-serif; color:#EDEBDD; }
+.hm-hoyo19 .h19-sub2{ position:absolute; left:20px; right:110px; top:106px; font:500 13px 'Barlow',sans-serif; color:#C6F24E; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hm-hoyo19 .h19-jarra{ position:absolute; right:18px; top:18px; width:78px; height:96px; animation:h19Flota 3.2s ease-in-out infinite; filter:drop-shadow(0 0 14px rgba(255,200,60,.55)); }
+@keyframes h19Flota{ 0%,100%{transform:translateY(0) rotate(-4deg)} 50%{transform:translateY(-5px) rotate(3deg)} }
+/* franja dormida */
+html body .hm-hoyo19.h19-dormido{ grid-column:1 / -1; display:flex !important; flex-direction:row !important; justify-content:flex-start !important; height:auto !important; min-height:0 !important; aspect-ratio:auto !important; align-items:center; gap:12px; width:100%; padding:11px 14px !important; box-sizing:border-box; border-radius:16px; background:#1B1E22 !important; border:1px solid #33383E !important; color:#F2F4F5 !important; text-align:left; cursor:pointer; opacity:.92; }
+.hm-hoyo19.h19-dormido:active{ transform:scale(.97); }
+.hm-hoyo19.h19-dormido > svg.h19-flecha{ display:none !important; }
+.hm-hoyo19.h19-dormido .h19-jarra-s{ width:26px; height:32px; flex:none; opacity:.7; }
+.hm-hoyo19.h19-dormido .h19-txt{ display:flex; flex-direction:column; align-items:flex-start; line-height:1.15; }
+.hm-hoyo19.h19-dormido .h19-txt b{ font:900 16px 'Archivo',sans-serif; text-transform:uppercase; letter-spacing:.04em; }
+.hm-hoyo19.h19-dormido .h19-txt small{ font:500 13.5px 'Barlow',sans-serif; color:#9AA3AB; }
+/* aviso «muy pronto» (mientras se construye el hilo) */
+.h19-fondo{ position:fixed; inset:0; z-index:100000; background:rgba(0,0,0,.7); display:flex; align-items:center; justify-content:center; padding:20px; }
+.h19-caja{ background:#2F3A1C; border:1px solid #C6F24E; border-radius:18px; padding:20px; max-width:340px; width:100%; color:#F2F4F5; font-family:'Barlow',system-ui,sans-serif; }
+.h19-caja h3{ font:800 19px 'Archivo',Barlow,sans-serif; margin:0 0 6px; }
+.h19-caja p{ font-size:15px; line-height:1.4; margin:0 0 16px; }
+.h19-caja button{ width:100%; padding:13px; border:0; border-radius:999px; background:#C6F24E; color:#111316; font:900 15px 'Archivo',Barlow,sans-serif; cursor:pointer; }
+.h19-caja button:active{ transform:scale(.97); }
+@media (prefers-reduced-motion:reduce){ .hm-hoyo19 .h19-tit, .hm-hoyo19 .h19-jarra{ animation:none; } }
