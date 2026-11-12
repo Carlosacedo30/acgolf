@@ -69,6 +69,7 @@
   }
 
   function abrir(){
+    if(window.acgolfHilo19 && partida && partida.code) return window.acgolfHilo19.abrir(partida.code, partida);
     if(document.getElementById('h19Aviso')) return;
     const f = document.createElement('div');
     f.id = 'h19Aviso'; f.className = 'h19-fondo';
