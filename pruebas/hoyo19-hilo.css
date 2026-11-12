@@ -204,3 +204,7 @@ body:has(.pr-banda) .h19h-cab { padding-top: 34px; }
 .h19h-acc { margin-top: 4px; }
 .h19h-acc button { font-size: 12px; padding: 3px 2px; }
 .h19h-acc svg { width: 18px; height: 18px; }
+.h19h-guardar { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); background: #C6F24E; color: #10140a; font-weight: 700; font-size: 15px; padding: 10px 18px; border-radius: 22px; text-decoration: none; }
+.h19f-acc { flex-wrap: wrap; }
+.h19f-gua { flex-basis: 100%; text-align: center; padding: 12px; border-radius: 999px; border: 1px solid rgba(198,242,78,.55); color: #C6F24E; font-weight: 800; font-size: 16px; text-decoration: none; }
+.h19f-gua[hidden] { display: none; }
