@@ -98,7 +98,7 @@
       + '<div class="h19f-err" hidden>No he podido abrir la cámara aquí. Pulsa «Hacer foto» y se abrirá la cámara del móvil.</div>'
       + '<div class="h19f-sw" hidden><button type="button" class="chip on" id="h19fC1">Con marco</button><button type="button" class="chip" id="h19fC0">Sin marco</button></div>'
       + '<div class="h19f-cam"><button type="button" class="giro" id="h19fGiro" aria-label="Girar la cámara">⟲</button><button type="button" class="disp" id="h19fDisp" aria-label="Disparar"><i></i></button><label class="plan-b">Hacer foto<input type="file" accept="image/*" capture="environment" id="h19fFile"></label></div>'
-      + '<div class="h19f-acc" id="h19fAcc" hidden><button type="button" id="h19fRep">Repetir</button><button type="button" class="pri" id="h19fEnv">Enviar al hilo</button></div>'
+      + '<div class="h19f-acc" id="h19fAcc" hidden><button type="button" id="h19fRep">Repetir</button><button type="button" class="pri" id="h19fEnv">Enviar al hilo</button><a id="h19fGua" class="h19f-gua" download="foto-hoyo19.jpg" hidden>Guardar en el móvil</a></div>'
       + '<p class="h19f-nota">El marco se pone solo. La foto se reduce antes de enviar y se borra con el hilo.</p>';
     document.body.appendChild(el);
     el.querySelector('#h19fCan').onclick = cerrar;
@@ -108,7 +108,7 @@
     el.querySelector('#h19fC1').onclick = () => { conMarco = true; pintar(); };
     el.querySelector('#h19fC0').onclick = () => { conMarco = false; pintar(); };
     el.querySelector('#h19fRep').onclick = () => { fuente = null; pintar(); el.querySelector('#h19fAcc').hidden = true; encender(); };
-    el.querySelector('#h19fEnv').onclick = async () => { const b = el.querySelector('#h19fEnv'); b.disabled = true; b.textContent = 'Enviando…'; const ok = await o.enviar(url); if(ok) cerrar(); else if(el){ b.disabled = false; b.textContent = 'Enviar al hilo'; } };
+    el.querySelector('#h19fEnv').onclick = async () => { const b = el.querySelector('#h19fEnv'); b.disabled = true; b.textContent = 'Enviando…'; const ok = await o.enviar(url); if(ok) cerrar(); else if(el){ b.disabled = false; b.textContent = 'Reintentar'; const g = el.querySelector('#h19fGua'); g.hidden = false; g.href = url; } };
     const acc = el.querySelector('#h19fAcc'); new MutationObserver(() => { acc.hidden = !fuente; }).observe(el.querySelector('.h19f-lienzo'), { attributes: true });
     encender();
   }

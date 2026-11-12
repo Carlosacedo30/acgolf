@@ -101,7 +101,7 @@
     });
   }
   function ampliar(d){
-    const z = document.createElement('div'); z.className = 'h19h-zoom'; z.innerHTML = '<img alt="Foto ampliada">'; z.firstChild.src = d; z.onclick = () => z.remove(); el.appendChild(z);
+    const z = document.createElement('div'); z.className = 'h19h-zoom'; z.innerHTML = '<img alt="Foto ampliada"><a class="h19h-guardar" download="foto-hoyo19.jpg">Guardar foto</a>'; z.firstChild.src = d; z.querySelector('a').href = d; z.querySelector('a').onclick = ev => ev.stopPropagation(); z.onclick = () => z.remove(); el.appendChild(z);
   }
 
   // ---- Chivito: solo lo manda el ganador, una vez por partida y cuando han acabado todos los grupos ----
@@ -250,7 +250,7 @@
   async function enviar(tipo, frase, texto, foto){
     const cl = cliente(); if(!cl) return false;
     try {
-      const r = await cl.rpc('hoyo19_enviar', { p_code: code, p_tipo: tipo, p_frase: frase == null ? null : frase, p_texto: texto || null, p_foto: foto || null });
+      const r = await Promise.race([cl.rpc('hoyo19_enviar', { p_code: code, p_tipo: tipo, p_frase: frase == null ? null : frase, p_texto: texto || null, p_foto: foto || null }), new Promise((_, no) => setTimeout(() => no(new Error('No hay buena cobertura. Inténtalo otra vez.')), 20000))]);
       if(r.error) throw r.error;
       if(foto && r.data) fotosLocal[r.data] = foto;
       await leer(false); return true;
