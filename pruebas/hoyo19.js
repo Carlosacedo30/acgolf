@@ -90,5 +90,17 @@
     if(document.visibilityState === 'visible' && window.miPerfilId && Date.now() - ultimaConsulta > 60000) consultar();
   });
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
-  window.acgolfHoyo19 = { abrir, consultar, _pintar: pintar };
+  // Resumen final de la partida (pantalla En vivo): botón grande para entrar al hilo de esa partida
+  function botonFinal(round){
+    if(!round || !round.code) return '';
+    return '<div class="h19-final"><button type="button" class="h19-ir" data-h19-ir="' + esc(round.code) + '">'
+      + '<svg viewBox="0 0 80 96" aria-hidden="true">' + JARRA + '</svg><span><b>Ir al hoyo 19</b><small>Brinda con tu grupo</small></span></button></div>';
+  }
+  const ultimaRonda = {};
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('[data-h19-ir]'); if(!b) return;
+    const c = b.dataset.h19Ir, r = ultimaRonda[c] || { code: c };
+    if(window.acgolfHilo19) window.acgolfHilo19.abrir(c, r);
+  });
+  window.acgolfHoyo19 = { abrir, consultar, botonFinal: r => { if(r && r.code) ultimaRonda[r.code] = r; return botonFinal(r); }, _pintar: pintar };
 })();
