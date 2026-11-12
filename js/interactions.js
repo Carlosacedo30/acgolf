@@ -102,6 +102,8 @@
     }
     roundMarkedFinished = true;
     goTo(4);
+    // la tarjeta «Hoy juegas» del Inicio debe quitarse cuando la partida ya está terminada
+    setTimeout(async () => { try { if(typeof convFetchActivas === 'function'){ convActivas = await convFetchActivas(); if(typeof renderConvHome === 'function') renderConvHome(); } } catch(e){} }, 3000);
   });
 
   // "Configurar partida": pestañas Grupo 1 a 4 (no pierden lo escrito al cambiar)
