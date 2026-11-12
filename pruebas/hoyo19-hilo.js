@@ -31,22 +31,24 @@
       + '<div class="h19h-clasif" id="h19Clasif" hidden></div>'
       + '<div class="h19h-borra" id="h19Borra"></div>'
       + '<div class="h19h-hilo" id="h19Lista" aria-live="polite"></div>'
-      + '<div class="h19h-barra"><div class="h19h-tabs" id="h19Tabs">'
+      + '<div class="h19h-barra" id="h19Barra"><div class="h19h-panel" id="h19Panel"><div class="h19h-tabs" id="h19Tabs">'
       + '<button type="button" class="on" data-t="enh">Enhorabuena</button><button type="button" data-t="bro">Bromas</button><button type="button" data-t="pag">Quién paga</button></div>'
       + '<div class="h19h-frases" id="h19Frases"></div>'
-      + '<div class="h19h-esc"><input id="h19Txt" maxlength="80" placeholder="Escribe una frase…" autocomplete="off" enterkeyhint="send"><button type="button" id="h19Env">Enviar</button></div>'
-      + '<div class="h19h-cont" id="h19Cont">0 de 80 letras</div>'
-      + '<div class="h19h-acc"><button type="button" id="h19Foto"><span id="h19FotoN">Foto</span></button><button type="button" id="h19Conf">Confeti</button><button type="button" id="h19Chiv" class="bloq"><svg viewBox="0 0 100 100"><use href="#s12"/></svg>Chivito</button></div></div>'
+      + '<div class="h19h-acc"><button type="button" id="h19Foto"><span id="h19FotoN">Foto</span></button><button type="button" id="h19Conf">Confeti</button><button type="button" id="h19Chiv" class="bloq"><svg viewBox="0 0 100 100"><use href="#s12"/></svg>Chivito</button></div></div><div class="h19h-esc"><button type="button" id="h19Mas" class="h19h-mas" aria-label="Abrir frases y botones" aria-expanded="false">+</button><input id="h19Txt" maxlength="80" placeholder="Escribe una frase…" autocomplete="off" enterkeyhint="send"><button type="button" id="h19Env">Enviar</button></div>'
+      + '<div class="h19h-cont" id="h19Cont">0 de 80 letras</div></div>'
       + '<div class="h19h-toast" id="h19Toast"></div>';
     document.body.appendChild(el);
     el.querySelector('#h19Volver').onclick = cerrar;
+    const panelAbrir = v => { const x = el.querySelector('#h19Barra'); x.classList.toggle('abierta', v); el.querySelector('#h19Mas').setAttribute('aria-expanded', v ? 'true' : 'false'); el.querySelector('#h19Mas').textContent = v ? '×' : '+'; };
+    el.querySelector('#h19Mas').onclick = () => panelAbrir(!el.querySelector('#h19Barra').classList.contains('abierta'));
+    el._panelCerrar = () => panelAbrir(false);
     el.querySelector('#h19Comp').onclick = compartir;
     el.querySelector('#h19Tabs').onclick = e => { const t = e.target.dataset && e.target.dataset.t; if(!t) return; tab = t; el.querySelectorAll('#h19Tabs button').forEach(b => b.classList.toggle('on', b === e.target)); frases(); };
     const txt = el.querySelector('#h19Txt');
     txt.oninput = () => { const n = txt.value.length, c = el.querySelector('#h19Cont'); c.textContent = n + ' de 80 letras'; c.classList.toggle('max', n >= 80); };
     txt.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); enviarTexto(); } };
     el.querySelector('#h19Env').onclick = enviarTexto;
-    el.querySelector('#h19Conf').onclick = () => enviar('confeti');
+    el.querySelector('#h19Conf').onclick = () => { enviar('confeti'); el._panelCerrar(); };
     el.querySelector('#h19Foto').onclick = () => {
       if(quedanFotos <= 0) return aviso('Ya no quedan fotos en esta partida');
       if(!window.acgolfFoto19) return aviso('La cámara no está disponible');
@@ -189,7 +191,7 @@
     FRASES[tab].forEach(f => {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'h19h-frase';
       b.innerHTML = '<svg viewBox="0 0 100 100" aria-hidden="true"><use href="#s' + f[1] + '"/></svg>' + esc(f[0]);
-      b.onclick = () => enviar('frase', f[1]); c.appendChild(b);
+      b.onclick = () => { enviar('frase', f[1]); if(el._panelCerrar) el._panelCerrar(); }; c.appendChild(b);
     });
   }
   function av(n){ return '<span class="h19h-av" style="--c:' + color(n) + '">' + esc(String(n || '?').trim().charAt(0).toUpperCase()) + '</span>'; }
