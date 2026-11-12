@@ -289,8 +289,7 @@
     raiz();
     const donde = [partida && partida.round_name, partida && partida.course_name].filter(Boolean).join(' · ');
     el.querySelector('#h19Sub').textContent = donde;
-    const borra = new Date((partida && partida.updated_at ? Date.parse(partida.updated_at) : Date.now()) + 5 * 864e5);
-    el.querySelector('#h19Borra').textContent = 'Se borra el ' + borra.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+    el.querySelector('#h19Borra').textContent = 'Este chat se borra hoy a las 12 de la noche';
     el.querySelector('#h19Lista').innerHTML = '<div class="h19h-sep" id="h19Vacio">Aquí empieza el hoyo 19. ¡Brinda con tu grupo!</div>';
     document.documentElement.classList.add('h19h-abierto');
     leer(true); clasificacion();
