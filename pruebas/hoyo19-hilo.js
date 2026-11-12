@@ -25,7 +25,7 @@
     if(!document.getElementById('h19Defs')) document.body.insertAdjacentHTML('beforeend', DEFS);
     el = document.createElement('div'); el.id = 'h19Hilo'; el.className = 'h19h'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
     el.innerHTML =
-      '<div class="h19h-cab"><button type="button" class="h19h-volver" id="h19Volver">‹ Volver al inicio</button>'
+      '<div class="h19h-cab"><button type="button" class="h19h-volver" id="h19Volver">‹ Volver</button>'
       + '<h1 class="h19h-titulo">El hoyo 19</h1><p class="h19h-sub" id="h19Sub"></p></div>'
       + '<div class="h19h-clasif" id="h19Clasif" hidden></div>'
       + '<div class="h19h-borra" id="h19Borra"></div>'

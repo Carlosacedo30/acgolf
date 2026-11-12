@@ -429,7 +429,9 @@
       const o = ordenDe(g);
       return '<div><b>' + (g.time ? 'Salida ' + esc(g.time) : 'Grupo ' + (gi + 1)) + '</b> · salió por el ' + salidaDe(g) + ' y terminó en el ' + o[nHoyos(g) - 1] + '.</div>';
     }).join('') + '</div>';
-    box.innerHTML = h;
+    // Botón «Ir al hoyo 19» arriba del resumen final (lo pone hoyo19.js; si no está, no se nota)
+    let h19 = ''; try { h19 = (window.acgolfHoyo19 && window.acgolfHoyo19.botonFinal) ? window.acgolfHoyo19.botonFinal(round) : ''; } catch(e){}
+    box.innerHTML = h19 + h;
   }
   const esEquipo2 = n => String(n || '').includes(' / ');
 
