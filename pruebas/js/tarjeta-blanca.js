@@ -98,7 +98,7 @@
     let hoyos = '', pares = '', marcas = '';
     // Golpes de hándicap que recibe el jugador en cada hoyo (con el % de la modalidad)
     let hcpJ = 0; try { hcpJ = typeof hcpJuego === 'function' ? hcpJuego(i) : 0; } catch(e){}
-    const recibe = h => { const si = siDe(h); if(si == null || typeof strokesForHole !== 'function') return 0; try { return Math.max(0, strokesForHole(hcpJ, si)); } catch(e){ return 0; } };
+    const recibe = h => { const si = siDe(h); if(si == null || typeof strokesForHole !== 'function') return 0; try { return strokesForHole(hcpJ, si); } catch(e){ return 0; } };
     for(let h = desde; h < desde + 9; h++){
       const p = parDe(h), v = golpesDe(h, i), rec = recibe(h);
       par += p || 0;

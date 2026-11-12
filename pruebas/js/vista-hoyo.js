@@ -335,7 +335,7 @@
         box.addEventListener('click', ()=>{
           const pIndex = +box.dataset.holeInputFor;
           const recibidos = strokeIndex != null ? strokesForHole(hcpJuego(pIndex), strokeIndex) : 0;
-          openNumPad({ name: players[pIndex], hole: currentHole, par: par, tuPar: par != null ? par + Math.max(0, recibidos) : null, value: box.value,
+          openNumPad({ name: players[pIndex], hole: currentHole, par: par, tuPar: par != null ? par + recibidos : null, value: box.value,
             onPick: v => { box.value = v; box.classList.toggle('filled', v !== ''); box.dispatchEvent(new Event('input', { bubbles: true })); } });
         });
       });

@@ -257,7 +257,7 @@ async function ligaResultados(l){
   });
   const rc = Object.values(rondaDe);
   if(!rc.length) return { _estado: rondaDe };
-  const { data: rondas } = await client.from('rounds').select('code, course_id, match_groups').in('code', rc);
+  const { data: rondas } = await client.from('rounds').select('code, course_id, match_groups, scoring_type, created_at').in('code', rc);
   const porCodigo = {}; (rondas || []).forEach(r => porCodigo[r.code] = r);
   const out = { _estado: rondaDe };
   // Solo puntúan los jugadores con cuenta: los apuntados a mano sin correo juegan, pero no clasifican
@@ -277,7 +277,7 @@ async function ligaResultados(l){
       if(golpes.length < nH) return; // solo cuentan las tarjetas completas
       const hcp = Number((g.handicaps || [])[i]) || 0;
       const bruto = golpes.reduce((a, b) => a + b, 0);
-      const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined, curso && curso.nueve ? 0.95 : undefined) : Math.round(hcp);
+      const recibidos = typeof hcpCampo === 'function' ? hcpCampo(hcp, curso, typeof barraDe === 'function' ? barraDe(g, i) : undefined, pctJuego((g && g.modo) || 'individual', (r && r.scoring_type) || 'stableford', !!(curso && curso.nueve), r && r.created_at)) : Math.round(hcp);
       // Puntos Stableford: por hoyo, 2 − (golpes − golpes recibidos − par), sin bajar de 0
       let stb = 0; const ptsHoyo = [], golHoyo = [];
       for(let h = 1; h <= nH; h++){

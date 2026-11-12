@@ -28,7 +28,7 @@
       if(!inp){ hoyos.push(null); continue; }
       const par = parseInt(inp.dataset.par, 10);
       const si = parseInt(inp.dataset.strokeIndex, 10);
-      const rec = isNaN(si) ? 0 : Math.max(0, strokesForHole(hcp, si));
+      const rec = isNaN(si) ? 0 : strokesForHole(hcp, si);
       const g = parseInt(inp.value, 10);
       const tiene = !isNaN(g) && g > 0;
       const diff = tiene ? (g - rec) - par : null;
@@ -175,7 +175,7 @@
       const inp = document.querySelector('.golpes-input[data-hole="' + hole + '"][data-player-index="' + pIndex + '"]');
       if(!inp || typeof openNumPad !== 'function') return;
       const par = parseInt(inp.dataset.par, 10);
-      const rec = Math.max(0, strokesForHole(hcpJuego(pIndex), parseInt(inp.dataset.strokeIndex, 10)));
+      const rec = strokesForHole(hcpJuego(pIndex), parseInt(inp.dataset.strokeIndex, 10));
       openNumPad({ name: players[pIndex], hole: hole, par: par, tuPar: par + rec, value: inp.value,
         onPick: v => { inp.value = v; inp.dispatchEvent(new Event('input', { bubbles: true })); } });
     }));

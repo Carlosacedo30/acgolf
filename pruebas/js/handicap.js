@@ -131,7 +131,7 @@
       + '<li><b>La dificultad del campo.</b> Cada campo tiene dos números: Hato Verde 68,3 y 122; Zaudín 70,5 y 133. Zaudín es más difícil, así que el mismo resultado allí vale más.</li>'
       + '<li><b>El diferencial.</b> Con eso, cada tarjeta da un número: (golpes ajustados − 68,3) × 113 ÷ 122 en Hato Verde. Cuanto más bajo, mejor jugaste.</li>'
       + '<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
-      + '<li><b>Los golpes de regalo.</b> En cada partida recibes los golpes que te tocan en ese campo: tu hándicap × slope ÷ 113 + (rating − par). En Hato Verde salen casi los mismos que tu hándicap; en Zaudín, unos cuantos más porque es más difícil.</li>'
+      + '<li><b>Los golpes de regalo.</b> En cada partida recibes los golpes que te tocan en ese campo: tu hándicap × slope ÷ 113 + (rating − par), y en juego individual el 95 % de eso (norma de la Federación). En Hato Verde salen casi los mismos que tu hándicap; en Zaudín, unos cuantos más porque es más difícil.</li>'
       + '<li><b>Si juegas solo 9 hoyos.</b> También cuenta. Se calcula el diferencial de esos 9 hoyos y se le suma lo que se espera que harías en los otros 9 según tu hándicap (0,52 × tu hándicap + 1,2). Así sale una tarjeta de 18 hoyos, como manda la Federación. Hoy cuentan los 9 hoyos de Hato Verde (Ida y Vuelta, amarillas).</li>'
       + '</ul></details>'
 

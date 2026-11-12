@@ -95,13 +95,19 @@
     if(isNaN(h) || h <= 0) return 0;
     const r = Math.round(h); return Math.floor(r / 18) + ((r % 18) >= si ? 1 : 0);
   }
+  // Golpes que recibe un hándicap de juego en un hoyo de dificultad «si» entre n hoyos (también negativos: plus)
+  function recibeEV(hc, si, n){
+    hc = Math.round(Number(hc) || 0); if(!hc) return 0;
+    if(hc < 0){ const a = -hc; return -(Math.floor(a / n) + ((a % n) >= (n + 1 - si) ? 1 : 0)); }
+    return Math.floor(hc / n) + ((hc % n) >= si ? 1 : 0);
+  }
   function hcpDe(round, g, p, pares){
     const h = Number((g.handicaps || [])[p]) || 0;
     const barra = (Array.isArray(g.barras) && g.barras[p]) || 'amarillas';
     try {
       // El campo completo (con sus barras) si lo conocemos; en 9 hoyos, medio hándicap
       const c = (typeof COURSES !== 'undefined' ? COURSES : []).find(x => x.id === round.course_id) || { id: round.course_id, par: pares, nueve: nHoyos(g) === 9 };
-      if(typeof hcpCampo === 'function') return hcpCampo(h, c, barra, nHoyos(g) === 9 && (!g.modo || g.modo === 'individual') ? 0.95 : undefined); // 9 hoyos individual: 95 % (Federación)
+      if(typeof hcpCampo === 'function') return Math.round(hcpCampo(h, c, barra, typeof pctJuego === 'function' ? pctJuego(g.modo || 'individual', round.scoring_type, nHoyos(g) === 9, round.created_at) : undefined) + 1e-9); // % de la Federación según la modalidad
     } catch(e){}
     return nHoyos(g) === 9 ? Math.round(h / 2) : Math.round(h);
   }
@@ -116,7 +122,7 @@
       let bruto = 0, aPar = 0, neto = 0, pts = 0, jugados = 0, ultimo = 0, pos = 0;
       Object.keys(sc).forEach(h => {
         const v = +sc[h]; if(!(v > 0)) return;
-        const par = pares[h - 1] || 4, rec = nHoyos(g) === 9 ? Math.floor(hc / 9) + ((hc % 9) >= (si[h - 1] || 9) ? 1 : 0) : golpesRegalo(hc, si[h - 1] || 18), diff = v - par - rec;
+        const par = pares[h - 1] || 4, rec = recibeEV(hc, si[h - 1] || nHoyos(g), nHoyos(g)), diff = v - par - rec;
         bruto += v; aPar += v - par; neto += diff; pts += stablefordPts(diff); jugados++; if(posDe(g, h) > pos){ pos = posDe(g, h); ultimo = +h; }
       });
       out.push({ n, gi, p, g, hc, bruto, aPar, neto, pts, jugados, ultimo, pos, sc, esPtos, total: esPtos ? pts : bruto - hc });
