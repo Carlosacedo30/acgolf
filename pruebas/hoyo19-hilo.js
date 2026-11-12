@@ -93,15 +93,23 @@
 
   // Las fotos no viajan con el hilo: se piden una a una (y la mía ya la tengo)
   function cargarFoto(id){
-    const poner = d => { const i = el && el.querySelector('img[data-fid="' + id + '"]'); if(i && d){ i.src = d; i.onclick = () => ampliar(d); } };
+    const poner = d => { const i = el && el.querySelector('img[data-fid="' + id + '"]'); if(i && d){ i.src = d; i.onclick = () => ampliar(d); if(!i.parentNode.querySelector('[data-wafoto="' + id + '"]')){ const b = document.createElement('button'); b.type = 'button'; b.className = 'h19h-wa'; b.dataset.wafoto = id; b.textContent = '📲 Enviar a WhatsApp'; b.onclick = ev => { ev.stopPropagation(); enviarWa(d); }; i.insertAdjacentElement('afterend', b); } } };
     if(fotosLocal[id]) return poner(fotosLocal[id]);
     colaFotos = colaFotos.then(async () => {
       const cl = cliente(); if(!cl || !el) return;
       try { const r = await cl.rpc('hoyo19_foto', { p_mensaje: id }); if(!r.error && r.data){ fotosLocal[id] = r.data; poner(r.data); } } catch(e){}
     });
   }
+  async function enviarWa(d){
+    try {
+      const blob = await (await fetch(d)).blob(), file = new File([blob], 'foto-hoyo19.jpg', { type: 'image/jpeg' });
+      if(navigator.canShare && navigator.canShare({ files: [file] })){ await navigator.share({ files: [file], text: 'El hoyo 19 · acgolf.es' }); return; }
+    } catch(e){ if(e && e.name === 'AbortError') return; }
+    const a = document.createElement('a'); a.href = d; a.download = 'foto-hoyo19.jpg'; document.body.appendChild(a); a.click(); a.remove();
+    alert('Foto guardada: envíala desde WhatsApp');
+  }
   function ampliar(d){
-    const z = document.createElement('div'); z.className = 'h19h-zoom'; z.innerHTML = '<img alt="Foto ampliada"><a class="h19h-guardar" download="foto-hoyo19.jpg">Guardar foto</a>'; z.firstChild.src = d; z.querySelector('a').href = d; z.querySelector('a').onclick = ev => ev.stopPropagation(); z.onclick = () => z.remove(); el.appendChild(z);
+    const z = document.createElement('div'); z.className = 'h19h-zoom'; z.innerHTML = '<img alt="Foto ampliada"><a class="h19h-guardar" download="foto-hoyo19.jpg">Guardar foto</a><button type="button" class="h19h-wa h19h-wa-z">📲 WhatsApp</button>'; z.firstChild.src = d; z.querySelector('a').href = d; z.querySelector('a').onclick = ev => ev.stopPropagation(); z.querySelector('button').onclick = ev => { ev.stopPropagation(); enviarWa(d); }; z.onclick = () => z.remove(); el.appendChild(z);
   }
 
   // ---- Chivito: solo lo manda el ganador, una vez por partida y cuando han acabado todos los grupos ----

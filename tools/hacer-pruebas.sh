@@ -719,3 +719,12 @@ for a, b in [('marcador.js?v=8', 'marcador.js?v=9'), ('tarjeta-firma.css?v=1', '
     s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+# --- Hoyo 19: botón WhatsApp en las fotos (hoyo19-hilo.js v10, css v7) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+for a, b in [('hoyo19-hilo.js?v=9', 'hoyo19-hilo.js?v=10'), ('hoyo19-hilo.css?v=6', 'hoyo19-hilo.css?v=7')]:
+    assert s.count(a) == 1, a
+    s = s.replace(a, b)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
