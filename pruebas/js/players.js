@@ -52,7 +52,7 @@
   }
   // Hándicap de campo (regla oficial): hándicap × slope ÷ 113 + (rating − par), con el rating y slope
   // de la barra desde la que sale el jugador. Sin datos del campo, el hándicap tal cual.
-  function hcpCampo(h, curso, barra){
+  function hcpCampo(h, curso, barra, pct){ // pct: porcentaje (0.95 en 9 hoyos individual); se redondea una sola vez al final
     const v = Number(h) || 0;
     const c = curso || (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
     const d = c && dificultadCampo(c, barra || BARRA_DEFECTO);
@@ -60,11 +60,12 @@
     const vueltas = c.holes9 && c.par.length === 9 && !c.nueve ? 2 : 1; // 9 hoyos: se juegan dos vueltas
     const mitad = c.nueve ? 0.5 : 1; // partida de 9 hoyos: medio hándicap (regla de la Federación para 9 hoyos)
     const par = c.par.reduce((a, b) => a + (Number(b) || 0), 0) * vueltas;
-    return Math.round(v * mitad * d.slope / 113 + (d.rating * vueltas - par));
+    return Math.round((v * mitad * d.slope / 113 + (d.rating * vueltas - par)) * (pct || 1));
   }
   // Hándicap con el que se juega de verdad: el del campo (según su barra) y, encima, el porcentaje de la modalidad
   function ajusteHcp(h, barra){
-    const v = hcpCampo(h, null, barra);
+    const c9 = (typeof selectedCourse !== 'undefined' ? selectedCourse : null);
+    const v = hcpCampo(h, null, barra, c9 && c9.nueve && modoPartida() === 'individual' ? 0.95 : undefined);
     const f = factorHcpModo();
     return f === 1 ? v : Math.round(v * f * 10) / 10;
   }

@@ -61,7 +61,7 @@
   function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? (window.acgolfMitad === 'vuelta' ? cursoNueveVuelta(c) : cursoNueve(c)) : c; }
   function prRecibe(n){
     const campo = prCurso();
-    return typeof hcpCampo === 'function' ? hcpCampo(prHcp(n), campo, prBarra(n)) : Math.round(prHcp(n));
+    return typeof hcpCampo === 'function' ? hcpCampo(prHcp(n), campo, prBarra(n), campo && campo.nueve && !prParejas() ? 0.95 : undefined) : Math.round(prHcp(n));
   }
   function prBarraHtml(n){
     if(!prBarrasOn()) return '';
