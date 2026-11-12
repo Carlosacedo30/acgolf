@@ -1,0 +1,29 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Firmar la tarjeta: pantalla grande, aviso de «no coincide» y cartel rojo del Inicio */
+.tf-fondo{ position:fixed; inset:0; z-index:9000; background:#0d0f12; display:flex; align-items:center; justify-content:center; padding:18px; overflow:auto; }
+.tf-caja{ width:100%; max-width:440px; display:flex; flex-direction:column; gap:12px; text-align:center; font-family:'Barlow', system-ui, sans-serif; color:#F2F4F5; }
+.tf-ic{ width:92px; height:92px; border-radius:50%; margin:0 auto; display:flex; align-items:center; justify-content:center; font:800 58px/1 'Barlow', sans-serif; color:#fff; }
+.tf-ic.ok{ background:#2f9e44; } .tf-ic.mal{ background:#e5484d; }
+.tf-t{ font:800 30px/1.15 'Barlow', sans-serif; letter-spacing:.3px; }
+.tf-sub{ font:600 18px 'Barlow', sans-serif; color:#9aa0a8; }
+.tf-fila{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:14px 16px; border-radius:14px; background:#1f2329; font:700 21px 'Barlow', sans-serif; }
+.tf-fila b{ font-size:28px; color:#C6F24E; } .tf-fila b.mal{ color:#ff8a8e; font-size:19px; }
+.tf-bien{ padding:14px; border-radius:14px; background:#0f2a1a; border:2px solid #2f9e44; font:700 20px 'Barlow', sans-serif; }
+.tf-btn{ display:block; width:100%; min-height:72px; border:0; border-radius:40px; background:#C6F24E; color:#10140a; font:800 26px/1.1 'Barlow', sans-serif; letter-spacing:.4px; padding:14px 18px; text-decoration:none; cursor:pointer; box-sizing:border-box; }
+.tf-btn[disabled]{ opacity:.6; }
+.tf-btn.naranja{ background:#F5A623; } .tf-btn.gris{ background:#1f2329; color:#F2F4F5; min-height:60px; font-size:22px; } .tf-btn.wa{ background:#25D366; color:#06200f; font-size:22px; line-height:44px; }
+.tf-p{ font:500 18px/1.4 'Barlow', sans-serif; color:#aab0b8; margin:0; }
+.tf-aviso{ font:700 18px 'Barlow', sans-serif; color:#ff8a8e; margin:0; }
+.tf-link{ background:none; border:0; color:#9aa0a8; font:600 18px 'Barlow', sans-serif; text-decoration:underline; padding:8px; cursor:pointer; }
+.tf-lista{ display:flex; flex-direction:column; gap:8px; }
+/* aviso dentro del hoyo cuando no coincide */
+.tf-mal{ margin:0 0 10px; padding:14px; border-radius:16px; background:#4a1a1d; border:3px solid #e5484d; color:#fff; display:flex; flex-direction:column; gap:8px; text-align:center; }
+.tf-mal b{ font:800 26px 'Barlow', sans-serif; } .tf-mal span{ font:600 18px/1.35 'Barlow', sans-serif; }
+.tf-mal button{ min-height:64px; border:0; border-radius:36px; background:#F5A623; color:#1a1000; font:800 22px 'Barlow', sans-serif; cursor:pointer; }
+.hole-chip.mk-bloq{ opacity:.35; pointer-events:none; }
+/* cartel rojo del Inicio */
+#tfInicio{ display:flex; flex-direction:column; gap:10px; margin:0 0 12px; }
+.tf-banda{ padding:14px 16px; border-radius:18px; background:#5a1a1d; border:3px solid #e5484d; color:#fff; display:flex; flex-direction:column; gap:8px; font-family:'Barlow', system-ui, sans-serif; }
+.tf-banda.suave{ background:#3a2f12; border-color:#F5A623; }
+.tf-banda b{ font:800 22px 'Barlow', sans-serif; } .tf-banda span{ font:600 18px/1.35 'Barlow', sans-serif; }
+.tf-banda .tf-btn{ min-height:60px; font-size:22px; }

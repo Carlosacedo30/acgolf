@@ -690,3 +690,14 @@ cambia(L, "filas.push({ jugador: n, bruto, neto: bruto - recibidos, hcp, stb, cb
 cambia(L, "rs.push({ n: j.n, v: f.puntos, stb: f.stb, neto: f.neto, pos: f.pos })", "rs.push({ n: j.n, v: f.puntos, stb: f.stb, neto: f.neto, pos: f.pos, nH: f.nH || 18 })")
 cambia(L, "dif: media == null ? null : media - 36,", "dif: stb.length ? rs.filter(x => x.stb != null).reduce((a, x) => a + x.stb - 2 * x.nH, 0) / stb.length : null,")
 EOF
+
+# --- Firmar la tarjeta: bloqueo hoyo a hoyo, pantalla grande de firma, cartel rojo en el Inicio (marcador.js v8, hoyo19.js v5) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+for a, b in [('marcador.js?v=7', 'marcador.js?v=8'), ('hoyo19.js?v=4', 'hoyo19.js?v=5'),
+             ('<link rel="stylesheet" href="liga-compartir.css?v=1">\n</head>', '<link rel="stylesheet" href="liga-compartir.css?v=1">\n<link rel="stylesheet" href="tarjeta-firma.css?v=1">\n</head>')]:
+    assert s.count(a) == 1, a
+    s = s.replace(a, b)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
