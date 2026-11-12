@@ -18,7 +18,8 @@
   const color = n => { let h = 0; for(const c of String(n)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORES[h % COLORES.length]; };
   const cliente = () => (typeof initSupabase === 'function') ? initSupabase() : null;
 
-  let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null, vueltas = 0, infoPartida = {}, fotosLocal = {}, colaFotos = Promise.resolve();
+  let el = null, code = '', timer = null, ultimo = 0, yo = '', tab = 'enh', reacc = {}, pintados = {}, quedanFotos = 0, ocupado = false, tostada = null, vueltas = 0, infoPartida = {}, fotosLocal = {}, colaFotos = Promise.resolve(),
+    jugadores = [], ganador = '', terminada = false, votos = [], miVoto = null, hayChivito = false;
 
   function raiz(){
     if(!document.getElementById('h19Defs')) document.body.insertAdjacentHTML('beforeend', DEFS);
@@ -51,7 +52,10 @@
       window.acgolfFoto19.abrir({ quedan: quedanFotos, campo: infoPartida.campo || '', fecha: f.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short' }).replace('.', ''),
         enviar: dataUrl => enviar('foto', null, null, dataUrl) });
     };
-    el.querySelector('#h19Chiv').onclick = () => aviso('El chivito lo manda solo el ganador (muy pronto)');
+    el.querySelector('#h19Chiv').onclick = () => {
+      const m = motivoChivito(); if(m) return aviso(m);
+      enviar('chivito');
+    };
     el.querySelector('#h19Lista').onclick = clicLista;
     // La pizarra se encoge a una línea al subir por la conversación y vuelve a crecer al bajar (con margen para que no parpadee)
     const lst = el.querySelector('#h19Lista');
@@ -74,6 +78,7 @@
       const t = EV.tabla(ronda); if(!t.length){ caja.hidden = true; return; }
       const pts = t[0].esPtos, nh = g => (g && g.nueve) ? 9 : 18;
       const acabados = t.every(x => x.pos >= nh(x.g));
+      jugadores = t.map(x => x.n); ganador = t[0].n; terminada = acabados; pintarVoto(); pintarChivito();
       caja.hidden = false; const muchos = t.length > 4, pagan = t.length >= 2 ? Math.floor(t.length / 2) : 0;   // pagan la mitad de abajo (impares: redondeo hacia abajo), igual que En vivo
        caja.classList.toggle('muchos', muchos); if(muchos) caja.classList.add('min');
       caja.innerHTML = '<div class="t">CLASIFICACIÓN (' + (pts ? 'PUNTOS' : 'NETO') + ')' + (acabados ? '' : ' · PROVISIONAL') + '</div><div class="fila">'
@@ -92,6 +97,35 @@
   }
   function ampliar(d){
     const z = document.createElement('div'); z.className = 'h19h-zoom'; z.innerHTML = '<img alt="Foto ampliada">'; z.firstChild.src = d; z.onclick = () => z.remove(); el.appendChild(z);
+  }
+
+  // ---- Chivito: solo lo manda el ganador, una vez por partida y cuando han acabado todos los grupos ----
+  const norm = n => String(n || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  function motivoChivito(){
+    if(!ganador) return 'El chivito sale cuando hay clasificación';
+    if(norm(yo) !== norm(ganador)) return 'El chivito lo manda solo el ganador';
+    if(!terminada) return 'Cuando acaben todos los grupos, ganador';
+    if(hayChivito) return 'Ya se ha mandado el chivito de hoy';
+    return '';
+  }
+  function pintarChivito(){ const b = el && el.querySelector('#h19Chiv'); if(b) b.classList.toggle('bloq', !!motivoChivito()); }
+
+  // ---- Voto del día: un toque, un solo voto por jugador ----
+  const dosPalabras = n => String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');
+  function pintarVoto(){
+    const lista = el && el.querySelector('#h19Lista'); if(!lista) return;
+    let c = el.querySelector('#h19Voto');
+    if(jugadores.length < 2){ if(c) c.remove(); return; }
+    if(!c){ c = document.createElement('div'); c.id = 'h19Voto'; c.className = 'h19h-tarj'; lista.insertBefore(c, lista.firstChild); }
+    const n = {}; votos.forEach(v => n[v.jugador] = v.n); const tot = votos.reduce((a, v) => a + v.n, 0) || 1;
+    c.innerHTML = '<h4>Voto del día</h4><p class="sub">' + (miVoto ? 'Gracias, ya has votado.' : '¿Quién ha sido el mejor hoy? Un toque y listo.') + '</p>'
+      + jugadores.map(j => '<button type="button" class="h19h-voto' + (miVoto === j ? ' mio' : '') + '" data-v="' + esc(j) + '"><span class="bar" style="width:' + Math.round(((n[j] || 0) / tot) * 100) + '%"></span>' + av(j) + '<b>' + esc(dosPalabras(j)) + '</b><span class="n">' + (n[j] || 0) + '</span></button>').join('');
+  }
+  async function votar(j){
+    if(miVoto) return aviso('Ya has votado');
+    const cl = cliente(); if(!cl) return;
+    try { const r = await cl.rpc('hoyo19_votar', { p_code: code, p_jugador: j }); if(r.error) throw r.error; miVoto = j; aviso('Voto enviado'); await leer(false); }
+    catch(e){ aviso(String(e && e.message || 'No se pudo votar')); }
   }
 
   function aviso(t){
@@ -148,6 +182,7 @@
         if(m.tipo === 'confeti' && Date.now() - Date.parse(m.creado_en) < 15000) confeti();
       });
       pintarReac();
+      votos = d.votos || []; miVoto = d.mi_voto || null; (d.mensajes || []).forEach(m => { if(m.tipo === 'chivito') hayChivito = true; }); pintarVoto(); pintarChivito();
       quedanFotos = d.fotos_quedan || 0; el.querySelector('#h19FotoN').textContent = 'Foto (' + quedanFotos + ')';
       el.querySelector('#h19Vacio') && (lista.children.length > 1 ? el.querySelector('#h19Vacio').remove() : 0);
       if(pegado || desdeCero) lista.scrollTop = lista.scrollHeight;
@@ -173,6 +208,7 @@
   }
   async function clicLista(e){
     const b = e.target.closest('button'); if(!b) return;
+    if(b.dataset.v) return votar(b.dataset.v);
     const cl = cliente();
     if(b.dataset.mas){
       const c = b.parentNode, ya = c.querySelector('.pick'); if(ya){ ya.remove(); return; }
@@ -194,7 +230,7 @@
 
   function abrir(codigo, partida){
     if(el) return;
-    code = codigo; ultimo = 0; pintados = {}; reacc = {}; fotosLocal = {};
+    code = codigo; jugadores = []; ganador = ''; terminada = false; votos = []; miVoto = null; hayChivito = false; ultimo = 0; pintados = {}; reacc = {}; fotosLocal = {};
     infoPartida = { campo: partida && partida.course_name, fecha: partida && partida.updated_at };
     raiz();
     const donde = [partida && partida.round_name, partida && partida.course_name].filter(Boolean).join(' · ');
