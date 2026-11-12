@@ -709,3 +709,13 @@ s = open(p, encoding='utf-8').read()
 assert s.count('hoyo19-hilo.js?v=8') == 1
 open(p, 'w', encoding='utf-8').write(s.replace('hoyo19-hilo.js?v=8', 'hoyo19-hilo.js?v=9'))
 EOF
+
+# --- Lista del administrador de tarjetas sin cerrar (marcador.js v9, tarjeta-firma.css v2) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+for a, b in [('marcador.js?v=8', 'marcador.js?v=9'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
+    assert s.count(a) == 1, a
+    s = s.replace(a, b)
+open(p, 'w', encoding='utf-8').write(s)
+EOF

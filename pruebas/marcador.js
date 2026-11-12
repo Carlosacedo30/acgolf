@@ -325,6 +325,39 @@
       + (p.mia_pendiente ? '<button type="button" class="tf-btn" data-code="' + esc(p.code) + '">ENTREGAR AHORA</button>' : '') + '</div>').join('');
     c.querySelectorAll('button[data-code]').forEach(b => b.onclick = () => { location.href = location.pathname + '?partida=' + encodeURIComponent(b.dataset.code); });
   }
+  // ---------- Lista del administrador: tarjetas sin cerrar (solo la ve el administrador) ----------
+  let adminLista = [];
+  const MOTIVO = { faltan_hoyos: 'Le faltan hoyos por apuntar', no_coincide: 'No coincide algún hoyo con su marcador', sin_marcador: 'Jugó sin marcador', sin_firmar: 'Coincide, pero no ha firmado (se cerrará sola a las 3 horas)' };
+  async function cargarAdmin(){
+    try {
+      if(!window.miPerfilId || !pantallaActiva(0)) return;
+      const { data, error } = await initSupabase().rpc('tarjetas_sin_cerrar_admin');
+      if(error) return;
+      adminLista = Array.isArray(data) ? data : [];
+      pintarAdmin();
+    } catch(e){}
+  }
+  function pintarAdmin(){
+    const home = pantallaActiva(0);
+    let c = document.getElementById('tfAdmin');
+    if(!home || !adminLista.length){ if(c) c.remove(); return; }
+    if(!c){ c = document.createElement('div'); c.id = 'tfAdmin'; const ref = document.getElementById('tfInicio'); home.insertBefore(c, ref ? ref.nextSibling : home.firstChild); }
+    c.innerHTML = '<div class="tf-banda"><b>TARJETAS SIN CERRAR · ' + adminLista.length + '</b><span>Solo la ves tú, el administrador.</span></div>'
+      + adminLista.map((p, i) => '<div class="tf-item"><b>' + esc(p.jugador) + '</b><small>' + esc(p.nombre || 'Liga') + '</small>'
+        + '<span class="tf-motivo">' + esc(MOTIVO[p.motivo] || 'Sin cerrar') + '</span>'
+        + '<div class="tf-dos"><a class="tf-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(corto(p.jugador) + ', te falta cerrar la tarjeta de la liga en acgolf. ' + (MOTIVO[p.motivo] || '') + '.') + '">AVISAR</a>'
+        + '<button type="button" class="tf-btn" data-i="' + i + '">CERRAR YO</button></div></div>').join('');
+    c.querySelectorAll('button[data-i]').forEach(b => b.onclick = async () => {
+      const p = adminLista[+b.dataset.i]; if(!p) return;
+      if(!confirm('¿Cerrar la tarjeta de ' + p.jugador + '?\n\nQueda dada por válida y anotado que la cerraste tú. Ya no se podrá cambiar.')) return;
+      b.disabled = true; b.textContent = 'CERRANDO…';
+      const { error } = await initSupabase().rpc('cerrar_tarjeta_admin', { p_code: p.code, p_grupo: p.grupo, p_idx: p.idx });
+      if(error) alert(String(error.message || 'No se pudo cerrar. Revisa la cobertura.'));
+      cargarAdmin();
+    });
+  }
+  setInterval(() => { if(document.visibilityState === 'visible') cargarAdmin(); }, 30000);
+  setTimeout(cargarAdmin, 3500);
   setInterval(() => { if(document.visibilityState === 'visible') cargarPendientes(); }, 20000);
   setTimeout(cargarPendientes, 3000);
   setTimeout(cargarPendientes, 8000);
