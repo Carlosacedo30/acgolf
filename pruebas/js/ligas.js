@@ -556,6 +556,11 @@ async function ligaVer(code){
   const reglaVista = ligaVerRegla || l.regla || 'todas';
   const clasif = ligaTabla(l, res, reglaVista);
   const hayPuntos = clasif.some(c => c.jugadas);
+  // datos para la imagen de WhatsApp (nombre completo, solo quien entra en la clasificación)
+  (() => { const jug = l.jornadas.filter(j => (res[j.n] || []).length), ult = jug[jug.length - 1];
+    let pos = 0; const filas = hayPuntos ? clasif.filter(c => c.entra).map(c => ({ n: c.jugador, p: c.puntos })) : [];
+    window.acgolfLigaComp = { nombre: l.nombre, stb: l.formato === 'stableford', filas,
+      linea: jug.length + (jug.length === 1 ? ' ronda jugada' : ' rondas jugadas') + ' de ' + l.jornadas.length + (ult ? ' · ' + ligaCampoCorto(ult.courseId) : '') + (l.hoyos === 9 ? ' · 9 hoyos (' + (l.mitad === 'vuelta' ? 'vuelta' : 'ida') + ')' : '') }; })();
   const fmt = (v, d) => v == null ? '–' : (d ? v.toFixed(d) : String(v)).replace('.', ',');
 
   const proxJ = ligaProxima(l);
@@ -573,6 +578,7 @@ async function ligaVer(code){
           + '<td class="lg-pts">' + c.puntos + '</td><td>' + c.validas + '</td><td>' + fmt(c.mejor) + '</td><td>' + fmt(c.media, 1) + '</td><td>' + (c.dif == null ? '–' : (c.dif > 0 ? '+' : '') + fmt(c.dif, 1)) + '</td>'
           + '<td class="lg-desc">' + (c.descartadas.length ? c.descartadas.map(x => '<s>R' + x.n + ' · ' + x.v + (l.formato === 'stableford' ? '' : ' pts') + '</s>').join('') : '—') + '</td></tr>'; }).join(''); })()
     + '</tbody></table></div>'
+    + (hayPuntos ? '<button type="button" class="lg-comp" id="lgComp">Compartir al WhatsApp</button><div class="lg-comp-n">Se crea la imagen en tu móvil y eliges el grupo</div>' : '')
     + '<div class="lg-aviso">PR = rondas válidas. Mejor, Promedio y Dif. hcp en puntos Stableford (36 = jugar a tu hándicap). A igual puntuación gana el hándicap más bajo.' + (l.minimo ? ' En gris, quien aún no tiene ' + l.minimo + (l.minimo === 1 ? ' ronda.' : ' rondas.') : '') + ' Solo puntúan los jugadores con cuenta.</div>'
     + '<div class="conv-eyebrow">Calendario</div>'
     + '<div class="lg-cal">' + orden.map(j => {
@@ -592,6 +598,7 @@ async function ligaVer(code){
     + (ligaEsAdmin() ? '<button type="button" class="conv-btn borrar" id="lgBorrar">' + (typeof icono === 'function' ? icono('papelera') : '') + ' Borrar esta liga</button>' : '') + '</div>';
 
   body.querySelectorAll('[data-ver]').forEach(b => b.addEventListener('click', ()=>{ ligaVerRegla = b.dataset.ver || null; ligaVer(l.code); }));
+  const botComp = body.querySelector('#lgComp'); if(botComp) botComp.onclick = () => window.acgolfLigaCompartir && window.acgolfLigaCompartir();
   body.querySelectorAll('.lg-cal-f[data-n]').forEach(b => b.addEventListener('click', ()=>
     ligaEsAdmin() ? ligaConfigJornada(l, Number(b.dataset.n), res) : ligaAbrirJornada(l, Number(b.dataset.n), res)));
   document.getElementById('lgVolver').addEventListener('click', ligaPintarLista);
