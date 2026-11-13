@@ -96,7 +96,7 @@
             + f('Lo que pasa de 3 cuenta la mitad', '+' + hNum((c.media - c.bajo - 3) / 2)) + f('Tope (tu más bajo + 5)', hNum(c.bajo + 5)) + f('Resultado', hNum(tras), true)
           : '<div style="padding:6px 0 2px;color:#C6F24E">No se aplica el freno: tu número no sube más de 3 sobre tu más bajo.</div>')
       + (c.n < 20 && Math.abs(tras - Number(c.jug.hcp)) >= 0.05
-          ? f('Resultado de la Federación', hNum(tras)) + '<div style="padding:6px 0 2px;color:#9AA3AB">Mientras tengas menos de 20 tarjetas, tu hándicap no baja más de 2 puntos cada vez. Va hacia ese número poco a poco.</div>' : '')
+          ? f('Resultado de la Federación', hNum(tras)) + '<div style="padding:6px 0 2px;color:#9AA3AB">Mientras tengas menos de 20 tarjetas, tu hándicap no baja más de 1 punto cada vez. Va hacia ese número poco a poco.</div>' : '')
       + '</div>';
   }
 
@@ -160,7 +160,7 @@
       + '<li><b>La dificultad del campo.</b> Cada campo tiene dos números: Hato Verde 68,3 y 122; Zaudín 70,5 y 133. Zaudín es más difícil, así que el mismo resultado allí vale más.</li>'
       + '<li><b>El diferencial.</b> Con eso, cada tarjeta da un número: (golpes ajustados − 68,3) × 113 ÷ 122 en Hato Verde. Cuanto más bajo, mejor jugaste.</li>'
       + '<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Con menos tarjetas se cogen menos (con 3, la mejor menos 2; con 6, las 2 mejores menos 1; con 8, las 2 mejores; con 12, las 4 mejores…). Para esto tus golpes se cuentan con el hándicap completo (100 %), aunque se juegue al 95 %. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
-      + '<li><b>El freno.</b> Tu hándicap no puede subir de golpe: si la cuenta sale más de 3 sobre tu hándicap más bajo del último año, lo que pasa de 3 cuenta la mitad, y nunca más de 5 por encima. Mientras tengas menos de 20 tarjetas, además, tu hándicap no baja más de 2 puntos cada vez, para que el cambio sea poco a poco.</li>'
+      + '<li><b>El freno.</b> Tu hándicap no puede subir de golpe: si la cuenta sale más de 3 sobre tu hándicap más bajo del último año, lo que pasa de 3 cuenta la mitad, y nunca más de 5 por encima. Mientras tengas menos de 20 tarjetas, además, tu hándicap no baja más de 1 punto cada vez, para que el cambio sea poco a poco.</li>'
       + '<li><b>Los golpes de regalo.</b> En cada partida recibes los golpes que te tocan en ese campo: tu hándicap × slope ÷ 113 + (rating − par), y en juego individual el 95 % de eso (norma de la Federación). En Hato Verde salen casi los mismos que tu hándicap; en Zaudín, unos cuantos más porque es más difícil.</li>'
       + '<li><b>Si juegas solo 9 hoyos.</b> También cuenta. Se calcula el diferencial de esos 9 hoyos y se le suma lo que se espera que harías en los otros 9 según tu hándicap (0,52 × tu hándicap + 1,2). Así sale una tarjeta de 18 hoyos, como manda la Federación. Hoy cuentan los 9 hoyos de Hato Verde (Ida y Vuelta, amarillas).</li>'
       + '</ul></details>'
