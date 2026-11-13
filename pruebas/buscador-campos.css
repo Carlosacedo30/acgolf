@@ -192,3 +192,12 @@ html.bc-abierto, html.bc-abierto body{ overflow:hidden; }
 .bc-listo, .bc-falta{ display:inline-block; align-self:flex-start; border-radius:999px; font-size:14px; font-weight:800; padding:3px 12px; margin-top:6px; }
 .bc-listo{ background:#E8F3E9; border:1px solid #2E7D32; color:#1B5E20; }
 .bc-falta{ background:#FFF6DD; border:1px solid #F5B83D; color:#8A5A00; }
+
+/* Foto de la tarjeta con protagonismo (estilo «Grafito deportivo») */
+.bc-foto-card{ background:#111316; border:1px solid rgba(198,242,78,.55); border-radius:20px; padding:18px 16px 16px; margin:0 0 6px; color:#F2F4F5; }
+.bc-foto-card-t{ margin:0 0 6px; font-family:'Archivo',sans-serif; font-weight:800; font-size:22px; line-height:1.15; color:#F2F4F5; }
+.bc-foto-card-p{ margin:0 0 14px; font-family:'Barlow',sans-serif; font-size:17px; color:#9AA3AB; }
+.bc-foto-card-btn.bc-btn{ width:100%; border-radius:999px; font-family:'Archivo',sans-serif; font-weight:800; }
+.bc-foto-card-btn .bc-ico{ width:24px; height:24px; color:#111316; }
+.bc-foto-card-btn:active{ transform:scale(.97); }
+.bc-o-busca{ margin:12px 0 4px; }
