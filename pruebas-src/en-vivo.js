@@ -123,6 +123,102 @@
     }));
     return out.filter(x => x.jugados).sort((a, b) => esPtos ? (b.pts - a.pts || a.bruto - b.bruto) : (a.neto - b.neto || a.aPar - b.aPar));
   }
+  // ---------- Parejas (Mejor bola) y Match Play ----------
+  // Golpes que recibe un hándicap de juego en un hoyo de dificultad «si» entre n hoyos (negativos si es plus)
+  function recib(hc, si, n){
+    hc = Math.round(Number(hc) || 0); if(!hc) return 0;
+    if(hc < 0){ const a = -hc; return -(Math.floor(a / n) + ((a % n) >= (n + 1 - si) ? 1 : 0)); }
+    return Math.floor(hc / n) + ((hc % n) >= si ? 1 : 0);
+  }
+  const nombreLado = (g, idxs) => idxs.map(p => corto(g.players[p])).join(' y ');
+  // Los lados de cada grupo: parejas en Mejor bola (Fourball); dos jugadores en Match Play individual
+  function ladosDe(round){
+    const out = [], mp = round.scoring_type === 'matchplay';
+    grupos(round).forEach((g, gi) => {
+      const ps = (g.players || []).map((n, p) => n ? p : -1).filter(p => p >= 0), modo = g.modo || 'individual';
+      let lados = null;
+      if(modo === 'fourball' && ps.length >= 2){ lados = []; for(let i = 0; i < ps.length; i += 2) lados.push(ps.slice(i, i + 2)); }
+      else if(modo === 'individual' && mp && ps.length === 2) lados = ps.map(p => [p]);
+      if(lados) out.push({ g, gi, lados });
+    });
+    return out;
+  }
+  // Clasificación por parejas en Mejor bola: en cada hoyo cuenta la mejor bola de los dos (neto con el hándicap de la modalidad)
+  function parejas(round){
+    if(round.scoring_type === 'matchplay') return null;
+    const L = ladosDe(round).filter(x => (x.g.modo || 'individual') === 'fourball'); if(!L.length) return null;
+    const pares = paresDe(round), si = dificultadDe(round), esPtos = round.scoring_type === 'stableford', out = [];
+    L.forEach(({ g, gi, lados }) => {
+      const n = nHoyos(g), sc = g.scores || {}, hcs = {};
+      (g.players || []).forEach((nom, p) => { if(nom) hcs[p] = hcpDe(round, g, p, pares); });
+      lados.forEach(idx => {
+        let total = 0, jugados = 0, pos = 0, ultimo = 0;
+        const por = idx.map(p => ({ n: g.players[p], pts: 0, neto: 0 }));
+        for(let h = 1; h <= n; h++){
+          let mejor = null;
+          idx.forEach((p, k) => {
+            const v = +((sc[p] || {})[h]); if(!(v > 0)) return;
+            const diff = v - (pares[h - 1] || 4) - recib(hcs[p], si[h - 1] || n, n);
+            por[k].pts += stablefordPts(diff); por[k].neto += diff;
+            mejor = mejor === null ? diff : Math.min(mejor, diff);
+          });
+          if(mejor === null) continue;
+          jugados++; total += esPtos ? stablefordPts(mejor) : mejor;
+          if(posDe(g, h) > pos){ pos = posDe(g, h); ultimo = h; }
+        }
+        if(jugados) out.push({ nombre: nombreLado(g, idx), gi, g, esPtos, total, jugados, pos, ultimo, por });
+      });
+    });
+    return out.sort((a, b) => a.esPtos ? (b.total - a.total) : (a.total - b.total));
+  }
+  // Match Play (dos lados por grupo): hoyos ganados, empatados y quién va ganando. El de menos golpes juega con 0 y el otro recibe la diferencia.
+  function partidos(round){
+    if(round.scoring_type !== 'matchplay') return null;
+    const L = ladosDe(round).filter(x => x.lados.length === 2); if(!L.length) return null;
+    const pares = paresDe(round), si = dificultadDe(round), out = [];
+    L.forEach(({ g, gi, lados }) => {
+      const n = nHoyos(g), sc = g.scores || {}, orden = ordenDe(g), hcs = {};
+      (g.players || []).forEach((nom, p) => { if(nom) hcs[p] = hcpDe(round, g, p, pares); });
+      const minimo = Math.min.apply(null, Object.keys(hcs).map(k => hcs[k]));
+      const res = []; let ga = 0, gb = 0, ge = 0, ultima = 0;
+      orden.forEach((h, k) => {
+        const m = lados.map(idx => { let b = null; idx.forEach(p => { const v = +((sc[p] || {})[h]); if(!(v > 0)) return; const d = v - (pares[h - 1] || 4) - recib(hcs[p] - minimo, si[h - 1] || n, n); b = b === null ? d : Math.min(b, d); }); return b; });
+        if(m[0] === null || m[1] === null){ res.push(null); return; }
+        const r = m[0] < m[1] ? 'A' : m[0] > m[1] ? 'B' : 'E';
+        res.push(r); if(r === 'A') ga++; else if(r === 'B') gb++; else ge++; ultima = k + 1;
+      });
+      const rest = n - ultima, dif = ga - gb, jug = ga + gb + ge;
+      const cerrado = jug > 0 && Math.abs(dif) > rest, acabado = jug > 0 && rest === 0;
+      const texto = (cerrado || acabado) ? (dif === 0 ? 'EMPATE' : (cerrado && rest > 0 ? 'GANA ' + Math.abs(dif) + ' Y ' + rest : 'GANA POR ' + Math.abs(dif))) : (dif === 0 ? 'TODO IGUAL' : Math.abs(dif) + ' ARRIBA');
+      out.push({ gi, g, a: nombreLado(g, lados[0]), b: nombreLado(g, lados[1]), res, ga, gb, ge, rest, dif, jug, texto, lider: dif > 0 ? 'A' : dif < 0 ? 'B' : null, final: cerrado || acabado, orden, ultimo: ultima ? orden[ultima - 1] : 0, pos: ultima });
+    });
+    return out;
+  }
+  const hoyosTxt = k => k + (k === 1 ? ' hoyo' : ' hoyos');
+  function tiraMP(m, clase){ return '<div class="' + (clase || 'vv-tira') + '">' + m.orden.map((h, k) => '<span class="' + ({ A: 'a', B: 'b', E: 'e' }[m.res[k]] || 'n') + '">' + h + '</span>').join('') + '</div>'; }
+  // Tarjetas grandes de En vivo: parejas (Mejor bola) y Match Play
+  function bloqueParejas(round){
+    const P = parejas(round), M = partidos(round), gs = grupos(round);
+    if(P && P.length){
+      const esPtos = P[0].esPtos;
+      return '<div class="vv-tab vv-parejas"><div class="vv-hoyo">PAREJAS · MEJOR BOLA<span>' + (esPtos ? 'puntos' : 'neto') + ' con hándicap</span></div><div class="vv-sale">En cada hoyo cuenta la mejor bola de los dos</div>'
+        + P.map((x, i) => '<div class="vv-par' + (i === 0 ? ' lider' : '') + '"><i>' + (i + 1) + '</i><div class="n"><b>' + esc(x.nombre) + '</b><small>' + x.por.map(j => esc(corto(j.n)) + ' ' + (esPtos ? j.pts : signo(j.neto))).join(' · ') + '</small></div><div class="p"><b>' + (esPtos ? x.total : signo(x.total)) + '</b><small>' + (esPtos ? 'puntos' : 'neto') + ' · ' + (x.pos >= nHoyos(x.g) ? 'fin' : 'hoyo ' + x.ultimo) + '</small></div></div>').join('') + '</div>';
+    }
+    if(M && M.some(m => m.jug)){
+      return M.filter(m => m.jug).map(m => {
+        const hora = m.g.time ? 'Salida ' + esc(m.g.time) : (gs.length > 1 ? 'Partida ' + (m.gi + 1) : '');
+        return '<div class="vv-tab vv-mp"><div class="vv-hoyo">MATCH PLAY<span>' + hora + '</span></div>'
+          + '<div class="vv-sale">Sale por el ' + salidaDe(m.g) + ' · ' + (m.final ? 'terminado' : 'van por el hoyo ' + m.ultimo) + '</div>'
+          + '<div class="vv-mp-vs"><b class="' + (m.lider === 'A' ? 'g' : '') + '">' + esc(m.a) + '</b><em>contra</em><b class="' + (m.lider === 'B' ? 'g' : '') + '">' + esc(m.b) + '</b></div>'
+          + '<div class="vv-mp-est">' + (m.lider === 'B' && !/^GANA|EMPATE/.test(m.texto) ? m.texto : m.texto) + '</div>'
+          + '<div class="vv-mp-det">' + (m.lider ? 'Va por delante ' + esc(m.lider === 'A' ? m.a : m.b) + '. ' : '') + 'Han ganado ' + hoyosTxt(m.ga) + ' contra ' + m.gb + ' · ' + m.ge + (m.ge === 1 ? ' empatado' : ' empatados') + ' · quedan ' + m.rest + '</div>'
+          + tiraMP(m)
+          + '<div class="vv-ley"><span><i class="a"></i>' + esc(m.a) + '</span><span><i class="b"></i>' + esc(m.b) + '</span><span><i class="e"></i>Empate</span><span><i class="n"></i>Por jugar</span></div>'
+          + '<div class="vv-ley-n">Los hoyos van en el orden en que se juegan (este grupo sale por el ' + salidaDe(m.g) + ').</div></div>';
+      }).join('');
+    }
+    return '';
+  }
   // Lo más destacado (para «Así va» y para el resumen)
   function momentos(round){
     const pares = paresDe(round), out = [];
@@ -330,6 +426,17 @@
     const titulo = esPtos ? 'puntos' : 'neto';
     if(!t.length){ box.innerHTML = '<div class="vv-asi-t">Así va · ' + titulo + '</div><div class="vv-asi-v">Aún no hay golpes</div>'; return; }
     const fin = terminada(round);
+    const P = parejas(round), M = partidos(round);
+    if(P && P.length){
+      box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Parejas · final' : 'Parejas · mejor bola') + ' · ' + titulo + '</div><ol class="vv-asi-l">'
+        + P.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(x.nombre) + '</b><span>' + (x.esPtos ? x.total + ' pts' : signo(x.total)) + '</span><small>' + (x.pos >= nHoyos(x.g) ? 'fin' : 'h' + x.ultimo) + '</small></li>').join('') + '</ol>';
+      return;
+    }
+    if(M && M.some(m => m.jug)){
+      box.innerHTML = '<div class="vv-asi-t">Match Play</div><ol class="vv-asi-l">'
+        + M.filter(m => m.jug).map(m => '<li class="lider"><b>' + esc(m.lider === 'B' ? m.b : m.a) + '</b><span>' + m.texto + '</span><small>' + (m.lider ? 'contra ' + esc(m.lider === 'B' ? m.a : m.b) + ' · ' : '') + 'quedan ' + m.rest + '</small></li>').join('') + '</ol>';
+      return;
+    }
     box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Clasificación final · ' + titulo : 'Así va · ' + titulo) + '</div><ol class="vv-asi-l">'
       + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : signo(x.neto)) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.pos >= nHoyos(x.g) ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
       + '</ol>';
@@ -389,7 +496,8 @@
       return '<div class="vv-tab"' + (tablas.length > 1 ? ' data-rot="1"' : '') + '><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
         + tablas.join('') + '</div>';
     }).join('');
-    ov.querySelector('.vv-tableros').innerHTML = html || '<div class="vv-tab vv-vacia">Todavía no hay jugadores en esta partida.</div>';
+    let extraPM = ''; try { extraPM = bloqueParejas(round); } catch(e){}
+    ov.querySelector('.vv-tableros').innerHTML = (extraPM + html) || '<div class="vv-tab vv-vacia">Todavía no hay jugadores en esta partida.</div>';
     // Si entras con la partida ya empezada, «Lo último» arranca con los últimos birdies/águilas (el más reciente según el orden de cada grupo)
     if(!previo){
       (m0 => m0.filter(x => x.d <= -1 && x.pos >= Math.max(...m0.map(y => y.pos)) - 3))(momentos(round)).sort((x, y) => y.pos - x.pos || x.gi - y.gi).slice(0, 2).reverse()
@@ -681,5 +789,5 @@
   window.addEventListener('load', engancharEntrada);
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharPortada); else engancharPortada();
   window.addEventListener('load', engancharPortada);
-  window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar, guion, tabla, momentos, rellenar, leerRonda };
+  window.acgolfEnVivo = { abrir, cerrar, pantalla, pintar, guion, tabla, momentos, rellenar, leerRonda, parejas, partidos, tiraMP, bloqueParejas };
 })();
