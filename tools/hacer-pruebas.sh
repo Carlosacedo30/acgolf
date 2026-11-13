@@ -714,7 +714,7 @@ EOF
 python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
-for a, b in [('marcador.js?v=8', 'marcador.js?v=9'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
+for a, b in [('marcador.js?v=8', 'marcador.js?v=10'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
     assert s.count(a) == 1, a
     s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
