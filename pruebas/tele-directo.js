@@ -283,6 +283,26 @@
       centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
         + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
     }
+    let PP = null, MM = null; try { PP = EV.parejas ? EV.parejas(round) : null; MM = EV.partidos ? EV.partidos(round) : null; } catch(e){}
+    if(MM) MM = MM.filter(m => m.jug); if(!MM || !MM.length) MM = null; if(!PP || !PP.length) PP = null;
+    if(PP || MM){
+      const cintaPM = caja.querySelector('.vt-cinta');
+      if(PP){
+        const l = PP[0];
+        centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small><div class="vt-lider"><span>Pareja líder</span><h3>' + esc(l.nombre) + '</h3><b>' + (l.esPtos ? l.total + ' pts' : signo(l.total) + ' neto') + '</b><em>' + (l.pos >= 18 || l.pos >= (l.g.nueve ? 9 : 18) ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
+        const it = PP.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(x.nombre) + '</em><b>' + (x.esPtos ? x.total : signo(x.total)) + '</b><small>' + (x.esPtos ? 'pts' : 'neto') + ' · H' + x.ultimo + '</small></span>').join('');
+        const rot = '<span class="rot">PAREJAS · MEJOR BOLA</span>';
+        cintaPM.innerHTML = rot + it; cintaPM.classList.toggle('anda', PP.length > 3); if(PP.length > 3) cintaPM.innerHTML += rot + it;
+      } else {
+        const m = MM[0];
+        centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small><div class="vt-lider vt-mp"><span>Match Play</span><h3>' + esc(m.lider === 'B' ? m.b : m.a) + '</h3><b>' + m.texto + '</b><em>contra ' + esc(m.lider === 'B' ? m.a : m.b) + ' · quedan ' + m.rest + '</em></div>' + (EV.tiraMP ? EV.tiraMP(m, 'vt-tira') : '');
+        const it = MM.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><em>' + esc(x.lider === 'B' ? x.b : x.a) + '</em><b>' + x.texto + '</b><small>quedan ' + x.rest + '</small></span>').join('');
+        const rot = '<span class="rot">MATCH PLAY</span>';
+        cintaPM.innerHTML = rot + it; cintaPM.classList.toggle('anda', MM.length > 3); if(MM.length > 3) cintaPM.innerHTML += rot + it;
+      }
+      pintarReloj();
+      return;
+    }
     const cinta = caja.querySelector('.vt-cinta');
     const marca2 = x => x.esPtos ? x.pts : signo(x.neto);
     const nombreLargo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García»; las parejas «Carlos y Jose»

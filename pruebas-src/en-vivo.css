@@ -181,3 +181,25 @@ html.es-invitado .vv-res-btn::after, html.es-invitado .vv-vivo-btn::after{ conte
 .vv-mas i{ font-style:normal; font-size:30px; line-height:.7; color:#C6F24E; animation:vv-mas-bota 1.4s ease-in-out infinite; }
 @keyframes vv-mas-bota{ 0%,100%{ transform:translateY(-3px); } 50%{ transform:translateY(4px); } }
 @media (prefers-reduced-motion:reduce){ .vv-mas i{ animation:none; } }
+
+/* Parejas (mejor bola) y Match Play */
+.vv-par{ display:flex; align-items:center; gap:10px; background:#24282D; border:1px solid #33383E; border-radius:14px; padding:10px 12px; margin-top:8px; }
+.vv-par.lider{ background:#2F3A1C; border-color:#C6F24E; }
+.vv-par>i{ font:900 18px 'Archivo',sans-serif; font-style:normal; color:#C6F24E; min-width:20px; text-align:center; }
+.vv-par .n{ flex:1; min-width:0; } .vv-par .n b{ display:block; font:800 16px 'Archivo',sans-serif; color:#F2F4F5; }
+.vv-par .n small, .vv-par .p small{ display:block; font:600 12px 'Barlow',sans-serif; color:#9AA3AB; }
+.vv-par .p{ text-align:right; } .vv-par .p b{ font:900 24px 'Archivo',sans-serif; color:#C6F24E; }
+.vv-mp-vs{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; }
+.vv-mp-vs b{ flex:1; font:800 16px 'Archivo',sans-serif; color:#F2F4F5; } .vv-mp-vs b:last-child{ text-align:right; } .vv-mp-vs b.g{ color:#C6F24E; }
+.vv-mp-vs em{ font:600 12px 'Barlow',sans-serif; font-style:normal; color:#9AA3AB; }
+.vv-mp-est{ margin:10px 0 4px; text-align:center; font:900 30px 'Archivo',sans-serif; color:#C6F24E; }
+.vv-mp-det{ text-align:center; font:600 13px 'Barlow',sans-serif; color:#9AA3AB; margin-bottom:10px; }
+.vv-tira, .vt-tira{ display:flex; flex-wrap:wrap; gap:4px; justify-content:center; }
+.vv-tira span, .vt-tira span{ min-width:26px; height:26px; border-radius:999px; display:flex; align-items:center; justify-content:center; font:800 12px 'Archivo',sans-serif; background:#1B1E22; color:#9AA3AB; border:1px solid #33383E; }
+.vv-tira span.a, .vt-tira span.a{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
+.vv-tira span.b, .vt-tira span.b{ background:#F2F4F5; color:#111316; border-color:#F2F4F5; }
+.vv-tira span.e, .vt-tira span.e{ background:#4A5058; color:#F2F4F5; border-color:#4A5058; }
+.vv-ley{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:10px; font:600 12px 'Barlow',sans-serif; color:#9AA3AB; }
+.vv-ley i{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:4px; background:#1B1E22; border:1px solid #33383E; }
+.vv-ley i.a{ background:#C6F24E; } .vv-ley i.b{ background:#F2F4F5; } .vv-ley i.e{ background:#4A5058; }
+.vv-ley-n{ text-align:center; font:500 11px 'Barlow',sans-serif; color:#6B7680; margin-top:6px; }

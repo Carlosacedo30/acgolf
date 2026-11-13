@@ -69,3 +69,6 @@
 .vt-admin-btn{ margin-top:8px; background:#0B0D10 !important; color:#C6F24E !important; border:2px solid #C6F24E !important; }
 
 .vt-cinta span.rot{ background:#C6F24E; color:#111316; padding:0 .8em; font:900 .8em 'Archivo','Barlow',sans-serif; letter-spacing:.08em; }
+
+.vt-mp b{ font-size:1.1em; }
+.vt-tira{ margin-top:.5em; gap:.25em; } .vt-tira span{ min-width:1.6em; height:1.6em; font-size:clamp(9px,2.4vw,13px); }
