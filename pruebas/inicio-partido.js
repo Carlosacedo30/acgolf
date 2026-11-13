@@ -40,11 +40,9 @@
   // Partido de liga: nombre de la liga + número de jornada (ej. «Jornada 3 de 8»)
   function ligaInfo(c){
     if(c.ryder || typeof ligaDeConv !== 'function') return null;
-    const l = ligaDeConv(c.code);
-    if(!l) return null;
-    const n = Number((/J(\d+)$/.exec(c.code || '') || [])[1]) || 0;
-    const total = (l.jornadas || []).length;
-    return { nombre: l.nombre || 'Liga', n: n, total: total };
+    const d = ligaDeConv(c.code); // devuelve { liga, n, total }
+    if(!d || !d.liga) return null;
+    return { nombre: d.liga.nombre || 'Liga', n: d.n || 0, total: d.total || 0 };
   }
   function jornada(c){
     if(c.ryder) return '<div class="ip-jornada">Jornada de Ryder</div>';
