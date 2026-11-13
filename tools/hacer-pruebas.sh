@@ -815,6 +815,90 @@ cambia(E, "  function hcpDe(round, g, p, pares){", """  // Golpes que recibe un 
 R = 'pruebas/ryder.js'
 cambia(R, ": d.tipo === 'fourball' ? Math.round(hc(b.hcp) * 0.9) : hc(b.hcp);", ": d.tipo === 'fourball' ? (typeof hcpCampo === 'function' ? hcpCampo(b.hcp == null ? 0 : b.hcp, campo, BARRA, 0.9) : Math.round(hc(b.hcp) * 0.9)) : hc(b.hcp);")
 EOF
+# --- Pantalla «Mi hándicap»: revisión como la Federación (tabla de pocas tarjetas, limitación y tope) ---
+python3 - <<'EOF'
+p = 'pruebas/js/handicap.js'
+s = open(p, encoding='utf-8').read()
+def cambia(a, b):
+    global s
+    assert s.count(a) == 1, a[:80]
+    s = s.replace(a, b)
+
+cambia("""    const casillas = tarjetas.map(x => ({ d: Number(x.diferencial), tipo: 'tarjeta', t: x }));
+    while(casillas.length < 20) casillas.push({ d: base, tipo: 'salida' });
+    const orden = casillas.map((c, i) => ({ i, d: c.d })).sort((a, b) => a.d - b.d);
+    const mejores = new Set(orden.slice(0, 8).map(x => x.i));
+    const media = orden.slice(0, 8).reduce((s, x) => s + x.d, 0) / 8;
+    const corte = orden[7].d; // la peor de las 8 que cuentan: para bajar hay que mejorarla
+    const hist = hcpHistorial(jug.name);
+    const ultimo = hist[hist.length - 1] || null;
+    return { jug, base, casillas, mejores, media, corte, hist, ultimo, n: tarjetas.length, tarjetas };""",
+"""    const casillas = tarjetas.map(x => ({ d: Number(x.diferencial), tipo: 'tarjeta', t: x }));
+    const n = casillas.length;
+    // Tabla de la Federación para pocas tarjetas: cuántas se cogen (k) y el ajuste (aj). Con menos de 3 no se revisa.
+    const k = n < 3 ? 0 : n <= 5 ? 1 : n <= 8 ? 2 : n <= 11 ? 3 : n <= 14 ? 4 : n <= 16 ? 5 : n <= 18 ? 6 : n === 19 ? 7 : 8;
+    const aj = n === 3 ? -2 : (n === 4 || n === 6) ? -1 : 0;
+    while(casillas.length < 20) casillas.push({ d: null, tipo: 'vacia' });
+    const orden = casillas.map((c, i) => ({ i, d: c.d })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
+    const mejores = new Set(orden.slice(0, k).map(x => x.i));
+    const media = k ? orden.slice(0, k).reduce((s, x) => s + x.d, 0) / k + aj : null;   // cuenta base
+    const corte = k ? orden[k - 1].d : null; // la peor de las que cuentan: para bajar hay que mejorarla
+    const hist = hcpHistorial(jug.name);
+    const ultimo = hist[hist.length - 1] || null;
+    // Hándicap más bajo de los últimos 12 meses (igual que la base de datos: salida, actual e historial)
+    const hace = Date.now() - 365 * 864e5;
+    let bajo = Math.min(Number(jug.hcp), base);
+    hcpDatos.historial.filter(x => hClave(x.player_name) === hClave(jug.name) && new Date(x.cambiado_en).getTime() >= hace).forEach(x => { bajo = Math.min(bajo, Number(x.hcp_despues)); });
+    return { jug, base, casillas, mejores, media, corte, hist, ultimo, n, tarjetas, k, aj, bajo };""")
+
+cambia("""      + '<div class="hp-expl">Se miran tus <b>últimas 20 tarjetas</b> de la liga. Llevas <b>' + c.n + '</b>; las ' + (20 - c.n) + ' que faltan cuentan como tu hándicap de salida (' + hNum(c.base) + '). De las 20 se cogen las <b>8 mejores</b> (en verde) y se hace la media.</div>'""",
+"""      + '<div class="hp-expl">' + (c.n < 3
+          ? 'Llevas <b>' + c.n + '</b> tarjetas. Hasta tener <b>3</b> tu hándicap se queda como está (' + hNum(c.jug.hcp) + '). Después se revisa como lo hace la Federación.'
+          : 'Se miran tus <b>últimas 20 tarjetas</b> de la app. Llevas <b>' + c.n + '</b>. ' + (c.n < 20
+              ? 'Con ' + c.n + ' la Federación coge las <b>' + c.k + ' mejores</b> (en verde), hace la media' + (c.aj ? ' y ' + (c.aj < 0 ? 'resta <b>' + (-c.aj) + '</b>' : 'suma <b>' + c.aj + '</b>') : '') + '.'
+              : 'Se cogen las <b>8 mejores</b> (en verde) y se hace la media.')) + '</div>'""")
+
+cambia("(x.tipo === 'tarjeta' ? hFecha(x.t.played_at) : 'salida') + '</small></div>'", "(x.tipo === 'tarjeta' ? hFecha(x.t.played_at) : '') + '</small></div>'")
+
+cambia("""      + '<div class="hp-suma">Media de las 8 mejores = <b>' + hNum(c.media) + '</b></div>'""",
+"""      + (c.media == null ? '' : '<div class="hp-suma">Media de las ' + c.k + ' mejores' + (c.aj ? (c.aj < 0 ? ' − ' + (-c.aj) : ' + ' + c.aj) : '') + ' = <b>' + hNum(c.media) + '</b></div>')
+      + (c.media == null ? '' : hcpFreno(c))""")
+
+cambia("""      + '<div class="hp-sec-t">Para bajar tu hándicap</div>'
+      + '<div class="hp-expl">Necesitas una tarjeta mejor que la peor de tus 8 que cuentan (' + hNum(c.corte) + '). En golpes, más o menos:</div>'
+      + '<div class="hp-objs">' + objetivo + '</div>'
+      + '<div class="hp-nota">Son golpes «ajustados»: en cada hoyo, como mucho cuenta doble bogey más tus golpes de regalo.</div>'""",
+"""      + (c.corte == null ? '' : '<div class="hp-sec-t">Para bajar tu hándicap</div>'
+      + '<div class="hp-expl">Necesitas una tarjeta mejor que la peor de las que cuentan (' + hNum(c.corte) + '). En golpes, más o menos:</div>'
+      + '<div class="hp-objs">' + objetivo + '</div>'
+      + '<div class="hp-nota">Son golpes «ajustados»: en cada hoyo, como mucho cuenta doble bogey más tus golpes de regalo.</div>')""")
+
+cambia("""'<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'""",
+"""'<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Con menos tarjetas se cogen menos (con 3, la mejor menos 2; con 6, las 2 mejores menos 1; con 8, las 2 mejores; con 12, las 4 mejores…). Para esto tus golpes se cuentan con el hándicap completo (100 %), aunque se juegue al 95 %. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
+      + '<li><b>El freno.</b> Tu hándicap no puede subir de golpe: si la cuenta sale más de 3 sobre tu hándicap más bajo del último año, lo que pasa de 3 cuenta la mitad, y nunca más de 5 por encima. Mientras tengas menos de 20 tarjetas, además, tu hándicap no baja más de 1 punto cada vez, para que el cambio sea poco a poco.</li>'""")
+
+cambia("  function hcpPintar(){", """  // Cuadro «Freno de la Federación»: limitación (+3 la mitad) y tope (+5)
+  function hcpFreno(c){
+    const f = (a, b, t) => '<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid #2a2e33' + (t ? ';color:#C6F24E;font-weight:800' : '') + '"><span style="' + (t ? '' : 'color:#9AA3AB') + '">' + a + '</span><b style="white-space:nowrap">' + b + '</b></div>';
+    const sube = c.media > c.bajo + 3;
+    const tras = sube ? Math.min(c.bajo + 3 + (c.media - c.bajo - 3) / 2, c.bajo + 5) : c.media;
+    return '<div class="hp-sec-t">Freno de la Federación</div><div style="background:#1B1E22;border:1px solid ' + (sube ? '#4A5058' : '#33383E') + ';border-radius:16px;padding:8px 14px;font-size:15px">'
+      + f('Tu hándicap más bajo del último año', hNum(c.bajo))
+      + (sube
+          ? f('Cuenta base (la media de arriba)', hNum(c.media)) + f('Sobre tu más bajo', '+' + hNum(c.media - c.bajo)) + f('Los primeros 3 cuentan enteros', hNum(c.bajo + 3))
+            + f('Lo que pasa de 3 cuenta la mitad', '+' + hNum((c.media - c.bajo - 3) / 2)) + f('Tope (tu más bajo + 5)', hNum(c.bajo + 5)) + f('Resultado', hNum(tras), true)
+          : '<div style="padding:6px 0 2px;color:#C6F24E">No se aplica el freno: tu número no sube más de 3 sobre tu más bajo.</div>')
+      + (c.n < 20 && Math.abs(tras - Number(c.jug.hcp)) >= 0.05
+          ? f('Resultado de la Federación', hNum(tras)) + '<div style="padding:6px 0 2px;color:#9AA3AB">Mientras tengas menos de 20 tarjetas, tu hándicap no baja más de 1 punto cada vez. Va hacia ese número poco a poco.</div>' : '')
+      + '</div>';
+  }
+
+  function hcpPintar(){""")
+
+cambia("// Regla: últimas 20 tarjetas; si hay menos, las que faltan cuentan como el hándicap de salida; media de las 8 mejores.",
+       "// Regla de la Federación: últimas 20 tarjetas; si hay menos, las que haya (tabla de pocas tarjetas); limitación +3 y tope +5 sobre el más bajo del año.")
+open(p, 'w', encoding='utf-8').write(s)
+EOF
 # --- Versiones nuevas para que los móviles cojan los cambios de la norma de la Federación ---
 python3 - <<'EOF'
 import re
@@ -824,5 +908,8 @@ for f in ['js/players.js', 'js/tarjetas.js', 'js/vista-hoyo.js', 'js/tarjeta-bla
     rx = re.compile('(' + re.escape(f) + r'\?v=)(\d+)')
     assert len(rx.findall(s)) == 1, f
     s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 1), s)
+# Revisión del hándicap como la Federación (13-nov-2026): una versión más para que los móviles recarguen la pantalla «Mi hándicap»
+rx = re.compile(r'(js/handicap\.js\?v=)(\d+)')
+s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 3), s)
 open(p, 'w', encoding='utf-8').write(s)
 EOF

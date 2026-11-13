@@ -4,7 +4,7 @@
   //  · league_players: hándicap actual y el de salida (hcp_base)
   //  · tarjetas_liga_whs: cada tarjeta de la liga con sus golpes ajustados y su diferencial
   //  · handicap_historial: cada cambio, con el hándicap de antes y el de después
-  // Regla: últimas 20 tarjetas; si hay menos, las que faltan cuentan como el hándicap de salida; media de las 8 mejores.
+  // Regla de la Federación: últimas 20 tarjetas; si hay menos, las que haya (tabla de pocas tarjetas); limitación +3 y tope +5 sobre el más bajo del año.
   const HCP_CAMPOS = { 'hato-verde': { n: 'Hato Verde', cr: 68.3, sl: 122 }, 'zaudin': { n: 'Zaudín', cr: 70.5, sl: 133 },
     // Rondas de 9 hoyos (cuentan igual: diferencial de 9 hoyos + lo esperado en los otros 9). Solo para poner el nombre.
     'hato-verde-9': { n: 'Hato Verde · Ida (9 hoyos)', nueve: true }, 'hato-verde-9v': { n: 'Hato Verde · Vuelta (9 hoyos)', nueve: true } };
@@ -48,14 +48,22 @@
     const tarjetas = hcpDatos.tarjetas.filter(x => hClave(x.jugador) === hClave(jug.name))
       .sort((a, b) => new Date(b.played_at) - new Date(a.played_at)).slice(0, 20);
     const casillas = tarjetas.map(x => ({ d: Number(x.diferencial), tipo: 'tarjeta', t: x }));
-    while(casillas.length < 20) casillas.push({ d: base, tipo: 'salida' });
-    const orden = casillas.map((c, i) => ({ i, d: c.d })).sort((a, b) => a.d - b.d);
-    const mejores = new Set(orden.slice(0, 8).map(x => x.i));
-    const media = orden.slice(0, 8).reduce((s, x) => s + x.d, 0) / 8;
-    const corte = orden[7].d; // la peor de las 8 que cuentan: para bajar hay que mejorarla
+    const n = casillas.length;
+    // Tabla de la Federación para pocas tarjetas: cuántas se cogen (k) y el ajuste (aj). Con menos de 3 no se revisa.
+    const k = n < 3 ? 0 : n <= 5 ? 1 : n <= 8 ? 2 : n <= 11 ? 3 : n <= 14 ? 4 : n <= 16 ? 5 : n <= 18 ? 6 : n === 19 ? 7 : 8;
+    const aj = n === 3 ? -2 : (n === 4 || n === 6) ? -1 : 0;
+    while(casillas.length < 20) casillas.push({ d: null, tipo: 'vacia' });
+    const orden = casillas.map((c, i) => ({ i, d: c.d })).filter(x => x.d != null).sort((a, b) => a.d - b.d);
+    const mejores = new Set(orden.slice(0, k).map(x => x.i));
+    const media = k ? orden.slice(0, k).reduce((s, x) => s + x.d, 0) / k + aj : null;   // cuenta base
+    const corte = k ? orden[k - 1].d : null; // la peor de las que cuentan: para bajar hay que mejorarla
     const hist = hcpHistorial(jug.name);
     const ultimo = hist[hist.length - 1] || null;
-    return { jug, base, casillas, mejores, media, corte, hist, ultimo, n: tarjetas.length, tarjetas };
+    // Hándicap más bajo de los últimos 12 meses (igual que la base de datos: salida, actual e historial)
+    const hace = Date.now() - 365 * 864e5;
+    let bajo = Math.min(Number(jug.hcp), base);
+    hcpDatos.historial.filter(x => hClave(x.player_name) === hClave(jug.name) && new Date(x.cambiado_en).getTime() >= hace).forEach(x => { bajo = Math.min(bajo, Number(x.hcp_despues)); });
+    return { jug, base, casillas, mejores, media, corte, hist, ultimo, n, tarjetas, k, aj, bajo };
   }
 
   // Línea de evolución: salida → cada cambio
@@ -74,6 +82,22 @@
       + '<text x="' + pad + '" y="' + (H + 18) + '" class="hp-eje">' + puntos[0].f + '</text>'
       + '<text x="' + (W - pad) + '" y="' + (H + 18) + '" text-anchor="end" class="hp-eje">' + puntos[puntos.length - 1].f + '</text>'
       + '</svg><div class="hp-leyenda">Más arriba es mejor (menos hándicap)</div>';
+  }
+
+  // Cuadro «Freno de la Federación»: limitación (+3 la mitad) y tope (+5)
+  function hcpFreno(c){
+    const f = (a, b, t) => '<div style="display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px solid #2a2e33' + (t ? ';color:#C6F24E;font-weight:800' : '') + '"><span style="' + (t ? '' : 'color:#9AA3AB') + '">' + a + '</span><b style="white-space:nowrap">' + b + '</b></div>';
+    const sube = c.media > c.bajo + 3;
+    const tras = sube ? Math.min(c.bajo + 3 + (c.media - c.bajo - 3) / 2, c.bajo + 5) : c.media;
+    return '<div class="hp-sec-t">Freno de la Federación</div><div style="background:#1B1E22;border:1px solid ' + (sube ? '#4A5058' : '#33383E') + ';border-radius:16px;padding:8px 14px;font-size:15px">'
+      + f('Tu hándicap más bajo del último año', hNum(c.bajo))
+      + (sube
+          ? f('Cuenta base (la media de arriba)', hNum(c.media)) + f('Sobre tu más bajo', '+' + hNum(c.media - c.bajo)) + f('Los primeros 3 cuentan enteros', hNum(c.bajo + 3))
+            + f('Lo que pasa de 3 cuenta la mitad', '+' + hNum((c.media - c.bajo - 3) / 2)) + f('Tope (tu más bajo + 5)', hNum(c.bajo + 5)) + f('Resultado', hNum(tras), true)
+          : '<div style="padding:6px 0 2px;color:#C6F24E">No se aplica el freno: tu número no sube más de 3 sobre tu más bajo.</div>')
+      + (c.n < 20 && Math.abs(tras - Number(c.jug.hcp)) >= 0.05
+          ? f('Resultado de la Federación', hNum(tras)) + '<div style="padding:6px 0 2px;color:#9AA3AB">Mientras tengas menos de 20 tarjetas, tu hándicap no baja más de 1 punto cada vez. Va hacia ese número poco a poco.</div>' : '')
+      + '</div>';
   }
 
   function hcpPintar(){
@@ -110,15 +134,20 @@
       + '<div class="hp-sec-t">Cómo ha ido</div>' + hcpGrafico(c)
 
       + '<div class="hp-sec-t">De dónde sale tu número</div>'
-      + '<div class="hp-expl">Se miran tus <b>últimas 20 tarjetas</b> de la liga. Llevas <b>' + c.n + '</b>; las ' + (20 - c.n) + ' que faltan cuentan como tu hándicap de salida (' + hNum(c.base) + '). De las 20 se cogen las <b>8 mejores</b> (en verde) y se hace la media.</div>'
+      + '<div class="hp-expl">' + (c.n < 3
+          ? 'Llevas <b>' + c.n + '</b> tarjetas. Hasta tener <b>3</b> tu hándicap se queda como está (' + hNum(c.jug.hcp) + '). Después se revisa como lo hace la Federación.'
+          : 'Se miran tus <b>últimas 20 tarjetas</b> de la app. Llevas <b>' + c.n + '</b>. ' + (c.n < 20
+              ? 'Con ' + c.n + ' la Federación coge las <b>' + c.k + ' mejores</b> (en verde), hace la media' + (c.aj ? ' y ' + (c.aj < 0 ? 'resta <b>' + (-c.aj) + '</b>' : 'suma <b>' + c.aj + '</b>') : '') + '.'
+              : 'Se cogen las <b>8 mejores</b> (en verde) y se hace la media.')) + '</div>'
       + '<div class="hp-rejilla">' + c.casillas.map((x, i) =>
-          '<div class="hp-cas ' + x.tipo + (c.mejores.has(i) ? ' cuenta' : '') + '"' + (x.tipo === 'tarjeta' ? ' title="' + hFecha(x.t.played_at) + '"' : '') + '><b>' + hNum(x.d) + '</b><small>' + (x.tipo === 'tarjeta' ? hFecha(x.t.played_at) : 'salida') + '</small></div>').join('') + '</div>'
-      + '<div class="hp-suma">Media de las 8 mejores = <b>' + hNum(c.media) + '</b></div>'
+          '<div class="hp-cas ' + x.tipo + (c.mejores.has(i) ? ' cuenta' : '') + '"' + (x.tipo === 'tarjeta' ? ' title="' + hFecha(x.t.played_at) + '"' : '') + '><b>' + hNum(x.d) + '</b><small>' + (x.tipo === 'tarjeta' ? hFecha(x.t.played_at) : '') + '</small></div>').join('') + '</div>'
+      + (c.media == null ? '' : '<div class="hp-suma">Media de las ' + c.k + ' mejores' + (c.aj ? (c.aj < 0 ? ' − ' + (-c.aj) : ' + ' + c.aj) : '') + ' = <b>' + hNum(c.media) + '</b></div>')
+      + (c.media == null ? '' : hcpFreno(c))
 
-      + '<div class="hp-sec-t">Para bajar tu hándicap</div>'
-      + '<div class="hp-expl">Necesitas una tarjeta mejor que la peor de tus 8 que cuentan (' + hNum(c.corte) + '). En golpes, más o menos:</div>'
+      + (c.corte == null ? '' : '<div class="hp-sec-t">Para bajar tu hándicap</div>'
+      + '<div class="hp-expl">Necesitas una tarjeta mejor que la peor de las que cuentan (' + hNum(c.corte) + '). En golpes, más o menos:</div>'
       + '<div class="hp-objs">' + objetivo + '</div>'
-      + '<div class="hp-nota">Son golpes «ajustados»: en cada hoyo, como mucho cuenta doble bogey más tus golpes de regalo.</div>'
+      + '<div class="hp-nota">Son golpes «ajustados»: en cada hoyo, como mucho cuenta doble bogey más tus golpes de regalo.</div>')
 
       + (c.tarjetas.length ? '<div class="hp-sec-t">Tus tarjetas de la liga</div><div class="hp-tarjetas">' + c.tarjetas.map(t => {
           const cp = HCP_CAMPOS[t.course_id] || { n: t.course_id };
@@ -130,7 +159,8 @@
       + '<li><b>Golpes ajustados.</b> En cada hoyo, como máximo cuenta un doble bogey más los golpes que te regala tu hándicap. Así un hoyo desastroso no te hunde.</li>'
       + '<li><b>La dificultad del campo.</b> Cada campo tiene dos números: Hato Verde 68,3 y 122; Zaudín 70,5 y 133. Zaudín es más difícil, así que el mismo resultado allí vale más.</li>'
       + '<li><b>El diferencial.</b> Con eso, cada tarjeta da un número: (golpes ajustados − 68,3) × 113 ÷ 122 en Hato Verde. Cuanto más bajo, mejor jugaste.</li>'
-      + '<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
+      + '<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Con menos tarjetas se cogen menos (con 3, la mejor menos 2; con 6, las 2 mejores menos 1; con 8, las 2 mejores; con 12, las 4 mejores…). Para esto tus golpes se cuentan con el hándicap completo (100 %), aunque se juegue al 95 %. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
+      + '<li><b>El freno.</b> Tu hándicap no puede subir de golpe: si la cuenta sale más de 3 sobre tu hándicap más bajo del último año, lo que pasa de 3 cuenta la mitad, y nunca más de 5 por encima. Mientras tengas menos de 20 tarjetas, además, tu hándicap no baja más de 1 punto cada vez, para que el cambio sea poco a poco.</li>'
       + '<li><b>Los golpes de regalo.</b> En cada partida recibes los golpes que te tocan en ese campo: tu hándicap × slope ÷ 113 + (rating − par), y en juego individual el 95 % de eso (norma de la Federación). En Hato Verde salen casi los mismos que tu hándicap; en Zaudín, unos cuantos más porque es más difícil.</li>'
       + '<li><b>Si juegas solo 9 hoyos.</b> También cuenta. Se calcula el diferencial de esos 9 hoyos y se le suma lo que se espera que harías en los otros 9 según tu hándicap (0,52 × tu hándicap + 1,2). Así sale una tarjeta de 18 hoyos, como manda la Federación. Hoy cuentan los 9 hoyos de Hato Verde (Ida y Vuelta, amarillas).</li>'
       + '</ul></details>'
