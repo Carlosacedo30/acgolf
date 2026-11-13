@@ -122,9 +122,10 @@
       const otro = esYo ? marca(g, i, h) : propio(i, h);
       const st = estadoTxt(val, otro, esYo ? 'tu marcador' : corto(players[i]));
       const marcadorDe = g.jugadores.find(x => +x.idx === i);
-      const sub = esYo ? 'Te marca ' + esc(corto(players[(marcadorDe || {}).marcador_idx])) : 'Le marcas tú';
+      const sub = esYo ? 'Te marca ' + esc(corto(players[(marcadorDe || {}).marcador_idx])) : 'Recibe ' + Math.max(0, si != null ? strokesForHole(hcpJuego(i), si) : 0) + ' golpe(s)';
       return '<div class="mk-col ' + st.cls + '">'
-        + '<div class="mk-n">' + (esYo ? 'Tú' : esc(corto(players[i]))) + '</div>'
+        + '<span class="mk-rol' + (esYo ? ' yo' : '') + '">' + (esYo ? 'YO' : 'LO MARCAS TÚ') + '</span>'
+        + '<div class="mk-n">' + esc(corto(players[i])) + '</div>'
         + '<div class="mk-sub">' + sub + '</div>'
         + '<div class="mk-tp">' + (esYo ? 'Tu par' : 'Su par') + ' <b>' + tuPar(i) + '</b></div>'
         + '<button type="button" class="mk-box' + (val != null ? ' filled' : '') + '" data-i="' + i + '" data-yo="' + (esYo ? 1 : 0) + '">' + (val != null ? val : '+') + '</button>'
@@ -231,7 +232,46 @@
       cols.parentNode.insertBefore(b, cols);
       b.querySelector('#tfArreglar').onclick = () => { const bx = wrap.querySelector('.mk-col.mal .mk-box'); if(bx) bx.click(); };
     }
+    ponerFlechas(g, h); try{ cartelGrupo(); }catch(e){}
     pintarFirma();
+  }
+  // ---- Reforma: flechas grandes, cartel de grupo y cambio de hoyo solo si todo coincide ----
+  function ponerFlechas(g, h){
+    const ok = hoyoMioCompleto(g, h) && !malEn(g, h);
+    const nx = document.getElementById('holeNextBtn'), pv = document.getElementById('holePrevBtn');
+    const sig = typeof hoyoSiguiente === 'function' ? hoyoSiguiente(h) : h + 1, ant = typeof hoyoAnterior === 'function' ? hoyoAnterior(h) : h - 1;
+    const ultimo = h >= nHoyos();
+    if(nx){ nx.classList.toggle('mk-off', !ok && !ultimo); nx.classList.toggle('mk-go', ok && !ultimo); nx.innerHTML = '›<small>' + (ultimo ? 'FIN' : 'HOYO ' + sig) + '</small>'; }
+    if(pv){ pv.innerHTML = '‹<small>HOYO ' + ant + '</small>'; }
+    const w = document.getElementById('hvPlayers'); if(!w) return;
+    let a = document.getElementById('mkAvisoHoyo'); if(a) a.remove();
+    a = document.createElement('div'); a.id = 'mkAvisoHoyo';
+    if(ok && !ultimo){
+      a.className = 'mk-aviso ok';
+      a.innerHTML = '✅ Todo correcto. Pasando al hoyo ' + sig + '…<div class="mk-barra"><i></i></div><button type="button" id="mkQuedar">Quedarme en el hoyo ' + h + '</button>';
+      w.appendChild(a);
+      a.querySelector('#mkQuedar').onclick = () => { clearTimeout(avanceTimer); llegada.completo = true; a.remove(); };
+    } else if(!ok){
+      const f = [];
+      if(propio(miIdx(), h) == null) f.push('tú');
+      marcados(g).forEach(i => { if(marca(g, i, h) == null) f.push(corto(players[i])); });
+      const sinMarcador = g.jugadores.filter(j => propio(+j.idx, h) == null || marca(g, +j.idx, h) == null);
+      if(malEn(g, h)) return;
+      a.className = 'mk-aviso espera';
+      a.innerHTML = '⏳ No puedes pasar todavía: faltan marcas en este hoyo.';
+      w.appendChild(a);
+    }
+  }
+  function cartelGrupo(){
+    const sec = document.getElementById('marcadorSection'); if(!sec) return;
+    let c = document.getElementById('mkCartelGrupo');
+    const g = est && typeof grupoEst === 'function' ? grupoEst() : null;
+    const multi = est && est.length > 1;
+    if(!g || !multi || typeof miIdx !== 'function' || miIdx() < 0){ if(c) c.remove(); return; }
+    if(!c){ c = document.createElement('div'); c.id = 'mkCartelGrupo'; c.className = 'mk-cartel'; sec.parentNode.insertBefore(c, sec); }
+    const mg = (typeof matchGroups !== 'undefined' && matchGroups[activeGroup]) || {};
+    const sal = mg.hora ? ' · sales a las ' + mg.hora.padStart(5, '0') : (Number(mg.hoyoSalida) > 1 ? ' · sales por el hoyo ' + mg.hoyoSalida : '');
+    c.textContent = 'Estás en el Grupo ' + (+activeGroup + 1) + sal;
   }
 
   // ---------- FIRMAR LA TARJETA: pantalla grande al terminar (estilo GolfDirecto) ----------

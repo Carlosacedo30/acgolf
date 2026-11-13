@@ -40,6 +40,7 @@
       if(g && Array.isArray(g.barras)) out.barras = g.barras;     // barra de salida de cada jugador
       if(g && g.nueve) out.nueve = true;                          // partida de 9 hoyos
       if(g && Number(g.hoyoSalida) > 1 && Number(g.hoyoSalida) <= 18) out.hoyoSalida = Number(g.hoyoSalida); // salida al tiro
+      if(g && /^\d{1,2}:\d{2}$/.test(String(g.hora || ''))) out.hora = String(g.hora); // hora de salida del grupo
       return out;
     });
   }

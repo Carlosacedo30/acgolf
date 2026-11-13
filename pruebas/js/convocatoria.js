@@ -357,6 +357,7 @@
     const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
       hoyoSalida: x.hoyo || undefined,
+      hora: (!x.hoyo && /^\d{1,2}:\d{2}$/.test(String(x.t || ''))) ? String(x.t) : undefined,
       nueve: course.nueve ? true : undefined,
       players: x.names.slice(0, 4),
       handicaps: x.names.slice(0, 4).map(n => (typeof FAVORITE_HANDICAPS !== 'undefined' && FAVORITE_HANDICAPS[n] != null) ? Number(FAVORITE_HANDICAPS[n]) : 0),

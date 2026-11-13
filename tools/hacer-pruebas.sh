@@ -714,9 +714,27 @@ EOF
 python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
-for a, b in [('marcador.js?v=8', 'marcador.js?v=10'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
+for a, b in [('marcador.js?v=8', 'marcador.js?v=12'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
     assert s.count(a) == 1, a
     s = s.replace(a, b)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+# --- La hora de salida de cada grupo se guarda en la partida (para el cartel «sales a las 08:40») ---
+python3 - <<'EOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:60])
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+cambia('pruebas/js/convocatoria.js', "      hoyoSalida: x.hoyo || undefined,\n", "      hoyoSalida: x.hoyo || undefined,\n      hora: (!x.hoyo && /^\\d{1,2}:\\d{2}$/.test(String(x.t || ''))) ? String(x.t) : undefined,\n")
+cambia('pruebas/js/rondas-compartidas.js', "      return out;\n    });\n  }\n\n  function getLocalRoundHistory", "      if(g && /^\\d{1,2}:\\d{2}$/.test(String(g.hora || ''))) out.hora = String(g.hora); // hora de salida del grupo\n      return out;\n    });\n  }\n\n  function getLocalRoundHistory")
+EOF
+# --- Reforma del marcador: flechas grandes, cartel de grupo, hoja de golpes (marcador-reforma.js/.css) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+s = s.replace('</head>', '<link rel="stylesheet" href="marcador-reforma.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-reforma.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 # --- Hoyo 19: botón WhatsApp en las fotos (hoyo19-hilo.js v10, css v7) ---

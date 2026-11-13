@@ -1,0 +1,29 @@
+/* Reforma del marcador: pantalla de marcar en BLANCO (norma de Carlos). */
+html.tb-on .hole-nav-btn{ width:84px !important; height:84px !important; border-radius:22px !important; flex-direction:column; background:#111316 !important; color:#C6F24E !important; font:900 44px/0.9 Archivo,Arial,sans-serif !important; border:0 !important; box-shadow:none !important; }
+html.tb-on .hole-nav-btn small{ font:800 10px Archivo,Arial,sans-serif; color:#fff; letter-spacing:.06em; margin-top:4px; }
+html.tb-on .hole-nav-btn.mk-off{ background:#E6EAEE !important; color:#B3BBC2 !important; }
+html.tb-on .hole-nav-btn.mk-off small{ color:#B3BBC2; }
+html.tb-on .hole-nav-btn.mk-go{ background:#C6F24E !important; color:#111316 !important; box-shadow:0 0 0 5px rgba(46,125,50,.25) !important; }
+html.tb-on .hole-nav-btn.mk-go small{ color:#111316; }
+.mk-cartel{ background:#EAF7C9; border:1px solid #2E7D32; border-radius:999px; padding:8px 14px; font:800 13px Archivo,Arial,sans-serif; color:#111316; margin:0 0 10px; text-align:center; }
+.mk-rol{ display:inline-block; white-space:nowrap; font:800 10px Archivo,Arial,sans-serif; border-radius:999px; padding:2px 9px; background:#DADFE3; color:#111316; margin-bottom:3px; }
+.mk-rol.yo{ background:#C6F24E; }
+.mk-aviso{ border-radius:16px; padding:10px 12px; margin:10px 0; font:800 13px Archivo,Arial,sans-serif; text-align:center; }
+.mk-aviso.ok{ background:#E3F6E5; border:1.5px solid #2E7D32; color:#1B5E20; }
+.mk-aviso.espera{ background:#FFF4D6; border:1.5px solid #F5B83D; color:#6B4700; }
+.mk-barra{ height:8px; border-radius:4px; background:#C9E7CC; margin-top:8px; overflow:hidden; }
+.mk-barra i{ display:block; height:100%; width:0; background:#2E7D32; animation:mkb 1.5s linear forwards; }
+@keyframes mkb{ to{ width:100%; } }
+.mk-aviso button{ display:block; width:100%; margin-top:8px; border-radius:999px; border:1.5px solid #2E7D32; padding:10px; font:800 12px Archivo,Arial,sans-serif; color:#2E7D32; background:#fff; }
+/* Hoja de golpes */
+#npChips{ display:flex; gap:6px; margin:8px 0; }
+#npChips div{ flex:1; background:#F2F4F6; border:1px solid #DADFE3; border-radius:10px; padding:5px 0; text-align:center; font:800 14px Archivo,Arial,sans-serif; color:#111316; }
+#npChips small{ display:block; font:700 9px Archivo,Arial,sans-serif; color:#5C6670; }
+#npPrev{ display:flex; align-items:center; gap:12px; background:#F2F4F6; border-radius:16px; padding:10px 12px; margin-bottom:10px; min-height:76px; color:#111316; }
+#npPrev b{ display:block; font:900 17px Archivo,Arial,sans-serif; } #npPrev span{ font:600 12px Barlow,Arial,sans-serif; color:#5C6670; }
+#npPrev .np-m{ width:56px; height:56px; font-size:30px; }
+#npGrid .np-key{ height:68px; flex-direction:column; gap:2px; font-size:14px; }
+#npGrid .np-key small{ font:700 9.5px Barlow,Arial,sans-serif; color:#5C6670; text-transform:none; }
+#npGrid .np-key.is-par{ background:#fff; border-color:#DADFE3; }
+#npGrid .np-key.is-cur{ border:3px solid #2E7D32; box-shadow:none; background:#F4FBD9; }
+#npGrid .np-m{ width:36px; height:36px; font-size:20px; }
