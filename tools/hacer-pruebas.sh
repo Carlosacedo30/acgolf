@@ -853,7 +853,7 @@ cambia("""    const casillas = tarjetas.map(x => ({ d: Number(x.diferencial), ti
 
 cambia("""      + '<div class="hp-expl">Se miran tus <b>últimas 20 tarjetas</b> de la liga. Llevas <b>' + c.n + '</b>; las ' + (20 - c.n) + ' que faltan cuentan como tu hándicap de salida (' + hNum(c.base) + '). De las 20 se cogen las <b>8 mejores</b> (en verde) y se hace la media.</div>'""",
 """      + '<div class="hp-expl">' + (c.n < 3
-          ? 'Llevas <b>' + c.n + '</b> tarjetas. Hasta tener <b>3</b> se queda tu hándicap de salida (' + hNum(c.base) + '). Después se revisa como lo hace la Federación.'
+          ? 'Llevas <b>' + c.n + '</b> tarjetas. Hasta tener <b>3</b> tu hándicap se queda como está (' + hNum(c.jug.hcp) + '). Después se revisa como lo hace la Federación.'
           : 'Se miran tus <b>últimas 20 tarjetas</b> de la app. Llevas <b>' + c.n + '</b>. ' + (c.n < 20
               ? 'Con ' + c.n + ' la Federación coge las <b>' + c.k + ' mejores</b> (en verde), hace la media' + (c.aj ? ' y ' + (c.aj < 0 ? 'resta <b>' + (-c.aj) + '</b>' : 'suma <b>' + c.aj + '</b>') : '') + '.'
               : 'Se cogen las <b>8 mejores</b> (en verde) y se hace la media.')) + '</div>'""")
@@ -875,7 +875,7 @@ cambia("""      + '<div class="hp-sec-t">Para bajar tu hándicap</div>'
 
 cambia("""'<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'""",
 """'<li><b>Tu hándicap.</b> La media de tus 8 mejores diferenciales de las últimas 20 tarjetas. Con menos tarjetas se cogen menos (con 3, la mejor menos 2; con 6, las 2 mejores menos 1; con 8, las 2 mejores; con 12, las 4 mejores…). Para esto tus golpes se cuentan con el hándicap completo (100 %), aunque se juegue al 95 %. Se recalcula solo después de cada partida y nadie puede tocarlo a mano.</li>'
-      + '<li><b>El freno.</b> Tu hándicap no puede subir de golpe: si la cuenta sale más de 3 sobre tu hándicap más bajo del último año, lo que pasa de 3 cuenta la mitad, y nunca más de 5 por encima.</li>'""")
+      + '<li><b>El freno.</b> Tu hándicap no puede subir de golpe: si la cuenta sale más de 3 sobre tu hándicap más bajo del último año, lo que pasa de 3 cuenta la mitad, y nunca más de 5 por encima. Mientras tengas menos de 20 tarjetas, además, tu hándicap no baja más de 2 puntos cada vez, para que el cambio sea poco a poco.</li>'""")
 
 cambia("  function hcpPintar(){", """  // Cuadro «Freno de la Federación»: limitación (+3 la mitad) y tope (+5)
   function hcpFreno(c){
@@ -888,6 +888,8 @@ cambia("  function hcpPintar(){", """  // Cuadro «Freno de la Federación»: li
           ? f('Cuenta base (la media de arriba)', hNum(c.media)) + f('Sobre tu más bajo', '+' + hNum(c.media - c.bajo)) + f('Los primeros 3 cuentan enteros', hNum(c.bajo + 3))
             + f('Lo que pasa de 3 cuenta la mitad', '+' + hNum((c.media - c.bajo - 3) / 2)) + f('Tope (tu más bajo + 5)', hNum(c.bajo + 5)) + f('Resultado', hNum(tras), true)
           : '<div style="padding:6px 0 2px;color:#C6F24E">No se aplica el freno: tu número no sube más de 3 sobre tu más bajo.</div>')
+      + (c.n < 20 && Math.abs(tras - Number(c.jug.hcp)) >= 0.05
+          ? f('Resultado de la Federación', hNum(tras)) + '<div style="padding:6px 0 2px;color:#9AA3AB">Mientras tengas menos de 20 tarjetas, tu hándicap no baja más de 2 puntos cada vez. Va hacia ese número poco a poco.</div>' : '')
       + '</div>';
   }
 
@@ -908,6 +910,6 @@ for f in ['js/players.js', 'js/tarjetas.js', 'js/vista-hoyo.js', 'js/tarjeta-bla
     s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 1), s)
 # Revisión del hándicap como la Federación (13-nov-2026): una versión más para que los móviles recarguen la pantalla «Mi hándicap»
 rx = re.compile(r'(js/handicap\.js\?v=)(\d+)')
-s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 1), s)
+s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 2), s)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
