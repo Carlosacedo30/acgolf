@@ -269,7 +269,9 @@
     const multi = est && est.length > 1;
     if(!g || !multi || typeof miIdx !== 'function' || miIdx() < 0){ if(c) c.remove(); return; }
     if(!c){ c = document.createElement('div'); c.id = 'mkCartelGrupo'; c.className = 'mk-cartel'; sec.parentNode.insertBefore(c, sec); }
-    c.textContent = 'Estás en el Grupo ' + (+activeGroup + 1) + ' · cada grupo marca el suyo';
+    const mg = (typeof matchGroups !== 'undefined' && matchGroups[activeGroup]) || {};
+    const sal = mg.hora ? ' · sales a las ' + mg.hora.padStart(5, '0') : (Number(mg.hoyoSalida) > 1 ? ' · sales por el hoyo ' + mg.hoyoSalida : '');
+    c.textContent = 'Estás en el Grupo ' + (+activeGroup + 1) + sal;
   }
 
   // ---------- FIRMAR LA TARJETA: pantalla grande al terminar (estilo GolfDirecto) ----------
