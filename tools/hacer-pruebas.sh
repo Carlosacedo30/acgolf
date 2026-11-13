@@ -714,9 +714,18 @@ EOF
 python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
-for a, b in [('marcador.js?v=8', 'marcador.js?v=10'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
+for a, b in [('marcador.js?v=8', 'marcador.js?v=11'), ('tarjeta-firma.css?v=1', 'tarjeta-firma.css?v=2')]:
     assert s.count(a) == 1, a
     s = s.replace(a, b)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+# --- Reforma del marcador: flechas grandes, cartel de grupo, hoja de golpes (marcador-reforma.js/.css) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+s = s.replace('</head>', '<link rel="stylesheet" href="marcador-reforma.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-reforma.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 # --- Hoyo 19: botón WhatsApp en las fotos (hoyo19-hilo.js v10, css v7) ---
