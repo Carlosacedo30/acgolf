@@ -195,7 +195,8 @@
       });
       const rest = n - ultima, dif = ga - gb, jug = ga + gb + ge;
       const cerrado = jug > 0 && Math.abs(dif) > rest, acabado = jug > 0 && rest === 0;
-      const texto = (cerrado || acabado) ? (dif === 0 ? 'EMPATE' : (cerrado && rest > 0 ? 'GANA ' + Math.abs(dif) + ' Y ' + rest : 'GANA POR ' + Math.abs(dif))) : (dif === 0 ? 'TODO IGUAL' : Math.abs(dif) + ' ARRIBA');
+      const hv = Math.abs(dif) + (Math.abs(dif) === 1 ? ' HOYO' : ' HOYOS');
+      const texto = (cerrado || acabado) ? (dif === 0 ? 'EMPATE' : 'GANA POR ' + hv + ' DE VENTAJA') : (dif === 0 ? 'TODO IGUAL' : hv + ' DE VENTAJA');
       out.push({ gi, g, a: nombreLado(g, lados[0]), b: nombreLado(g, lados[1]), res, ga, gb, ge, rest, dif, jug, texto, lider: dif > 0 ? 'A' : dif < 0 ? 'B' : null, final: cerrado || acabado, orden, ultimo: ultima ? orden[ultima - 1] : 0, pos: ultima });
     });
     return out;
@@ -217,7 +218,7 @@
           + '<div class="vv-sale">Sale por el ' + salidaDe(m.g) + ' · ' + (m.final ? 'terminado' : 'van por el hoyo ' + m.ultimo) + '</div>'
           + '<div class="vv-mp-vs"><b class="' + (m.lider === 'A' ? 'g' : '') + '">' + esc(m.a) + '</b><em>contra</em><b class="' + (m.lider === 'B' ? 'g' : '') + '">' + esc(m.b) + '</b></div>'
           + '<div class="vv-mp-est">' + (m.lider === 'B' && !/^GANA|EMPATE/.test(m.texto) ? m.texto : m.texto) + '</div>'
-          + '<div class="vv-mp-det">' + (m.lider ? 'Va por delante ' + esc(m.lider === 'A' ? m.a : m.b) + '. ' : '') + 'Han ganado ' + hoyosTxt(m.ga) + ' contra ' + m.gb + ' · ' + m.ge + (m.ge === 1 ? ' empatado' : ' empatados') + ' · quedan ' + m.rest + '</div>'
+          + '<div class="vv-mp-det">' + (m.lider ? (m.final ? 'Gana ' : 'Va por delante ') + esc(m.lider === 'A' ? m.a : m.b) + '. ' : '') + (m.final && m.rest > 0 ? 'Ya no se puede remontar: ' + (m.rest === 1 ? 'queda 1 hoyo' : 'quedan ' + m.rest + ' hoyos') + ' por jugar. ' : '') + 'Han ganado ' + hoyosTxt(m.ga) + ' contra ' + m.gb + ' · ' + m.ge + (m.ge === 1 ? ' empatado' : ' empatados') + (m.final ? '' : ' · quedan ' + m.rest) + '</div>'
           + tiraMP(m)
           + '<div class="vv-ley"><span><i class="a"></i>' + esc(m.a) + '</span><span><i class="b"></i>' + esc(m.b) + '</span><span><i class="e"></i>Empate</span><span><i class="n"></i>Por jugar</span></div>'
           + '<div class="vv-ley-n">Los hoyos van en el orden en que se juegan (este grupo sale por el ' + salidaDe(m.g) + ').</div></div>';
