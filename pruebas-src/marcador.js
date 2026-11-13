@@ -6,7 +6,7 @@
 // Solo en las partidas de una liga creada en «Crear liga»; las partidas normales cuentan sin marcador.
 (function(){
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const corto = n => { const w = String(n || '').trim().split(/\s+/); return w[0] || n; };
+  const corto = n => String(n || '').trim().replace(/\s+/g, ' ');   // norma de Carlos: en los marcadores siempre el nombre completo
   let est = null, estCode = null, estJson = '', cargando = false, aviso = '';
   let elegidos = null, elegidosKey = '';       // marcadores elegidos en pantalla antes de confirmar
   let llegada = { hoyo: null, completo: false }, avanceTimer = null;
