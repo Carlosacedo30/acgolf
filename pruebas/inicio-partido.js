@@ -37,11 +37,22 @@
   }
 
   // Etiqueta «Jornada de liga» o «Jornada de Ryder» cuando el partido sale de una liga o de una Ryder Cup
+  // Partido de liga: nombre de la liga + número de jornada (ej. «Jornada 3 de 8»)
+  function ligaInfo(c){
+    if(c.ryder || typeof ligaDeConv !== 'function') return null;
+    const l = ligaDeConv(c.code);
+    if(!l) return null;
+    const n = Number((/J(\d+)$/.exec(c.code || '') || [])[1]) || 0;
+    const total = (l.jornadas || []).length;
+    return { nombre: l.nombre || 'Liga', n: n, total: total };
+  }
   function jornada(c){
-    let t = '';
-    if(c.ryder) t = 'Jornada de Ryder';
-    else if(c.liga || (typeof ligaDeConv === 'function' && ligaDeConv(c.code))) t = 'Jornada de liga';
-    return t ? '<div class="ip-jornada">' + t + '</div>' : '';
+    if(c.ryder) return '<div class="ip-jornada">Jornada de Ryder</div>';
+    const li = ligaInfo(c);
+    if(li) return '<div class="ip-liga-banda"><span class="ip-liga-trofeo" aria-hidden="true">🏆</span><b>' + esc(li.nombre) + '</b>'
+      + (li.n ? '<span class="ip-liga-jn">Jornada ' + li.n + (li.total ? ' de ' + li.total : '') + '</span>' : '') + '</div>';
+    if(c.liga) return '<div class="ip-jornada">Jornada de liga</div>';
+    return '';
   }
 
   window.renderConvHomeCards = function(box){
@@ -79,7 +90,7 @@
           return '<button type="button" class="ip-hora' + (mi === k ? ' sel' : '') + '" data-c="' + esc(c.code) + '" data-k="' + k + '"' + (llena ? ' disabled' : '') + '>' + esc(convEtq(c, k)) + (llena ? '<small>llena</small>' : '') + '</button>';
         }).join('') + '<button type="button" class="ip-hora no" data-c="' + esc(c.code) + '" data-k="-1">No voy</button></div>' : '';
       const cambiar = mi >= 0 && !c.roundCode && abierta !== c.code ? '<button type="button" class="ip-cambiar" data-apuntar="' + esc(c.code) + '">Cambiar hora o decir que no voy</button>' : '';
-      return '<div class="ip-card' + (esHoy ? ' hoy' : '') + '">'
+      return '<div class="ip-card' + (esHoy ? ' hoy' : '') + (ligaInfo(c) ? ' ip-card-liga' : '') + '">'
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
         + '<div class="ip-eti">' + etiqueta + '</div>' + jornada(c) + '<div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
         + derecha + '</div>' + elegir + cambiar

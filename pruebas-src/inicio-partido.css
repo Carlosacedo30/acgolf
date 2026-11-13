@@ -59,3 +59,8 @@ html #convHomeNew .ip-logo-grupo.ip-escudo svg{ max-width:54px; max-height:54px;
 .pr-marc:focus-visible{ outline:3px solid #C6F24E; outline-offset:2px; }
 
 .ip-jornada{ display:inline-block; margin:6px 0 2px; padding:3px 12px; border-radius:999px; background:#2F3A1C; border:1px solid #C6F24E; color:#C6F24E; font:800 14px 'Archivo', sans-serif; }
+/* Partido de liga: franja lima a la izquierda + nombre de la liga + número de jornada */
+.ip-card.ip-card-liga{ border-left:5px solid #C6F24E; background:linear-gradient(90deg,#2F3A1C 0%,#1B1E22 70%); }
+.ip-liga-banda{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:6px 0 2px; font:800 14px 'Archivo', sans-serif; color:#C6F24E; }
+.ip-liga-banda b{ font-weight:800; color:#F2F4F5; }
+.ip-liga-jn{ padding:3px 10px; border-radius:999px; background:#C6F24E; color:#111316; font:900 12px 'Archivo', sans-serif; }
