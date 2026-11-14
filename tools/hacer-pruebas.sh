@@ -764,6 +764,15 @@ s = s.replace('marcador-reforma.css?v=4', 'marcador-reforma.css?v=6')
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
+# --- Cada jugador ve solo su grupo (marcador-solo-grupo.js) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('<div class="pr-banda">Pruebas</div>') == 1
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-solo-grupo.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+
 # --- Hoyo 19: botón WhatsApp en las fotos (hoyo19-hilo.js v10, css v7) ---
 python3 - <<'EOF'
 p = 'pruebas/index.html'
