@@ -54,3 +54,21 @@ html .tf-mal.mk-mal-card .mk-mal-cambia{ background:#fff !important; color:#1113
 html .tf-mal.mk-mal-card .mk-mal-deja{ background:#C6F24E !important; color:#111316 !important; border:0 !important; }
 /* Sin cobertura: aviso fijo abajo */
 .mk-cola{ position:fixed; left:12px; right:12px; bottom:12px; z-index:9999; background:#FFF4D6; border:1.5px solid #F5B83D; color:#6B4700; border-radius:999px; padding:10px 14px; text-align:center; font:800 13px 'Archivo',sans-serif; box-shadow:0 6px 20px rgba(0,0,0,.15); }
+/* Pantalla de ENTREGAR TARJETA: también en BLANCO (norma de Carlos, partes de marcación) */
+html .tf-fondo{ background:#fff !important; }
+html .tf-fondo .tf-caja{ color:#111316 !important; font-family:'Barlow',system-ui,sans-serif; }
+html .tf-fondo .tf-t{ font:900 34px/1.1 'Archivo',sans-serif !important; color:#111316; }
+html .tf-fondo .tf-ic.ok + .tf-t{ color:#2E7D32; }
+html .tf-fondo .tf-sub{ color:#5A636B !important; font:600 17px 'Barlow',sans-serif !important; }
+html .tf-fondo .tf-fila{ background:#F2F4F6 !important; border:1px solid #DADFE3; color:#111316 !important; }
+html .tf-fondo .tf-fila b{ color:#2E7D32 !important; }
+html .tf-fondo .tf-fila b.mal{ color:#B3261E !important; }
+html .tf-fondo .tf-bien{ background:#E3F6E5 !important; border:2px solid #2E7D32 !important; color:#1B5E20 !important; font:700 17px 'Barlow',sans-serif !important; }
+html .tf-fondo .tf-btn{ background:#C6F24E !important; color:#111316 !important; font:900 24px 'Archivo',sans-serif !important; }
+html .tf-fondo .tf-btn.gris{ background:#E6EAEE !important; }
+html .tf-fondo .tf-btn.naranja{ background:#F5B83D !important; }
+html .tf-fondo .tf-btn.wa{ background:#25D366 !important; color:#06200f !important; }
+html .tf-fondo .tf-btn:active{ transform:scale(.97); }
+html .tf-fondo .tf-p{ color:#5A636B !important; }
+html .tf-fondo .tf-link{ color:#5A636B !important; }
+html .tf-fondo .tf-aviso{ color:#B3261E !important; }

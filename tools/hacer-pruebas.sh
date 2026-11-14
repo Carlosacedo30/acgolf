@@ -757,6 +757,10 @@ s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
 s = s.replace('</head>', '<link rel="stylesheet" href="marcador-retiro.css?v=1">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-retiro.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+assert s.count('marcador.js?v=15') == 1
+s = s.replace('marcador.js?v=15', 'marcador.js?v=16')
+assert s.count('marcador-reforma.css?v=4') == 1
+s = s.replace('marcador-reforma.css?v=4', 'marcador-reforma.css?v=5')
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
