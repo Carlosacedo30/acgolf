@@ -409,7 +409,7 @@
           + '<button type="button" class="tf-btn naranja" id="tfVolver">VOLVER A LA PARTIDA</button></div>';
       } else {
         const faltan = faltanTodos();
-        const txt = 'Faltan por firmar la tarjeta de la liga: ' + faltan.join(', ') + '. Abrid acgolf y pulsad ENTREGAR TARJETA.';
+        const txt = 'Faltan por entregar la tarjeta de la liga: ' + faltan.join(', ') + '. Abrid acgolf y pulsad ENTREGAR TARJETA.';
         h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">TARJETA ENTREGADA</div><div class="tf-sub">Verificada por ' + miMarc + '</div>'
           + (faltan.length ? '<div class="tf-lista"><div class="tf-sub">Falta que entreguen:</div>' + faltan.map(x => '<div class="tf-fila"><span>' + esc(x) + '</span><b class="mal">falta</b></div>').join('') + '</div>'
               + '<a class="tf-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(txt) + '">AVISAR A LOS QUE FALTAN</a>'
@@ -426,7 +426,7 @@
         firmando = true; aviso = ''; pintarFirma();
         const { data, error } = await initSupabase().rpc('entregar_tarjeta', { p_code: currentRoundCode, p_grupo: +activeGroup });
         firmando = false;
-        if(error) aviso = String(error.message || 'No se pudo firmar. Revisa la cobertura y vuelve a pulsar.');
+        if(error) aviso = String(error.message || 'No se pudo entregar. Revisa la cobertura y vuelve a pulsar.');
         else { est = data || []; estJson = JSON.stringify(est); estCode = currentRoundCode; mostrarEntregada = true; }
         pintarFirma(); pintarEntrega();
       };
@@ -460,7 +460,7 @@
   }
   // ---------- Lista del administrador: tarjetas sin cerrar (solo la ve el administrador) ----------
   let adminLista = [];
-  const MOTIVO = { faltan_hoyos: 'Le faltan hoyos por apuntar', no_coincide: 'No coincide algún hoyo con su marcador', sin_marcador: 'Jugó sin marcador', sin_firmar: 'Coincide, pero no ha firmado (se entregará sola a la hora)' };
+  const MOTIVO = { faltan_hoyos: 'Le faltan hoyos por apuntar', no_coincide: 'No coincide algún hoyo con su marcador', sin_marcador: 'Jugó sin marcador', sin_firmar: 'Coincide, pero no la ha entregado (se entregará sola a la hora)' };
   async function cargarAdmin(){
     try {
       if(!window.miPerfilId || !pantallaActiva(0)) return;
