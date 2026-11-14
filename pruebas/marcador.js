@@ -25,6 +25,7 @@
   }
   // Para que otros archivos (el caddie Curro y Lola) sepan si esta partida es de la liga con marcadores
   window.acgolfModoMarcador = { cargar: cargarModo, con: conMarcadorEn };
+  window.acgolfMarcadorRecargar = () => cargar(true);   // lo usa la mesa para refrescar al momento
 
   const yo = () => window.miPerfil && window.miPerfil.player_name;
   const grupoEst = () => (est || []).find(g => +g.grupo === +activeGroup);
