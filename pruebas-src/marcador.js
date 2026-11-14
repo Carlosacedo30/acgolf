@@ -117,6 +117,17 @@
     if(scr && typeof window.renderHoleView === 'function') window.renderHoleView();
   }
   setInterval(() => { if(document.visibilityState === 'visible' && currentRoundCode) cargar(); }, 5000);
+  // Si la partida ya se sabe «con marcadores» pero la hoja de golpes sigue en modo normal, se repinta sola (una vez por cambio)
+  let vigiaFirma = '';
+  setInterval(() => { try {
+    if(document.visibilityState !== 'visible' || !currentRoundCode || !conMarcadorEn(currentRoundCode) || !pantallaActiva(3)) return;
+    const w = document.getElementById('hvPlayers');
+    if(!w || !w.querySelector('.hv-scores')) { vigiaFirma = ''; return; }
+    if(players.filter(Boolean).length < 2) return;
+    const f = currentRoundCode + ':' + activeGroup + ':' + (est ? est.length : -1);
+    if(f === vigiaFirma) return;
+    vigiaFirma = f; repintarHoyo();
+  } catch(e){} }, 1500);
 
   // ---------- Elegir quién marca a quién (antes de empezar) ----------
   function htmlElegir(n){
