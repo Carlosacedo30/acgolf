@@ -1,5 +1,5 @@
 /* Clasificación liga: «Esta liga» y «General del año» (estilo Grafito deportivo, letra grande) */
-.screen[data-screen="6"] .screen-content > section{ display:none !important; }
+.screen[data-screen="6"] .screen-content > section:not(#salonSection){ display:none !important; }
 #clNuevo{ padding:4px 16px 24px; color:#F2F4F5; font-family:'Barlow',sans-serif; }
 .cl-tabs{ display:flex; gap:8px; margin:6px 0 12px; }
 .cl-tab{ flex:1; min-height:48px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:transparent; color:#F2F4F5; font:900 16px 'Archivo',sans-serif; cursor:pointer; touch-action:manipulation; }
