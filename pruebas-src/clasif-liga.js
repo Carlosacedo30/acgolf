@@ -172,10 +172,6 @@
         + (faltan.length ? 'Falta: <b>' + faltan.join(', ') + '</b>. Después, el Campeonato final.' : 'Todas las ligas están terminadas. Toca el Campeonato final.') + '</div>';
     }
     h += '<div class="cl-card"><b>Campeonato de campeones</b><br>Una ronda a golpes, siempre con hándicap al 95 %, en el campo de la liga más reciente. La fecha la fija el organizador antes del 31 de diciembre; si no, es el último domingo de diciembre.</div>';
-    // Salón de campeones: una tarjeta por liga terminada, con el nombre de la liga
-    if(g.fin.length){
-      h += '<h2 class="cl-h2">Salón de campeones</h2>' + g.fin.slice().reverse().map(r => '<div class="cl-card cl-camp"><div class="cl-copa">🏆</div><div><b>' + esc(r.l.nombre) + '</b><br>' + esc((r.tabla[0] || {}).jugador || '') + '</div></div>').join('');
-    }
     return h;
   }
 
@@ -204,6 +200,7 @@
     // si no hay ligas terminadas este año pero sí en otro, abre el más reciente
     const an = aniosConLigas(); if(an.length && !an.includes(vista.anio)) vista.anio = an[an.length - 1];
     cuerpo();
+    if(window.acgolfSalon) window.acgolfSalon.pintar(Object.values(datos));
   };
   window.acgolfClasifLiga = { general, datos: () => datos, cargarTodo, puntosGeneral };
 })();
