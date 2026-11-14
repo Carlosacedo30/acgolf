@@ -737,6 +737,19 @@ s = s.replace('</head>', '<link rel="stylesheet" href="marcador-reforma.css?v=1"
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-reforma.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+# --- Mesa para elegir marcador, sin administrador (marcador-mesa.js/.css; marcador.js v13) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1 and s.count('marcador.js?v=12') == 1
+s = s.replace('marcador.js?v=12', 'marcador.js?v=14')
+s = s.replace('</head>', '<link rel="stylesheet" href="marcador-mesa.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-mesa.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-tarjeta.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('marcador-reforma.css?v=1', 'marcador-reforma.css?v=3')
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+
 # --- Hoyo 19: botón WhatsApp en las fotos (hoyo19-hilo.js v10, css v7) ---
 python3 - <<'EOF'
 p = 'pruebas/index.html'

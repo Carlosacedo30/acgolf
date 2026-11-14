@@ -27,3 +27,28 @@ html.tb-on .hole-nav-btn.mk-go small{ color:#111316; }
 #npGrid .np-key.is-par{ background:#fff; border-color:#DADFE3; }
 #npGrid .np-key.is-cur{ border:3px solid #2E7D32; box-shadow:none; background:#F4FBD9; }
 #npGrid .np-m{ width:36px; height:36px; font-size:20px; }
+/* Marcador completo: filas «Recibes» y «Puntos» de la tarjeta + totales */
+.tb-r-rc{ font:700 13px/22px 'Barlow Condensed','Barlow',sans-serif; color:#2E7D32; border-top:1px solid #DADFE3; }
+.tb-r-rc .tb-lbl, .tb-r-pt .tb-lbl{ font:800 12px 'Barlow',sans-serif; color:#2A3036; }
+.mc-rec{ letter-spacing:-1px; font-size:11px; }
+.tb-r-pt{ font:800 16px/28px 'Barlow Condensed','Barlow',sans-serif; color:#111316; padding-bottom:4px; }
+.tb-r-pt .tb-tot.b{ color:#2E7D32; font-size:19px; }
+.mc-total{ display:flex; gap:8px; margin:0 0 8px; }
+.mc-total span{ flex:1; background:#F2F4F6; border:1px solid #DADFE3; border-radius:14px; padding:8px 4px; text-align:center; font:800 12px 'Barlow',sans-serif; color:#5C6670; }
+.mc-total b{ display:block; font:900 20px 'Archivo',sans-serif; color:#111316; }
+/* «No coincide»: los dos números y dos botones */
+.mk-mal-card{ border-radius:16px; }
+.mk-mal-fila{ margin:8px 0; } .mk-mal-fila p{ margin:0 0 6px; font:700 14px/1.3 'Barlow',sans-serif; color:#111316; }
+.mk-mal-bot{ display:flex; gap:8px; flex-wrap:wrap; }
+.mk-mal-bot button{ flex:1 1 140px; min-height:46px; border-radius:999px; font:800 14px 'Archivo',sans-serif; cursor:pointer; touch-action:manipulation; }
+.mk-mal-bot button:active{ transform:scale(.97); }
+.mk-mal-cambia{ background:#fff; color:#111316; border:1.5px solid rgba(46,125,50,.6); }
+.mk-mal-deja{ background:#C6F24E; color:#111316; border:0; }
+/* «No coincide» en blanco (norma de Carlos): fondo rosa claro, letra oscura, botones en pastilla */
+html .tf-mal.mk-mal-card{ background:#FFE5E5 !important; border:1.5px solid #E5484D !important; color:#111316 !important; text-align:left !important; padding:12px 14px !important; }
+html .tf-mal.mk-mal-card > b{ display:block; font:900 16px 'Archivo',sans-serif !important; color:#B3261E !important; text-align:left !important; }
+html .tf-mal.mk-mal-card .mk-mal-fila p{ color:#111316 !important; font:700 14px/1.3 'Barlow',sans-serif !important; text-align:left !important; }
+html .tf-mal.mk-mal-card .mk-mal-fila p b{ font:900 18px 'Archivo',sans-serif !important; }
+html .tf-mal.mk-mal-card > span{ display:block; font:600 12.5px/1.35 'Barlow',sans-serif !important; color:#6B1F1A !important; text-align:left !important; margin-top:6px; }
+html .tf-mal.mk-mal-card .mk-mal-cambia{ background:#fff !important; color:#111316 !important; border:1.5px solid rgba(46,125,50,.6) !important; }
+html .tf-mal.mk-mal-card .mk-mal-deja{ background:#C6F24E !important; color:#111316 !important; border:0 !important; }
