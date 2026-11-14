@@ -1,0 +1,44 @@
+/* Clasificación liga: «Esta liga» y «General del año» (estilo Grafito deportivo, letra grande) */
+.screen[data-screen="6"] .screen-content > section{ display:none !important; }
+#clNuevo{ padding:4px 16px 24px; color:#F2F4F5; font-family:'Barlow',sans-serif; }
+.cl-tabs{ display:flex; gap:8px; margin:6px 0 12px; }
+.cl-tab{ flex:1; min-height:48px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:transparent; color:#F2F4F5; font:900 16px 'Archivo',sans-serif; cursor:pointer; touch-action:manipulation; }
+.cl-tab.on{ background:#C6F24E; color:#111316; border-color:#C6F24E; }
+.cl-tab:active, .cl-btn:active{ transform:scale(.97); }
+.cl-sel{ display:block; background:#24282D; border:1px solid #4A5058; border-radius:16px; padding:8px 14px 6px; margin-bottom:10px; }
+.cl-sel small{ display:block; font:700 12px 'Barlow',sans-serif; color:#9AA3AB; }
+.cl-sel select{ width:100%; background:transparent; color:#F2F4F5; border:0; font:800 19px 'Archivo',sans-serif; padding:4px 0; }
+.cl-sel select option{ background:#24282D; color:#F2F4F5; }
+.cl-sub{ font-size:15px; color:#9AA3AB; margin:2px 0 10px; line-height:1.35; }
+.cl-h2{ font:900 21px 'Archivo',sans-serif; margin:18px 0 6px; }
+.cl-yo{ background:#2F3A1C; border:1.5px solid #C6F24E; border-radius:20px; padding:14px; margin-bottom:12px; }
+.cl-yo small{ font:800 12px 'Archivo',sans-serif; letter-spacing:.06em; color:#C6F24E; }
+.cl-yo-g{ display:flex; align-items:baseline; gap:10px; margin:4px 0; }
+.cl-yo-g b{ font:900 48px 'Archivo',sans-serif; line-height:1; } .cl-yo-g span{ font:800 19px 'Archivo',sans-serif; }
+.cl-yo p{ margin:4px 0 0; font-size:16px; color:#DDE3C8; } .cl-yo p b{ color:#C6F24E; }
+.cl-yo-no{ background:#1B1E22; border-color:#33383E; } .cl-yo-no small{ color:#9AA3AB; }
+.cl-podio{ display:flex; gap:8px; align-items:flex-end; margin:6px 0 12px; }
+.cl-podio > div{ flex:1; min-width:0; border-radius:16px; padding:10px 6px; text-align:center; background:#1B1E22; border:1px solid #33383E; }
+.cl-podio .cl-p1{ background:#2F3A1C; border-color:#C6F24E; padding-top:18px; padding-bottom:16px; }
+.cl-podio i{ display:block; font:900 22px 'Archivo',sans-serif; color:#C6F24E; font-style:normal; }
+.cl-podio b{ display:block; font:800 15px/1.15 'Archivo',sans-serif; overflow-wrap:anywhere; }
+.cl-podio span{ display:block; font:900 24px 'Archivo',sans-serif; margin-top:4px; }
+.cl-vacio{ visibility:hidden; }
+.cl-soy{ box-shadow:0 0 0 2px #C6F24E inset; }
+.cl-fila{ display:flex; align-items:center; gap:10px; background:#1B1E22; border:1px solid #33383E; border-radius:16px; padding:12px; margin:7px 0; }
+.cl-fila b{ flex:1; min-width:0; font:800 17px 'Archivo',sans-serif; overflow-wrap:anywhere; }
+.cl-pos{ font:900 22px 'Archivo',sans-serif; width:28px; text-align:center; color:#C6F24E; }
+.cl-pt{ font:900 24px 'Archivo',sans-serif; }
+.cl-fila-d{ display:block; } .cl-fila-top{ display:flex; align-items:center; gap:10px; }
+.cl-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.cl-chip{ font:800 13px 'Archivo',sans-serif; border-radius:999px; padding:4px 10px; background:#24282D; border:1px solid #4A5058; }
+.cl-chip.ok{ border-color:#C6F24E; color:#C6F24E; } .cl-chip.no{ color:#6b737a; text-decoration:line-through; }
+.cl-btn{ display:block; width:100%; min-height:52px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:transparent; color:#F2F4F5; font:900 16px 'Archivo',sans-serif; margin:12px 0; cursor:pointer; touch-action:manipulation; }
+.cl-card{ background:#24282D; border:1px solid #33383E; border-radius:16px; padding:12px 14px; margin:10px 0; font-size:16px; line-height:1.4; }
+.cl-card b{ color:#C6F24E; }
+.cl-barra{ height:10px; border-radius:99px; background:#33383E; margin:8px 0; } .cl-barra i{ display:block; height:100%; border-radius:99px; background:#C6F24E; }
+.cl-camp{ display:flex; gap:12px; align-items:center; } .cl-copa{ width:54px; height:54px; border-radius:12px; background:#33383E; display:flex; align-items:center; justify-content:center; font-size:26px; flex:none; }
+.cl-anio{ display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:10px; } .cl-anio b{ font:900 22px 'Archivo',sans-serif; }
+.cl-anio button{ width:48px; height:48px; border-radius:50%; border:1.5px solid rgba(198,242,78,.55); background:transparent; color:#F2F4F5; font:900 22px sans-serif; }
+.cl-anio button:disabled{ opacity:.35; }
+.cl-vacio-msg{ background:#1B1E22; border:1px solid #33383E; border-radius:16px; padding:16px; margin:10px 0; font-size:16px; color:#9AA3AB; }

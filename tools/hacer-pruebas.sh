@@ -977,3 +977,14 @@ rx = re.compile(r'(js/handicap\.js\?v=)(\d+)')
 s = rx.sub(lambda m: m.group(1) + str(int(m.group(2)) + 3), s)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+
+# --- Clasificación liga: Esta liga / General del año (clasif-liga.js/.css) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+s = s.replace('</head>', '<link rel="stylesheet" href="clasif-liga.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="clasif-liga.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+
