@@ -983,7 +983,7 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="clasif-liga.css?v=1">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="clasif-liga.css?v=2">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="clasif-liga.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
