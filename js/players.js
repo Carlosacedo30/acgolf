@@ -185,7 +185,7 @@
     wrap.classList.add('grp-paso');
     wrap.innerHTML = '<button type="button" class="grp-flecha" data-d="-1" aria-label="Grupo anterior"' + (pos ? '' : ' disabled') + '>‹</button>'
       + '<div class="grp-centro"><b>Grupo ' + (con[pos] + 1) + ' <small>de ' + con.length + '</small>' + (miG === con[pos] ? ' <em>· el tuyo</em>' : '') + '</b>'
-      + '<span>' + g.players.map(n => esc(String(n).split(/\s+/)[0])).join(', ') + '</span></div>'
+      + '<span>' + g.players.map(n => esc(String(n).trim())).join(', ') + '</span></div>'
       + '<button type="button" class="grp-flecha" data-d="1" aria-label="Grupo siguiente"' + (pos < con.length - 1 ? '' : ' disabled') + '>›</button>'
       + (miG !== undefined && miG !== con[pos] ? '<button type="button" class="grp-mio">Ir a mi grupo</button>' : '');
     wrap.querySelectorAll('.grp-flecha').forEach(b => b.addEventListener('click', ()=>{

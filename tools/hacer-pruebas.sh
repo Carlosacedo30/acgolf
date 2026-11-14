@@ -758,9 +758,19 @@ assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>'
 s = s.replace('</head>', '<link rel="stylesheet" href="marcador-retiro.css?v=1">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-retiro.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 assert s.count('marcador.js?v=15') == 1
-s = s.replace('marcador.js?v=15', 'marcador.js?v=17')
+s = s.replace('marcador.js?v=15', 'marcador.js?v=18')
 assert s.count('marcador-reforma.css?v=4') == 1
 s = s.replace('marcador-reforma.css?v=4', 'marcador-reforma.css?v=7')
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+
+# --- Textos entregar y nombres completos en la flecha de grupo (versiones nuevas) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+for a, b in [('hoyo19.js?v=5', 'hoyo19.js?v=6'), ('styles.css?v=83', 'styles.css?v=84'), ('js/players.js?v=3410', 'js/players.js?v=3412')]:
+    assert s.count(a) == 1, a
+    s = s.replace(a, b)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
