@@ -16,17 +16,6 @@ html.tb-on .hole-nav-btn.mk-go small{ color:#111316; }
 @keyframes mkb{ to{ width:100%; } }
 .mk-aviso button{ display:block; width:100%; margin-top:8px; border-radius:999px; border:1.5px solid #2E7D32; padding:10px; font:800 12px Archivo,Arial,sans-serif; color:#2E7D32; background:#fff; }
 /* Hoja de golpes */
-#npChips{ display:flex; gap:6px; margin:8px 0; }
-#npChips div{ flex:1; background:#F2F4F6; border:1px solid #DADFE3; border-radius:10px; padding:5px 0; text-align:center; font:800 14px Archivo,Arial,sans-serif; color:#111316; }
-#npChips small{ display:block; font:700 9px Archivo,Arial,sans-serif; color:#5C6670; }
-#npPrev{ display:flex; align-items:center; gap:12px; background:#F2F4F6; border-radius:16px; padding:10px 12px; margin-bottom:10px; min-height:76px; color:#111316; }
-#npPrev b{ display:block; font:900 17px Archivo,Arial,sans-serif; } #npPrev span{ font:600 12px Barlow,Arial,sans-serif; color:#5C6670; }
-#npPrev .np-m{ width:56px; height:56px; font-size:30px; }
-#npGrid .np-key{ height:68px; flex-direction:column; gap:2px; font-size:14px; }
-#npGrid .np-key small{ font:700 9.5px Barlow,Arial,sans-serif; color:#5C6670; text-transform:none; }
-#npGrid .np-key.is-par{ background:#fff; border-color:#DADFE3; }
-#npGrid .np-key.is-cur{ border:3px solid #2E7D32; box-shadow:none; background:#F4FBD9; }
-#npGrid .np-m{ width:36px; height:36px; font-size:20px; }
 /* Marcador completo: filas «Recibes» y «Puntos» de la tarjeta + totales */
 .tb-r-rc{ font:700 13px/22px 'Barlow Condensed','Barlow',sans-serif; color:#2E7D32; border-top:1px solid #DADFE3; }
 .tb-r-rc .tb-lbl, .tb-r-pt .tb-lbl{ font:800 12px 'Barlow',sans-serif; color:#2A3036; }
@@ -81,3 +70,15 @@ html.tb-on .grp-centro b{ color:#111316 !important; font-family:'Archivo',sans-s
 html.tb-on .grp-centro b small, html.tb-on .grp-centro span{ color:#5A636B !important; }
 html.tb-on .grp-centro b em{ color:#2E7D32 !important; font-weight:900; }
 html.tb-on .grp-mio{ background:#fff !important; color:#2E7D32 !important; border:2px solid #2E7D32 !important; }
+
+/* Teclado de golpes: números MUY grandes (norma de Carlos: muchos jugadores mayores de 55 con vista cansada) */
+#numPadOverlay .np-sheet{ padding-top:12px; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 12px); }
+#numPadOverlay .np-title{ font-size:34px; }
+#numPadOverlay .np-sub{ font:800 24px/1.2 'Archivo',sans-serif; color:#111316; margin-top:2px; }
+#numPadOverlay .np-sub b{ color:#2E7D32; }
+#numPadOverlay .np-lbl{ margin:4px 0 8px; }
+#numPadOverlay #npGrid{ gap:8px; }
+#numPadOverlay #npGrid .np-key{ height:clamp(78px, calc((100dvh - 330px) / 3), 132px); font:900 clamp(52px, 11vw, 68px)/1 'Archivo',sans-serif; border-radius:18px; color:#111316; }
+#numPadOverlay #npGrid .np-key small{ font:800 15px 'Archivo',sans-serif; text-transform:none; letter-spacing:0; }
+#numPadOverlay #npGrid .np-key.is-par{ background:#C6F24E; border-color:#2E7D32; }
+#numPadOverlay #npGrid .np-key.is-cur{ box-shadow:0 0 0 4px #2E7D32; }
