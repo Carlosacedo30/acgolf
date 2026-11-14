@@ -760,7 +760,7 @@ s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-reti
 assert s.count('marcador.js?v=15') == 1
 s = s.replace('marcador.js?v=15', 'marcador.js?v=16')
 assert s.count('marcador-reforma.css?v=4') == 1
-s = s.replace('marcador-reforma.css?v=4', 'marcador-reforma.css?v=5')
+s = s.replace('marcador-reforma.css?v=4', 'marcador-reforma.css?v=6')
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 

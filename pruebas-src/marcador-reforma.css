@@ -72,3 +72,12 @@ html .tf-fondo .tf-btn:active{ transform:scale(.97); }
 html .tf-fondo .tf-p{ color:#5A636B !important; }
 html .tf-fondo .tf-link{ color:#5A636B !important; }
 html .tf-fondo .tf-aviso{ color:#B3261E !important; }
+/* Pestañas de GRUPO en la pantalla blanca: se leen todas (la otra casi no se veía: letra clara sobre blanco) */
+html.tb-on #groupSwitchToggle .tab{ background:#fff !important; color:#111316 !important; border:2px solid #8A939B !important; font:800 15px 'Archivo',sans-serif !important; border-radius:999px; }
+html.tb-on #groupSwitchToggle .tab.active{ background:#C6F24E !important; color:#111316 !important; border-color:#2E7D32 !important; }
+html.tb-on #groupSwitchToggle .tab:active{ transform:scale(.97); }
+html.tb-on .grp-flecha{ background:#fff !important; color:#111316 !important; border:2px solid #8A939B !important; }
+html.tb-on .grp-centro b{ color:#111316 !important; font-family:'Archivo',sans-serif; }
+html.tb-on .grp-centro b small, html.tb-on .grp-centro span{ color:#5A636B !important; }
+html.tb-on .grp-centro b em{ color:#2E7D32 !important; font-weight:900; }
+html.tb-on .grp-mio{ background:#fff !important; color:#2E7D32 !important; border:2px solid #2E7D32 !important; }
