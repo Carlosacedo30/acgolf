@@ -76,6 +76,7 @@
     return v == null ? null : +v;
   }
   const marcados = g => g ? g.jugadores.filter(j => +j.marcador_idx === miIdx()).map(j => +j.idx) : [];
+  const nombreCompleto = n => String(n || '').trim().replace(/\s+/g, ' ');
   const nHoyos = () => typeof hoyosPartida === 'function' ? hoyosPartida() : 18;
   // ¿En este hoyo, lo que apunto yo (o lo que apunto de quien marco) NO coincide con lo del otro?
   function malEn(g, h){
@@ -340,7 +341,8 @@
   // ---------- FIRMAR LA TARJETA: pantalla grande al terminar (estilo GolfDirecto) ----------
   let firmaOculta = '', mostrarEntregada = false, firmando = false;
   const pantallaActiva = n => document.querySelector('.screen.active[data-screen="' + n + '"]');
-  const entregadaYa = g => { const mia = g && g.jugadores.find(j => +j.idx === miIdx()); return !!mia && mia.entregada && marcados(g).every(i => (g.jugadores.find(j => +j.idx === i) || {}).confirmada); };
+  const entregadaYa = g => { const mia = g && g.jugadores.find(j => +j.idx === miIdx()); return !!mia && (mia.validada || (mia.entregada && marcados(g).every(i => (g.jugadores.find(j => +j.idx === i) || {}).confirmada))); };
+  const hayCola = () => colaMem.some(x => x.code === currentRoundCode);
   const tarjetaCuadra = g => { const mia = g && g.jugadores.find(j => +j.idx === miIdx()); return !!mia && mia.ok && marcados(g).every(i => (g.jugadores.find(j => +j.idx === i) || {}).ok); };
   function sumaPropia(a, b){ let t = 0; for(let h = a; h <= b; h++) t += propio(miIdx(), h) || 0; return t; }
   function faltanTodos(){ const l = []; (est || []).forEach(gr => gr.jugadores.forEach(j => { if(!j.validada) l.push(corto(j.nombre)); })); return l; }
@@ -353,8 +355,11 @@
       let estado = null;
       if(mostrarEntregada && entregadaYa(g)) estado = 'entregada';
       else if(!entregadaYa(g) && todoApuntado(g)){
-        if(tarjetaCuadra(g)) estado = enHoyo && firmaOculta === currentRoundCode ? null : 'firmar';
+        // Norma de Carlos (14-nov): al anotar el último hoyo sale VERIFICADA + ENTREGAR; sin salida hasta entregar
+        if(hayCola()) estado = 'cola';
+        else if(tarjetaCuadra(g)) estado = 'firmar';
         else if(enResumen) estado = 'bloqueo';
+        else if(enHoyo && !primerMal(g)) estado = firmaOculta === currentRoundCode ? null : 'espera';
       }
       if(!estado){ cerrarFirma(); return; }
       let f = document.getElementById('tfFirma');
@@ -364,23 +369,37 @@
       f.dataset.clave = clave;
       const n = nHoyos();
       let h = '';
+      const mia = g.jugadores.find(j => +j.idx === miIdx()) || {};
+      const miMarc = mia.marcador_idx != null ? esc(nombreCompleto(players[+mia.marcador_idx])) : 'tu marcador';
+      const aQuien = marcados(g).map(i => esc(nombreCompleto(players[i])));
       if(estado === 'firmar'){
-        h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">REVISA TU TARJETA</div>'
+        h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">VERIFICADA</div>'
+          + '<div class="tf-sub">Tu tarjeta coincide con la que te ha apuntado ' + miMarc + '.</div>'
           + (n > 9 ? '<div class="tf-fila"><span>Ida (9 hoyos)</span><b>' + sumaPropia(1, 9) + '</b></div><div class="tf-fila"><span>Vuelta (9 hoyos)</span><b>' + sumaPropia(10, n) + '</b></div>' : '')
           + '<div class="tf-fila tot"><span>TOTAL' + (n <= 9 ? ' (' + n + ' hoyos)' : '') + '</span><b>' + sumaPropia(1, n) + '</b></div>'
-          + '<div class="tf-bien">Todo coincide con tu marcador.</div>'
-          + '<button type="button" class="tf-btn" id="tfFirmar"' + (firmando ? ' disabled' : '') + '>' + (firmando ? 'FIRMANDO…' : 'FIRMAR MI TARJETA') + '</button>'
-          + '<p class="tf-p">Una vez firmada, nadie la puede cambiar. Es la entrega oficial. Sin firmarla no cuenta para la liga ni para el hándicap.</p>'
-          + (aviso ? '<p class="tf-aviso">' + esc(aviso) + '</p>' : '')
+          + (aQuien.length ? '<div class="tf-bien">Al entregar, también confirmas la tarjeta de ' + aQuien.join(' y ') + ', que has marcado tú.</div>' : '')
+          + '<button type="button" class="tf-btn" id="tfFirmar"' + (firmando ? ' disabled' : '') + '>' + (firmando ? 'ENTREGANDO…' : 'ENTREGAR TARJETA') + '</button>'
+          + '<p class="tf-p">Una vez entregada, nadie la puede cambiar. Sin entregarla no se abre el Resumen y no cuenta para la liga ni para el hándicap.</p>'
+          + (aviso ? '<p class="tf-aviso">' + esc(aviso) + '</p>' : '') + '</div>';
+      } else if(estado === 'cola'){
+        h = '<div class="tf-caja"><div class="tf-ic" style="background:#F5B83D">…</div><div class="tf-t">FALTA ENVIAR TUS GOLPES</div>'
+          + '<p class="tf-p">Tus golpes están guardados en el móvil, pero aún no han llegado. Busca cobertura: en cuanto lleguen se comprueba la tarjeta.</p></div>';
+      } else if(estado === 'espera'){
+        const hechos = mia.marcas ? Object.keys(mia.marcas).length : 0;
+        h = '<div class="tf-caja"><div class="tf-ic" style="background:#F5B83D">…</div><div class="tf-t">ESPERANDO</div>'
+          + '<div class="tf-sub">' + miMarc + ' todavía no ha terminado de apuntarte los hoyos.</div>'
+          + '<div class="tf-fila"><span>Tus ' + n + ' hoyos</span><b>apuntados ✓</b></div>'
+          + '<div class="tf-fila"><span>Te ha apuntado</span><b>' + hechos + ' de ' + n + '</b></div>'
+          + '<p class="tf-p">El botón ENTREGAR TARJETA sale solo cuando tu marcador termine y todo coincida.</p>'
           + '<button type="button" class="tf-link" id="tfMirar">Volver a mirar mis hoyos</button></div>';
       } else if(estado === 'bloqueo'){
         h = '<div class="tf-caja"><div class="tf-ic mal">!</div><div class="tf-t">PRIMERO ENTREGA TU TARJETA</div>'
-          + '<p class="tf-p">' + (primerMal(g) ? 'El hoyo ' + primerMal(g) + ' no coincide con tu marcador. Arréglalo y después firma.' : 'Tu marcador todavía no ha apuntado todos los hoyos. Cuando coincidan, podrás firmar.') + '</p>'
+          + '<p class="tf-p">' + (primerMal(g) ? 'El hoyo ' + primerMal(g) + ' no coincide con tu marcador. Arréglalo y después entrega.' : 'Tu marcador todavía no ha apuntado todos los hoyos. Cuando coincidan, podrás entregar.') + '</p>'
           + '<button type="button" class="tf-btn naranja" id="tfVolver">VOLVER A LA PARTIDA</button></div>';
       } else {
         const faltan = faltanTodos();
-        const txt = 'Faltan por firmar la tarjeta de la liga: ' + faltan.join(', ') + '. Abrid acgolf y pulsad FIRMAR MI TARJETA.';
-        h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">TARJETA ENTREGADA</div><div class="tf-sub">Firmada por ti y por tu marcador</div>'
+        const txt = 'Faltan por firmar la tarjeta de la liga: ' + faltan.join(', ') + '. Abrid acgolf y pulsad ENTREGAR TARJETA.';
+        h = '<div class="tf-caja"><div class="tf-ic ok">✓</div><div class="tf-t">TARJETA ENTREGADA</div><div class="tf-sub">Verificada por ' + miMarc + '</div>'
           + (faltan.length ? '<div class="tf-lista"><div class="tf-sub">Falta que entreguen:</div>' + faltan.map(x => '<div class="tf-fila"><span>' + esc(x) + '</span><b class="mal">falta</b></div>').join('') + '</div>'
               + '<a class="tf-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(txt) + '">AVISAR A LOS QUE FALTAN</a>'
             : '<div class="tf-bien">¡Todas las tarjetas entregadas!</div>')
@@ -430,7 +449,7 @@
   }
   // ---------- Lista del administrador: tarjetas sin cerrar (solo la ve el administrador) ----------
   let adminLista = [];
-  const MOTIVO = { faltan_hoyos: 'Le faltan hoyos por apuntar', no_coincide: 'No coincide algún hoyo con su marcador', sin_marcador: 'Jugó sin marcador', sin_firmar: 'Coincide, pero no ha firmado (se cerrará sola a las 3 horas)' };
+  const MOTIVO = { faltan_hoyos: 'Le faltan hoyos por apuntar', no_coincide: 'No coincide algún hoyo con su marcador', sin_marcador: 'Jugó sin marcador', sin_firmar: 'Coincide, pero no ha firmado (se entregará sola a la hora)' };
   async function cargarAdmin(){
     try {
       if(!window.miPerfilId || !pantallaActiva(0)) return;
@@ -490,7 +509,7 @@
     }).join('') + '</div>';
     const mia = g.jugadores.find(j => +j.idx === me);
     const misMarcados = g.jugadores.filter(j => +j.marcador_idx === me);
-    const yaHecho = mia && mia.entregada && misMarcados.every(j => j.confirmada);
+    const yaHecho = mia && (mia.validada || (mia.entregada && misMarcados.every(j => j.confirmada)));
     if(me < 0){ h += '<p class="fm-p">Las entregan los jugadores de este grupo desde su móvil.</p>'; }
     else if(!mia || mia.marcador_idx == null){ h += '<p class="fm-p">Has jugado sin marcador: en las partidas de una liga creada, la tarjeta solo cuenta con marcador.</p>'; }
     else if(yaHecho){ h += '<div class="fm-ok">✅ Has entregado tu tarjeta' + (misMarcados.length ? ' y confirmado la de ' + misMarcados.map(j => esc(corto(j.nombre))).join(' y ') : '') + '.<br><small>Cuenta para la liga cuando también la confirme tu marcador.</small></div>'; }
