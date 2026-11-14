@@ -742,11 +742,11 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1 and s.count('marcador.js?v=12') == 1
-s = s.replace('marcador.js?v=12', 'marcador.js?v=14')
+s = s.replace('marcador.js?v=12', 'marcador.js?v=15')
 s = s.replace('</head>', '<link rel="stylesheet" href="marcador-mesa.css?v=1">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-mesa.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcador-tarjeta.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
-s = s.replace('marcador-reforma.css?v=1', 'marcador-reforma.css?v=3')
+s = s.replace('marcador-reforma.css?v=1', 'marcador-reforma.css?v=4')
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 

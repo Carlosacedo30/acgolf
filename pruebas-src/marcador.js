@@ -35,7 +35,42 @@
     const v = inp ? parseInt(inp.value, 10) : NaN;
     return isNaN(v) || v <= 0 ? null : v;
   }
+  // ---------- Sin cobertura: las marcas se guardan en el móvil y se envían solas al volver ----------
+  const COLA = 'acgolfColaMarcas';
+  let colaMem = [], vaciando = false;
+  try { colaMem = JSON.parse(localStorage.getItem(COLA) || '[]'); if(!Array.isArray(colaMem)) colaMem = []; } catch(e){ colaMem = []; }
+  const guardarCola = () => { try { localStorage.setItem(COLA, JSON.stringify(colaMem)); } catch(e){} };
+  const esRed = err => !navigator.onLine || /fetch|network|load failed|timeout|offline/i.test(String(err && (err.message || err)));
+  function pintarCola(){
+    let b = document.getElementById('mkCola');
+    if(!colaMem.length){ if(b) b.remove(); return; }
+    if(!b){ b = document.createElement('div'); b.id = 'mkCola'; b.className = 'mk-cola'; document.body.appendChild(b); }
+    b.textContent = '📵 Guardado en tu móvil, se enviará con cobertura (' + colaMem.length + ')';
+  }
+  function encolar(m){
+    colaMem = colaMem.filter(x => !(x.code === m.code && x.grupo === m.grupo && x.i === m.i && x.h === m.h));
+    colaMem.push(m); guardarCola(); pintarCola();
+  }
+  async function vaciarCola(){
+    if(vaciando || !colaMem.length) return;
+    vaciando = true;
+    const resto = [];
+    for(const m of colaMem.slice()){
+      try {
+        const { error } = await initSupabase().rpc('anotar_marca', { p_code: m.code, p_grupo: m.grupo, p_jugador: m.i, p_hoyo: m.h, p_golpes: m.v });
+        if(error && esRed(error)) resto.push(m);       // sigue sin cobertura: se queda guardada
+      } catch(e){ resto.push(m); }                       // (si es otro error, por ejemplo tarjeta ya entregada, se descarta)
+    }
+    colaMem = resto; guardarCola(); vaciando = false; pintarCola();
+    if(!resto.length) cargar(true);
+  }
+  window.addEventListener('online', vaciarCola);
+  setInterval(vaciarCola, 15000);
+  setTimeout(() => { pintarCola(); vaciarCola(); }, 3000);
+
   function marca(g, idx, h){
+    const q = colaMem.find(x => x.code === currentRoundCode && x.grupo === +activeGroup && x.i === +idx && x.h === +h);
+    if(q) return q.v;
     const j = g && g.jugadores.find(x => +x.idx === +idx);
     const v = j && j.marcas ? j.marcas[String(h)] : null;
     return v == null ? null : +v;
@@ -151,8 +186,14 @@
     const j = g.jugadores.find(x => +x.idx === i);
     if(j){ j.marcas = j.marcas || {}; if(v === '') delete j.marcas[String(h)]; else j.marcas[String(h)] = +v; }
     window.renderHoleView(); quizaAvanzar(h);
-    const { error } = await initSupabase().rpc('anotar_marca', { p_code: currentRoundCode, p_grupo: +activeGroup, p_jugador: i, p_hoyo: h, p_golpes: v === '' ? null : +v });
-    if(error) alert(error.message || 'No se pudo guardar. Revisa la cobertura.');
+    const val = v === '' ? null : +v;
+    let error = null;
+    try { ({ error } = await initSupabase().rpc('anotar_marca', { p_code: currentRoundCode, p_grupo: +activeGroup, p_jugador: i, p_hoyo: h, p_golpes: val })); }
+    catch(e){ error = e; }
+    if(error){
+      if(esRed(error)){ encolar({ code: currentRoundCode, grupo: +activeGroup, i: i, h: h, v: val }); window.renderHoleView(); return; }
+      alert(error.message || 'No se pudo guardar. Revisa la cobertura.');
+    }
     cargar(true);
   }
   function hoyoMioCompleto(g, h){
