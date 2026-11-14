@@ -227,11 +227,32 @@
     enlazarColumnas(wrap, g, h, par, isNaN(si) ? null : si); marcarFichasHoyos(g);
     const cols = wrap.querySelector('.mk-cols');
     if(cols && malEn(g, h)){
-      const b = document.createElement('div'); b.className = 'tf-mal';
-      b.innerHTML = '<b>⚠️ NO COINCIDE</b><span>El hoyo ' + (h + 1 <= nHoyos() ? (h + 1) : 'siguiente') + ' queda BLOQUEADO hasta que lo arregléis. Cada uno corrige solo su número.</span>'
-        + '<button type="button" id="tfArreglar">ARREGLAR EL HOYO ' + h + '</button>';
+      // «No coincide»: se ven los dos números y cada uno puede cambiar el suyo o dejar el del otro con un toque (no hace falta administrador)
+      const me = miIdx();
+      const items = [me].concat(marcados(g)).map(i => {
+        const esYo = i === me;
+        const mio = esYo ? propio(i, h) : marca(g, i, h), otro = esYo ? marca(g, i, h) : propio(i, h);
+        if(mio == null || otro == null || mio === otro) return null;
+        const mj = g.jugadores.find(x => +x.idx === i);
+        const quien = esYo ? corto(players[(mj || {}).marcador_idx]) : corto(players[i]);
+        return { i, esYo, mio, otro, quien };
+      }).filter(Boolean);
+      const b = document.createElement('div'); b.className = 'tf-mal mk-mal-card';
+      b.innerHTML = '<b>⚠️ NO COINCIDE</b>'
+        + items.map((it, k) => '<div class="mk-mal-fila"><p>' + (it.esYo
+            ? 'Tú pusiste <b>' + it.mio + '</b> y ' + esc(it.quien) + ' apuntó <b>' + it.otro + '</b>.'
+            : 'Tú apuntaste <b>' + it.mio + '</b> a ' + esc(it.quien) + ' y él se puso <b>' + it.otro + '</b>.') + '</p>'
+          + '<div class="mk-mal-bot"><button type="button" class="mk-mal-cambia" data-k="' + k + '">Cambiar el mío</button>'
+          + '<button type="button" class="mk-mal-deja" data-k="' + k + '">Dejar el de ' + esc(it.quien) + ' (' + it.otro + ')</button></div></div>').join('')
+        + '<span>El hoyo ' + (h + 1 <= nHoyos() ? (h + 1) : 'siguiente') + ' queda BLOQUEADO hasta que lo arregléis. Habladlo entre los dos: cada uno corrige solo su número, o acepta el del otro con un toque. No hace falta administrador.</span>';
       cols.parentNode.insertBefore(b, cols);
-      b.querySelector('#tfArreglar').onclick = () => { const bx = wrap.querySelector('.mk-col.mal .mk-box'); if(bx) bx.click(); };
+      b.querySelectorAll('.mk-mal-cambia').forEach(btn => btn.onclick = () => {
+        const it = items[+btn.dataset.k]; const bx = wrap.querySelector('.mk-box[data-i="' + it.i + '"]'); if(bx) bx.click();
+      });
+      b.querySelectorAll('.mk-mal-deja').forEach(btn => btn.onclick = () => {
+        const it = items[+btn.dataset.k]; btn.disabled = true;
+        if(it.esYo) apuntarPropio(it.i, h, String(it.otro)); else apuntarMarca(g, it.i, h, String(it.otro));
+      });
     }
     ponerFlechas(g, h); try{ cartelGrupo(); }catch(e){}
     pintarFirma();
