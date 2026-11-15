@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 rm -rf pruebas
 mkdir pruebas
 for f in *; do
-  case "$f" in pruebas|pruebas-src|tools|acgolf-es|supabase|README.md|CLAUDE.md|LICENSE|app-golf-movil.html) continue ;; esac
+  case "$f" in pruebas|pruebas-src|tools|acgolf-es|supabase|README.md|CLAUDE.md|DESIGN.md|diseno-ref|LICENSE|app-golf-movil.html) continue ;; esac
   cp -R "$f" pruebas/
 done
 cp -R pruebas-src/. pruebas/
@@ -988,3 +988,13 @@ s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="clasif-liga.j
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
+# --- Inicio nuevo: estilo «fino y elegante» y barra de 4 pestañas (inicio-nuevo.js/.css; DESIGN.md §1 y §8) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+# Letra Playfair Display (cursiva dorada de la fecha y del puesto), cargada igual que Archivo
+s = s.replace('</head>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap">\n<link rel="stylesheet" href="inicio-nuevo.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+EOF

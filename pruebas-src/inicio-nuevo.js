@@ -1,0 +1,170 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+// --- Inicio nuevo (diseño «fino y elegante» aprobado por Carlos, 15-nov-2026) ---
+// Todo sale de DESIGN.md (secciones 1, 2, 3, 4, 5 y 8) y del dibujo diseno-ref/inicio.html.
+// SOLO cambia el aspecto del Inicio; cada botón sigue haciendo lo mismo que hacía:
+// · Arriba: foto del campo, escudo y nombre del grupo (los mismos que ya ponía la portada del grupo).
+// · «Crear partida» (rojo) y «Organizar partidos» (dorado): son los botones de siempre, con otro traje.
+// · Bloques «Ahora» (partida en marcha), «Lo próximo» (partidos organizados + Apuntarme) y «Tu liga» (nombre y puesto).
+// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. Cada una pulsa el botón que ya existía
+//   (Crear partida, Clasificación liga, Ir a mi cuenta). No se inventa ninguna pantalla.
+// · Los demás botones del Inicio (Ganadores, Medallas, Mi hándicap…) siguen debajo, en el bloque «Más»,
+//   hasta que se construyan las pantallas Jugar, Liga y Mi cuenta.
+(function(){
+  'use strict';
+  const pant = document.querySelector('.screen[data-screen="0"]');
+  const cont = pant && pant.querySelector('.screen-content');
+  const ahora = document.getElementById('homeAhora');
+  if(!pant || !cont || !ahora) return;
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toLowerCase();
+  const crear = (etq, clase, html) => { const e = document.createElement(etq); e.className = clase; if(html) e.innerHTML = html; return e; };
+  document.documentElement.classList.add('in-on');
+
+  // ---------- Arriba: foto del campo, escudo y nombre del grupo ----------
+  const foto = crear('div', 'in-foto'); foto.setAttribute('aria-hidden', 'true');
+  const hero = crear('div', 'in-hero', '<div class="in-esc" id="inEsc"></div><h1 class="in-nombre" id="inNombre"></h1>');
+  cont.insertBefore(hero, cont.firstChild);
+  cont.insertBefore(foto, hero);
+  // El escudo y el nombre se copian de la portada del grupo (portada.js los pone y los cambia según el grupo)
+  function pintarCabecera(){
+    const cab = cont.querySelector('.home-cab'); if(!cab) return;
+    const e = cab.querySelector('.pv2-escudo'), t = cab.querySelector('.pv2-titulo');
+    const caja = $('inEsc'), nom = $('inNombre');
+    const clave = e ? (e.tagName === 'IMG' ? e.getAttribute('src') : e.innerHTML) : '';
+    if(caja.dataset.clave !== clave){
+      caja.dataset.clave = clave;
+      if(!e) caja.innerHTML = '';
+      else if(e.tagName === 'IMG') caja.innerHTML = '<img src="' + esc(e.getAttribute('src')) + '" alt="' + esc(e.getAttribute('alt') || '') + '">';
+      else { caja.innerHTML = e.innerHTML; caja.setAttribute('role', 'img'); caja.setAttribute('aria-label', e.getAttribute('aria-label') || ''); }
+      // El aro dorado fino solo en los escudos redondos
+      const svg = caja.querySelector('svg');
+      caja.classList.toggle('in-redondo', !svg || (svg.firstElementChild && svg.firstElementChild.tagName.toLowerCase() === 'circle'));
+    }
+    if(t){
+      const copia = t.cloneNode(true);
+      copia.querySelectorAll('br').forEach(b => b.replaceWith(' '));
+      const nombre = copia.textContent.replace(/\s+/g, ' ').trim();
+      if(nom.textContent !== nombre) nom.textContent = nombre;
+    }
+  }
+
+  // ---------- Rótulos de los bloques ----------
+  const rotulo = (texto, clase) => { const r = crear('div', 'in-sec ' + clase); r.textContent = texto; r.hidden = true; ahora.appendChild(r); return r; };
+  const secAhora = rotulo('Ahora', 'in-sec-ahora');
+  const secProx = rotulo('Lo próximo', 'in-sec-prox');
+  const secLiga = rotulo('Tu liga', 'in-sec-liga');
+  const secMas = rotulo('Más', 'in-sec-mas');
+  secMas.hidden = false;
+
+  // ---------- Tu liga: nombre de la liga y tu puesto (toca y abre la clasificación de siempre) ----------
+  const liga = crear('button', 'in-liga');
+  liga.type = 'button'; liga.id = 'inLiga'; liga.hidden = true;
+  liga.onclick = () => { const b = $('hmLiga'); if(b) b.click(); };
+  ahora.appendChild(liga);
+  function pintarLiga(){
+    const C = window.acgolfClasifLiga;
+    let lista = [];
+    try { lista = C ? Object.values(C.datos() || {}) : []; } catch(e){}
+    if(!lista.length){ liga.hidden = true; secLiga.hidden = true; return; }
+    // La misma liga que abre «Clasificación liga»: la que está en juego; si todas han terminado, la última
+    const r = lista.slice().sort((a, b) => (a.terminada - b.terminada) || String(b.ultima).localeCompare(String(a.ultima)))[0];
+    const yo = norm(window.miPerfil && window.miPerfil.player_name);
+    const tabla = r.tabla || [];
+    const i = yo ? tabla.findIndex(f => norm(f.jugador) === yo) : -1;
+    let sub;
+    if(i < 0) sub = 'Jornada ' + r.jugadasJ + ' de ' + r.total;
+    else if(i === 0) sub = 'Vas líder';
+    else { const d = tabla[0].puntos - tabla[i].puntos; sub = d === 0 ? 'Empatado con el líder' : 'A ' + d + (d === 1 ? ' punto' : ' puntos') + ' del líder'; }
+    const html = '<span class="in-liga-tx"><b>' + esc(r.l.nombre) + '</b><span>' + esc(sub) + '</span></span>'
+      + (i >= 0 ? '<span class="in-liga-pos">' + (i + 1) + '.º</span>' : '') + '<i class="in-fl" aria-hidden="true"></i>';
+    if(liga.dataset.html !== html){ liga.innerHTML = html; liga.dataset.html = html; }
+    liga.hidden = false; secLiga.hidden = false;
+  }
+  // Se lee una vez, cuando la cuenta ya está cargada (solo lectura; son los mismos datos de «Clasificación liga»)
+  (function esperarCuenta(n){
+    if(window.miPerfil){
+      const C = window.acgolfClasifLiga;
+      if(C && !document.documentElement.classList.contains('es-invitado')) Promise.resolve().then(() => C.cargarTodo()).then(pintarLiga, () => {});
+      return;
+    }
+    if(n < 120) setTimeout(() => esperarCuenta(n + 1), 500);
+  })(0);
+
+  // ---------- Lo próximo: la fecha y la hora en grande; el campo y los apuntados debajo (mismos datos) ----------
+  const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  function afinarProximos(box){
+    if(window.acgolfIdioma && window.acgolfIdioma !== 'es') return; // en otros idiomas se dejan los textos de siempre
+    box.querySelectorAll('.ip-card').forEach(card => {
+      const info = card.querySelector('.ip-info[data-conv-code]');
+      const c = info && convActivas.find(x => x.code === info.dataset.convCode);
+      const cuando = card.querySelector('.ip-cuando'), pie = card.querySelector('.ip-pie');
+      if(!c || !cuando || !pie) return;
+      const me = convMe(), mi = me ? convSlotOf(c, me) : -1;
+      if(c.date === convIsoToday() && mi >= 0) return; // «Hoy juegas»: se queda como está (hora de salida y con quién)
+      const d = new Date(c.date + 'T12:00:00');
+      const alTiro = convAlTiro(c);
+      const horas = alTiro ? convTime(c.times[0]) : c.times.map((t, k) => convEtq(c, k)).join(' y ');
+      const total = c.groups.reduce((a, g) => a + g.length, 0);
+      const campo = convCourse(c.courseId).name.replace(/^Club\s+/i, '');
+      cuando.textContent = DIAS[d.getDay()] + ' ' + d.getDate() + ' · ' + horas;
+      pie.innerHTML = '<i>' + esc(campo) + '</i> · ' + total + (total === 1 ? ' apuntado' : ' apuntados') + (alTiro ? ' · al tiro' : '');
+    });
+  }
+  if(typeof window.renderConvHomeCards === 'function'){
+    const pintarDeSiempre = window.renderConvHomeCards;
+    window.renderConvHomeCards = function(box){
+      const r = pintarDeSiempre.apply(this, arguments);
+      try { afinarProximos(box); } catch(e){}
+      return r;
+    };
+    try { renderConvHome(); } catch(e){}
+  }
+
+  // ---------- Barra de abajo: 4 pestañas ----------
+  const nav = crear('nav', 'in-nav',
+      '<button type="button" class="in-tab on" data-tab="inicio" aria-current="page">Inicio<i class="in-punto" id="inPunto" hidden></i></button>'
+    + '<button type="button" class="in-tab" data-tab="jugar">Jugar</button>'
+    + '<button type="button" class="in-tab" data-tab="liga">Liga</button>'
+    + '<button type="button" class="in-tab" data-tab="cuenta">Mi cuenta</button>');
+  nav.id = 'inNav'; nav.setAttribute('aria-label', 'Pestañas');
+  pant.appendChild(nav);
+  const pulsa = sel => { const b = document.querySelector(sel); if(b) b.click(); };
+  nav.addEventListener('click', ev => {
+    const b = ev.target.closest('.in-tab'); if(!b) return;
+    const t = b.dataset.tab;
+    if(t === 'inicio'){ try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
+    else if(t === 'jugar') pulsa('#prAbrirBtn');   // el flujo de partida de siempre («Crear partida»)
+    else if(t === 'liga') pulsa('#hmLiga');        // «Clasificación liga»
+    else if(t === 'cuenta') pulsa('.cg-mi');       // «Ir a mi cuenta»
+  });
+
+  // ---------- Repaso: qué bloques se ven y el puntito rojo ----------
+  function repasar(){
+    pintarCabecera();
+    const marcha = $('homeEnMarcha'), extras = $('vvExtras');
+    const hayAhora = !!((marcha && marcha.children.length) || (extras && extras.children.length) || $('amBannerHome'));
+    if(secAhora.hidden === hayAhora) secAhora.hidden = !hayAhora;
+    const hayProx = !!ahora.querySelector('#convHome .ip-card');
+    if(secProx.hidden === hayProx) secProx.hidden = !hayProx;
+    // Puntito rojo en «Inicio»: hay una partida tuya en marcha (algo que hacer)
+    const pendiente = !!($('homeContinuarBtn') || ahora.querySelector('#vvExtras .home-big-btn:not(.vv-btn)'));
+    const punto = $('inPunto');
+    if(punto.hidden === pendiente) punto.hidden = !pendiente;
+  }
+  let enCola = false;
+  const avisar = () => { if(enCola) return; enCola = true; setTimeout(() => { enCola = false; try { repasar(); } catch(e){} }, 60); };
+  new MutationObserver(avisar).observe(ahora, { childList: true, subtree: true });
+  const cab = cont.querySelector('.home-cab');
+  if(cab) new MutationObserver(avisar).observe(cab, { childList: true, subtree: true, characterData: true });
+  repasar();
+  // Al volver al Inicio se repasa (la liga puede haber cambiado en «Clasificación liga»)
+  if(typeof window.goTo === 'function'){
+    const irDeSiempre = window.goTo;
+    window.goTo = function(n){
+      const r = irDeSiempre.apply(this, arguments);
+      if(n === 0) setTimeout(() => { try { repasar(); pintarLiga(); } catch(e){} }, 300);
+      return r;
+    };
+  }
+})();
