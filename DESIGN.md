@@ -75,3 +75,10 @@ Referencias exactas en `diseno-ref/` (`jugar.*`, `liga.*`) y `diseno-ref/cuenta/
 - **Panel general** (pantalla aparte, sin barra de pestañas): «‹ Volver», recuadro de puntos «SUPER ADMINISTRADOR / PANEL GENERAL / Elige qué quieres hacer»; bloques «Jugadores» (Promociones, Avisos), «Seguimiento» (Estadísticas, Resúmenes), «Gestión» (Grupos, Usuarios, Códigos, Campos — «Mapa de los campos»). El botón «VOLVER A LA APP» va FIJO abajo, siempre visible. Decisión de Carlos.
 - Valores añadidos por estas pantallas: línea fina de separación `rgba(217,190,122,.18)`, interruptor apagado `#5A6475`, fondo suave dorado `rgba(233,207,140,.08–.13)`, difuminado de 22–26 px donde la lista queda cortada. En 360×640 algunas pantallas se deslizan un poco (sin solapes).
 - Cuando se construya: no cambiar funciones, solo estilo; cada enlace sigue yendo donde iba; los textos pequeños de cada fila se revisan con lo que la función hace de verdad.
+
+## 10. Todo lo que sale de la app — misma identidad (norma de Carlos, 15-nov-2026)
+Correos (bienvenida, avisos, promociones), manual, resúmenes/impresos y cualquier cosa que se mande o se descargue llevan la MISMA identidad que la app: escudo, azul/oro/rojo, letras Archivo/Barlow/Playfair, botones en pastilla, textos sencillos en español y letra grande.
+- Se hace DESPUÉS de las pantallas de la app (fase 2), una pieza cada vez y enseñando antes un dibujo a Carlos.
+- Adaptaciones obligatorias (no se pueden copiar tal cual): los **correos** usan tablas y estilos dentro del propio correo, letras con respaldo (Arial/Georgia) porque muchos programas de correo no cargan letras propias, y fondo claro con cabecera azul y detalles dorados (el modo oscuro de los programas de correo invierte colores); botón principal rojo o dorado a todo el ancho. El **manual** y todo lo que se imprima va sobre fondo blanco (como las pantallas de marcar), con títulos azules y detalles dorados.
+- Cada pieza lleva el enlace/botón de siempre; no cambia lo que dice el contenido, solo cómo se ve.
+- La franja de «Patrocinador oficial»: sitio por decidir cuando se vea cómo queda la app (Carlos, 15-nov).
