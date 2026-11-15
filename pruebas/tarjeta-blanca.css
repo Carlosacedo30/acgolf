@@ -11,15 +11,15 @@ html.tb-on .screen[data-screen="3"] .hole-strip-section{ display:none !important
 /* Clasificación */
 html.tb-on .screen[data-screen="3"] .marcador-section{ padding:8px 12px 0 !important; margin:0 !important; }
 .tb-cl{ background:#F2F4F6; border:1px solid #DADFE3; border-radius:16px; padding:6px 4px 4px; }
-.tb-cl-cab, .tb-cl-fila{ display:grid; grid-template-columns:34px minmax(0,1fr) 50px 58px 44px; gap:4px; align-items:center; padding:0 10px; }
-.tb-cl-cab{ font:700 13px 'Barlow', sans-serif; color:#5C6670; letter-spacing:.5px; padding-bottom:4px; }
+.tb-cl-cab, .tb-cl-fila{ display:grid; grid-template-columns:24px minmax(0,1fr) 46px 52px 38px; gap:3px; align-items:center; padding:0 10px; }
+.tb-cl-cab{ font:700 12px 'Barlow', sans-serif; color:#5C6670; letter-spacing:.5px; padding-bottom:4px; }
 .tb-cl-cab span:nth-child(n+3){ text-align:right; }
-.tb-cl-fila{ width:100%; min-height:46px; border:none; border-radius:12px; background:transparent; color:#111316; text-align:left; cursor:pointer; font-family:'Barlow', sans-serif; margin-bottom:2px; }
+.tb-cl-fila{ width:100%; min-height:46px; padding-top:3px; padding-bottom:3px; border:none; border-radius:12px; background:transparent; color:#111316; text-align:left; cursor:pointer; font-family:'Barlow', sans-serif; margin-bottom:2px; }
 .tb-cl-fila:disabled{ cursor:default; color:#111316; }
 .tb-cl-fila.on{ background:#E4F5B5; }
 .tb-cl-pos{ font:800 18px 'Barlow Condensed', 'Barlow', sans-serif; color:#4A535C; }
 .tb-cl-n{ display:flex; flex-direction:column; min-width:0; }
-.tb-cl-n b{ font-size:18px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tb-cl-n b{ font-size:17px; font-weight:700; line-height:1.15; white-space:normal; overflow:visible; text-overflow:clip; overflow-wrap:anywhere; }  /* nombre completo, en dos líneas si hace falta */
 .tb-cl-n b small{ font-size:13px; color:#5C6670; font-weight:700; }
 .tb-cl-n > small{ font-size:13px; font-weight:600; color:#5C6670; }
 .tb-cl-g, .tb-cl-h{ font:700 20px 'Barlow Condensed', 'Barlow', sans-serif; text-align:right; }

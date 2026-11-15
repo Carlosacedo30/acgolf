@@ -58,8 +58,7 @@
     const nombre = s => {
       if(s.pIndexes && s.pIndexes.length > 1 && /^Pareja [AB]/.test(s.name)) return s.name;
       if(String(s.name).includes(' / ')) return nombrePareja(String(s.name).split(' / '));
-      const w = String(s.name || '').trim().split(/\s+/);
-      return w.length > 2 ? w.slice(0, 2).join(' ') : w.join(' ');
+      return String(s.name || '').trim().replace(/\s+/g, ' ');   // norma de Carlos: en los marcadores siempre el nombre completo
     };
     const alPar = s => s.holesFilled === 0 ? '—' : sf ? s.points : (s.scoreDiff === 0 ? 'PAR' : (s.scoreDiff > 0 ? '+' : '') + s.scoreDiff);
     // Las cervezas: paga la mitad de abajo (si son impares, el del medio se libra)
