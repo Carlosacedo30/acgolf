@@ -4,11 +4,11 @@
 // SOLO cambia el aspecto del Inicio; cada botón sigue haciendo lo mismo que hacía:
 // · Arriba: foto del campo, escudo y nombre del grupo (los mismos que ya ponía la portada del grupo).
 // · «Crear partida» (rojo) y «Organizar partidos» (dorado): son los botones de siempre, con otro traje.
-// · Bloques «Ahora» (partida en marcha), «Lo próximo» (partidos organizados + Apuntarme) y «Tu liga» (nombre y puesto).
-// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. Cada una pulsa el botón que ya existía
-//   (Crear partida, Clasificación liga, Ir a mi cuenta). No se inventa ninguna pantalla.
-// · Los demás botones del Inicio (Ganadores, Medallas, Mi hándicap…) siguen debajo, en el bloque «Más»,
-//   hasta que se construyan las pantallas Jugar, Liga y Mi cuenta.
+// · Bloques «Ahora» (tarjeta sin entregar y partida en marcha), «Lo próximo» (partidos organizados + Apuntarme) y «Tu liga» (nombre y puesto).
+// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. «Jugar» abre la pantalla Jugar (jugar-nuevo.js);
+//   «Liga» y «Mi cuenta» pulsan el botón que ya existía (Clasificación liga, Ir a mi cuenta).
+// · Los demás botones del Inicio (Medallas, Mi hándicap…) siguen debajo, en el bloque «Más»,
+//   hasta que se construyan las pantallas Liga y Mi cuenta. Los de Jugar ya están en su pantalla.
 (function(){
   'use strict';
   const pant = document.querySelector('.screen[data-screen="0"]');
@@ -56,6 +56,28 @@
   const secLiga = rotulo('Tu liga', 'in-sec-liga');
   const secMas = rotulo('Más', 'in-sec-mas');
   secMas.hidden = false;
+
+  // ---------- Ahora: «Te falta entregar tu tarjeta» ----------
+  // El cartel de siempre (#tfInicio, lo pone marcador.js) se queda escondido y aquí sale con el aspecto del dibujo.
+  // Al tocarlo se pulsa su botón «ENTREGAR AHORA» de siempre (abre esa partida para entregar la tarjeta).
+  const tarjetas = crear('div', 'in-tarjetas'); tarjetas.id = 'inTarjetas';
+  ahora.insertBefore(tarjetas, $('homeEnMarcha'));
+  function pintarTarjetas(){
+    const bandas = Array.from(pant.querySelectorAll('#tfInicio .tf-banda'));
+    const html = bandas.map((b, i) => {
+      const boton = b.querySelector('.tf-btn'), sub = b.querySelector('span');
+      const tx = '<span class="in-aviso-tx"><b>' + (boton ? 'Te falta entregar tu tarjeta' : 'Faltan tarjetas por entregar') + '</b><span>' + esc(sub ? sub.textContent : '') + '</span></span>';
+      return boton ? '<button type="button" class="in-aviso" data-i="' + i + '"><i class="in-aviso-ic" aria-hidden="true">!</i>' + tx + '<i class="in-fl" aria-hidden="true"></i></button>'
+                   : '<div class="in-aviso suave">' + tx + '</div>';
+    }).join('');
+    if(tarjetas.dataset.html !== html){ tarjetas.innerHTML = html; tarjetas.dataset.html = html; }
+  }
+  tarjetas.addEventListener('click', ev => {
+    const a = ev.target.closest('button.in-aviso'); if(!a) return;
+    const banda = pant.querySelectorAll('#tfInicio .tf-banda')[+a.dataset.i];
+    const boton = banda && banda.querySelector('.tf-btn');
+    if(boton) boton.click();
+  });
 
   // ---------- Tu liga: nombre de la liga y tu puesto (toca y abre la clasificación de siempre) ----------
   const liga = crear('button', 'in-liga');
@@ -133,28 +155,30 @@
   nav.addEventListener('click', ev => {
     const b = ev.target.closest('.in-tab'); if(!b) return;
     const t = b.dataset.tab;
-    if(t === 'inicio'){ try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
-    else if(t === 'jugar') pulsa('#prAbrirBtn');   // el flujo de partida de siempre («Crear partida»)
-    else if(t === 'liga') pulsa('#hmLiga');        // «Clasificación liga»
-    else if(t === 'cuenta') pulsa('.cg-mi');       // «Ir a mi cuenta»
+    const J = window.acgolfJugar; // la pantalla Jugar (jugar-nuevo.js)
+    if(t === 'inicio'){ if(J) J.cerrar(); try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
+    else if(t === 'jugar'){ if(J) J.abrir(); else pulsa('#prAbrirBtn'); }
+    else if(t === 'liga'){ if(J) J.cerrar(); pulsa('#hmLiga'); }   // «Clasificación liga»
+    else if(t === 'cuenta') pulsa('.cg-mi');                       // «Ir a mi cuenta»
   });
 
   // ---------- Repaso: qué bloques se ven y el puntito rojo ----------
   function repasar(){
     pintarCabecera();
+    pintarTarjetas();
     const marcha = $('homeEnMarcha'), extras = $('vvExtras');
-    const hayAhora = !!((marcha && marcha.children.length) || (extras && extras.children.length) || $('amBannerHome'));
+    const hayAhora = !!(tarjetas.children.length || (marcha && marcha.children.length) || (extras && extras.children.length) || $('amBannerHome'));
     if(secAhora.hidden === hayAhora) secAhora.hidden = !hayAhora;
     const hayProx = !!ahora.querySelector('#convHome .ip-card');
     if(secProx.hidden === hayProx) secProx.hidden = !hayProx;
-    // Puntito rojo en «Inicio»: hay una partida tuya en marcha (algo que hacer)
-    const pendiente = !!($('homeContinuarBtn') || ahora.querySelector('#vvExtras .home-big-btn:not(.vv-btn)'));
+    // Puntito rojo en «Inicio»: te falta entregar tu tarjeta o hay una partida tuya en marcha (algo que hacer)
+    const pendiente = !!(tarjetas.querySelector('button.in-aviso') || $('homeContinuarBtn') || ahora.querySelector('#vvExtras .home-big-btn:not(.vv-btn)'));
     const punto = $('inPunto');
     if(punto.hidden === pendiente) punto.hidden = !pendiente;
   }
   let enCola = false;
   const avisar = () => { if(enCola) return; enCola = true; setTimeout(() => { enCola = false; try { repasar(); } catch(e){} }, 60); };
-  new MutationObserver(avisar).observe(ahora, { childList: true, subtree: true });
+  new MutationObserver(avisar).observe(pant, { childList: true, subtree: true }); // el Inicio entero (el cartel de la tarjeta va fuera del bloque)
   const cab = cont.querySelector('.home-cab');
   if(cab) new MutationObserver(avisar).observe(cab, { childList: true, subtree: true, characterData: true });
   repasar();

@@ -33,7 +33,7 @@ html.in-on .screen[data-screen="0"]:not([data-foco]) #convHome{ display:contents
 html.in-on #homeAhora > #prAbrirBtn{ order:1; }
 html.in-on #homeAhora #convHome > .ip-nuevo{ order:2; }
 html.in-on #homeAhora > .in-sec-ahora{ order:3; }
-html.in-on #homeAhora > #amBannerHome, html.in-on #homeAhora > #homeEnMarcha, html.in-on #homeAhora > #vvExtras{ order:4; }
+html.in-on #homeAhora > #inTarjetas, html.in-on #homeAhora > #amBannerHome, html.in-on #homeAhora > #homeEnMarcha, html.in-on #homeAhora > #vvExtras{ order:4; }
 html.in-on #homeAhora > .in-sec-prox{ order:5; }
 html.in-on #homeAhora #convHome > .ip-card{ order:6; }
 html.in-on #homeAhora > .in-sec-liga{ order:7; }
@@ -62,6 +62,23 @@ html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew .ip-logo-
 html.in-on #homeAhora .in-sec{ font:700 12px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.24em; text-transform:uppercase; color:#B5BFD0; margin:22px 2px 9px; display:flex; align-items:center; gap:12px; }
 html.in-on #homeAhora .in-sec[hidden]{ display:none; }
 html.in-on #homeAhora .in-sec::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(217,190,122,.35),transparent); }
+
+/* ===== Ahora: «Te falta entregar tu tarjeta», aviso rojo con círculo fino, «!» y flecha (el cartel antiguo se esconde) ===== */
+html.in-on .screen[data-screen="0"]:not([data-foco]) > #tfInicio{ display:none !important; }
+html.in-on #inTarjetas{ display:flex; flex-direction:column; gap:8px; margin:0; }
+html.in-on #inTarjetas:empty{ display:none; }
+html.in-on #homeAhora > #inTarjetas:not(:empty) + #homeEnMarcha:not(:empty){ margin-top:8px !important; }
+html.in-on body #inTarjetas .in-aviso{ box-sizing:border-box; width:100%; margin:0; padding:13px 16px; display:flex; align-items:center; gap:14px; text-align:left; color:#F4F1E8; border-radius:18px;
+  background:linear-gradient(160deg,#4A1A20,#2A0C10); border:1px solid rgba(179,38,46,.8); box-shadow:none; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on body #inTarjetas button.in-aviso{ cursor:pointer; }
+html.in-on body #inTarjetas button.in-aviso:active{ transform:scale(.97); }
+html.in-on #inTarjetas .in-aviso-ic{ flex:0 0 38px; box-sizing:border-box; height:38px; border-radius:50%; border:1.5px solid #D8333D; color:#F4F1E8; display:flex; align-items:center; justify-content:center; font:700 21px/1 Archivo, system-ui, Arial, sans-serif; font-style:normal; }
+html.in-on #inTarjetas .in-aviso-tx{ flex:1; min-width:0; }
+html.in-on #inTarjetas .in-aviso-tx b{ display:block; font:700 18px/1.15 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on #inTarjetas .in-aviso-tx span{ display:block; font:600 16px/1.25 Barlow, system-ui, Arial, sans-serif; color:#E8C9CC; margin-top:3px; overflow-wrap:anywhere; }
+/* Las tarjetas que faltan de otros jugadores no son cosa tuya: tarjeta azul, sin «!» ni flecha */
+html.in-on body #inTarjetas .in-aviso.suave{ padding:13px 18px; background:linear-gradient(160deg,#17233D,#0F1626); border-color:rgba(217,190,122,.45); }
+html.in-on #inTarjetas .in-aviso.suave .in-aviso-tx span{ color:#B5BFD0; }
 
 /* ===== Ahora: partida en marcha, como aviso rojo con círculo fino y «!» ===== */
 html.in-on #homeAhora > #homeEnMarcha, html.in-on #homeAhora > #vvExtras{ margin:0 !important; padding:0 !important; display:flex; flex-direction:column; gap:8px; }
@@ -138,6 +155,8 @@ html.in-on .in-fl{ flex:0 0 auto; width:10px; height:10px; box-sizing:border-box
 
 /* ===== Más: los botones de siempre, cada uno en su fila (hasta que estén Jugar, Liga y Mi cuenta) ===== */
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu #hmLiga{ display:none !important; } /* la clasificación está en «Tu liga» y en la pestaña Liga */
+/* Ganadores de la semana, Cartas, Ryder Cup y Campos de golf están en la pantalla Jugar (cada cosa en un solo sitio) */
+html.jg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="premios"], #hmCartas, #hmRyder, #hmCampos){ display:none !important; }
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora > .home-menu{ display:flex !important; flex-direction:column !important; gap:8px !important; margin:0 !important; padding:0 !important; }
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19){ position:relative; flex-direction:row !important; align-items:center !important; justify-content:flex-start !important; gap:14px !important; box-sizing:border-box;
   width:100% !important; height:auto !important; min-height:62px !important; margin:0 !important; padding:9px 38px 9px 14px !important; border-radius:18px !important; background:#121620 !important; border:1px solid #242B38 !important; box-shadow:none !important;
@@ -181,6 +200,10 @@ html.in-on body:not(.nv-dentro) .pr-banda{ top:calc(env(safe-area-inset-top, 0px
   html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew{ height:46px !important; font-size:17px !important; }
   html.in-on #homeAhora .in-sec{ margin:11px 2px 6px; }
   html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha{ padding:7px 14px 9px 58px !important; border-radius:16px !important; }
+  html.in-on body #inTarjetas .in-aviso{ padding:7px 14px; gap:12px; border-radius:16px; }
+  html.in-on #inTarjetas .in-aviso-ic{ flex-basis:32px; height:32px; font-size:18px; }
+  html.in-on #inTarjetas .in-aviso-tx b{ font-size:17px; }
+  html.in-on #inTarjetas .in-aviso-tx span{ font-size:15px; margin-top:1px; }
   html.in-on #homeAhora .home-marcha::before{ left:14px; top:9px; width:32px; height:32px; font-size:18px; }
   html.in-on body #homeAhora .home-marcha .home-marcha-t{ font-size:17px !important; }
   html.in-on body #homeAhora .home-marcha .home-marcha-sub, html.in-on body #homeAhora .home-marcha .home-marcha-chips span{ font-size:15px !important; margin-top:1px !important; }
