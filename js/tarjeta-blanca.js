@@ -55,10 +55,21 @@
     if(scoringType === 'matchplay' || !lista.length){ if(marcadorOrig) marcadorOrig(standings); return; }
     const sf = scoringType === 'stableford';
     const valor = s => sf ? s.points : s.scoreDiff;
+    // Nombre(s) y primer apellido: se quita el segundo apellido (con sus «de», «del», «la»…). Con 2 palabras o menos se deja tal cual.
+    const nombreYApellido = n => {
+      const w = String(n || '').trim().split(/\s+/).filter(Boolean);
+      if(w.length <= 2) return w.join(' ');
+      const part = /^(de|del|la|las|los|y|san|santa)$/i;
+      let k = w.length - 1;                       // empieza en la última palabra (el segundo apellido)
+      while(k - 1 >= 0 && part.test(w[k - 1])) k--;   // si lleva «de», «del»… se incluyen
+      if(k < w.length - 1 || part.test(w[k - 1] || '')) k = Math.max(k - 1, 0);   // apellido compuesto: «Lopez de Lemus»
+      const quedan = w.slice(0, k);
+      return (quedan.length >= 2 ? quedan : w.slice(0, 2)).join(' ');
+    };
     const nombre = s => {
       if(s.pIndexes && s.pIndexes.length > 1 && /^Pareja [AB]/.test(s.name)) return s.name;
       if(String(s.name).includes(' / ')) return nombrePareja(String(s.name).split(' / '));
-      return String(s.name || '').trim().replace(/\s+/g, ' ');   // norma de Carlos: en los marcadores siempre el nombre completo
+      return nombreYApellido(s.name);   // Carlos (15-nov): nombre(s) y primer apellido
     };
     const alPar = s => s.holesFilled === 0 ? '—' : sf ? s.points : (s.scoreDiff === 0 ? 'PAR' : (s.scoreDiff > 0 ? '+' : '') + s.scoreDiff);
     // Las cervezas: paga la mitad de abajo (si son impares, el del medio se libra)
