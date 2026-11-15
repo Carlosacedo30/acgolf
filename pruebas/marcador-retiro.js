@@ -54,8 +54,10 @@
   function revisarRetirados(){
     const k = key(), lista = (players || []).map(nombre);
     if(previosKey === k && previos){
-      const quitados = previos.filter(n => lista.indexOf(n) < 0 && n !== nombre(yo()));
-      if(quitados.length && lista.length){ avisoRetirados = quitados; avisoHasta = Date.now() + 25000; }
+      // Un nombre de relleno («Jugador 1») o un cambio de nombre NO es una retirada: solo cuenta si la lista se ha acortado
+      const vacio = n => !n || /^jugador\s*\d+$/i.test(n);
+      const quitados = previos.filter(n => !vacio(n) && lista.indexOf(n) < 0 && n !== nombre(yo()));
+      if(quitados.length && lista.length && lista.length < previos.length){ avisoRetirados = quitados; avisoHasta = Date.now() + 25000; }
     }
     previos = lista; previosKey = k;
   }
