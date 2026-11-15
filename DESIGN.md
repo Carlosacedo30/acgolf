@@ -6,6 +6,7 @@
 - No añadas dependencias, librerías ni abstracciones.
 - Al terminar: abre cada pantalla en el navegador y verifica visualmente (captura en 390×844 y 360×640).
 - Si una pantalla no encaja con el resto, corrígela. No pares hasta que todas sean consistentes.
+- **Estilo Iscariotes (azul, oro, rojo) SOLO en las pantallas que NO son de marcar golpes.** Las pantallas de marcar (anotar golpes en el campo, tarjeta, clasificación mientras se marca, quién marca a quién) NO se tocan: siguen con fondo blanco y los colores de resultado de `tarjeta-blanca.css`.
 - Se construye solo en pruebas (`pruebas-src/` y `bash tools/hacer-pruebas.sh`). A acgolf.es solo con permiso de Carlos.
 - Todo en español sencillo para Carlos.
 
