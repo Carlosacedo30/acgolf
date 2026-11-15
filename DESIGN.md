@@ -56,3 +56,12 @@ Referencia visual exacta: `diseno-ref/marcar.html` y capturas `diseno-ref/marcar
 - Abajo: «‹ Hoyo 6» (pastilla con borde dorado) y «SIGUIENTE HOYO ›» (pastilla roja, texto blanco).
 - Colores añadidos por este diseño: gris `#4A5568` (etiqueta «Hoyo»), `#A8873A` (sombra tecla dorada).
 - En 360×640 se compacta (teclas de unos 61 px) y sigue todo visible sin cortes.
+
+## 8. Estilo «fino y elegante» y pantalla Inicio — aprobado por Carlos (15-nov-2026)
+Referencia visual exacta: `diseno-ref/inicio.html`, `inicio.png` (390×844), `inicio-pequeno.png` (360×640). Este estilo fino vale para TODAS las pantallas (también las de marcar, sobre fondo blanco). Corrige a lo anterior donde choque:
+- Bordes de 1 px en oro suave; sin sombras gordas en tarjetas; sin brillo en botones. Esquinas de tarjeta de 18 px (16 px en móvil pequeño); botones en pastilla.
+- Letra: Archivo 700 para secundarios; 800–900 solo en nombre del grupo, botón principal y pestaña activa. Letra GRANDE igualmente (nada por debajo de 15 px salvo etiquetas en mayúsculas de 12–13 px). Playfair cursiva dorada para toques de club (fecha de la jornada, posición «2.º»).
+- Botones: «Crear partida» rojo y «Organizar partidos» dorado relleno; **«Apuntarme» también dorado relleno** (decisión de Carlos). Aviso rojo con círculo fino con «!» y flecha ›.
+- Inicio: foto de Hato Verde con degradado, escudo con aro dorado fino y «LOS ISCARIOTES» (sin liga ni campo); bloques Ahora · Lo próximo («Hato Verde · 4 apuntados» en la misma línea) · Tu liga (nombre de la liga y «2.º» en cursiva dorada con una rayita fina); barra inferior baja y lisa con puntito rojo en Inicio.
+- Valores añadidos: `#E8C9CC` (texto suave del aviso rojo), `#141820` (fondo de barra inferior y borde del puntito), sombras suaves `rgba(0,0,0,.4–.6)` solo en escudo y título, `rgba(179,38,46,.2)` bajo el botón rojo.
+- Las capturas de referencia usan letras de respaldo porque Archivo/Barlow/Playfair no están instaladas en el equipo de dibujo; en la app real se cargan las verdaderas.
