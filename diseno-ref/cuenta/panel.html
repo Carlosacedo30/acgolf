@@ -13,7 +13,7 @@ body{width:100vw;height:100vh;overflow:hidden;color:#F4F1E8;font:600 16px Barlow
 .parte>*{flex:0 0 auto}
 .main.corta{-webkit-mask-image:linear-gradient(180deg,transparent,#000 22px);mask-image:linear-gradient(180deg,transparent,#000 22px)}
 #p3 .row{min-height:62px}
-.supa{display:none}.supa+.sec{margin-top:20px}body.super .supa{display:block;margin-top:18px}body.super .supa+.sec{margin-top:26px}
+body.super #p1 .mas{display:none}.supa{display:none}.supa+.sec{margin-top:20px}body.super .supa{display:block;margin-top:18px}body.super .supa+.sec{margin-top:26px}
 .main.cortabajo{-webkit-mask-image:linear-gradient(0deg,transparent,#000 26px);mask-image:linear-gradient(0deg,transparent,#000 26px)}
 .sec{font:700 12px/1 Archivo,system-ui,Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase;color:#B5BFD0;margin:26px 2px 12px;display:flex;align-items:center;gap:12px}
 .parte>.sec:first-child{margin-top:20px}
@@ -39,7 +39,9 @@ body{width:100vw;height:100vh;overflow:hidden;color:#F4F1E8;font:600 16px Barlow
 .sw u{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#9AA3B0}
 .sw.on{border-color:transparent;background:linear-gradient(180deg,#EBD08A,#C9A54A)}
 .sw.on u{left:auto;right:4px;top:4px;background:#16120A}
-.redes{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:2px 0}
+.redes{display:flex;flex-wrap:wrap;justify-content:center;gap:14px 0;padding:2px 0}.red{flex:0 0 33.33%}
+.red svg{width:26px;height:26px;display:block}
+.apoyo{margin:-2px 2px 12px;font:600 16px/1.3 Barlow,system-ui,Arial,sans-serif;color:#B5BFD0}
 .red{display:flex;flex-direction:column;align-items:center;gap:8px}
 .red em{width:56px;height:56px;border-radius:50%;border:1px solid rgba(217,190,122,.6);display:flex;align-items:center;justify-content:center;font:italic 600 21px/1 'Playfair Display',Georgia,serif;color:#E9CF8C;background:linear-gradient(160deg,#17233D,#0F1626)}
 .red span{font:600 15px/1 Barlow,system-ui,Arial,sans-serif;color:#F4F1E8}
@@ -63,7 +65,7 @@ body{width:100vw;height:100vh;overflow:hidden;color:#F4F1E8;font:600 16px Barlow
 .tx b{font-size:18px}.tx span{font-size:15px;margin-top:1px}
 .hcp .row{min-height:80px;padding-left:16px}.hcp .tx b{font-size:20px}.num{font-size:46px}
 .adm .row{min-height:58px}#p3 .row{min-height:56px}
-.red em{width:48px;height:48px;font-size:19px}.red{gap:6px}
+.red em{width:46px;height:46px}.red{gap:5px}.red svg{width:23px;height:23px}.redes{gap:8px 0}#p3 .mas{display:none}#p3 .card+.card{margin-top:6px}#p3{padding-bottom:2px}.apoyo{font-size:15px;margin:-1px 2px 8px}
 .salir{height:52px;font-size:17px}
 .borrar{margin-top:4px}
 .mas{padding-top:8px}.cv{margin-bottom:2px}
@@ -81,14 +83,14 @@ body{width:100vw;height:100vh;overflow:hidden;color:#F4F1E8;font:600 16px Barlow
 .lista{padding-bottom:14px}
 .lista>.sec:first-child{margin-top:22px}
 .lista .row{min-height:64px}
-.lista .salir{margin-top:26px}
+.salir.fija{flex:0 0 58px;margin:12px 0 16px}
 .main.abajo{-webkit-mask-image:linear-gradient(0deg,transparent,#000 26px);mask-image:linear-gradient(0deg,transparent,#000 26px)}
 .main.arriba{-webkit-mask-image:linear-gradient(180deg,transparent,#000 22px);mask-image:linear-gradient(180deg,transparent,#000 22px)}
 .main.arriba.abajo{-webkit-mask-image:linear-gradient(180deg,transparent,#000 22px,#000 calc(100% - 26px),transparent);mask-image:linear-gradient(180deg,transparent,#000 22px,#000 calc(100% - 26px),transparent)}
 @media (max-height:700px){
 .top{padding:2px 0 9px}.top .esc{width:40px;height:40px}.volver{height:42px}
 .zona{border-radius:16px;padding:10px 10px 10px 14px}.zona i{margin-bottom:6px}.zona h1{font-size:30px}.zona p{font-size:17px;margin-top:4px}
-.lista>.sec:first-child{margin-top:14px}.lista .row{min-height:58px}.lista .salir{margin-top:18px}
+.lista>.sec:first-child{margin-top:14px}.lista .row{min-height:58px}.salir.fija{flex:0 0 52px;margin:8px 0 10px}
 }
 </style></head><body>
 <div class="st"><span>9:41</span><span>acgolf</span></div>
@@ -101,8 +103,8 @@ body{width:100vw;height:100vh;overflow:hidden;color:#F4F1E8;font:600 16px Barlow
 <div class="card"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19V5M5 19h14"/><path d="M8.5 15.5l3-4 2.5 2 4-5.5"/></svg></div><div class="tx"><b>Estadísticas</b><span>Seguimiento, de dónde vienen y visitas</span></div><div class="c"></div></div></div><div class="card"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="11" rx="2"/><path d="M9 20h6M10.5 9.8v3.6l3.4-1.8z"/></svg></div><div class="tx"><b>Resúmenes</b><span>El plató de cualquier partida</span></div><div class="c"></div></div></div>
 <div class="sec">Gestión</div>
 <div class="card"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9.5" r="3"/><path d="M3.5 18.5c.6-2.8 2.8-4.2 5.5-4.2s4.9 1.4 5.5 4.2"/><path d="M15.5 6.8a3 3 0 0 1 0 5.6M17.5 14.6c1.6.6 2.7 1.9 3.1 3.9"/></svg></div><div class="tx"><b>Grupos</b><span>Crear, entrar y miembros</span></div><div class="c"></div></div></div><div class="card"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9.2" r="3.4"/><path d="M5 19.5c.8-3.4 3.6-5 7-5s6.2 1.6 7 5"/></svg></div><div class="tx"><b>Usuarios</b><span>Roles y bajas</span></div><div class="c"></div></div></div><div class="card"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="12" r="3.5"/><path d="M12 12h8M17 12v3M20 12v2.2"/></svg></div><div class="tx"><b>Códigos</b><span>Códigos de administrador</span></div><div class="c"></div></div></div><div class="card"><div class="row"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-5.5-5.2-5.5-9.3a5.5 5.5 0 0 1 11 0C17.5 14.8 12 20 12 20z"/><circle cx="12" cy="10.5" r="1.9"/></svg></div><div class="tx"><b>Campos</b><span>Mapa de los campos</span></div><div class="c"></div></div></div>
-<div class="salir">Volver a la app</div>
 </div></div>
+<div class="salir fija">Volver a la app</div>
 <script>
 (function(){var m=document.querySelector('.main'),t=(location.search.match(/trozo=(\d)/)||[])[1]||1;m.scrollTop=(t-1)*(m.clientHeight-70);
 if(m.scrollTop>1)m.classList.add('arriba');if(m.scrollTop+m.clientHeight<m.scrollHeight-1)m.classList.add('abajo');})();
