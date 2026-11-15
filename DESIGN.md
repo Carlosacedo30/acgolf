@@ -46,3 +46,13 @@ Pantalla de referencia 390×844; debe funcionar también en 360×640 (móvil peq
 Resultado neto con hándicap · hoyo de salida (`hoyoSalida`) · nombres de grupos y ligas (la referencia de la liga es el nombre que se puso al crearla) · Solo mi grupo · bases de datos REAL/PRUEBAS sin mezclar · primero dibujo a Carlos, luego pruebas, y publicar solo con permiso.
 Al adoptar este estilo hay que actualizar la norma «Grafito deportivo» de CLAUDE.md (lo hace Claude cuando Carlos dé el visto bueno final en pruebas).
 
+
+## 7. Pantalla de marcar golpes — diseño aprobado por Carlos (15-nov-2026)
+Referencia visual exacta: `diseno-ref/marcar.html` y capturas `diseno-ref/marcar.png` (390×844) y `diseno-ref/marcar-pequeno.png` (360×640). Es el modelo para TODAS las pantallas de marcar: mismo lenguaje Iscariotes pero con fondo blanco.
+- Arriba: botón «‹ Salir» (pastilla con borde azul), escudo pequeño centrado, «Hoyo 7 de 18» a la derecha. Título «HOYO 7» (Archivo 900, azul oscuro), debajo «Par 4 · 352 m» en Playfair cursiva oro oscuro `#8A6A1F`, y barra de 18 rayitas (jugados azul oscuro, actual dorado, pendientes gris).
+- Tarjeta «Marcas a»: azul oscuro con borde dorado y sombra suave, nombre completo en blanco, a la derecha el resultado ya anotado con su color fijo.
+- Teclado 3×3 con números lisos lo más grandes posible. La tecla del par va en dorado con el rótulo **«SU PAR»** (se marca a otro jugador). La tecla pulsada va en azul oscuro con número blanco. Sin más colores ni nombres de resultado.
+- «Tu grupo»: lista con nombre completo y resultado con colores fijos; fila del jugador al que marcas con borde dorado; aviso rojo «Falta N por marcar» y la fila pendiente con borde rojo de rayas y la palabra «Falta».
+- Abajo: «‹ Hoyo 6» (pastilla con borde dorado) y «SIGUIENTE HOYO ›» (pastilla roja, texto blanco).
+- Colores añadidos por este diseño: gris `#4A5568` (etiqueta «Hoyo»), `#A8873A` (sombra tecla dorada).
+- En 360×640 se compacta (teclas de unos 61 px) y sigue todo visible sin cortes.
