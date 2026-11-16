@@ -1001,6 +1001,16 @@ s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
+# --- Inscripción a la Ryder por equipos (Sevilla – Betis…): ryder-inscripcion.js/.css; enlaces ?ryder=CODIGO&equipo=... ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+s = s.replace('</head>', '<link rel="stylesheet" href="ryder-inscripcion.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ryder-inscripcion.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+
 # --- Pantalla de marcar golpes: diseño «Iscariotes sobre fondo blanco» (marcar-nuevo.js/.css; DESIGN.md §7) ---
 # --- (marcador.js v19: tarjeta «Marcas a», teclado a la vista y «Tu grupo»; mesa y «Me retiro» con los mismos colores) ---
 python3 - <<'EOF'

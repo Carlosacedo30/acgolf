@@ -28,6 +28,7 @@
     + '</div><div class="jg-bloque"><div class="jg-sec">Otras formas de jugar</div>'
     + fila('cartas', '<rect x="6" y="3.5" width="12" height="17" rx="2.2"/><path d="M12 8.2c-1.6 1.7-3 2.8-3 4.3a1.7 1.7 0 0 0 3 1 1.7 1.7 0 0 0 3-1c0-1.5-1.4-2.6-3-4.3zM12 13.5V16"/>', 'Cartas', 'Para reírse en el campo')
     + fila('ryder', '<path d="M8 4h8v5a4 4 0 0 1-8 0V4z"/><path d="M8 5.5H5.2v1.2A2.8 2.8 0 0 0 8 9.5M16 5.5h2.8v1.2A2.8 2.8 0 0 1 16 9.5M12 13v4M8.5 20h7M9.5 17h5"/>', 'Ryder Cup', 'Equipos contra equipos')
+    + fila('ryins', '<path d="M12 3.8l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7z"/><path d="M6 20h12"/>', 'Apuntarme a la Ryder', 'Elige tu equipo')
     + '</div><div class="jg-bloque"><div class="jg-sec">Antes de salir</div>'
     + fila('campos', '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/>', 'Campos de golf', 'Busca tu campo')
     + '</div>';
@@ -69,6 +70,7 @@
       cont.scrollTop = r && !r.hidden ? Math.max(0, cont.scrollTop + r.getBoundingClientRect().top - cont.getBoundingClientRect().top - 48) : 0;
       return;
     }
+    if(va === 'ryins'){ cerrar(); if(window.acgolfRyderIns) window.acgolfRyderIns.abrir(); return; }
     const b = document.querySelector(DE_SIEMPRE[va]);
     if(b) b.click();
   });
