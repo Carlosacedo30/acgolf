@@ -190,8 +190,8 @@
   function mensaje(){
     const e = r.equipos;
     return '¡Se abre la Ryder ' + e[0].nombre + ' – ' + e[1].nombre + '! Elige tu equipo y apúntate en acgolf. Un toque y listo:\n\n'
-      + '👉 Soy del ' + e[0].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 0) + '\n'
-      + '👉 Soy del ' + e[1].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 1) + '\n\n'
+      + '→ Soy del ' + e[0].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 0) + '\n'
+      + '→ Soy del ' + e[1].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 1) + '\n\n'
       + '¿No tienes cuenta? Créala gratis en acgolf.es y vuelve a pulsar tu enlace. No se admiten invitados.\n\n'
       + (e[0].capitan && e[1].capitan ? 'Capitanes: ' + e[0].capitan + ' (' + e[0].nombre + ') y ' + e[1].capitan + ' (' + e[1].nombre + ')\n' : '') + datosTxt(r);
   }
