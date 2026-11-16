@@ -393,3 +393,12 @@ body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; 
 .inv-x{ position:absolute; top:8px; right:8px; width:44px; height:44px; border-radius:999px; border:1.5px solid rgba(198,242,78,.55); background:#111316; color:#F2F4F5; font:800 18px/1 Archivo,sans-serif; cursor:pointer; }
 .inv-x:active{ transform:scale(.97); }
 .inv-tarjeta .inv-et{ padding-right:52px; }
+
+/* Alta: «Mira tu correo» (pasos claros, correo grande) */
+.cg-correo{ display:flex; flex-direction:column; align-items:center; gap:4px; background:#2F3A1C; border:1.5px solid #C6F24E; border-radius:18px; padding:14px 16px; text-align:center; }
+.cg-correo span{ font:800 15px 'Barlow', sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#C6F24E; }
+.cg-correo b{ font:900 22px/1.2 'Archivo', 'Barlow', sans-serif; color:#F2F4F5; word-break:break-all; }
+.cg-pasos{ list-style:none; margin:6px 0; padding:0; display:flex; flex-direction:column; gap:12px; }
+.cg-pasos li{ display:flex; align-items:flex-start; gap:12px; font:600 18px/1.35 'Barlow', sans-serif; color:#F2F4F5; }
+.cg-pasos li i{ flex:0 0 34px; height:34px; border-radius:50%; background:#C6F24E; color:#111316; font:900 18px 'Archivo', 'Barlow', sans-serif; font-style:normal; display:grid; place-items:center; }
+.cg-pasos b{ color:#C6F24E; }

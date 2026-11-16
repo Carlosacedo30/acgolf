@@ -139,8 +139,25 @@
     $('cgEnlOtro').onclick = e => ocupado(e.target, () => mandarOtroEnlace($('cgEmail').value.trim()));
   }
 
+  // Nombre que la persona escribió al crear su cuenta (se guarda en el móvil y en su cuenta)
+  let nombreMeta = '';
+  const nombreAlta = () => { try { return nombreMeta || localStorage.getItem('acgolfNombreAlta') || ''; } catch(e){ return nombreMeta || ''; } };
+  const primerNombre = n => String(n || '').trim().split(/\s+/)[0] || '';
+  // Errores típicos al escribir el correo: se avisa antes de mandarlo
+  const DOMINIOS_BIEN = ['gmail.com','hotmail.com','hotmail.es','outlook.com','outlook.es','yahoo.es','yahoo.com','icloud.com','telefonica.net','live.com'];
+  function correoSospechoso(email){
+    const d = String(email.split('@')[1] || '').toLowerCase();
+    if(!d || DOMINIOS_BIEN.indexOf(d) >= 0) return '';
+    const dist = (a, b) => { const m = []; for(let i = 0; i <= a.length; i++){ m[i] = [i]; } for(let j = 0; j <= b.length; j++) m[0][j] = j;
+      for(let i = 1; i <= a.length; i++) for(let j = 1; j <= b.length; j++) m[i][j] = Math.min(m[i-1][j] + 1, m[i][j-1] + 1, m[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+      return m[a.length][b.length]; };
+    for(const bien of DOMINIOS_BIEN){ if(dist(d, bien) <= 2) return bien; }
+    return '';
+  }
+
   function pantallaCrear(aviso){
-    mostrar(cabecera('Crear mi cuenta', 'Solo hay que hacerlo una vez. Después el móvil te recuerda.') + botonGoogle()
+    mostrar(cabecera('Crear mi cuenta', 'Es gratis y se hace en un minuto.') + botonGoogle()
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombreAlta" type="text" autocomplete="name" value="' + esc(nombreAlta()) + '"></label>'
       + '<label class="cg-lbl">Tu correo<input id="cgEmail" type="email" inputmode="email" autocomplete="username" autocapitalize="off"></label>'
       + '<label class="cg-lbl">Inventa una contraseña<small>Mínimo 8 letras o números</small><input id="cgPass" type="password" autocomplete="new-password"></label>'
       + '<label class="cg-ver"><input type="checkbox" id="cgVer"> Ver la contraseña</label>'
@@ -152,22 +169,43 @@
     $('cgVer').onchange = e => { $('cgPass').type = e.target.checked ? 'text' : 'password'; };
     $('cgVolver').onclick = () => pantallaEntrar();
     $('cgCrear').onclick = e => ocupado(e.target, async () => {
-      const email = $('cgEmail').value.trim(), password = $('cgPass').value;
-      if(!email){ msg('Escribe tu correo.'); return; }
+      const email = $('cgEmail').value.trim(), password = $('cgPass').value, nombre = $('cgNombreAlta').value.trim().replace(/\s+/g, ' ');
+      if(nombre.length < 3 || nombre.indexOf(' ') < 0){ msg('Escribe tu nombre y apellidos.'); return; }
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg('Escribe bien tu correo.'); return; }
       if(password.length < 8){ msg('La contraseña tiene que tener al menos 8 caracteres.'); return; }
-      const { data, error } = await client.auth.signUp({ email, password, options:{ emailRedirectTo: location.origin + location.pathname } });
+      const sospecha = correoSospechoso(email);
+      if(sospecha && !confirm('¿Seguro que tu correo es «' + email + '»?\n\nQuizá querías escribir «' + email.split('@')[0] + '@' + sospecha + '». Si te equivocas, el correo no te llegará.\n\nPulsa Aceptar si está bien, o Cancelar para corregirlo.')) return;
+      try { localStorage.setItem('acgolfNombreAlta', nombre); } catch(x){}
+      nombreMeta = nombre;
+      const { data, error } = await client.auth.signUp({ email, password, options:{ data:{ nombre }, emailRedirectTo: location.origin + location.pathname } });
       if(error){ msg(traducir(error)); return; }
       // Supabase no avisa si el correo ya existe (no manda ningún mensaje): se nota porque viene sin «identidades»
       if(data && data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0){ msg('Ese correo ya tiene cuenta (quizá la creaste con Google). Pulsa «Continuar con Google» o «Ya tengo cuenta: entrar».'); return; }
       await evento('registro');
       if(data && data.session){ location.reload(); return; }
-      mostrar(cabecera('Mira tu correo', 'Te hemos enviado un mensaje a <b>' + esc(email) + '</b>.')
-        + '<p class="cg-p">Ábrelo y pulsa el enlace para confirmar tu cuenta. Si no lo ves, mira en «Correo no deseado».</p>'
-        + '<p class="cg-p">El enlace dura 24 horas y <b>solo hay que pulsarlo una vez</b>.</p>'
-        + '<p class="cg-p">Después vuelve aquí y entra con tu correo y tu contraseña.</p>'
-        + '<button type="button" class="cg-btn" id="cgYa">Ya lo he confirmado: entrar</button>');
-      $('cgYa').onclick = () => pantallaEntrar();
+      pantallaMiraCorreo(email);
     });
+  }
+
+  // «Mira tu correo»: pasos claros, reenviar con cuenta atrás y corregir el correo
+  function pantallaMiraCorreo(email){
+    mostrar(cabecera('Mira tu correo', 'Te lo hemos mandado ahora mismo.')
+      + '<div class="cg-correo"><span>Enviado a</span><b>' + esc(email) + '</b></div>'
+      + '<ol class="cg-pasos"><li><i>1</i><span>Abre tu correo. Puede tardar <b>un minuto</b>.</span></li>'
+      + '<li><i>2</i><span>¿No lo ves? Mira en <b>«Correo no deseado»</b> o «Spam».</span></li>'
+      + '<li><i>3</i><span>Pulsa el enlace <b>una sola vez</b> y vuelve aquí.</span></li></ol>'
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + '<button type="button" class="cg-btn" id="cgYa">Ya lo he confirmado</button>'
+      + '<button type="button" class="cg-btn ghost" id="cgReenviar" disabled>Reenviar el correo</button>'
+      + '<button type="button" class="cg-link" id="cgOtroCorreo">Me equivoqué de correo</button>');
+    $('cgYa').onclick = () => pantallaEntrar();
+    $('cgOtroCorreo').onclick = () => pantallaCrear();
+    const bt = $('cgReenviar');
+    let seg = 40;
+    const pinta = () => { bt.textContent = seg > 0 ? 'Reenviar el correo (en ' + seg + ' s)' : 'Reenviar el correo'; bt.disabled = seg > 0; };
+    pinta();
+    const reloj = setInterval(() => { if(!document.body.contains(bt)){ clearInterval(reloj); return; } seg--; pinta(); if(seg <= 0) clearInterval(reloj); }, 1000);
+    bt.onclick = () => ocupado(bt, async () => { await mandarOtroEnlace(email); seg = 40; pinta(); const r2 = setInterval(() => { if(!document.body.contains(bt)){ clearInterval(r2); return; } seg--; pinta(); if(seg <= 0) clearInterval(r2); }, 1000); });
   }
 
   function pantallaOlvido(emailPrevio){
@@ -295,7 +333,7 @@
   function pantallaCrearGrupo(email, yaTengoCuenta){
     mostrar(cabecera('Crear un grupo nuevo', 'Tendréis vuestra propia liga, hándicaps, medallas y caddie. Solo lo veréis los de vuestro grupo.')
       + '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Cajapollos</small><input id="cgGrupo" type="text" maxlength="40"></label>'
-      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
+      + '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name" value="' + esc(nombreAlta()) + '"></label>'
       + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>'
       + (yaTengoCuenta ? '' : aceptoHtml) + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgCrearGrupo">Crear el grupo</button>'
@@ -351,7 +389,7 @@
         nuevo ? 'Con este código creas tu grupo y quedas como su administrador. Tendréis vuestra propia liga, hándicaps y caddie.'
               : 'Con este código pasas a ser administrador de «' + esc(info.grupo) + '».')
       + (nuevo ? '<label class="cg-lbl">Nombre del grupo<small>Por ejemplo: Cajapollos</small><input id="cgGrupo" type="text" maxlength="40"></label>' : '')
-      + (nuevo || sinCuenta ? '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name"></label>'
+      + (nuevo || sinCuenta ? '<label class="cg-lbl">Tu nombre y apellidos<input id="cgNombre" type="text" autocomplete="name" value="' + esc(nombreAlta()) + '"></label>'
           + '<label class="cg-lbl">Tu hándicap<small>Por ejemplo 18,4</small><input id="cgHcp" type="text" inputmode="decimal"></label>' : '')
       + (sinCuenta ? aceptoHtml : '') + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="caUsar">' + (nuevo ? 'Crear el grupo' : 'Ser administrador') + '</button>'
@@ -383,7 +421,7 @@
     + '<p>Un grupo es como un <b>equipo</b>: los amigos con los que juegas. Allí se apuntan las partidas y se ve quién gana.</p>'
     + '<p>Puedes estar en <b>varios grupos</b>. Tu <b>hándicap es uno solo</b> y es el mismo en todos.</p></details>';
   function pantallaBienvenida(email){
-    mostrar(cabecera('¡Hola! 👋', 'Para jugar necesitas un grupo. Elige una de estas dos cosas:')
+    mostrar(cabecera(nombreAlta() ? '¡Hola, ' + esc(primerNombre(nombreAlta())) + '! 👋' : '¡Hola! 👋', 'Ya casi estás. Para jugar necesitas un grupo. Elige una de estas dos cosas:')
       + '<button type="button" class="cg-camino" id="cgTengoInv"><span class="cg-camino-ico" aria-hidden="true">📩</span>'
       +   '<span class="cg-camino-txt"><b>Tengo una invitación</b><small>Un amigo te ha mandado un enlace o un código. Entras en su grupo.</small></span><i aria-hidden="true">›</i></button>'
       + '<button type="button" class="cg-camino" id="cgNuevoGrupo"><span class="cg-camino-ico" aria-hidden="true">⛳</span>'
@@ -1583,6 +1621,7 @@
     if(!client){ mostrar(cabecera('Sin conexión', 'No se ha podido conectar. Revisa la cobertura.') + '<button type="button" class="cg-btn" onclick="location.reload()">Reintentar</button>'); return; }
     let session = null, sinCuentaAviso = '';
     try { ({ data:{ session } } = await client.auth.getSession()); } catch(e){}
+    if(session && session.user && session.user.user_metadata && session.user.user_metadata.nombre) nombreMeta = String(session.user.user_metadata.nombre);
     if(recuperando && session){ pantallaNuevaClave(); return; }
     if(enlaceFallido && !session){ pantallaEnlaceFallido(); return; }
     // Ya no se puede jugar sin registro: una sesión anónima antigua se cierra
