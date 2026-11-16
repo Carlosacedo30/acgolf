@@ -113,7 +113,7 @@
     }
     const mi = dondeEstoy(r), x = r;
     const idxElegido = elegido ? x.equipos.findIndex(e => norm(e.nombre) === elegido) : -1;
-    let h = '<div class="ri-in">' + cabecera(x);
+    let h = '<div class="ri-in">' + cabecera(x) + bandaCapitanes(x);
     if(x.cerrada && mi < 0){
       h += '<div class="ri-tj"><b style="font:900 19px Archivo,system-ui,sans-serif">La lista está cerrada</b><div class="ri-dat">Ya no se admiten más jugadores. Habla con el organizador.</div></div>';
     } else if(mi >= 0){
@@ -134,9 +134,8 @@
     }
     h += '<div class="ri-dos">' + x.equipos.map((e, k) => '<div class="ri-tj"><div class="ri-eq"><span class="ri-pt" style="background:' + esc(e.color) + '"></span><b style="font-size:18px">' + esc(e.nombre.toUpperCase()) + '</b></div>'
       + '<div class="ri-cnt">' + e.players.length + '</div><div class="ri-li">'
-      + (e.capitan ? '<div class="cap"><span class="' + (norm(e.capitan) === norm(yo()) ? 'yo' : '') + '">' + esc(e.capitan) + '<small class="ri-cap">Capitán</small></span></div>' : '')
-      + (e.players.filter(n => !(e.capitan && norm(n) === norm(e.capitan))).length || e.capitan ? e.players.filter(n => !(e.capitan && norm(n) === norm(e.capitan))).map(n => '<div><span class="' + (norm(n) === norm(yo()) ? 'yo' : '') + '">' + esc(n) + '</span>'
-        + (admin() ? '<span><button type="button" class="ri-mini" data-ri="pasar" data-n="' + esc(n) + '" data-i="' + (1 - k) + '" title="Pasar al otro equipo">↔</button> <button type="button" class="ri-mini" data-ri="quitar" data-n="' + esc(n) + '" title="Quitar">✕</button></span>' : '') + '</div>').join('') : '<div class="vacio">Nadie todavía</div>')
+      + (e.players.filter(n => !(e.capitan && norm(n) === norm(e.capitan))).length ? e.players.filter(n => !(e.capitan && norm(n) === norm(e.capitan))).map(n => '<div><span class="' + (norm(n) === norm(yo()) ? 'yo' : '') + '">' + esc(n) + '</span>'
+        + (admin() ? '<span><button type="button" class="ri-mini" data-ri="pasar" data-n="' + esc(n) + '" data-i="' + (1 - k) + '" title="Pasar al otro equipo">↔</button> <button type="button" class="ri-mini" data-ri="quitar" data-n="' + esc(n) + '" title="Quitar">✕</button></span>' : '') + '</div>').join('') : '<div class="vacio">Nadie más todavía</div>')
       + '</div></div>').join('') + '</div>';
     if(admin()){
       h += '<div class="ri-adm"><h3>Solo administrador</h3>'
@@ -146,6 +145,13 @@
         + '<button type="button" class="ri-link" data-ri="borrar">Borrar esta inscripción</button></div>';
     }
     o.innerHTML = h + '</div>';
+  }
+  const iniciales = n => String(n || '').trim().split(/\s+/).filter(Boolean).slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('');
+  function bandaCapitanes(x){
+    if(!x.equipos.some(e => e.capitan)) return '';
+    return '<div class="ri-caps">' + x.equipos.map(e => e.capitan
+      ? '<div class="ri-capt" style="--c:' + esc(e.color) + '"><span class="ri-ini">' + esc(iniciales(e.capitan)) + '</span>'
+        + '<small>Capitán del ' + esc(e.nombre) + '</small><b>' + esc(e.capitan) + '</b></div>' : '').join('<span class="ri-vs">VS</span>') + '</div>';
   }
   function pintarCrear(o){
     const hoy = new Date().toISOString().slice(0, 10);
@@ -163,7 +169,8 @@
     const e = r.equipos;
     return '¡Se abre la Ryder ' + e[0].nombre + ' – ' + e[1].nombre + '! Elige tu equipo y apúntate en acgolf. Un toque y listo:\n\n'
       + '👉 Soy del ' + e[0].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 0) + '\n'
-      + '👉 Soy del ' + e[1].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 1) + '\n\n' + datosTxt(r);
+      + '👉 Soy del ' + e[1].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 1) + '\n\n'
+      + (e[0].capitan && e[1].capitan ? 'Capitanes: ' + e[0].capitan + ' (' + e[0].nombre + ') y ' + e[1].capitan + ' (' + e[1].nombre + ')\n' : '') + datosTxt(r);
   }
   async function crear(){
     const client = initSupabase(); if(!client) return;

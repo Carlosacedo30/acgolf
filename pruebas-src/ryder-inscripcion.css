@@ -38,3 +38,10 @@
 .ri-inp{ width:100%; margin-top:6px; background:#1B1E22; border:1px solid #4A5058; border-radius:14px; padding:14px; font-size:18px; color:#F2F4F5; font-family:inherit; box-sizing:border-box; }
 .ri-vacio{ text-align:center; color:#9AA3AB; font-size:18px; margin-top:40px; line-height:1.4; }
 .ri-cap{ display:inline-block; margin-left:8px; font:800 11px Archivo,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#111316; background:#C6F24E; border-radius:999px; padding:2px 8px; vertical-align:middle; }
+
+.ri-caps{ display:flex; align-items:stretch; gap:8px; margin-top:16px; }
+.ri-capt{ flex:1; min-width:0; background:#1B1E22; border:1px solid #33383E; border-top:5px solid var(--c); border-radius:18px; padding:14px 10px 14px; text-align:center; }
+.ri-ini{ display:flex; align-items:center; justify-content:center; width:62px; height:62px; margin:0 auto 8px; border-radius:50%; background:#24282D; border:3px solid var(--c); font:900 24px Archivo,system-ui,sans-serif; color:#F2F4F5; }
+.ri-capt small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#C6F24E; }
+.ri-capt b{ display:block; margin-top:5px; font:900 19px/1.15 Archivo,system-ui,sans-serif; overflow-wrap:anywhere; }
+.ri-vs{ align-self:center; font:900 15px Archivo,system-ui,sans-serif; color:#9AA3AB; }
