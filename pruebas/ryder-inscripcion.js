@@ -126,7 +126,7 @@
     }
     const mi = dondeEstoy(r), x = r;
     const idxElegido = elegido ? x.equipos.findIndex(e => norm(e.nombre) === elegido) : -1;
-    let h = '<div class="ri-in">' + cabecera(x) + bandaCapitanes(x);
+    let h = '<div class="ri-in">' + cabecera(x) + bandaCapitanes(x) + marcador(x);
     if(x.cerrada && mi < 0){
       h += '<div class="ri-tj"><b style="font:900 19px Archivo,system-ui,sans-serif">La lista está cerrada</b><div class="ri-dat">Ya no se admiten más jugadores. Habla con el organizador.</div></div>';
     } else if(mi >= 0){
@@ -166,6 +166,30 @@
     return '<div class="ri-caps">' + x.equipos.map(e => e.capitan
       ? '<div class="ri-capt" style="--c:' + esc(e.color) + '"><span class="ri-ini">' + esc(iniciales(e.capitan)) + '</span>'
         + '<small>Capitán del ' + esc(e.nombre) + '</small><b>' + esc(e.capitan) + '</b></div>' : '').join('<span class="ri-vs">VS</span>') + '</div>';
+  }
+  // ---------- Marcador de apuntados (pica a los del otro equipo, siempre con buen humor) ----------
+  function frase(x){
+    const [A, B] = x.equipos, a = A.players.length, b = B.players.length, d = Math.abs(a - b);
+    if(a + b === 0) return '¡Nadie se ha apuntado todavía! ¿Quién será el primero?';
+    if(a === b) return '¡Empate a ' + a + '! Quien se apunte ahora inclina la balanza.';
+    const [L, P] = a > b ? [A, B] : [B, A];
+    if(d === 1) return '¡Muy igualado! El ' + L.nombre + ' va por delante por uno solo. ' + P.nombre + ', ¿os vais a dejar?';
+    if(d <= 3) return '¡El ' + L.nombre + ' va por delante por ' + d + '! ' + P.nombre + ', ¿os vais a dejar?';
+    return '¡El ' + L.nombre + ' arrasa, ' + d + ' de ventaja! ' + P.nombre + ', ¿os quedáis mirando?';
+  }
+  function marcador(x){
+    const [A, B] = x.equipos, a = A.players.length, b = B.players.length, t = (a + b) || 1;
+    return '<div class="ri-tj ri-mar"><div class="ri-k" style="text-align:center">Marcador de apuntados</div>'
+      + '<div class="ri-nums"><div><small>' + esc(A.nombre.toUpperCase()) + '</small><span>' + a + '</span></div><div style="text-align:right"><small>' + esc(B.nombre.toUpperCase()) + '</small><span>' + b + '</span></div></div>'
+      + '<div class="ri-tira"><i style="width:' + (a + b ? a / t * 100 : 50) + '%;background:' + esc(A.color) + '"></i><i style="flex:1;background:' + esc(B.color) + '"></i></div>'
+      + '<div class="ri-pica">' + esc(frase(x)) + '</div>'
+      + '<button type="button" class="ri-btn ri-sec" data-ri="marcador" style="margin-top:14px">Mandar el marcador al WhatsApp</button></div>';
+  }
+  function mensajeMarcador(){
+    const e = r.equipos;
+    return 'Marcador de la Ryder ' + e[0].nombre + ' – ' + e[1].nombre + ': ' + e[0].nombre + ' ' + e[0].players.length + ' – ' + e[1].nombre + ' ' + e[1].players.length + '.\n' + frase(r)
+      + '\n\nElige tu equipo y apúntate en acgolf:\n→ Soy del ' + e[0].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 0) + '\n→ Soy del ' + e[1].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 1)
+      + '\n\n¿No tienes cuenta? Créala gratis en acgolf.es y vuelve a pulsar tu enlace. No se admiten invitados.';
   }
   function pintarEditar(o){
     const hoy = new Date().toISOString().slice(0, 10);
@@ -230,6 +254,7 @@
       else if(a === 'quitar'){ if(confirm('¿Quitar a ' + b.dataset.n + ' de la lista?')) await quitar(b.dataset.n); }
       else if(a === 'pasar') await pasar(b.dataset.n, i);
       else if(a === 'cerrarlista') await cambiar(x => { x.cerrada = !x.cerrada; return null; });
+      else if(a === 'marcador') window.open('https://wa.me/?text=' + encodeURIComponent(mensajeMarcador()), '_blank');
       else if(a === 'wa') window.open('https://wa.me/?text=' + encodeURIComponent(mensaje()), '_blank');
       else if(a === 'copiar'){ try { await navigator.clipboard.writeText(mensaje()); b.textContent = '¡Copiado!'; } catch(e){ prompt('Copia este mensaje:', mensaje()); } }
       else if(a === 'borrar'){

@@ -45,3 +45,11 @@
 .ri-capt small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#C6F24E; }
 .ri-capt b{ display:block; margin-top:5px; font:900 19px/1.15 Archivo,system-ui,sans-serif; overflow-wrap:anywhere; }
 .ri-vs{ align-self:center; font:900 15px Archivo,system-ui,sans-serif; color:#9AA3AB; }
+
+.ri-mar{ margin-top:14px; }
+.ri-nums{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px; }
+.ri-nums small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.14em; color:#9AA3AB; margin-bottom:2px; }
+.ri-nums span{ font:900 44px/1 Archivo,system-ui,sans-serif; }
+.ri-tira{ display:flex; height:22px; border-radius:999px; overflow:hidden; margin-top:12px; background:#24282D; }
+.ri-tira i{ display:block; height:100%; transition:width .5s; }
+.ri-pica{ margin-top:12px; font:italic 600 19px/1.3 "Playfair Display",Georgia,serif; color:#E9CF8C; text-align:center; }
