@@ -15,6 +15,7 @@
     { n: '⭐ acgolf', url: 'https://g.page/r/Ceq0QgzdhDQ8ECE/review' },
     { n: '⭐ Bolarecuperada', url: 'https://maps.app.goo.gl/j7pf91yTuF8MWC43A' },
   ];
+  window.acgolfRedes = { REDES, RESENAS }; // las mismas direcciones para la pantalla Mi cuenta nueva (cuenta-nueva.js)
   const esc = v => String(v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   function poner(){
     const pie = document.querySelector('.home-pie'); if(!pie || document.getElementById('acRedes')) return;
@@ -36,6 +37,8 @@
     const caja = document.getElementById('acRedes');
     if(!caja){ if((intento || 0) < 25) setTimeout(() => irDirecto((intento || 0) + 1), 300); return; }
     try { history.replaceState(null, '', location.pathname + location.hash); } catch(e){}
+    // Con la pantalla Mi cuenta nueva, «Síguenos» está allí: se abre y se baja hasta las redes
+    if(window.acgolfCuentaNueva){ window.acgolfCuentaNueva.abrir('redes'); return; }
     caja.scrollIntoView({ behavior: 'smooth', block: 'center' });
     caja.classList.add('ac-redes-ping');
     setTimeout(() => caja.classList.remove('ac-redes-ping'), 2400);

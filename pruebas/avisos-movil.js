@@ -46,12 +46,15 @@
 
   // Pinta la opción en «Mi cuenta»: tarjeta oscura con campana lima e interruptor (diseño A, elegido por Carlos)
   const CAMPANA = '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6"/><path d="M9 17v1a3 3 0 0 0 6 0v-1"/><path d="M21 6.73a9 9 0 0 0 -2.5 -3.73"/><path d="M3 6.73a9 9 0 0 1 2.5 -3.73"/></svg>';
+  // «titulo»: en la pantalla Mi cuenta nueva el rótulo es «En el móvil» (va dentro del bloque «Avisos»)
+  let rotulo = 'Avisos en el móvil';
   function tarjeta(sub, derecha){
     return '<div class="am-card"><div class="am-ico">' + CAMPANA + '</div>'
-      + '<div class="am-txt"><b>Avisos en el móvil</b><span>' + sub + '</span></div>' + (derecha || '') + '</div>';
+      + '<div class="am-txt"><b>' + rotulo + '</b><span>' + sub + '</span></div>' + (derecha || '') + '</div>';
   }
-  async function pintar(box, perfil, msg){
+  async function pintar(box, perfil, msg, titulo){
     if(!box) return;
+    rotulo = titulo || 'Avisos en el móvil';
     if(iphone && !instalada()){
       box.innerHTML = tarjeta('Instala la app en la pantalla de inicio para activarlos');
       return;
@@ -78,7 +81,7 @@
         msg(e && e.message === 'permiso' ? 'Para recibir avisos tienes que tocar «Permitir» cuando el móvil lo pregunte.' : 'No se pudieron cambiar los avisos. Inténtalo otra vez.');
       }
       cb.disabled = false;
-      pintar(box, perfil, msg);
+      pintar(box, perfil, msg, titulo);
     };
     const bp = box.querySelector('#amPrueba');
     if(bp) bp.onclick = async () => {

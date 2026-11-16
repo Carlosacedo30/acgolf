@@ -5,10 +5,10 @@
 // · Arriba: foto del campo, escudo y nombre del grupo (los mismos que ya ponía la portada del grupo).
 // · «Crear partida» (rojo) y «Organizar partidos» (dorado): son los botones de siempre, con otro traje.
 // · Bloques «Ahora» (tarjeta sin entregar y partida en marcha), «Lo próximo» (partidos organizados + Apuntarme) y «Tu liga» (nombre y puesto).
-// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. «Jugar» abre la pantalla Jugar (jugar-nuevo.js)
-//   y «Liga» la pantalla Liga (liga-nueva.js); «Mi cuenta» pulsa el botón que ya existía (Ir a mi cuenta).
-// · Los demás botones del Inicio (Mi hándicap, Últimas partidas…) siguen debajo, en el bloque «Más»,
-//   hasta que se construya la pantalla Mi cuenta. Los de Jugar y los de Liga ya están en su pantalla.
+// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. «Jugar» abre la pantalla Jugar (jugar-nuevo.js),
+//   «Liga» la pantalla Liga (liga-nueva.js) y «Mi cuenta» la pantalla Mi cuenta (cuenta-nueva.js).
+// · Los botones del Inicio que ya están en Jugar, Liga o Mi cuenta no se repiten aquí. En el bloque «Más»
+//   quedan los que no tienen sitio en esas pantallas (Hoyo 19…).
 (function(){
   'use strict';
   const pant = document.querySelector('.screen[data-screen="0"]');
@@ -157,15 +157,17 @@
     const t = b.dataset.tab;
     const J = window.acgolfJugar; // la pantalla Jugar (jugar-nuevo.js)
     const L = window.acgolfLiga;  // la pantalla Liga (liga-nueva.js)
+    const C = window.acgolfCuentaNueva; // la pantalla Mi cuenta (cuenta-nueva.js)
+    if(t !== 'cuenta' && C) C.cerrar();
     if(t === 'inicio'){ if(J) J.cerrar(); if(L) L.cerrar(); try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
     else if(t === 'jugar'){ if(L) L.cerrar(); if(J) J.abrir(); else pulsa('#prAbrirBtn'); }
     else if(t === 'liga'){ if(J) J.cerrar(); if(L) L.abrir(); else pulsa('#hmLiga'); }   // sin la pantalla Liga: «Clasificación liga»
-    else if(t === 'cuenta') pulsa('.cg-mi');                       // «Ir a mi cuenta»
+    else if(t === 'cuenta'){ if(C){ if(J) J.cerrar(); if(L) L.cerrar(); C.abrir(); } else pulsa('.cg-mi'); } // sin la pantalla Mi cuenta: «Ir a mi cuenta»
   });
   // La pestaña marcada es la de la pantalla que se está viendo (Jugar y Liga son hojas encima del Inicio)
   function marcarPestana(){
     const ve = id => { const e = $(id); return !!e && !e.hidden; };
-    const cual = ve('lgPant') ? 'liga' : ve('jgPant') ? 'jugar' : 'inicio';
+    const cual = ve('cnPant') ? 'cuenta' : ve('lgPant') ? 'liga' : ve('jgPant') ? 'jugar' : 'inicio';
     nav.querySelectorAll('.in-tab').forEach(b => {
       const on = b.dataset.tab === cual;
       if(b.classList.contains('on') !== on){ b.classList.toggle('on', on); if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }
@@ -182,6 +184,11 @@
     if(secAhora.hidden === hayAhora) secAhora.hidden = !hayAhora;
     const hayProx = !!ahora.querySelector('#convHome .ip-card');
     if(secProx.hidden === hayProx) secProx.hidden = !hayProx;
+    // «Más»: solo si queda algún botón a la vista (los demás están ya en Jugar, Liga o Mi cuenta)
+    if(pant.classList.contains('active') && !pant.dataset.foco){
+      const hayMas = Array.from(ahora.querySelectorAll('.home-menu > *, #irHatoBtn')).some(b => b.offsetParent !== null);
+      if(secMas.hidden === hayMas) secMas.hidden = !hayMas;
+    }
     // Puntito rojo en «Inicio»: te falta entregar tu tarjeta o hay una partida tuya en marcha (algo que hacer)
     const pendiente = !!(tarjetas.querySelector('button.in-aviso') || $('homeContinuarBtn') || ahora.querySelector('#vvExtras .home-big-btn:not(.vv-btn)'));
     const punto = $('inPunto');

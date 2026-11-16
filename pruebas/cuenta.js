@@ -64,7 +64,7 @@
     const t = btn.textContent; btn.disabled = true; btn.textContent = 'Un momento…';
     try { await fn(); } finally { btn.disabled = false; btn.textContent = t; }
   }
-  function mostrar(html){ gate.innerHTML = '<div class="cg-card">' + html + '</div>'; gate.hidden = false; document.body.classList.add('cg-open'); gate.scrollTop = 0; }
+  function mostrar(html){ gate.classList.remove('cg-pn'); gate.innerHTML = '<div class="cg-card">' + html + '</div>'; gate.hidden = false; document.body.classList.add('cg-open'); gate.scrollTop = 0; }
   function ocultar(){ gate.hidden = true; gate.innerHTML = ''; document.body.classList.remove('cg-open'); }
 
   // Entrar o crear la cuenta con Google (Supabase lo gestiona; al volver, la sesión ya está abierta)
@@ -785,20 +785,36 @@
   const ROL = { group_admin: 'Administrador', user: 'Jugador' };
 
   // Panel general: todo ordenado en botones; cada uno abre su pantalla (con «‹ Volver al panel»)
+  // Panel general (diseño aprobado por Carlos, 15-nov-2026; DESIGN.md §9 y dibujo diseno-ref/cuenta/panel.html; estilos en cuenta-nueva.css).
+  // Pantalla aparte, sin barra de pestañas: «‹ Volver» arriba (a Mi cuenta) y «VOLVER A LA APP» fijo abajo (al Inicio).
+  // Cada botón abre lo mismo de siempre.
   function pantallaPanel(perfil){
-    const B = (id, ico, tit, sub, pri) => '<button type="button" class="pn-b' + (pri ? ' pri' : '') + '" id="' + id + '"><i>' + ico + '</i><b>' + tit + '</b><span>' + sub + '</span></button>';
-    mostrar('<div class="cg-head"><div class="cg-eyebrow">Super administrador</div><h1 class="cg-title">Panel general</h1><p class="cg-sub">Elige qué quieres hacer</p></div>'
-      + '<div class="pn-grid">'
-      + B('pnEst', '📈', 'Estadísticas', 'Seguimiento, de dónde vienen y visitas', true)
-      + B('pnPro', '📣', 'Promociones', 'Correos a los jugadores y avisos en redes', true)
-      + B('pnAvi', '🔔', 'Avisos', 'Quién tiene los avisos del móvil')
-      + B('pnRes', '🎬', 'Resúmenes', 'El plató de cualquier partida')
-      + B('pnGru', '👥', 'Grupos', 'Crear, entrar y miembros')
-      + B('pnUsu', '🙋', 'Usuarios', 'Roles y bajas')
-      + B('pnCod', '🔑', 'Códigos', 'Códigos de administrador')
-      + B('pnCam', '⛳', 'Campos', 'Greens en el mapa')
-      + '</div><button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
-    $('cgCerrar').onclick = ocultar;
+    const sv = d => '<span class="cn-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg></span>';
+    const B = (id, ico, tit, sub) => '<div class="cn-card"><button type="button" class="cn-row" id="' + id + '">' + sv(ico) + '<span class="cn-tx"><b>' + tit + '</b><span>' + sub + '</span></span><i class="cn-fl" aria-hidden="true"></i></button></div>';
+    const de = document.getElementById('inEsc'); // el escudo del grupo que ya pinta el Inicio
+    mostrar('<div class="pn-top"><button type="button" class="pn-volver" id="pnVolver">Volver</button>'
+      + (de && de.innerHTML ? '<div class="pn-esc' + (de.classList.contains('in-redondo') ? ' pn-redondo' : '') + '" aria-hidden="true">' + de.innerHTML + '</div>' : '') + '</div>'
+      + '<div class="pn-zona"><i>Super administrador</i><h1>Panel general</h1><p>Elige qué quieres hacer</p></div>'
+      + '<div class="pn-main" id="pnMain"><div class="pn-filas">'
+      + '<div class="cn-sec">Jugadores</div>'
+      + B('pnPro', '<path d="M5 10v4h3l6 4V6l-6 4H5z"/><path d="M17 9.5a3.5 3.5 0 0 1 0 5"/>', 'Promociones', 'Correos a los jugadores y avisos en redes')
+      + B('pnAvi', '<path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5l1.5-1.5z"/><path d="M10.3 20.2a1.9 1.9 0 0 0 3.4 0"/>', 'Avisos', 'Quién tiene los avisos del móvil')
+      + '<div class="cn-sec">Seguimiento</div>'
+      + B('pnEst', '<path d="M5 19V5M5 19h14"/><path d="M8.5 15.5l3-4 2.5 2 4-5.5"/>', 'Estadísticas', 'Seguimiento, de dónde vienen y visitas')
+      + B('pnRes', '<rect x="4" y="6" width="16" height="11" rx="2"/><path d="M9 20h6M10.5 9.8v3.6l3.4-1.8z"/>', 'Resúmenes', 'El plató de cualquier partida')
+      + '<div class="cn-sec">Gestión</div>'
+      + B('pnGru', '<circle cx="9" cy="9.5" r="3"/><path d="M3.5 18.5c.6-2.8 2.8-4.2 5.5-4.2s4.9 1.4 5.5 4.2"/><path d="M15.5 6.8a3 3 0 0 1 0 5.6M17.5 14.6c1.6.6 2.7 1.9 3.1 3.9"/>', 'Grupos', 'Crear, entrar y miembros')
+      + B('pnUsu', '<circle cx="12" cy="9.2" r="3.4"/><path d="M5 19.5c.8-3.4 3.6-5 7-5s6.2 1.6 7 5"/>', 'Usuarios', 'Roles y bajas')
+      + B('pnCod', '<circle cx="8.5" cy="12" r="3.5"/><path d="M12 12h8M17 12v3M20 12v2.2"/>', 'Códigos', 'Códigos de administrador')
+      + B('pnCam', '<path d="M12 20s-5.5-5.2-5.5-9.3a5.5 5.5 0 0 1 11 0C17.5 14.8 12 20 12 20z"/><circle cx="12" cy="10.5" r="1.9"/>', 'Campos', 'Mapa de los campos')
+      + '</div></div><button type="button" class="cn-salir pn-fija" id="pnApp">Volver a la app</button>');
+    gate.classList.add('cg-pn');
+    // Difuminado donde la lista queda cortada (arriba o abajo)
+    const main = $('pnMain');
+    const bordes = () => { main.classList.toggle('arriba', main.scrollTop > 1); main.classList.toggle('abajo', main.scrollTop + main.clientHeight < main.scrollHeight - 1); };
+    main.onscroll = bordes; bordes();
+    $('pnVolver').onclick = ocultar;   // debajo sigue Mi cuenta
+    $('pnApp').onclick = () => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.cerrar(); };
     $('pnEst').onclick = () => pantallaSuper(perfil, 'seguimiento');
     $('pnPro').onclick = () => pantallaMenuPromos(perfil);
     $('pnAvi').onclick = () => pantallaSuper(perfil, 'avisos');
@@ -1094,75 +1110,105 @@
   }
 
   // ---------- Mi cuenta ----------
-  function panelMiCuenta(perfil){
-    mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
-      + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
-      + (perfil.es_admin ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
-      + '<div id="cgMsg" class="cg-msg"></div>'
-      + (window.acgolfAvatares ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
-      + (perfil.es_super ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
-      + ''
-      + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
-      + (perfil.es_admin && perfil.grupo_tipo === 'liga' ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
-      + '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>'
-      + (perfil.grupo_tipo === 'liga' ? '<label class="am-lbl"><div class="am-card"><div class="am-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6l9 -6"/></svg></div>'
-        + '<div class="am-txt"><b>Avisos por correo</b><span id="cgCorreosTxt">Un correo cuando alguien de tu grupo crea una partida</span></div>'
-        + '<span class="am-sw"><input type="checkbox" id="cgCorreos" role="switch" checked disabled aria-label="Avisos por correo"><i></i></span></div></label>' : '')
-      + '<label class="am-lbl"><div class="am-card"><div class="am-ico"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l15-6v14L3 13z"/><path d="M7 14l1.5 6h3L10 15"/></svg></div>'
-        + '<div class="am-txt"><b>Novedades de acgolf</b><span id="cgNovTxt">Un correo de vez en cuando con las novedades de la app</span></div>'
-        + '<span class="am-sw"><input type="checkbox" id="cgNov" role="switch" checked disabled aria-label="Novedades de acgolf"><i></i></span></div></label>'
-      + (perfil.grupo_tipo === 'liga' && window.acgolfAvisosMovil ? '<div id="cgMovil"></div>' : '')
-      + (window.acgolfInstalar ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
-      + '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>'
-      + '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
-      + '<a class="cg-btn ghost" id="cgSoporte" href="mailto:avisos@acgolf.es?subject=' + encodeURIComponent('Ayuda con acgolf' + (perfil.grupo ? ' (' + perfil.grupo + ')' : '')) + '" style="text-align:center;text-decoration:none;box-sizing:border-box;">✉️ Escribir a soporte</a>'
-      + '<button type="button" class="cg-btn danger" id="cgBorrar">Borrar mi cuenta</button>'
-      + '<p class="cg-legal"><a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a><br>Aceptadas el ' + esc(new Date(perfil.privacidad_aceptada_en).toLocaleDateString('es-ES')) + '</p>'
-      + '<button type="button" class="cg-btn" id="cgCerrar">Volver a la app</button>');
-    $('cgCerrar').onclick = ocultar;
-    if($('cgAvatar')) $('cgAvatar').onclick = () => { ocultar(); window.acgolfAvatares.editar(perfil); };
-    $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
-    if($('cgPlan')) $('cgPlan').onclick = () => window.acgolfPlanes.abrir();
+  // Avisos por correo, novedades y avisos en el móvil: los interruptores de siempre (mis_correos, mis_novedades y avisos-movil.js).
+  // «aviso» es dónde se escribe el resultado; «nueva» = textos cortos para la pantalla Mi cuenta nueva (cuenta-nueva.js).
+  function pintarAvisos(box, perfil, aviso, nueva){
+    const SOBRE = '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6l9 -6"/>', ALTAVOZ = '<path d="M3 11l15-6v14L3 13z"/><path d="M7 14l1.5 6h3L10 15"/>';
+    const ico = d => '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>';
+    const TX = nueva ? { correo: 'Por correo', correoSi: 'Partidas nuevas', correoNo: 'Desactivados', nov: 'Novedades de acgolf', novSi: 'Correos con lo nuevo', novNo: 'Desactivadas', movil: 'En el móvil' }
+      : { correo: 'Avisos por correo', correoSi: 'Un correo cuando alguien de tu grupo crea una partida', correoNo: 'Desactivados. Actívalos para no perderte nada', nov: 'Novedades de acgolf', novSi: 'Un correo de vez en cuando con las novedades de la app', novNo: 'Desactivadas. Actívalas para enterarte de lo nuevo', movil: '' };
+    const interruptor = (id, d, titulo, sub) => '<label class="am-lbl"><div class="am-card"><div class="am-ico">' + ico(d) + '</div>'
+      + '<div class="am-txt"><b>' + titulo + '</b><span id="' + id + 'Txt">' + sub + '</span></div>'
+      + '<span class="am-sw"><input type="checkbox" id="' + id + '" role="switch" checked disabled aria-label="' + titulo + '"><i></i></span></div></label>';
+    const conMovil = perfil.grupo_tipo === 'liga' && window.acgolfAvisosMovil;
+    const movil = conMovil ? '<div id="cgMovil"></div>' : '';
+    box.innerHTML = (nueva ? movil : '')
+      + (perfil.grupo_tipo === 'liga' ? interruptor('cgCorreos', SOBRE, TX.correo, TX.correoSi) : '')
+      + interruptor('cgNov', ALTAVOZ, TX.nov, TX.novSi)
+      + (nueva ? '' : movil);
     const cc = $('cgCorreos');
     if(cc){
-      client.rpc('mis_correos').then(r => { if(!r.error){ cc.checked = r.data !== false; cc.disabled = false;
-        if(!cc.checked && $('cgCorreosTxt')) $('cgCorreosTxt').textContent = 'Desactivados. Actívalos para no perderte nada'; } });
+      const txtCorreo = on => { const t = $('cgCorreosTxt'); if(t) t.textContent = on ? TX.correoSi : TX.correoNo; };
+      client.rpc('mis_correos').then(r => { if(!r.error){ cc.checked = r.data !== false; cc.disabled = false; txtCorreo(cc.checked); } });
       cc.onchange = async () => {
         cc.disabled = true;
         const { data, error } = await client.rpc('mis_correos', { p_quiero: cc.checked });
         cc.disabled = false;
-        if(error){ cc.checked = !cc.checked; msg(traducir(error)); return; }
-        msg(data ? 'Recibirás los avisos por correo.' : 'Ya no te llegarán avisos por correo.', true);
-        const t = $('cgCorreosTxt'); if(t) t.textContent = data ? 'Un correo cuando alguien de tu grupo crea una partida' : 'Desactivados. Actívalos para no perderte nada';
+        if(error){ cc.checked = !cc.checked; aviso(traducir(error)); return; }
+        aviso(data ? 'Recibirás los avisos por correo.' : 'Ya no te llegarán avisos por correo.', true);
+        txtCorreo(data);
       };
     }
     const cn = $('cgNov');
     if(cn){
-      const txtNov = on => { const t = $('cgNovTxt'); if(t) t.textContent = on ? 'Un correo de vez en cuando con las novedades de la app' : 'Desactivadas. Actívalas para enterarte de lo nuevo'; };
+      const txtNov = on => { const t = $('cgNovTxt'); if(t) t.textContent = on ? TX.novSi : TX.novNo; };
       client.rpc('mis_novedades').then(r => { if(!r.error){ cn.checked = r.data !== false; cn.disabled = false; txtNov(cn.checked); } });
       cn.onchange = async () => {
         cn.disabled = true;
         const { data, error } = await client.rpc('mis_novedades', { p_quiero: cn.checked });
         cn.disabled = false;
-        if(error){ cn.checked = !cn.checked; msg(traducir(error)); return; }
-        msg(data ? 'Recibirás las novedades de acgolf.' : 'Ya no te llegarán novedades de acgolf.', true);
+        if(error){ cn.checked = !cn.checked; aviso(traducir(error)); return; }
+        aviso(data ? 'Recibirás las novedades de acgolf.' : 'Ya no te llegarán novedades de acgolf.', true);
         txtNov(data);
       };
     }
-    if($('cgMovil')) window.acgolfAvisosMovil.pintar($('cgMovil'), perfil, msg);
+    if($('cgMovil')) window.acgolfAvisosMovil.pintar($('cgMovil'), perfil, aviso, TX.movil);
+  }
+  async function cerrarSesion(){
+    if(!confirm('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
+    await client.auth.signOut();
+    try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){}
+    location.reload();
+  }
+  function borrarCuenta(boton, aviso){
+    return ocupado(boton, async () => {
+      if(!confirm('¿Borrar tu cuenta?\n\nSe borrarán tu correo y tu contraseña en unos días. Las partidas que ya jugaste se quedan en la liga, porque son también de tus compañeros.\n\nNo se puede deshacer.')) return;
+      const { data, error } = await client.rpc('pedir_baja');
+      if(error || !data){ aviso(traducir(error)); return; }
+      await client.auth.signOut();
+      try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){}
+      mostrar(cabecera('Solicitud recibida', 'Tu cuenta se borrará en unos días. Ya has salido de la app en este móvil.')
+        + '<button type="button" class="cg-btn" onclick="location.reload()">De acuerdo</button>');
+    });
+  }
+
+  // Mi cuenta. Con la pantalla nueva (cuenta-nueva.js) «Mi cuenta» es esa pantalla, y aquí solo se abren dos trozos de la de siempre:
+  // «invitar» (el enlace y el QR del grupo) y «datos» (contraseña, descargar mis datos, instalar la app y los textos legales).
+  // Sin la pantalla nueva sale entera, como siempre.
+  function panelMiCuenta(perfil, parte){
+    if(!parte && window.acgolfCuentaNueva){ ocultar(); window.acgolfCuentaNueva.abrir(); return; }
+    const ve = k => !parte || parte === k;
+    mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
+      + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
+      + (perfil.es_admin && ve('invitar') ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
+      + '<div id="cgMsg" class="cg-msg"></div>'
+      + (window.acgolfAvatares && !parte ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
+      + (perfil.es_super && !parte ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
+      + ''
+      + (perfil.es_admin && perfil.grupo_tipo === 'liga' && !parte ? '<button type="button" class="cg-btn ghost" id="cgMiembros">Miembros del grupo</button>' : '')
+      + (perfil.es_admin && perfil.grupo_tipo === 'liga' && !parte ? '<button type="button" class="cg-btn ghost" id="cgPortada">Cambiar la portada del grupo</button>' : '')
+      + (parte ? '' : '<button type="button" class="cg-btn" id="cgMisGrupos">Mis grupos' + (perfil.num_grupos > 1 ? ' (' + perfil.num_grupos + ')' : '') + '</button>')
+      + (parte ? '' : '<div id="cgAvisos"></div>')
+      + (window.acgolfInstalar && ve('datos') ? '<button type="button" class="cg-btn ghost" id="cgInstalar">📲 Instalar la app en el móvil</button>' : '')
+      + (ve('datos') ? '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
+        + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>' : '')
+      + (parte ? '' : '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
+        + '<a class="cg-btn ghost" id="cgSoporte" href="mailto:avisos@acgolf.es?subject=' + encodeURIComponent('Ayuda con acgolf' + (perfil.grupo ? ' (' + perfil.grupo + ')' : '')) + '" style="text-align:center;text-decoration:none;box-sizing:border-box;">✉️ Escribir a soporte</a>'
+        + '<button type="button" class="cg-btn danger" id="cgBorrar">Borrar mi cuenta</button>')
+      + (ve('datos') ? '<p class="cg-legal"><a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a><br>Aceptadas el ' + esc(new Date(perfil.privacidad_aceptada_en).toLocaleDateString('es-ES')) + '</p>' : '')
+      + '<button type="button" class="cg-btn" id="cgCerrar"' + (parte ? ' data-nv="‹ Volver"' : '') + '>' + (parte ? 'Volver' : 'Volver a la app') + '</button>');
+    $('cgCerrar').onclick = ocultar;
+    if($('cgAvatar')) $('cgAvatar').onclick = () => { ocultar(); window.acgolfAvatares.editar(perfil); };
+    if($('cgMisGrupos')) $('cgMisGrupos').onclick = () => pantallaMisGrupos(perfil);
+    if($('cgPlan')) $('cgPlan').onclick = () => window.acgolfPlanes.abrir();
+    if($('cgAvisos')) pintarAvisos($('cgAvisos'), perfil, msg);
     if($('cgInstalar')) $('cgInstalar').onclick = () => { ocultar(); window.acgolfInstalar(); };
     if($('cgPortada')) $('cgPortada').onclick = () => asistentePortada(perfil, true);
     if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);
     if($('cgMiembros')) $('cgMiembros').onclick = () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false);
-    $('cgClave').onclick = pantallaNuevaClave;
-    $('cgSalir').onclick = async () => {
-      if(!confirm('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
-      await client.auth.signOut();
-      try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){}
-      location.reload();
-    };
-    $('cgDatos').onclick = e => ocupado(e.target, async () => {
+    if($('cgClave')) $('cgClave').onclick = pantallaNuevaClave;
+    if($('cgSalir')) $('cgSalir').onclick = cerrarSesion;
+    if($('cgDatos')) $('cgDatos').onclick = e => ocupado(e.target, async () => {
       const { data, error } = await client.rpc('mis_datos');
       if(error){ msg(traducir(error)); return; }
       const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
@@ -1172,16 +1218,8 @@
       document.body.appendChild(a); a.click(); a.remove();
       msg('Descargado: mis-datos-golf.json', true);
     });
-    $('cgBorrar').onclick = e => ocupado(e.target, async () => {
-      if(!confirm('¿Borrar tu cuenta?\n\nSe borrarán tu correo y tu contraseña en unos días. Las partidas que ya jugaste se quedan en la liga, porque son también de tus compañeros.\n\nNo se puede deshacer.')) return;
-      const { data, error } = await client.rpc('pedir_baja');
-      if(error || !data){ msg(traducir(error)); return; }
-      await client.auth.signOut();
-      try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){}
-      mostrar(cabecera('Solicitud recibida', 'Tu cuenta se borrará en unos días. Ya has salido de la app en este móvil.')
-        + '<button type="button" class="cg-btn" onclick="location.reload()">De acuerdo</button>');
-    });
-    if(perfil.es_admin){
+    if($('cgBorrar')) $('cgBorrar').onclick = e => borrarCuenta(e.target, msg);
+    if(perfil.es_admin && ve('invitar')){
       const pintarInvita = (inv) => {
         const box = $('cgInvita'); if(!box) return;
         if(!inv){ box.remove(); return; }
@@ -1202,7 +1240,7 @@
       };
       client.rpc('invitacion_de_mi_grupo', { p_nuevo: false }).then(r => pintarInvita(r.data), () => pintarInvita(null));
     }
-    if(perfil.es_admin) client.rpc('bajas_pendientes').then(({ data }) => {
+    if(perfil.es_admin && ve('datos')) client.rpc('bajas_pendientes').then(({ data }) => {
       if(!data || !data.length) return;
       const box = document.createElement('div');
       box.className = 'cg-bajas';
@@ -1442,7 +1480,7 @@
         + '<button type="button" class="inv-btn" id="invQR">Enseñar el código QR</button>'
         + '<div class="inv-ok" id="invOk" aria-live="polite"></div>';
       conv.insertAdjacentElement('afterend', t);
-      $('invQR').onclick = () => panelMiCuenta(perfil);
+      $('invQR').onclick = () => panelMiCuenta(perfil, 'invitar');
       $('invX').onclick = () => { try { localStorage.setItem(claveX, String(Date.now())); } catch(e){} t.remove(); };
     } catch(e){}
   }
@@ -1573,6 +1611,18 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== (perfil.solo_control ? '' : perfil.player_name)){ location.reload(); return; }
     botonMiCuenta(perfil);
+    // Lo que usa la pantalla Mi cuenta nueva (cuenta-nueva.js): las mismas pantallas y funciones de siempre
+    window.acgolfCuenta = {
+      panel: () => pantallaSuper(perfil),
+      misGrupos: () => pantallaMisGrupos(perfil),
+      invitar: () => panelMiCuenta(perfil, 'invitar'),
+      miembros: () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false),
+      portada: () => asistentePortada(perfil, true),
+      datos: () => panelMiCuenta(perfil, 'datos'),
+      avisos: (box, aviso) => pintarAvisos(box, perfil, aviso, true),
+      salir: cerrarSesion,
+      borrar: borrarCuenta,
+    };
     // Grupo nuevo: el administrador elige su plan y paga antes de entrar
     if(perfil.es_admin && perfil.grupo_tipo === 'liga'){
       let plan = null;

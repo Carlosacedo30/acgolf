@@ -1,0 +1,186 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Pantalla Mi cuenta y Panel general: estilo «fino y elegante» (DESIGN.md §2, §3, §4, §5, §8 y §9;
+   dibujos diseno-ref/cuenta/cuenta.html y panel.html). Mi cuenta es una hoja encima del Inicio, con la barra
+   de pestañas debajo; el Panel general es la ventana de cuenta.js (sin barra). No toca ninguna otra pantalla. */
+
+/* Historia del golf y Consejos de golf ya no se ven en la app (decisión de Carlos). Su código sigue ahí. */
+#hmHistoria, #hmConsejos{ display:none !important; }
+/* Lo que ahora está en Mi cuenta no se repite en el Inicio */
+html.cn-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is(#hmHcp, #hmDiagnostico, [data-foco="recientes"], #hmReglas, #hmManual),
+html.cn-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora > #irHatoBtn,
+html.cn-hay body .screen[data-screen="0"] .home-pie #acRedes{ display:none !important; }
+
+/* ===== La hoja: cabecera fija y lista que se desliza ===== */
+html.in-on #cnPant{ position:absolute; inset:0; z-index:20; box-sizing:border-box; display:flex; flex-direction:column; overflow:hidden;
+  background:#0A0C10; color:#F4F1E8; padding:calc(env(safe-area-inset-top, 0px) + 40px) 16px 88px; font:600 16px Barlow, system-ui, Arial, sans-serif; text-align:left; }
+html.in-on #cnPant[hidden], html.in-on #cnPant [hidden], html.in-on .screen[data-screen="0"][data-foco] > #cnPant{ display:none !important; }
+html.in-on #cnPant .cn-cab{ flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 4px 16px 2px; border-bottom:1px solid rgba(217,190,122,.18); }
+html.in-on #cnPant .cn-cab > div:first-child{ flex:1; min-width:0; }
+html.in-on body #cnPant .cn-titulo{ margin:0 !important; padding:0 !important; font:800 30px/1.05 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.04em !important; text-transform:uppercase !important; text-align:left !important; color:#F4F1E8 !important; text-shadow:none !important; }
+html.in-on body #cnPant .cn-sub{ margin:8px 0 0 !important; padding:0 !important; font:italic 600 19px/1.1 'Playfair Display', Georgia, serif !important; letter-spacing:0 !important; text-transform:none !important; color:#E9CF8C !important; overflow-wrap:break-word; }
+html.in-on #cnPant .cn-esc{ width:52px; height:52px; flex:0 0 auto; margin-right:4px; }
+html.in-on #cnPant .cn-esc:empty{ display:none; }
+html.in-on #cnPant .cn-esc.cn-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0A0C10, 0 0 0 4px #E9CF8C; }
+html.in-on #cnPant .cn-esc img, html.in-on #cnPant .cn-esc svg{ display:block; width:100%; height:100%; }
+html.in-on #cnPant .cn-esc.cn-redondo img{ border-radius:50%; }
+html.in-on #cnPant .cn-main{ flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; scroll-snap-type:y proximity; }
+html.in-on #cnPant .cn-main::-webkit-scrollbar{ display:none; }
+html.in-on #cnPant .cn-main.arriba{ -webkit-mask-image:linear-gradient(180deg,transparent,#000 22px); mask-image:linear-gradient(180deg,transparent,#000 22px); }
+html.in-on #cnPant .cn-main.abajo{ -webkit-mask-image:linear-gradient(0deg,transparent,#000 26px); mask-image:linear-gradient(0deg,transparent,#000 26px); }
+html.in-on #cnPant .cn-main.arriba.abajo{ -webkit-mask-image:linear-gradient(180deg,transparent,#000 22px,#000 calc(100% - 26px),transparent); mask-image:linear-gradient(180deg,transparent,#000 22px,#000 calc(100% - 26px),transparent); }
+html.in-on #cnPant .cn-parte{ box-sizing:border-box; min-height:100%; display:flex; flex-direction:column; scroll-snap-align:start; padding-bottom:6px; }
+html.in-on #cnPant .cn-parte > *{ flex:0 0 auto; }
+
+/* ===== Lo que comparten Mi cuenta y el Panel general ===== */
+/* Rótulo de bloque */
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-sec{ font:700 12px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.24em; text-transform:uppercase; color:#B5BFD0; margin:26px 2px 12px; display:flex; align-items:center; gap:12px; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-sec::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(217,190,122,.35),transparent); }
+html.in-on #cnPant .cn-parte > .cn-sec:first-child{ margin-top:20px; }
+/* Tarjeta: cada fila en la suya */
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-card{ border-radius:18px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); overflow:hidden; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-card + .cn-card{ margin-top:10px; }
+/* Fila con icono fino en círculo dorado y flecha */
+html.in-on body :is(#cnPant, #cuentaGate.cg-pn) .cn-row{ box-sizing:border-box; width:100%; min-height:66px; margin:0; padding:8px 18px 8px 14px; display:flex; align-items:center; gap:14px; text-align:left; text-decoration:none; color:#F4F1E8; cursor:pointer;
+  border:0; border-radius:0; background:none; box-shadow:none; text-shadow:none; transition:transform .12s; -webkit-appearance:none; appearance:none; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+html.in-on body :is(#cnPant, #cuentaGate.cg-pn) .cn-row:active{ transform:scale(.97); }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-ic{ flex:0 0 44px; box-sizing:border-box; height:44px; border-radius:50%; border:1px solid rgba(217,190,122,.45); display:flex; align-items:center; justify-content:center; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-ic svg{ width:23px; height:23px; display:block; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-tx{ flex:1; min-width:0; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-tx b{ display:block; font:700 19px/1.15 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-tx span{ display:block; font:600 16px/1.2 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-top:3px; }
+html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-fl{ flex:0 0 auto; width:10px; height:10px; box-sizing:border-box; border-right:1.5px solid #E9CF8C; border-top:1.5px solid #E9CF8C; transform:rotate(45deg); margin-right:4px; }
+/* Botón de borde dorado: «Cerrar sesión» y «Volver a la app» */
+html.in-on body :is(#cnPant, #cuentaGate.cg-pn) .cn-salir{ box-sizing:border-box; width:100%; height:58px; min-height:0; margin:0; padding:0 16px; border-radius:999px; border:1px solid #E9CF8C; background:none; box-shadow:none; text-shadow:none; display:flex; align-items:center; justify-content:center;
+  font:700 18px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#E9CF8C; cursor:pointer; transition:transform .12s; -webkit-appearance:none; appearance:none; touch-action:manipulation; }
+html.in-on body :is(#cnPant, #cuentaGate.cg-pn) .cn-salir:active{ transform:scale(.97); }
+
+/* ===== Mi cuenta: piezas propias ===== */
+/* Mi hándicap */
+html.in-on #cnPant .cn-hcp{ background:linear-gradient(90deg,rgba(233,207,140,.13),rgba(233,207,140,0) 75%),linear-gradient(160deg,#17233D,#0F1626); border-color:rgba(217,190,122,.7); }
+html.in-on body #cnPant .cn-hcp .cn-row{ min-height:104px; padding-left:20px; }
+html.in-on #cnPant .cn-hcp .cn-tx b{ font-size:21px; color:#E9CF8C; }
+html.in-on #cnPant .cn-num{ flex:0 0 auto; font:800 56px/1 Archivo, system-ui, Arial, sans-serif; color:#E9CF8C; font-variant-numeric:tabular-nums; letter-spacing:-.01em; margin-right:4px; }
+html.in-on #cnPant .cn-num:empty{ display:none; }
+/* Solo administrador y solo super administrador: aparte, en recuadro de puntos */
+html.in-on #cnPant .cn-adm{ margin-top:14px; border:1px dashed rgba(217,190,122,.6); border-radius:18px; padding:14px 0 2px; }
+html.in-on #cnPant .cn-adm > i{ display:block; font:700 12px/1 Archivo, system-ui, Arial, sans-serif; font-style:normal; letter-spacing:.24em; text-transform:uppercase; color:#E9CF8C; padding:0 18px 4px; }
+html.in-on body #cnPant .cn-adm .cn-row{ min-height:64px; }
+html.in-on body #cnPant .cn-adm .cn-row:not([hidden]) ~ .cn-row{ border-top:1px solid rgba(217,190,122,.18); }
+html.in-on #cnPant .cn-super + .cn-sec{ margin-top:26px; }
+html.in-on #cnPant.cn-con-super #cnP1 .cn-mas{ display:none; }
+/* «Más abajo…» */
+html.in-on #cnPant .cn-mas{ margin-top:auto; padding-top:14px; display:flex; flex-direction:column; align-items:center; gap:4px; font:600 15px/1 Barlow, system-ui, Arial, sans-serif; color:#9AA3B0; }
+html.in-on #cnPant .cn-mas i{ width:9px; height:9px; box-sizing:border-box; border-right:1.5px solid #E9CF8C; border-bottom:1.5px solid #E9CF8C; transform:rotate(45deg); margin-bottom:6px; }
+/* Avisos: los interruptores de siempre (cuenta.js y avisos-movil.js) con el traje del dibujo */
+html.in-on #cnPant .cn-avisos > :empty{ display:none; }
+html.in-on #cnPant .am-lbl{ display:block; margin:0; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+html.in-on #cnPant .cn-avisos > * + *{ margin-top:10px; }
+html.in-on #cnPant .am-card{ box-sizing:border-box; min-height:66px; margin:0; padding:8px 18px 8px 14px; display:flex; align-items:center; gap:14px; border-radius:18px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); }
+html.in-on #cnPant .am-ico{ flex:0 0 44px; box-sizing:border-box; width:44px; height:44px; border-radius:50%; border:1px solid rgba(217,190,122,.45); background:none; color:#E9CF8C; display:flex; align-items:center; justify-content:center; }
+html.in-on #cnPant .am-ico svg{ width:23px; height:23px; display:block; stroke-width:1.4; }
+html.in-on #cnPant .am-txt{ flex:1; min-width:0; display:block; text-align:left; }
+html.in-on #cnPant .am-txt b{ display:block; font:700 19px/1.15 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on #cnPant .am-txt span{ display:block; font:600 16px/1.2 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-top:3px; }
+html.in-on #cnPant .am-sw{ position:relative; flex:0 0 54px; width:54px; height:30px; margin-right:2px; }
+html.in-on #cnPant .am-sw i{ position:absolute; inset:0; box-sizing:border-box; border-radius:999px; border:1px solid #5A6475; background:none; }
+html.in-on #cnPant .am-sw i::after{ content:''; position:absolute; left:3px; top:3px; width:22px; height:22px; border-radius:50%; background:#9AA3B0; transition:transform .2s, background .2s; }
+html.in-on #cnPant .am-sw input:checked + i{ border-color:transparent; background:linear-gradient(180deg,#EBD08A,#C9A54A); }
+html.in-on #cnPant .am-sw input:checked + i::after{ transform:translate(23px,1px); background:#16120A; }
+html.in-on #cnPant .am-sw input:focus-visible + i{ outline:2px solid #E9CF8C; outline-offset:2px; }
+html.in-on body #cnPant .cn-avisos .cg-btn{ box-sizing:border-box; width:100%; min-height:48px; margin:10px 0 0; padding:8px 16px; border-radius:999px; border:1px solid rgba(217,190,122,.45); background:none; box-shadow:none; font:700 16px/1.2 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; cursor:pointer; }
+html.in-on #cnPant .cn-msg{ margin:10px 2px 0; font:600 16px/1.3 Barlow, system-ui, Arial, sans-serif; color:#E8C9CC; }
+html.in-on #cnPant .cn-msg.ok{ color:#E9CF8C; }
+html.in-on #cnPant .cn-msg:empty{ display:none; }
+/* Ayuda y club */
+html.in-on body #cnPant #cnP3 .cn-row{ min-height:62px; }
+/* Síguenos: logos en línea fina dorada, 3 + 2 centrados */
+html.in-on #cnPant .cn-redes{ display:flex; flex-wrap:wrap; justify-content:center; gap:14px 0; padding:2px 0; }
+html.in-on #cnPant .cn-red{ flex:0 0 33.33%; display:flex; flex-direction:column; align-items:center; gap:8px; text-decoration:none; transition:transform .12s; -webkit-tap-highlight-color:transparent; }
+html.in-on #cnPant .cn-red:active{ transform:scale(.97); }
+html.in-on #cnPant .cn-red em{ box-sizing:border-box; width:56px; height:56px; border-radius:50%; border:1px solid rgba(217,190,122,.6); display:flex; align-items:center; justify-content:center; background:linear-gradient(160deg,#17233D,#0F1626); }
+html.in-on #cnPant .cn-red svg{ width:26px; height:26px; display:block; }
+html.in-on #cnPant .cn-red span{ font:600 15px/1 Barlow, system-ui, Arial, sans-serif; color:#F4F1E8; }
+/* Reseñas */
+html.in-on body #cnPant .cn-apoyo{ margin:-2px 2px 12px !important; padding:0 !important; font:600 16px/1.3 Barlow, system-ui, Arial, sans-serif !important; color:#B5BFD0 !important; text-align:left !important; }
+/* Sesión */
+html.in-on #cnPant .cn-borrar{ display:flex; justify-content:center; margin-top:8px; }
+html.in-on body #cnPant .cn-borrar button{ min-height:44px; margin:0; padding:0 16px; display:flex; align-items:center; border:0; border-radius:0; background:none; box-shadow:none; font:600 15px/1 Barlow, system-ui, Arial, sans-serif; letter-spacing:0; text-transform:none; color:#9AA3B0;
+  text-decoration:underline; text-underline-offset:4px; text-decoration-color:rgba(154,163,176,.5); cursor:pointer; -webkit-appearance:none; appearance:none; }
+
+/* Solo en la versión de pruebas: la etiqueta «Pruebas» se aparta del título mientras se ve Mi cuenta */
+html.in-on body:not(.nv-dentro):has(#cnPant:not([hidden])) .pr-banda{ left:50%; transform:translateX(-50%); }
+
+/* ===== Panel general (solo super administrador): pantalla aparte, sin barra de pestañas ===== */
+html.in-on #cuentaGate.cg-pn:not([hidden]){ display:flex; flex-direction:column; overflow:hidden; background:#0A0C10 !important; color:#F4F1E8; padding:calc(env(safe-area-inset-top, 0px) + 40px) 16px 0; font:600 16px Barlow, system-ui, Arial, sans-serif; text-align:left; }
+html.in-on #cuentaGate.cg-pn .cg-card{ flex:1 1 0; min-height:0; width:100%; max-width:440px; margin:0 auto; display:flex; flex-direction:column; gap:0; }
+html.in-on #cuentaGate.cg-pn .cg-card > *{ flex:0 0 auto; }
+html.in-on #cuentaGate.cg-pn .pn-top{ padding:4px 0 14px; display:flex; align-items:center; justify-content:space-between; }
+html.in-on body #cuentaGate.cg-pn .pn-volver{ display:inline-flex; align-items:center; gap:10px; box-sizing:border-box; width:auto; height:44px; min-height:0; margin:0; padding:0 18px 0 16px; border-radius:999px; border:1px solid rgba(217,190,122,.45); background:none; box-shadow:none;
+  font:700 16px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:0; text-transform:none; color:#F4F1E8; cursor:pointer; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on body #cuentaGate.cg-pn .pn-volver:active{ transform:scale(.97); }
+html.in-on #cuentaGate.cg-pn .pn-volver::before{ content:''; width:9px; height:9px; box-sizing:border-box; border-left:1.5px solid #E9CF8C; border-bottom:1.5px solid #E9CF8C; transform:rotate(45deg); }
+html.in-on #cuentaGate.cg-pn .pn-esc{ width:46px; height:46px; flex:0 0 auto; margin-right:6px; }
+html.in-on #cuentaGate.cg-pn .pn-esc.pn-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0A0C10, 0 0 0 4px #E9CF8C; }
+html.in-on #cuentaGate.cg-pn .pn-esc img, html.in-on #cuentaGate.cg-pn .pn-esc svg{ display:block; width:100%; height:100%; }
+html.in-on #cuentaGate.cg-pn .pn-esc.pn-redondo img{ border-radius:50%; }
+html.in-on #cuentaGate.cg-pn .pn-zona{ border:1px dashed rgba(217,190,122,.6); border-radius:18px; padding:16px 14px 16px 18px; background:linear-gradient(90deg,rgba(233,207,140,.08),rgba(233,207,140,0) 80%); }
+html.in-on #cuentaGate.cg-pn .pn-zona i{ display:block; font:700 12px/1 Archivo, system-ui, Arial, sans-serif; font-style:normal; letter-spacing:.24em; text-transform:uppercase; color:#E9CF8C; margin-bottom:10px; }
+html.in-on body #cuentaGate.cg-pn .pn-zona h1{ margin:0 !important; padding:0 !important; font:800 30px/1.05 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.03em !important; text-transform:uppercase !important; text-align:left !important; color:#F4F1E8 !important; text-shadow:none !important; }
+html.in-on body #cuentaGate.cg-pn .pn-zona p{ margin:7px 0 0 !important; padding:0 !important; font:italic 600 19px/1.1 'Playfair Display', Georgia, serif !important; color:#E9CF8C !important; text-align:left !important; }
+html.in-on #cuentaGate.cg-pn .cg-card > .pn-main{ flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+html.in-on #cuentaGate.cg-pn .pn-main::-webkit-scrollbar{ display:none; }
+html.in-on #cuentaGate.cg-pn .pn-main.abajo{ -webkit-mask-image:linear-gradient(0deg,transparent,#000 26px); mask-image:linear-gradient(0deg,transparent,#000 26px); }
+html.in-on #cuentaGate.cg-pn .pn-main.arriba{ -webkit-mask-image:linear-gradient(180deg,transparent,#000 22px); mask-image:linear-gradient(180deg,transparent,#000 22px); }
+html.in-on #cuentaGate.cg-pn .pn-main.arriba.abajo{ -webkit-mask-image:linear-gradient(180deg,transparent,#000 22px,#000 calc(100% - 26px),transparent); mask-image:linear-gradient(180deg,transparent,#000 22px,#000 calc(100% - 26px),transparent); }
+html.in-on #cuentaGate.cg-pn .pn-filas{ padding-bottom:14px; }
+html.in-on #cuentaGate.cg-pn .pn-filas > .cn-sec:first-child{ margin-top:22px; }
+html.in-on body #cuentaGate.cg-pn .pn-filas .cn-row{ min-height:64px; }
+html.in-on body #cuentaGate.cg-pn .cn-salir.pn-fija{ flex:0 0 58px; margin:12px 0 calc(env(safe-area-inset-bottom, 0px) + 16px); }
+
+/* ===== Móvil pequeño (360×640): se compacta como en el dibujo ===== */
+@media (max-height:700px){
+  html.in-on #cnPant{ padding-top:calc(env(safe-area-inset-top, 0px) + 22px); padding-bottom:68px; }
+  html.in-on #cnPant .cn-cab{ padding:4px 4px 10px 2px; }
+  html.in-on body #cnPant .cn-sub{ font-size:17px !important; margin-top:4px !important; }
+  html.in-on #cnPant .cn-esc{ width:40px; height:40px; }
+  html.in-on #cnPant .cn-esc.cn-redondo{ box-shadow:0 0 0 2px #0A0C10, 0 0 0 3px #E9CF8C; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-sec{ margin:16px 2px 8px; }
+  html.in-on #cnPant .cn-parte > .cn-sec:first-child{ margin-top:14px; }
+  html.in-on #cnPant .cn-super + .cn-sec{ margin-top:16px; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-card, html.in-on #cnPant .cn-adm, html.in-on #cnPant .am-card{ border-radius:16px; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-card + .cn-card{ margin-top:8px; }
+  html.in-on #cnPant .cn-avisos > * + *{ margin-top:8px; }
+  html.in-on body :is(#cnPant, #cuentaGate.cg-pn) .cn-row, html.in-on #cnPant .am-card{ min-height:58px; padding:5px 16px 5px 12px; gap:12px; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-ic, html.in-on #cnPant .am-ico{ flex-basis:38px; width:38px; height:38px; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-ic svg, html.in-on #cnPant .am-ico svg{ width:21px; height:21px; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-tx b, html.in-on #cnPant .am-txt b{ font-size:18px; }
+  html.in-on :is(#cnPant, #cuentaGate.cg-pn) .cn-tx span, html.in-on #cnPant .am-txt span{ font-size:15px; margin-top:1px; }
+  html.in-on body #cnPant .cn-hcp .cn-row{ min-height:80px; padding-left:16px; }
+  html.in-on #cnPant .cn-hcp .cn-tx b{ font-size:20px; }
+  html.in-on #cnPant .cn-num{ font-size:46px; }
+  html.in-on body #cnPant .cn-adm .cn-row{ min-height:58px; }
+  html.in-on body #cnPant #cnP3 .cn-row{ min-height:56px; }
+  html.in-on #cnPant #cnP3 .cn-card + .cn-card{ margin-top:6px; }
+  html.in-on #cnPant #cnP3{ padding-bottom:2px; }
+  html.in-on #cnPant #cnP3 .cn-mas{ display:none; }
+  html.in-on #cnPant .cn-redes{ gap:8px 0; }
+  html.in-on #cnPant .cn-red{ gap:5px; }
+  html.in-on #cnPant .cn-red em{ width:46px; height:46px; }
+  html.in-on #cnPant .cn-red svg{ width:23px; height:23px; }
+  html.in-on body #cnPant .cn-apoyo{ font-size:15px !important; margin:-1px 2px 8px !important; }
+  html.in-on body :is(#cnPant, #cuentaGate.cg-pn) .cn-salir{ height:52px; font-size:17px; }
+  html.in-on #cnPant .cn-borrar{ margin-top:4px; }
+  html.in-on #cnPant .cn-mas{ padding-top:8px; }
+  html.in-on #cnPant .cn-mas i{ margin-bottom:2px; }
+  html.in-on #cuentaGate.cg-pn:not([hidden]){ padding-top:calc(env(safe-area-inset-top, 0px) + 22px); }
+  html.in-on #cuentaGate.cg-pn .pn-top{ padding:2px 0 9px; }
+  html.in-on #cuentaGate.cg-pn .pn-esc{ width:40px; height:40px; }
+  html.in-on #cuentaGate.cg-pn .pn-esc.pn-redondo{ box-shadow:0 0 0 2px #0A0C10, 0 0 0 3px #E9CF8C; }
+  html.in-on body #cuentaGate.cg-pn .pn-volver{ height:42px; }
+  html.in-on #cuentaGate.cg-pn .pn-zona{ border-radius:16px; padding:10px 10px 10px 14px; }
+  html.in-on #cuentaGate.cg-pn .pn-zona i{ margin-bottom:6px; }
+  html.in-on body #cuentaGate.cg-pn .pn-zona p{ font-size:17px !important; margin-top:4px !important; }
+  html.in-on #cuentaGate.cg-pn .pn-filas > .cn-sec:first-child{ margin-top:14px; }
+  html.in-on body #cuentaGate.cg-pn .pn-filas .cn-row{ min-height:58px; }
+  html.in-on body #cuentaGate.cg-pn .cn-salir.pn-fija{ flex:0 0 52px; margin:8px 0 calc(env(safe-area-inset-bottom, 0px) + 10px); }
+}

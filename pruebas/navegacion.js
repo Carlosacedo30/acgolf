@@ -78,7 +78,7 @@
     if(!cerrar || !card || card.querySelector('.nv-volver')) return;
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'nv-volver';
-    b.textContent = '‹ Volver a la app';
+    b.textContent = cerrar.dataset.nv || '‹ Volver a la app'; // «‹ Volver» en los trozos que se abren desde Mi cuenta
     b.onclick = () => cerrar.click();
     card.insertBefore(b, card.firstChild);
     cerrar.style.display = 'none';
