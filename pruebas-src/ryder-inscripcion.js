@@ -298,6 +298,11 @@
     imgCalc = clave;
     Promise.resolve(document.fonts && document.fonts.ready).catch(() => {}).then(() => imagenPantalla(r)).then(b => { imgBlob = b; imgClave = clave; }).catch(() => { imgBlob = null; });
   }
+  function aviso(t){
+    const d = document.createElement('div'); d.textContent = t;
+    d.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:99999;background:#C6F24E;color:#111316;font:800 18px Archivo,system-ui,sans-serif;padding:16px 22px;border-radius:999px;max-width:90vw;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)';
+    document.body.appendChild(d); setTimeout(() => d.remove(), 9000);
+  }
   function soloTexto(texto){
     const u = 'https://wa.me/?text=' + encodeURIComponent(texto);
     if(!window.open(u, '_blank')) location.href = u;
@@ -313,7 +318,8 @@
         return;
       }
     }
-    if(blob){ // ordenador: se baja la foto y se abre WhatsApp con el texto
+    if(blob){ // ordenador: la foto se copia (para pegarla con Ctrl/Cmd+V en el chat) y también se baja; se abre WhatsApp con el texto
+      try { if(navigator.clipboard && window.ClipboardItem) navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => aviso('Foto copiada. En WhatsApp, pégala con Cmd+V (o Ctrl+V).')).catch(() => {}); } catch(e){}
       try { const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = 'ryder.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); } catch(e){}
     }
     soloTexto(texto);
