@@ -46,13 +46,13 @@
   }
   const datosTxt = x => 'Fecha: ' + (fechaLarga(x.fecha) || 'por confirmar') + ' · Campo: ' + (x.campo || 'por confirmar');
 
+  // Se lee con una función de la base: así la ven jugadores de cualquier grupo (el mismo WhatsApp va a varios grupos)
+  const ULTIMA = 'acgolfRyderUltima';
   async function traer(code){
     const client = initSupabase(); if(!client) return null;
-    let q = client.from('rounds').select('id, code, match_groups, updated_at, created_at').is('course_id', null).eq('round_name', TAG);
-    q = code ? q.eq('code', code) : q.order('created_at', { ascending: false }).limit(1);
-    const { data, error } = await q;
-    if(error || !data || !data.length) return null;
-    return deFila(data[0]);
+    const { data, error } = await client.rpc('ryder_ins_leer', { p_code: code || null });
+    if(error || !data) return null;
+    return deFila(data);
   }
   // Cambia la inscripción sin pisar lo que haga otro a la vez (se relee, se aplica y se guarda si nadie la tocó)
   async function cambiar(fn){
@@ -78,17 +78,15 @@
   }
 
   const dondeEstoy = x => x.equipos.findIndex(e => e.players.some(n => norm(n) === norm(yo())));
-  async function apuntar(i){
-    if(!yo()){ alert('Primero completa tu nombre en «Mi cuenta».'); return; }
-    const nombre = yo();
-    await cambiar(x => {
-      if(x.cerrada) return 'La lista está cerrada.';
-      if(esCap(x, nombre) && !(x.equipos[i].capitan && norm(x.equipos[i].capitan) === norm(nombre))) return 'Eres capitán de tu equipo y no puedes cambiar. Habla con el organizador.';
-      x.equipos.forEach(e => { e.players = e.players.filter(n => norm(n) !== norm(nombre)); });
-      x.equipos[i].players.push(nombre);
-      return null;
-    });
+  // Apuntarse, cambiarse o quitarse uno mismo: lo hace la base con el nombre del perfil (equipo 1 o 2; 0 = quitarse)
+  async function conmigo(equipo){
+    const client = initSupabase(); if(!client || !r) return false;
+    if(!yo()){ alert('Primero completa tu nombre en «Mi cuenta».'); return false; }
+    const { data, error } = await client.rpc('ryder_ins_apuntar', { p_code: r.code, p_equipo: equipo });
+    if(error){ alert(error.message || 'No se pudo guardar. Revisa la conexión e inténtalo otra vez.'); const f = await traer(r.code).catch(() => null); if(f){ r = f; pintar(); } return false; }
+    r = deFila(data); pintar(); return true;
   }
+  const apuntar = i => conmigo(i + 1);
   async function quitar(nombre){
     await cambiar(x => { if(esCap(x, nombre)) return 'Un capitán no se puede quitar de la lista.'; x.equipos.forEach(e => { e.players = e.players.filter(n => n !== nombre); }); return null; });
   }
@@ -119,7 +117,7 @@
     }
     if(!r){
       o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-vacio">' + (pedida
-        ? 'No encontramos esta inscripción.<br>Puede que no estés en el grupo del organizador. Entra con el código de invitación del grupo y vuelve a pulsar tu enlace.'
+        ? 'No encontramos esta inscripción.<br>Puede que el organizador la haya borrado o que el enlace esté cortado. Pídele que te lo mande otra vez.'
         : 'Todavía no hay ninguna inscripción abierta.') + '</div>'
         + (admin() ? '<button type="button" class="ri-btn ri-pri" data-ri="nueva">Abrir una inscripción</button>' : '') + '</div>';
       return;
@@ -208,7 +206,7 @@
     if(b.dataset.busy) return; b.dataset.busy = '1';
     try {
       if(a === 'ap') await apuntar(i);
-      else if(a === 'salir'){ if(confirm('¿Quitarte de la lista?')) await quitar(yo()); }
+      else if(a === 'salir'){ if(confirm('¿Quitarte de la lista?')) await conmigo(0); }
       else if(a === 'quitar'){ if(confirm('¿Quitar a ' + b.dataset.n + ' de la lista?')) await quitar(b.dataset.n); }
       else if(a === 'pasar') await pasar(b.dataset.n, i);
       else if(a === 'cerrarlista') await cambiar(x => { x.cerrada = !x.cerrada; return null; });
@@ -224,14 +222,14 @@
     } finally { delete b.dataset.busy; }
   }
 
-  async function abrir(code, equipo){
+  async function abrir(code, equipo, porEnlace){
     const o = ventana(); o.hidden = false; document.body.style.overflow = 'hidden'; creando = false;
     if(equipo !== undefined) elegido = norm(equipo);
     o.innerHTML = '<div class="ri-in"><div class="ri-vacio">Cargando…</div></div>';
-    pedida = !!code;
+    pedida = !!code && !!porEnlace;
     if(esInvitado()){ r = null; pedida = false; pintar(); return; }
-    try { r = await traer(code || null); } catch(e){ r = null; }
-    if(r) vigilar();
+    try { r = await traer(code || null); if(!r && code && !porEnlace) r = await traer(null); } catch(e){ r = null; }
+    if(r){ vigilar(); try { localStorage.setItem(ULTIMA, r.code); } catch(e){} }
     borrarPend();
     pintar();
   }
@@ -239,7 +237,7 @@
     if(ov) ov.hidden = true; document.body.style.overflow = '';
     if(/[?&]ryder=/.test(location.search)){ try { history.replaceState(null, '', location.pathname); } catch(e){} }
   }
-  window.acgolfRyderIns = { abrir: () => abrir(null, ''), cerrar };
+  window.acgolfRyderIns = { abrir: () => { let u = ''; try { u = localStorage.getItem(ULTIMA) || ''; } catch(e){} return abrir(u || null, ''); }, cerrar };
 
   // Enlace de WhatsApp: ?ryder=CODIGO&equipo=betis. Se recuerda en el móvil (como la invitación del grupo) porque quien
   // no tiene cuenta tiene que registrarse y confirmar su correo, y en esa vuelta el enlace se pierde. Se abre en cuanto hay sesión.
@@ -252,9 +250,15 @@
       if(++n > 120){ clearInterval(t); return; }
       if(typeof initSupabase !== 'function' || !(window.miPerfil || esInvitado())) return;
       clearInterval(t);
-      abrir(pend.c, pend.e || '');
+      abrir(pend.c, pend.e || '', true);
     }, 500);
   }
+  // Quien es de otro grupo no recibe avisos en directo: se refresca solo cada 10 segundos mientras está abierta
+  setInterval(async () => {
+    if(document.hidden || !r || !ov || ov.hidden || creando) return;
+    const f = await traer(r.code).catch(() => null);
+    if(f && f.updatedAt !== r.updatedAt){ r = f; pintar(); }
+  }, 10000);
   // Al volver a la app desde WhatsApp se refresca
   document.addEventListener('visibilitychange', async () => {
     if(document.hidden || !r || !ov || ov.hidden || creando) return;
