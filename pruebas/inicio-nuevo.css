@@ -157,6 +157,8 @@ html.in-on .in-fl{ flex:0 0 auto; width:10px; height:10px; box-sizing:border-box
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu #hmLiga{ display:none !important; } /* la clasificación está en «Tu liga» y en la pestaña Liga */
 /* Ganadores de la semana, Cartas, Ryder Cup y Campos de golf están en la pantalla Jugar (cada cosa en un solo sitio) */
 html.jg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="premios"], #hmCartas, #hmRyder, #hmCampos){ display:none !important; }
+/* y los que ya están en la pantalla Liga (liga-nueva.js) */
+html.lg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="medallas"], #hmLigas){ display:none !important; }
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora > .home-menu{ display:flex !important; flex-direction:column !important; gap:8px !important; margin:0 !important; padding:0 !important; }
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19){ position:relative; flex-direction:row !important; align-items:center !important; justify-content:flex-start !important; gap:14px !important; box-sizing:border-box;
   width:100% !important; height:auto !important; min-height:62px !important; margin:0 !important; padding:9px 38px 9px 14px !important; border-radius:18px !important; background:#121620 !important; border:1px solid #242B38 !important; box-shadow:none !important;

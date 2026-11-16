@@ -5,10 +5,10 @@
 // · Arriba: foto del campo, escudo y nombre del grupo (los mismos que ya ponía la portada del grupo).
 // · «Crear partida» (rojo) y «Organizar partidos» (dorado): son los botones de siempre, con otro traje.
 // · Bloques «Ahora» (tarjeta sin entregar y partida en marcha), «Lo próximo» (partidos organizados + Apuntarme) y «Tu liga» (nombre y puesto).
-// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. «Jugar» abre la pantalla Jugar (jugar-nuevo.js);
-//   «Liga» y «Mi cuenta» pulsan el botón que ya existía (Clasificación liga, Ir a mi cuenta).
-// · Los demás botones del Inicio (Medallas, Mi hándicap…) siguen debajo, en el bloque «Más»,
-//   hasta que se construyan las pantallas Liga y Mi cuenta. Los de Jugar ya están en su pantalla.
+// · Barra de 4 pestañas abajo: Inicio · Jugar · Liga · Mi cuenta. «Jugar» abre la pantalla Jugar (jugar-nuevo.js)
+//   y «Liga» la pantalla Liga (liga-nueva.js); «Mi cuenta» pulsa el botón que ya existía (Ir a mi cuenta).
+// · Los demás botones del Inicio (Mi hándicap, Últimas partidas…) siguen debajo, en el bloque «Más»,
+//   hasta que se construya la pantalla Mi cuenta. Los de Jugar y los de Liga ya están en su pantalla.
 (function(){
   'use strict';
   const pant = document.querySelector('.screen[data-screen="0"]');
@@ -156,11 +156,22 @@
     const b = ev.target.closest('.in-tab'); if(!b) return;
     const t = b.dataset.tab;
     const J = window.acgolfJugar; // la pantalla Jugar (jugar-nuevo.js)
-    if(t === 'inicio'){ if(J) J.cerrar(); try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
-    else if(t === 'jugar'){ if(J) J.abrir(); else pulsa('#prAbrirBtn'); }
-    else if(t === 'liga'){ if(J) J.cerrar(); pulsa('#hmLiga'); }   // «Clasificación liga»
+    const L = window.acgolfLiga;  // la pantalla Liga (liga-nueva.js)
+    if(t === 'inicio'){ if(J) J.cerrar(); if(L) L.cerrar(); try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
+    else if(t === 'jugar'){ if(L) L.cerrar(); if(J) J.abrir(); else pulsa('#prAbrirBtn'); }
+    else if(t === 'liga'){ if(J) J.cerrar(); if(L) L.abrir(); else pulsa('#hmLiga'); }   // sin la pantalla Liga: «Clasificación liga»
     else if(t === 'cuenta') pulsa('.cg-mi');                       // «Ir a mi cuenta»
   });
+  // La pestaña marcada es la de la pantalla que se está viendo (Jugar y Liga son hojas encima del Inicio)
+  function marcarPestana(){
+    const ve = id => { const e = $(id); return !!e && !e.hidden; };
+    const cual = ve('lgPant') ? 'liga' : ve('jgPant') ? 'jugar' : 'inicio';
+    nav.querySelectorAll('.in-tab').forEach(b => {
+      const on = b.dataset.tab === cual;
+      if(b.classList.contains('on') !== on){ b.classList.toggle('on', on); if(on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }
+    });
+  }
+  window.acgolfInicio = { marcarPestana };
 
   // ---------- Repaso: qué bloques se ven y el puntito rojo ----------
   function repasar(){

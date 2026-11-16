@@ -41,10 +41,7 @@
   // Qué filas salen (solo las que tienen su botón de siempre), el escudo del grupo y la pestaña activa
   function repasar(){
     const abierta = !caja.hidden;
-    nav.querySelectorAll('.in-tab').forEach(t => {
-      const on = t.dataset.tab === (abierta ? 'jugar' : 'inicio');
-      if(t.classList.contains('on') !== on){ t.classList.toggle('on', on); if(on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current'); }
-    });
+    if(window.acgolfInicio) window.acgolfInicio.marcarPestana(); // inicio-nuevo.js marca la pestaña de la pantalla que se ve
     if(!abierta) return;
     caja.querySelectorAll('[data-va]').forEach(f => {
       const sel = DE_SIEMPRE[f.dataset.va];
