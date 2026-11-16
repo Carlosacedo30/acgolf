@@ -195,3 +195,6 @@ html.in-on #cnPant .cn-gesc img, html.in-on #cnPant .cn-gesc svg{ display:block;
 html.in-on #cnPant .cn-gesc.cn-redondo img{ border-radius:50%; }
 html.in-on #cnPant .cn-grupo .cn-tx b{ font-size:21px; }
 @media (max-height:700px){ html.in-on #cnPant .cn-gesc{ flex-basis:60px; width:60px; height:60px; } html.in-on #cnPant .cn-grupo .cn-row{ min-height:78px; } }
+
+/* Soporte: círculo rojo con número en la fila «Mensajes de soporte» del Panel general */
+html.in-on #cuentaGate.cg-pn .cn-row .sp-dot{ margin-left:auto; margin-right:8px; background:#D8333D; }

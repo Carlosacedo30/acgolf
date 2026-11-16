@@ -427,9 +427,11 @@
       + '<button type="button" class="cg-camino" id="cgNuevoGrupo"><span class="cg-camino-ico" aria-hidden="true">⛳</span>'
       +   '<span class="cg-camino-txt"><b>Crear mi grupo</b><small>Empiezas tu propio grupo. Aunque estés solo, ya puedes jugar. Luego invitas a tus amigos.</small></span><i aria-hidden="true">›</i></button>'
       + queEsGrupo
+      + '<button type="button" class="cg-btn ghost cg-ayuda" id="cgAyuda">💬 ¿Necesitas ayuda? Escríbenos</button>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
     $('cgTengoInv').onclick = () => pantallaTengoInvitacion(email, null);
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
+    $('cgAyuda').onclick = () => pantallaSoporte(() => pantallaBienvenida(email));
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
   }
   // Saca el código de lo que peguen: el enlace entero, el mensaje de WhatsApp entero o solo el código
@@ -822,6 +824,122 @@
   const fecha = d => d ? new Date(d).toLocaleDateString('es-ES', { day:'numeric', month:'short', year:'numeric' }) : '';
   const ROL = { group_admin: 'Administrador', user: 'Jugador' };
 
+  // ---------- Soporte por mensajes (norma de Carlos, 16-nov-2026) ----------
+  // La persona escribe a «Soporte acgolf» y solo ve su hilo. El super administrador lo ve en Panel general → «Mensajes de soporte».
+  // Nadie ve el teléfono ni el correo del otro. Se mira la base de datos SOLO con el hilo abierto (cada 5 s).
+  const horaSop = iso => { try { const d = new Date(iso), h = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    return d.toDateString() === new Date().toDateString() ? h : d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) + ' · ' + h; } catch(e){ return ''; } };
+  let relojSop = null;
+  const paraSop = () => { if(relojSop){ clearInterval(relojSop); relojSop = null; } };
+  // lista = mensajes; esMio(m) dice si va a la derecha; quien = rótulo del otro lado
+  function burbujasSop(lista, esMio, quienIzq, quienDer){
+    return lista.map(m => '<div class="sp-b ' + (esMio(m) ? 'sp-m' : 'sp-s') + '">' + esc(m.texto).replace(/\n/g, '<br>')
+      + '<small>' + (esMio(m) ? quienDer : quienIzq) + ' · ' + horaSop(m.cuando) + '</small></div>').join('');
+  }
+  // Pantalla de chat (la usan la persona y el super administrador): cargar() devuelve los mensajes, mandar(texto) los envía
+  function chatSop(o){
+    paraSop();
+    mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver</button>'
+      + '<div class="sp-tt"><b>' + esc(o.titulo) + '</b><span>' + esc(o.sub) + '</span></div></div>'
+      + (o.aviso ? '<p class="sp-aviso">' + esc(o.aviso) + '</p>' : '')
+      + '<div class="sp-msgs" id="spMsgs" aria-live="polite"></div><div id="cgMsg" class="cg-msg"></div>'
+      + '<div class="sp-esc"><input id="spTxt" type="text" maxlength="600" placeholder="' + esc(o.placeholder) + '" autocomplete="off" enterkeyhint="send">'
+      + '<button type="button" class="cg-btn sp-env" id="spEnv">Enviar</button></div>');
+    const caja = $('spMsgs'), txt = $('spTxt'), env = $('spEnv');
+    let ultimo = -1;
+    const pintar = async () => {
+      let lista; try { lista = await o.cargar(); } catch(e){ return; }
+      if(!Array.isArray(lista) || !$('spMsgs')) return;
+      const id = lista.length ? lista[lista.length - 1].id : 0;
+      if(id === ultimo) return;
+      const abajo = ultimo === -1 || caja.scrollTop + caja.clientHeight >= caja.scrollHeight - 40;
+      ultimo = id;
+      caja.innerHTML = (lista.length ? '' : '<div class="sp-b sp-s">' + esc(o.vacio) + '</div>') + burbujasSop(lista, o.esMio, o.izq, o.der);
+      if(abajo) caja.scrollTop = caja.scrollHeight;
+    };
+    const enviar = async () => {
+      const t = txt.value.trim(); if(!t || env.disabled) return;
+      env.disabled = true; msg('');
+      try { await o.mandar(t); txt.value = ''; await pintar(); } catch(e){ msg((e && e.message) || 'No se pudo enviar. Inténtalo otra vez.'); }
+      env.disabled = false; txt.focus();
+    };
+    env.onclick = enviar;
+    txt.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); enviar(); } };
+    $('spAtras').onclick = () => { paraSop(); o.volver(); };
+    pintar();
+    relojSop = setInterval(() => { if(!document.getElementById('spMsgs')){ paraSop(); return; } pintar(); }, 5000);
+  }
+  // La persona
+  function pantallaSoporte(volver){
+    chatSop({
+      titulo: 'Soporte acgolf', sub: 'Te contestamos lo antes posible',
+      aviso: 'Aquí solo hablas con el equipo de acgolf. Nadie más lo ve.',
+      placeholder: 'Escribe tu mensaje…', vacio: '¡Hola! Cuéntanos qué te pasa y te ayudamos.',
+      izq: 'acgolf', der: 'Tú', esMio: m => !m.de_soporte, volver,
+      cargar: async () => { const r = await client.rpc('soporte_mis_mensajes'); if(r.error) throw r.error; return r.data; },
+      mandar: async t => {
+        const r = await client.rpc('soporte_enviar', { p_texto: t }); if(r.error) throw r.error;
+        try { client.functions.invoke('soporte-aviso', { body: {} }); } catch(e){}   // avisa por correo al super administrador (si falla, no pasa nada)
+      }
+    });
+  }
+  // El super administrador: bandeja con todas las conversaciones
+  async function pantallaBandeja(perfil){
+    paraSop();
+    mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver al panel</button>'
+      + '<div class="sp-tt"><b>Mensajes de soporte</b><span>Super administrador</span></div></div>'
+      + '<div id="cgMsg" class="cg-msg"></div><div class="sp-lista" id="spLista"><p class="sp-aviso">Un momento…</p></div>'
+      + '<p class="sp-aviso">Cada mensaje nuevo también te llega a tu correo.</p>');
+    $('spAtras').onclick = () => pantallaPanel(perfil);
+    const r = await client.rpc('sa_soporte_hilos');
+    if(!$('spLista')) return;
+    if(r.error){ $('spLista').innerHTML = ''; msg('No se pudo cargar. ' + r.error.message); return; }
+    const lista = r.data || [];
+    if(!lista.length){ $('spLista').innerHTML = '<p class="sp-aviso">Todavía no te ha escrito nadie.</p>'; return; }
+    const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+    $('spLista').innerHTML = lista.map(h => '<button type="button" class="sp-row' + (h.sin_leer > 0 ? ' nuevo' : '') + '" data-u="' + esc(h.user_id) + '">'
+      + '<span class="sp-av">' + esc(ini(h.nombre)) + '</span>'
+      + '<span class="sp-rt"><b>' + esc(h.nombre) + '</b><small>' + (h.ultimo_de_soporte ? 'Tú: ' : '') + esc(h.ultimo) + '</small></span>'
+      + (h.sin_leer > 0 ? '<span class="sp-dot" aria-label="' + h.sin_leer + ' sin contestar">' + h.sin_leer + '</span>' : '<span class="sp-hora">' + esc(horaSop(h.ultimo_en)) + '</span>')
+      + '</button>').join('');
+    $('spLista').querySelectorAll('.sp-row').forEach(b => {
+      const h = lista.find(x => String(x.user_id) === b.dataset.u);
+      b.onclick = () => pantallaHiloSoporte(perfil, h);
+    });
+  }
+  function pantallaHiloSoporte(perfil, h){
+    chatSop({
+      titulo: h.nombre, sub: h.email || '', aviso: '',
+      placeholder: 'Escribe tu respuesta…', vacio: 'Todavía no hay mensajes.',
+      izq: h.nombre, der: 'Tú (soporte)', esMio: m => !!m.de_soporte, volver: () => { ponPuntoSoporte(); pantallaBandeja(perfil); },
+      cargar: async () => { const r = await client.rpc('sa_soporte_hilo', { p_user: h.user_id }); if(r.error) throw r.error; return r.data; },
+      mandar: async t => { const r = await client.rpc('sa_soporte_responder', { p_user: h.user_id, p_texto: t }); if(r.error) throw r.error; }
+    });
+  }
+  // Señal de «tienes preguntas por contestar»: círculo rojo con número en el Panel general y puntito rojo en «Mi cuenta»
+  function ponPuntoSoporte(n){
+    const poner = v => {
+      const t = document.querySelector('#inNav .in-tab[data-tab="cuenta"]'); if(!t) return;
+      let i = t.querySelector('.in-punto');
+      if(!i){ t.insertAdjacentHTML('beforeend', '<i class="in-punto" hidden></i>'); i = t.querySelector('.in-punto'); }
+      i.hidden = !v; window.acgolfSopPendientes = v;
+    };
+    if(typeof n === 'number'){ poner(n); return Promise.resolve(n); }
+    return client.rpc('sa_soporte_sin_leer').then(r => { const v = Number(r && r.data) || 0; poner(v); return v; }, () => 0);
+  }
+  function ponCirculoSoporte(){
+    ponPuntoSoporte().then(v => {
+      const f = $('pnSop'); if(!f || !v) return;
+      const fl = f.querySelector('.cn-fl'); if(!fl || f.querySelector('.sp-dot')) return;
+      fl.insertAdjacentHTML('beforebegin', '<span class="sp-dot" aria-label="' + v + ' sin contestar">' + v + '</span>');
+    });
+  }
+  function vigilarSoporte(){
+    const mira = () => { if(!document.hidden) ponPuntoSoporte(); };
+    setTimeout(mira, 3000); setInterval(mira, 60000);
+    document.addEventListener('visibilitychange', mira);
+  }
+
   // Panel general: todo ordenado en botones; cada uno abre su pantalla (con «‹ Volver al panel»)
   // Panel general (diseño aprobado por Carlos, 15-nov-2026; DESIGN.md §9 y dibujo diseno-ref/cuenta/panel.html; estilos en cuenta-nueva.css).
   // Pantalla aparte, sin barra de pestañas: «‹ Volver» arriba (a Mi cuenta) y «VOLVER A LA APP» fijo abajo (al Inicio).
@@ -835,6 +953,7 @@
       + '<div class="pn-zona"><i>Super administrador</i><h1>Panel general</h1><p>Elige qué quieres hacer</p></div>'
       + '<div class="pn-main" id="pnMain"><div class="pn-filas">'
       + '<div class="cn-sec">Jugadores</div>'
+      + B('pnSop', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Mensajes de soporte', 'Lo que te escriben los jugadores')
       + B('pnPro', '<path d="M5 10v4h3l6 4V6l-6 4H5z"/><path d="M17 9.5a3.5 3.5 0 0 1 0 5"/>', 'Promociones', 'Correos a los jugadores y avisos en redes')
       + B('pnAvi', '<path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5l1.5-1.5z"/><path d="M10.3 20.2a1.9 1.9 0 0 0 3.4 0"/>', 'Avisos', 'Quién tiene los avisos del móvil')
       + '<div class="cn-sec">Seguimiento</div>'
@@ -855,6 +974,8 @@
     $('pnApp').onclick = () => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.cerrar(); };
     $('pnEst').onclick = () => pantallaSuper(perfil, 'seguimiento');
     $('pnPro').onclick = () => pantallaMenuPromos(perfil);
+    $('pnSop').onclick = () => pantallaBandeja(perfil);
+    ponCirculoSoporte();
     $('pnAvi').onclick = () => pantallaSuper(perfil, 'avisos');
     $('pnRes').onclick = () => pantallaResumenes(perfil);
     $('pnGru').onclick = () => pantallaSuper(perfil, 'grupos');
@@ -1650,6 +1771,7 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== (perfil.solo_control ? '' : perfil.player_name)){ location.reload(); return; }
     botonMiCuenta(perfil);
+    if(perfil.es_super) vigilarSoporte();   // puntito rojo si hay mensajes de soporte sin contestar
     // Lo que usa la pantalla Mi cuenta nueva (cuenta-nueva.js): las mismas pantallas y funciones de siempre
     window.acgolfCuenta = {
       panel: () => pantallaSuper(perfil),
