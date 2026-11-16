@@ -18,7 +18,7 @@ html.in-on #cnPant .cn-cab{ flex:0 0 auto; display:flex; align-items:center; jus
 html.in-on #cnPant .cn-cab > div:first-child{ flex:1; min-width:0; }
 html.in-on body #cnPant .cn-titulo{ margin:0 !important; padding:0 !important; font:800 30px/1.05 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.04em !important; text-transform:uppercase !important; text-align:left !important; color:#F4F1E8 !important; text-shadow:none !important; }
 html.in-on body #cnPant .cn-sub{ margin:8px 0 0 !important; padding:0 !important; font:italic 600 19px/1.1 'Playfair Display', Georgia, serif !important; letter-spacing:0 !important; text-transform:none !important; color:#E9CF8C !important; overflow-wrap:break-word; }
-html.in-on #cnPant .cn-esc{ width:52px; height:52px; flex:0 0 auto; margin-right:4px; }
+html.in-on #cnPant .cn-esc{ width:68px; height:68px; flex:0 0 auto; margin-right:4px; }
 html.in-on #cnPant .cn-esc:empty{ display:none; }
 html.in-on #cnPant .cn-esc.cn-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0A0C10, 0 0 0 4px #E9CF8C; }
 html.in-on #cnPant .cn-esc img, html.in-on #cnPant .cn-esc svg{ display:block; width:100%; height:100%; }
@@ -184,3 +184,14 @@ html.in-on body #cuentaGate.cg-pn .cn-salir.pn-fija{ flex:0 0 58px; margin:12px 
   html.in-on body #cuentaGate.cg-pn .pn-filas .cn-row{ min-height:58px; }
   html.in-on body #cuentaGate.cg-pn .cn-salir.pn-fija{ flex:0 0 52px; margin:8px 0 calc(env(safe-area-inset-bottom, 0px) + 10px); }
 }
+
+/* «Mis grupos» arriba de la primera pestaña: escudo grande del grupo activo */
+html.in-on #cnPant .cn-grupo{ border-color:#E9CF8C; box-shadow:0 0 0 1px rgba(233,207,140,.3); }
+html.in-on #cnPant .cn-grupo .cn-row{ min-height:96px; }
+html.in-on #cnPant .cn-gesc{ flex:0 0 76px; width:76px; height:76px; }
+html.in-on #cnPant .cn-gesc:empty{ display:none; }
+html.in-on #cnPant .cn-gesc.cn-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0F1626, 0 0 0 4px #E9CF8C; }
+html.in-on #cnPant .cn-gesc img, html.in-on #cnPant .cn-gesc svg{ display:block; width:100%; height:100%; }
+html.in-on #cnPant .cn-gesc.cn-redondo img{ border-radius:50%; }
+html.in-on #cnPant .cn-grupo .cn-tx b{ font-size:21px; }
+@media (max-height:700px){ html.in-on #cnPant .cn-gesc{ flex-basis:60px; width:60px; height:60px; } html.in-on #cnPant .cn-grupo .cn-row{ min-height:78px; } }

@@ -18,7 +18,7 @@ html.in-on .in-foto{ position:absolute; left:0; right:0; top:0; height:40vh; z-i
   background:linear-gradient(180deg,rgba(10,12,16,.45) 0%,rgba(10,12,16,.2) 30%,rgba(10,12,16,.7) 70%,#0A0C10 100%), url(hato-verde.webp) center 38%/cover; }
 html.in-on .in-hero, html.in-on .screen[data-screen="0"]:not([data-foco]) #homeAhora, html.in-on .screen[data-screen="0"]:not([data-foco]) .home-pie{ position:relative; z-index:1; }
 html.in-on .in-hero{ box-sizing:border-box; min-height:173px; padding:calc(env(safe-area-inset-top, 0px) + 44px) 0 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:11px; }
-html.in-on .in-esc{ width:70px; height:70px; flex:0 0 auto; }
+html.in-on .in-esc{ width:88px; height:88px; flex:0 0 auto; }
 html.in-on .in-esc:empty{ display:none; }
 html.in-on .in-esc.in-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0A0C10, 0 0 0 4px #E9CF8C, 0 6px 18px rgba(0,0,0,.4); }
 html.in-on .in-esc img, html.in-on .in-esc svg{ display:block; width:100%; height:100%; }
