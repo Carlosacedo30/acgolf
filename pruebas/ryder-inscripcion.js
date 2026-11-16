@@ -253,6 +253,19 @@
       abrir(pend.c, pend.e || '', true);
     }, 500);
   }
+  // Botón en el menú del Inicio, junto a «Ryder Cup» (en la app nueva de pruebas lo cubre la fila de «Jugar»)
+  function ponerBoton(){
+    if(document.getElementById('hmRyderIns')) return true;
+    const ref = document.getElementById('hmRyder'); if(!ref) return false;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'home-menu-btn hm-ryder'; b.id = 'hmRyderIns';
+    b.innerHTML = '<svg class="ico ry-ico" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0 0 19z" fill="#C8102E"/><path d="M12 2.5a9.5 9.5 0 0 1 0 19z" fill="#1F4E9C"/><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>Apuntarme a la Ryder</span>' + (typeof icono === 'function' ? icono('flecha', 'hm-flecha') : '');
+    b.onclick = () => window.acgolfRyderIns.abrir();
+    ref.parentNode.insertBefore(b, ref.nextSibling);
+    return true;
+  }
+  let nb = 0;
+  const tb = setInterval(() => { if(ponerBoton() || ++nb > 120) clearInterval(tb); }, 1000);
   // Quien es de otro grupo no recibe avisos en directo: se refresca solo cada 10 segundos mientras está abierta
   setInterval(async () => {
     if(document.hidden || !r || !ov || ov.hidden || creando) return;
