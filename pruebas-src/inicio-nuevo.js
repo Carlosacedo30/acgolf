@@ -162,7 +162,7 @@
     if(t === 'inicio'){ if(J) J.cerrar(); if(L) L.cerrar(); try { cont.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e){ cont.scrollTop = 0; } }
     else if(t === 'jugar'){ if(L) L.cerrar(); if(J) J.abrir(); else pulsa('#prAbrirBtn'); }
     else if(t === 'liga'){ if(J) J.cerrar(); if(L) L.abrir(); else pulsa('#hmLiga'); }   // sin la pantalla Liga: «Clasificación liga»
-    else if(t === 'cuenta'){ if(C){ if(J) J.cerrar(); if(L) L.cerrar(); C.abrir(); } else pulsa('.cg-mi'); } // sin la pantalla Mi cuenta: «Ir a mi cuenta»
+    else if(t === 'cuenta'){ if(C && window.miPerfil){ if(J) J.cerrar(); if(L) L.cerrar(); C.abrir(); } else pulsa('.cg-mi'); } // sin la pantalla Mi cuenta: «Ir a mi cuenta»
   });
   // La pestaña marcada es la de la pantalla que se está viendo (Jugar y Liga son hojas encima del Inicio)
   function marcarPestana(){
