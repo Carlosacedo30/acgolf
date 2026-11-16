@@ -19,6 +19,7 @@
   let canal = null;
   let elegido = '';      // equipo que venía en el enlace (se guarda sin acentos ni espacios)
   let creando = false;
+  let editando = false;   // el administrador cambia el día y el campo
   let pedida = false;    // se pidió una inscripción concreta (por enlace)
   const esInvitado = () => document.documentElement.classList.contains('es-invitado');
   const PEND = 'acgolfRyderPendiente';
@@ -73,7 +74,7 @@
     const client = initSupabase(); if(!client || !r) return;
     if(canal){ try { client.removeChannel(canal); } catch(e){} }
     canal = client.channel('ryins-' + r.id).on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'rounds', filter: 'id=eq.' + r.id }, p => {
-      if(p.new && ov && !ov.hidden && !creando){ r = deFila(p.new); pintar(); }
+      if(p.new && ov && !ov.hidden && !creando && !editando){ r = deFila(p.new); pintar(); }
     }).subscribe();
   }
 
@@ -109,6 +110,7 @@
   function pintar(){
     const o = ventana();
     if(creando){ pintarCrear(o); return; }
+    if(editando && r){ pintarEditar(o); return; }
     if(esInvitado()){
       o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-tj"><b style="font:900 21px Archivo,system-ui,sans-serif">Para apuntarte necesitas tu cuenta</b>'
         + '<div class="ri-dat" style="color:#F2F4F5">En la Ryder no se admiten invitados. Crea tu cuenta en acgolf (es gratis y lleva un minuto) y vuelve a pulsar tu enlace de WhatsApp. Si ya la has creado y confirmado, te llevaremos a tu equipo.</div></div>'
@@ -152,6 +154,7 @@
       h += '<div class="ri-adm"><h3>Solo administrador</h3>'
         + '<button type="button" class="ri-btn ri-pri" data-ri="wa">Mandar al WhatsApp</button>'
         + '<button type="button" class="ri-btn ri-sec" data-ri="copiar">Copiar el mensaje</button>'
+        + '<button type="button" class="ri-btn ri-sec" data-ri="editar">Cambiar día y campo</button>'
         + '<button type="button" class="ri-btn ri-sec" data-ri="cerrarlista">' + (x.cerrada ? 'Abrir la lista otra vez' : 'Cerrar la lista') + '</button>'
         + '<button type="button" class="ri-link" data-ri="borrar">Borrar esta inscripción</button></div>';
     }
@@ -163,6 +166,14 @@
     return '<div class="ri-caps">' + x.equipos.map(e => e.capitan
       ? '<div class="ri-capt" style="--c:' + esc(e.color) + '"><span class="ri-ini">' + esc(iniciales(e.capitan)) + '</span>'
         + '<small>Capitán del ' + esc(e.nombre) + '</small><b>' + esc(e.capitan) + '</b></div>' : '').join('<span class="ri-vs">VS</span>') + '</div>';
+  }
+  function pintarEditar(o){
+    const hoy = new Date().toISOString().slice(0, 10);
+    o.innerHTML = '<div class="ri-in">' + cabecera(r).replace('Ryder Cup</div>', 'Cambiar día y campo</div>')
+      + '<label class="ri-lab">Día (déjalo vacío si aún no se sabe)<input id="riF" type="date" class="ri-inp" value="' + esc(r.fecha) + '" min="' + hoy + '"></label>'
+      + '<label class="ri-lab">Campo (déjalo vacío si aún no se sabe)<input id="riC" class="ri-inp" maxlength="60" placeholder="Por confirmar" value="' + esc(r.campo) + '"></label>'
+      + '<button type="button" class="ri-btn ri-pri" data-ri="guardarEd">Guardar</button>'
+      + '<button type="button" class="ri-link" data-ri="volverEd">Volver</button></div>';
   }
   function pintarCrear(o){
     const hoy = new Date().toISOString().slice(0, 10);
@@ -203,6 +214,15 @@
     if(a === 'nueva'){ creando = true; return pintar(); }
     if(a === 'atras'){ creando = false; return pintar(); }
     if(a === 'crear') return crear();
+    if(a === 'editar'){ editando = true; return pintar(); }
+    if(a === 'volverEd'){ editando = false; return pintar(); }
+    if(a === 'guardarEd'){
+      const f = document.getElementById('riF').value || '', c = (document.getElementById('riC').value || '').trim();
+      b.disabled = true;
+      const ok = await cambiar(x => { x.fecha = f; x.campo = c; return null; });
+      if(ok) editando = false; else b.disabled = false;
+      return pintar();
+    }
     if(b.dataset.busy) return; b.dataset.busy = '1';
     try {
       if(a === 'ap') await apuntar(i);
@@ -223,7 +243,7 @@
   }
 
   async function abrir(code, equipo, porEnlace){
-    const o = ventana(); o.hidden = false; document.body.style.overflow = 'hidden'; creando = false;
+    const o = ventana(); o.hidden = false; document.body.style.overflow = 'hidden'; creando = false; editando = false;
     if(equipo !== undefined) elegido = norm(equipo);
     o.innerHTML = '<div class="ri-in"><div class="ri-vacio">Cargando…</div></div>';
     pedida = !!code && !!porEnlace;
@@ -268,13 +288,13 @@
   const tb = setInterval(() => { if(ponerBoton() || ++nb > 120) clearInterval(tb); }, 1000);
   // Quien es de otro grupo no recibe avisos en directo: se refresca solo cada 10 segundos mientras está abierta
   setInterval(async () => {
-    if(document.hidden || !r || !ov || ov.hidden || creando) return;
+    if(document.hidden || !r || !ov || ov.hidden || creando || editando) return;
     const f = await traer(r.code).catch(() => null);
     if(f && f.updatedAt !== r.updatedAt){ r = f; pintar(); }
   }, 10000);
   // Al volver a la app desde WhatsApp se refresca
   document.addEventListener('visibilitychange', async () => {
-    if(document.hidden || !r || !ov || ov.hidden || creando) return;
+    if(document.hidden || !r || !ov || ov.hidden || creando || editando) return;
     const f = await traer(r.code).catch(() => null); if(f){ r = f; pintar(); }
   });
 })();
