@@ -305,7 +305,8 @@
   // Manda imagen + enlaces. Todo síncrono al pulsar; si el móvil no deja compartir la foto, se manda el texto con los enlaces
   function mandarWA(texto){
     const blob = imgBlob;
-    if(blob && navigator.share && navigator.canShare){
+    const movil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '') || (navigator.maxTouchPoints > 1 && /Mac/i.test(navigator.platform || '') && matchMedia('(pointer:coarse)').matches);
+    if(blob && movil && navigator.share && navigator.canShare){
       let f = null; try { f = new File([blob], 'ryder.png', { type: 'image/png' }); } catch(e){}
       if(f && navigator.canShare({ files: [f] })){
         navigator.share({ files: [f], text: texto }).catch(e => { if(!(e && e.name === 'AbortError')) soloTexto(texto); });
