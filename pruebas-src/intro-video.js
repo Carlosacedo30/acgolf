@@ -9,10 +9,12 @@
 (function(){
   const LOLA = 'plato-lola.mp4?v=1', CURRO = 'plato-curro.mp4?v=1';
   const TOTAL = 2500;   // solo Lola (Carlos quitó los 2,5 s de Curro)
+  const ACTIVA = false; // true = vuelve a salir el saludo de Lola al abrir la app
   let avisar;
   window.acgolfIntro = new Promise(r => { avisar = r; });
 
   function mostrar(){
+    if(!ACTIVA) return avisar();   // Carlos (16-nov-2026): sin saludo de Lola al abrir la app
     let vista = false;
     try { vista = sessionStorage.getItem('acgolfIntro') === '1'; sessionStorage.setItem('acgolfIntro', '1'); } catch(e){}
     let sinMovimiento = false;
