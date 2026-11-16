@@ -29,38 +29,52 @@
     return (pal[0][0] + pal[1][0]).toUpperCase();
   }
 
-  // Dibuja el escudo (SVG) con las iniciales y el color del grupo
+  // Dibuja el escudo (SVG) con las iniciales y el color del grupo.
+  // Estilo fino y elegante: línea de 1,6, doble filete, letra con serifa y fondo azul noche.
   function escudo(tipo, ini, color, tam){
     ini = esc(String(ini || 'G').slice(0, 3).toUpperCase());
     color = /^#[0-9A-Fa-f]{6}$/.test(color || '') ? color : '#C6F24E';
     tam = tam || 96;
-    const fs = ini.length > 2 ? 27 : 36;
-    const anton = "font-family=\"Anton, 'Barlow Condensed', sans-serif\"";
+    const fs = ini.length > 2 ? 26 : 34;
+    const serif = "font-family=\"'Playfair Display', Georgia, 'Times New Roman', serif\"";
+    const gid = 'esc' + tipo + ini.replace(/[^A-Z0-9]/g, '') + color.slice(1);
+    // El degradado va al final: así el primer dibujo del SVG sigue siendo el círculo (lo usa el Inicio para el aro dorado)
+    const defs = '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#17233D"/><stop offset="1" stop-color="#0F1626"/></linearGradient></defs>';
+    const fondo = 'url(#' + gid + ')';
     let dentro;
     if(tipo === 'clasico'){
       return '<svg width="' + Math.round(tam * .87) + '" height="' + tam + '" viewBox="0 0 100 116" aria-hidden="true">'
-        + '<path d="M50 4 L92 16 V58 C92 86 72 102 50 112 C28 102 8 86 8 58 V16 Z" fill="#0E3324" stroke="' + color + '" stroke-width="4"/>'
-        + '<path d="M50 12 L84 22 V58 C84 81 68 95 50 103 C32 95 16 81 16 58 V22 Z" fill="none" stroke="' + color + '" stroke-width="1.2"/>'
-        + '<text x="50" y="68" text-anchor="middle" font-family="Georgia, \'Times New Roman\', serif" font-weight="700" font-size="' + (fs - 2) + '" fill="' + color + '">' + ini + '</text>'
-        + '<path d="M30 82 H70" stroke="' + color + '" stroke-width="1.5"/></svg>';
+        + '<path d="M50 5 L90 16 V58 C90 85 71 100 50 110 C29 100 10 85 10 58 V16 Z" fill="' + fondo + '" stroke="' + color + '" stroke-width="1.6"/>'
+        + '<path d="M50 11 L84 21 V58 C84 81 68 94 50 103 C32 94 16 81 16 58 V21 Z" fill="none" stroke="' + color + '" stroke-width=".7" opacity=".8"/>'
+        + '<circle cx="40" cy="22" r="1.4" fill="' + color + '"/><circle cx="50" cy="19.5" r="1.8" fill="' + color + '"/><circle cx="60" cy="22" r="1.4" fill="' + color + '"/>'
+        + '<text x="50" y="66" text-anchor="middle" ' + serif + ' font-weight="700" font-size="' + fs + '" fill="' + color + '">' + ini + '</text>'
+        + '<path d="M28 80 H46 M54 80 H72" stroke="' + color + '" stroke-width=".8"/><path d="M50 77.2 l2.8 2.8 -2.8 2.8 -2.8 -2.8z" fill="' + color + '"/>' + defs + '</svg>';
     }
     if(tipo === 'bandera'){
-      dentro = '<rect x="6" y="6" width="88" height="88" rx="22" fill="#1B1E22" stroke="' + color + '" stroke-width="3"/>'
-        + '<path d="M30 82 V20" stroke="#F2F4F5" stroke-width="4" stroke-linecap="round"/>'
-        + '<path d="M32 20 L62 29 L32 40 Z" fill="' + color + '"/>'
-        + '<ellipse cx="34" cy="83" rx="16" ry="3.5" fill="#F2F4F5" opacity=".3"/>'
-        + '<text x="66" y="78" text-anchor="middle" ' + anton + ' font-size="' + (fs - 10) + '" fill="#F2F4F5">' + ini + '</text>';
+      dentro = '<rect x="7" y="7" width="86" height="86" rx="24" fill="' + fondo + '" stroke="' + color + '" stroke-width="1.6"/>'
+        + '<rect x="12.5" y="12.5" width="75" height="75" rx="19" fill="none" stroke="' + color + '" stroke-width=".7" opacity=".75"/>'
+        + '<path d="M32 78 V24" stroke="#F4F1E8" stroke-width="1.6" stroke-linecap="round"/>'
+        + '<path d="M33 24 L58 32 L33 41 Z" fill="' + color + '" fill-opacity=".9" stroke="' + color + '" stroke-width=".8" stroke-linejoin="round"/>'
+        + '<path d="M22 79 q10 -3.5 20 0" stroke="#F4F1E8" stroke-width=".9" fill="none" opacity=".6"/>'
+        + '<text x="65" y="74" text-anchor="middle" ' + serif + ' font-weight="700" font-size="' + (fs - 12) + '" fill="#F4F1E8">' + ini + '</text>';
     } else if(tipo === 'bola'){
-      const hoyos = [[30,30],[44,22],[58,22],[72,30],[22,46],[78,46],[26,64],[74,64],[38,77],[50,80],[62,77]]
-        .map(p => '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3" fill="#D3DAE2"/>').join('');
-      dentro = '<circle cx="50" cy="50" r="44" fill="#FFFFFF" stroke="' + color + '" stroke-width="5"/>' + hoyos
-        + '<text x="50" y="62" text-anchor="middle" ' + anton + ' font-size="' + (fs - 3) + '" fill="#111316">' + ini + '</text>';
+      const hoyos = [[50,25],[38,31],[62,31],[28,42],[72,42],[24,54],[76,54],[30,66],[70,66],[40,75],[60,75],[50,79]]
+        .map(q => '<circle cx="' + q[0] + '" cy="' + q[1] + '" r="1.1" fill="' + color + '" opacity=".45"/>').join('');
+      dentro = '<circle cx="50" cy="50" r="45" fill="' + fondo + '" stroke="' + color + '" stroke-width="1.6"/>'
+        + '<circle cx="50" cy="50" r="40" fill="none" stroke="' + color + '" stroke-width=".7" opacity=".8"/>' + hoyos
+        + '<text x="50" y="60" text-anchor="middle" ' + serif + ' font-weight="700" font-size="' + (fs - 4) + '" fill="#F4F1E8">' + ini + '</text>';
     } else {
-      dentro = '<circle cx="50" cy="50" r="46" fill="#111316" stroke="' + color + '" stroke-width="4"/>'
-        + '<circle cx="50" cy="50" r="37" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-dasharray="3 4"/>'
-        + '<text x="50" y="62" text-anchor="middle" ' + anton + ' font-size="' + (fs - 2) + '" fill="' + color + '">' + ini + '</text>';
+      let marcas = '';
+      for(let i = 0; i < 36; i++){
+        const an = i * 10 * Math.PI / 180, r1 = 40.5, r2 = i % 3 === 0 ? 36.5 : 38.2;
+        marcas += '<path d="M' + (50 + r1 * Math.sin(an)).toFixed(2) + ' ' + (50 - r1 * Math.cos(an)).toFixed(2) + ' L' + (50 + r2 * Math.sin(an)).toFixed(2) + ' ' + (50 - r2 * Math.cos(an)).toFixed(2) + '" stroke="' + color + '" stroke-width=".8" opacity=".85"/>';
+      }
+      dentro = '<circle cx="50" cy="50" r="46" fill="' + fondo + '" stroke="' + color + '" stroke-width="1.6"/>'
+        + '<circle cx="50" cy="50" r="42.5" fill="none" stroke="' + color + '" stroke-width=".6" opacity=".7"/>' + marcas
+        + '<text x="50" y="60" text-anchor="middle" ' + serif + ' font-weight="700" font-size="' + (fs - 2) + '" fill="' + color + '">' + ini + '</text>'
+        + '<path d="M38 69 H62" stroke="' + color + '" stroke-width=".8"/>';
     }
-    return '<svg width="' + tam + '" height="' + tam + '" viewBox="0 0 100 100" aria-hidden="true">' + dentro + '</svg>';
+    return '<svg width="' + tam + '" height="' + tam + '" viewBox="0 0 100 100" aria-hidden="true">' + dentro + defs + '</svg>';
   }
 
   // ---- Tonos de la app ----

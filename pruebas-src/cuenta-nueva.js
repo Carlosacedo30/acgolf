@@ -42,6 +42,9 @@
     + '<div class="cn-parte" id="cnP1">'
     + '<div class="cn-adm cn-super" id="cnSuper" hidden><i>Solo super administrador</i>'
     +   fila('panel', '<path d="M5 7h7M16 7h3M5 12h2M11 12h8M5 17h8M17 17h2"/><circle cx="14" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/>', 'Panel general', 'Todo el control de la app') + '</div>'
+    + '<div class="cn-sec">Mis grupos</div>'
+    + '<div class="cn-card cn-grupo"><button type="button" class="cn-row" data-va="misGrupos"><span class="cn-gesc" id="cnGesc"></span>'
+    +   '<span class="cn-tx"><b id="cnGnom"></b><span>Cambiar de grupo o crear uno</span></span><i class="cn-fl" aria-hidden="true"></i></button></div>'
     + '<div class="cn-sec">Mi golf</div>'
     + '<div class="cn-card cn-hcp"><button type="button" class="cn-row" data-va="hcp"><span class="cn-tx"><b>Mi hándicap</b><span>Cómo se calcula</span></span><span class="cn-num" id="cnHcp"></span><i class="cn-fl" aria-hidden="true"></i></button></div>'
     + tarjeta(fila('partidas', '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>', 'Mis últimas partidas', 'Tarjetas y resultados'))
@@ -53,7 +56,6 @@
     // ----- Trozo 2: Mi grupo · Avisos -----
     + '<div class="cn-parte" id="cnP2">'
     + '<div class="cn-sec">Mi grupo</div>'
-    + tarjeta(fila('misGrupos', '<circle cx="9" cy="9.5" r="3"/><path d="M3.5 18.5c.6-2.8 2.8-4.2 5.5-4.2s4.9 1.4 5.5 4.2"/><path d="M15.5 6.8a3 3 0 0 1 0 5.6M17.5 14.6c1.6.6 2.7 1.9 3.1 3.9"/>', 'Mis grupos', 'Cambiar de grupo o crear uno'))
     + tarjeta(fila('invitar', '<circle cx="10" cy="9.5" r="3.2"/><path d="M4 19c.7-3 3-4.6 6-4.6 1.2 0 2.3.3 3.2.7"/><path d="M18 14v6M15 17h6"/>', 'Invitar amigos', 'Mandar el enlace del grupo'))
     + '<div class="cn-adm" id="cnAdm" hidden><i>Solo administrador</i>'
     +   fila('miembros', '<path d="M5 7h9M5 12h9M5 17h6"/><path d="M16 16.5l2 2 3.5-4"/>', 'Miembros', 'Quién está en el grupo')
@@ -129,8 +131,11 @@
     if(window.acgolfAyuda){ const h = window.acgolfAyuda.correoSoporte(); if(fs.getAttribute('href') !== h) fs.setAttribute('href', h); }
     // Avisos: los interruptores de siempre (cuenta.js y avisos-movil.js)
     if(p && window.acgolfCuenta && pintadoPara !== p){ pintadoPara = p; window.acgolfCuenta.avisos($('cnAvisos'), aviso); }
-    // El mismo escudo que el Inicio (inicio-nuevo.js lo copia de la portada del grupo)
+    // El mismo escudo que el Inicio (inicio-nuevo.js lo copia de la portada del grupo), también en la tarjeta «Mis grupos»
+    const gn = $('inNombre'), ge = $('cnGesc'), gt = $('cnGnom');
+    if(gn && gt && gt.textContent !== gn.textContent) gt.textContent = gn.textContent;
     const de = $('inEsc'), a = $('cnEsc');
+    if(de && ge && ge.dataset.clave !== de.dataset.clave){ ge.dataset.clave = de.dataset.clave || ''; ge.innerHTML = de.innerHTML; ge.classList.toggle('cn-redondo', de.classList.contains('in-redondo')); }
     if(de && a.dataset.clave !== de.dataset.clave){ a.dataset.clave = de.dataset.clave || ''; a.innerHTML = de.innerHTML; a.classList.toggle('cn-redondo', de.classList.contains('in-redondo')); }
     bordes();
   }
