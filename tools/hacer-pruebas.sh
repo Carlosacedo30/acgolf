@@ -1000,3 +1000,17 @@ s = s.replace('</head>', '<link rel="stylesheet" href="https://fonts.googleapis.
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=4"></script>\n<script src="jugar-nuevo.js?v=2"></script>\n<script src="liga-nueva.js?v=1"></script>\n<script src="cuenta-nueva.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+
+# --- Pantalla de marcar golpes: diseño «Iscariotes sobre fondo blanco» (marcar-nuevo.js/.css; DESIGN.md §7) ---
+# --- (marcador.js v19: tarjeta «Marcas a», teclado a la vista y «Tu grupo»; mesa y «Me retiro» con los mismos colores) ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+for a, b in [('marcador.js?v=18', 'marcador.js?v=19'), ('marcador-mesa.js?v=1', 'marcador-mesa.js?v=2'), ('marcador-mesa.css?v=1', 'marcador-mesa.css?v=2')]:
+    assert s.count(a) == 1, a
+    s = s.replace(a, b)
+s = s.replace('</head>', '<link rel="stylesheet" href="marcar-nuevo.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="marcar-nuevo.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+EOF

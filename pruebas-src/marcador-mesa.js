@@ -94,8 +94,8 @@
       return '<' + (tap ? 'button type="button" data-i="' + i + '"' : 'div') + ' class="mm-j ' + cls + '" style="left:' + x.toFixed(1) + '%;top:' + y.toFixed(1) + '%">'
         + '<span class="mm-av">' + esc(iniciales(players[i])) + '</span><b>' + esc(nombre(players[i])) + '</b><i>' + rot + '</i></' + (tap ? 'button' : 'div') + '>';
     }).join('');
-    const arcos = asientos.map(({ i, fi }) => '<path d="' + arco(164, 172, 54, fi - medio, fi + medio) + '" fill="none" stroke="' + (marcaA[i] != null ? (i === me ? '#111316' : '#2E7D32') : '#B8C0C7') + '" stroke-width="5" stroke-linecap="round" marker-end="url(#mm-f' + (marcaA[i] != null ? (i === me ? 'n' : 'v') : 'g') + ')"/>').join('');
-    const defs = [['n', '#111316'], ['v', '#2E7D32'], ['g', '#B8C0C7']].map(([k, c]) => '<marker id="mm-f' + k + '" markerWidth="4" markerHeight="4" refX="2.4" refY="2" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L4,2 L0,4 z" fill="' + c + '"/></marker>').join('');
+    const arcos = asientos.map(({ i, fi }) => '<path d="' + arco(164, 172, 54, fi - medio, fi + medio) + '" fill="none" stroke="' + (marcaA[i] != null ? (i === me ? '#17233D' : '#C9A54A') : '#DADFE3') + '" stroke-width="5" stroke-linecap="round" marker-end="url(#mm-f' + (marcaA[i] != null ? (i === me ? 'n' : 'v') : 'g') + ')"/>').join('');
+    const defs = [['n', '#17233D'], ['v', '#C9A54A'], ['g', '#DADFE3']].map(([k, c]) => '<marker id="mm-f' + k + '" markerWidth="4" markerHeight="4" refX="2.4" refY="2" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L4,2 L0,4 z" fill="' + c + '"/></marker>').join('');
     const titulo = eligio ? '<div class="mm-gran ok"><b>Marcas a ' + esc(nombre(players[miElegido ? +miElegido.idx : 0])) + '</b><span>Si te has equivocado, toca a otro.</span></div>'
       : '<div class="mm-gran"><b>Toca con el dedo al jugador de tu derecha</b><span>Es el que vas a marcar tú.</span></div>';
     const faltaTxt = faltan.length ? 'Esperando a: ' + faltan.filter(i => i !== me).map(i => nombre(players[i])).join(', ') : '';

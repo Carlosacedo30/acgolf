@@ -1,0 +1,300 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Pantalla de marcar golpes: «Iscariotes sobre fondo blanco» (DESIGN.md §7; referencia diseno-ref/marcar.html).
+   Fondo blanco, azul oscuro #17233D, oro #C9A54A / #E9CF8C / #8A6A1F y rojo #B3262E.
+   Los resultados de cada hoyo van SIEMPRE con los colores fijos (norma de Carlos):
+   águila círculo dorado · birdie círculo rojo · par casilla blanca · bogey azul claro · doble o peor azul fuerte. */
+
+/* ---------- La pantalla: una columna; primero la hoja de marcar y debajo lo demás ---------- */
+html.mn-on .screen[data-screen="3"] .screen-content{ display:flex !important; flex-direction:column; font-family:Barlow,system-ui,Arial,sans-serif; }
+html.mn-on .screen[data-screen="3"] .screen-content > *{ flex-shrink:0; }
+html.mn-on .screen[data-screen="3"] .screen-content > .app-bar,
+html.mn-on .screen[data-screen="3"] .screen-content > .mk-cartel,
+html.mn-on .screen[data-screen="3"] .screen-content > #groupSwitchSection,
+html.mn-on .screen[data-screen="3"] .screen-content > #holeViewSection,
+html.mn-on .screen[data-screen="3"] .screen-content > .mr-bloque{ order:-1; }
+html.mn-on .screen[data-screen="3"] .screen-content > .actions{ order:9; }
+
+/* ---------- Arriba: ‹ Salir · escudo · Hoyo N de 18 ---------- */
+/* El dibujo aprobado no lleva arriba los botones «Ir a mi cuenta» y grupo: mientras se marca no salen (siguen en el resto de la app) */
+html.mn-on .screen[data-screen="3"] .screen-content > .cg-barra{ display:none !important; }
+html.mn-on body .screen.screen[data-screen="3"] .app-bar{ display:grid !important; grid-template-columns:1fr auto 1fr; align-items:center; gap:8px; padding:8px 16px 0 !important; margin:0 !important; background:#fff !important; border:0 !important; box-shadow:none !important; min-height:0 !important; }
+html.mn-on .screen[data-screen="3"] .app-bar .back{ justify-self:start; height:44px; min-height:0 !important; width:auto !important; margin:0 !important; padding:0 18px !important; border-radius:999px !important; border:1.5px solid #17233D !important; background:#fff !important; box-shadow:none !important; display:flex; align-items:center; font:900 16px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:0 !important; text-transform:none !important; color:#17233D !important; white-space:nowrap; cursor:pointer; }
+html.mn-on .screen[data-screen="3"] .app-bar .back:active{ transform:scale(.97); }
+.mn-esc{ width:48px; height:48px; border-radius:50%; overflow:hidden; box-shadow:0 2px 8px rgba(23,35,61,.18); }
+.mn-esc:empty{ box-shadow:none; }
+.mn-esc svg, .mn-esc img{ display:block; width:100%; height:100%; object-fit:cover; }
+.mn-cnt{ justify-self:end; text-align:right; font:800 12px/1.15 Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; color:#4A5568; text-transform:uppercase; }
+.mn-cnt b{ display:block; font:900 20px Archivo,system-ui,Arial,sans-serif; letter-spacing:0; color:#17233D; text-transform:none; white-space:nowrap; }
+
+/* Cartel «Estás en el Grupo 2 · sales a las 08:40» */
+html.mn-on .screen[data-screen="3"] .mk-cartel{ margin:8px 16px 0; background:#fff; border:1px solid #C9A54A; border-radius:999px; padding:7px 14px; font:800 14px Archivo,system-ui,Arial,sans-serif; color:#17233D; text-align:center; }
+
+/* ---------- La hoja del hoyo ---------- */
+html.mn-on .screen[data-screen="3"] #holeViewSection{ position:relative; padding:0 16px 12px !important; margin:0 !important; }
+html.mn-on .screen[data-screen="3"] #holeViewSection.mn-con{ display:flex; flex-direction:column; min-height:calc(100vh - 100px); min-height:var(--mn-alto, calc(100vh - 100px)); }
+html.mn-on .screen[data-screen="3"] #hvPlayers{ margin:0 !important; padding:0 !important; }
+html.mn-on #holeViewSection.mn-con #hvPlayers{ flex:1 1 auto; display:flex; flex-direction:column; min-height:0; }
+html.mn-on #holeViewSection.mn-con #hvPlayers > .mk-cols{ flex:1 1 auto; }
+
+/* Título «HOYO 7» y «Par 4 · Hcp 9» */
+html.mn-on .screen[data-screen="3"] .hole-card-header{ display:flex !important; flex-direction:column; align-items:center; justify-content:center; gap:4px !important; margin:8px 0 0 !important; padding:0 !important; }
+html.mn-on .screen[data-screen="3"] .hole-badge-big{ display:flex !important; flex-direction:row-reverse; align-items:baseline; justify-content:center; gap:.28em; width:auto !important; height:auto !important; padding:0 !important; margin:0 !important; border:0 !important; border-radius:0 !important; background:none !important; box-shadow:none !important; font:900 38px/1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.03em; color:#17233D !important; }
+html.mn-on .screen[data-screen="3"] .hole-badge-big .hoyo-num,
+html.mn-on .screen[data-screen="3"] .hole-badge-big .hoyo-lbl{ font:inherit !important; letter-spacing:inherit !important; color:#17233D !important; margin:0 !important; text-transform:uppercase; opacity:1 !important; }
+html.mn-on .screen[data-screen="3"] #holeViewSection .hole-meta-row{ display:flex !important; flex-direction:row !important; flex-wrap:nowrap; white-space:nowrap; align-items:baseline; justify-content:center; gap:0 !important; margin:0 !important; font:italic 600 18px 'Playfair Display',Georgia,serif; color:#8A6A1F; }
+html.mn-on .screen[data-screen="3"] #holeViewSection .hole-meta-item{ display:inline-flex !important; flex-direction:row !important; width:auto !important; text-align:left; align-items:baseline; gap:.3em; padding:0 !important; margin:0 !important; min-width:0 !important; width:auto !important; background:none !important; border:0 !important; border-radius:0 !important; }
+html.mn-on .screen[data-screen="3"] #holeViewSection .hole-meta-item .k,
+html.mn-on .screen[data-screen="3"] #holeViewSection .hole-meta-item .v{ font:inherit !important; color:#8A6A1F !important; letter-spacing:0 !important; text-transform:none !important; margin:0 !important; width:auto !important; line-height:inherit !important; }
+html.mn-on .screen[data-screen="3"] #holeViewSection .hole-meta-item + .hole-meta-item::before{ content:'·'; margin:0 .4em; }
+
+/* Rayitas: jugados en azul, el actual en oro, los que faltan en gris */
+.mn-prog{ display:flex; gap:3px; margin-top:8px; }
+.mn-prog i{ flex:1; height:6px; border-radius:999px; background:#DADFE3; }
+.mn-prog i.h{ background:#17233D; }
+.mn-prog i.a{ background:#C9A54A; flex:2.2; }
+
+/* ---------- Tarjeta azul «Marcas a» / «Tus golpes» ---------- */
+.mn-marca{ display:flex !important; flex-direction:column; gap:0 !important; }
+.mn-sel{ flex:0 0 auto; margin-top:10px; border-radius:22px; border:1.5px solid rgba(217,190,122,.9); background:linear-gradient(160deg,#17233D,#0F1626); padding:9px 14px 9px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px; box-shadow:0 6px 16px rgba(15,22,38,.22); text-align:left; animation:mn-entra .22s ease-out; }
+@keyframes mn-entra{ from{ opacity:.35; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce){ .mn-sel{ animation:none; } }
+.mn-sel.mal{ border-color:rgba(179,38,46,.8); box-shadow:0 0 0 2px rgba(179,38,46,.8), 0 6px 16px rgba(15,22,38,.22); }
+.mn-sel-tx{ min-width:0; }
+.mn-sel-tx small{ display:block; font:800 12px Archivo,system-ui,Arial,sans-serif; letter-spacing:.18em; color:#E9CF8C; text-transform:uppercase; }
+.mn-sel-tx b{ display:block; font:900 24px/1.12 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; margin-top:3px; overflow-wrap:anywhere; }
+.mn-st{ display:block; margin-top:3px; font:600 15px/1.2 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+.mn-sel-tx .mn-st b{ display:inline; margin:0; font:900 17px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+.mn-sel.ok .mn-st{ color:#E9CF8C; }
+.mn-sel.mal .mn-st{ color:#E8C9CC; }
+.mn-put{ flex:0 0 auto; text-align:center; font:700 14px/1.1 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+.mn-put span{ display:block; margin-top:4px; }
+html.mn-on .screen[data-screen="3"] .mn-put .mk-box{ display:flex; align-items:center; justify-content:center; width:44px; height:44px; min-height:0; margin:0 auto; padding:0; border-radius:7px; font:900 24px/1 Archivo,system-ui,Arial,sans-serif; box-shadow:0 0 0 2px rgba(255,255,255,.9); cursor:pointer; touch-action:manipulation; }
+html.mn-on .screen[data-screen="3"] .mn-put .mk-box:active{ transform:scale(.97); }
+
+/* Rótulos «Golpes en este hoyo» y «Tu grupo» */
+.mn-lbl{ flex:0 0 auto; display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:26px; margin:10px 4px 6px; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; color:#17233D; text-transform:uppercase; }
+.mn-lbl span{ white-space:nowrap; }
+.mn-falta{ font:800 14px Archivo,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; color:#fff; background:#B3262E; border-radius:999px; padding:4px 12px; }
+.mn-hecho{ font:800 14px Archivo,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; color:#17233D; background:#fff; border:1.5px solid #17233D; border-radius:999px; padding:3px 12px; }
+.mn-mas{ font:800 14px Archivo,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; color:#17233D; background:#fff; border:1.5px solid #17233D; border-radius:999px; padding:3px 12px; min-height:28px; cursor:pointer; touch-action:manipulation; }
+.mn-mas:active{ transform:scale(.97); }
+
+/* ---------- Teclado: números lisos, lo más grandes posible ---------- */
+.mn-keys{ flex:1 1 0; min-height:180px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,minmax(0,1fr)); gap:9px; }
+.mn-k{ position:relative; margin:0; padding:0; min-width:0; min-height:0; border-radius:20px; background:#F2F4F6; border:1.5px solid #DADFE3; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#111316; box-shadow:0 2px 0 #DADFE3,0 4px 10px rgba(23,35,61,.06); cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent; font-family:Archivo,system-ui,Arial,sans-serif; }
+.mn-k:active{ transform:scale(.97); }
+.mn-k span{ font:900 clamp(40px, 13vw, 58px)/1 Archivo,system-ui,Arial,sans-serif; }
+.mn-k.par span{ font-size:clamp(34px, 11vw, 46px); }
+.mn-k.par{ background:linear-gradient(180deg,#EBD08A,#C9A54A); border-color:#C9A54A; color:#16120A; box-shadow:0 2px 0 #A8873A,0 6px 14px rgba(201,165,74,.35); }
+.mn-k.par u{ text-decoration:none; font:900 12px/1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.16em; margin-top:2px; }
+.mn-k.on{ background:linear-gradient(160deg,#17233D,#0F1626); border-color:#17233D; color:#fff; box-shadow:0 2px 0 #0A0C10,0 6px 14px rgba(15,22,38,.28); }
+@supports (container-type:size){
+  .mn-k{ container-type:size; }
+  .mn-k span{ font-size:82cqh; }
+  .mn-k.par span{ font-size:64cqh; }
+  .mn-k.par u{ margin-top:2cqh; }
+}
+
+/* ---------- «Tu grupo» ---------- */
+.mn-list{ flex:0 0 auto; display:flex; flex-direction:column; gap:5px; }
+.mn-pl{ width:100%; margin:0; min-height:42px; border-radius:16px; background:#F2F4F6; border:1px solid #DADFE3; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:3px 8px 3px 16px; font:800 17px/1.1 Archivo,system-ui,Arial,sans-serif; color:#17233D; text-align:left; box-sizing:border-box; }
+button.mn-pl{ cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+button.mn-pl:active{ transform:scale(.97); }
+.mn-pl > span{ min-width:0; overflow-wrap:anywhere; }
+.mn-pl small{ font:800 12px Archivo,system-ui,Arial,sans-serif; letter-spacing:.12em; color:#8A6A1F; margin-left:4px; white-space:nowrap; }
+.mn-pl.no{ background:#fff; border:2px dashed #B3262E; padding:2px 7px 2px 15px; }
+.mn-pl.yo{ background:#fff; border:2px solid #C9A54A; padding:2px 7px 2px 15px; }
+.mn-pl em{ flex:0 0 auto; font:800 14px Archivo,system-ui,Arial,sans-serif; font-style:normal; color:#B3262E; padding:0 8px; }
+.mn-r{ flex:0 0 auto; width:32px; height:32px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; font:900 19px Archivo,system-ui,Arial,sans-serif; font-style:normal; border-radius:7px; background:#fff; border:2px solid #DADFE3; color:#111316; }
+/* Colores fijos de los resultados (los de tarjeta-blanca.css) */
+.mn-r.tb-eagle{ background:#F5B83D; color:#111316; border:0; border-radius:50%; }
+.mn-r.tb-birdie{ background:#E5484D; color:#fff; border:0; border-radius:50%; }
+.mn-r.tb-par{ background:#fff; color:#111316; border:2px solid #8A939B; }
+.mn-r.tb-bogey{ background:#8DB8FF; color:#111316; border:0; }
+.mn-r.tb-doble{ background:#2F5BD3; color:#fff; border:0; }
+
+/* ---------- Abajo: «‹ Hoyo 6» y «SIGUIENTE HOYO ›» ---------- */
+.mn-bot{ flex:0 0 auto; display:flex; gap:10px; margin-top:12px; }
+html.mn-on .screen[data-screen="3"] .mn-bot .hole-nav-btn{ width:auto !important; min-width:0 !important; height:62px !important; padding:0 10px !important; margin:0 !important; border-radius:999px !important; display:flex !important; flex-direction:row !important; align-items:center; justify-content:center; text-align:center; line-height:1.1 !important; cursor:pointer; touch-action:manipulation; -webkit-tap-highlight-color:transparent; user-select:none; }
+html.mn-on .screen[data-screen="3"] .mn-bot .hole-nav-btn:active{ transform:scale(.97); }
+html.mn-on .screen[data-screen="3"] .mn-bot #holePrevBtn{ flex:0 0 120px; border:2px solid #C9A54A !important; background:#fff !important; color:#17233D !important; box-shadow:none !important; font:900 17px Archivo,system-ui,Arial,sans-serif !important; }
+html.mn-on .screen[data-screen="3"] .mn-bot #holePrevBtn.disabled{ opacity:.4; cursor:default; }
+html.mn-on .screen[data-screen="3"] .mn-bot #holeNextBtn{ flex:1 1 0; border:0 !important; background:linear-gradient(180deg,#B3262E,#8A1A21) !important; color:#fff !important; font:900 19px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.05em; box-shadow:0 8px 18px rgba(179,38,46,.28) !important; }
+/* Todavía faltan marcas en este hoyo: el botón se ve apagado (como antes) */
+html.mn-on .screen[data-screen="3"] .mn-bot #holeNextBtn.mk-off{ background:#F2F4F6 !important; color:#4A5568 !important; border:1.5px solid #DADFE3 !important; box-shadow:none !important; }
+html.mn-on .screen[data-screen="3"] #holeViewSection.mn-ultimo .mn-bot #holeNextBtn{ display:none !important; }
+/* «Finalizar partida»: rojo en el último hoyo (en el sitio de «Siguiente hoyo»); si no, al final con borde dorado */
+html.mn-on .screen[data-screen="3"] #finalizarRondaBtn{ flex:1 1 0 !important; width:auto; min-height:58px !important; margin:0 !important; padding:0 12px !important; border-radius:999px !important; border:2px solid #C9A54A !important; background:#fff !important; color:#17233D !important; box-shadow:none !important; font:900 18px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em; text-transform:none !important; }
+html.mn-on .screen[data-screen="3"] .mn-bot #finalizarRondaBtn{ min-height:62px !important; border:0 !important; background:linear-gradient(180deg,#B3262E,#8A1A21) !important; color:#fff !important; box-shadow:0 8px 18px rgba(179,38,46,.28) !important; letter-spacing:.05em; text-transform:uppercase !important; }
+html.mn-on .screen[data-screen="3"] #finalizarRondaBtn:active{ transform:scale(.97); }
+html.mn-on .screen[data-screen="3"] .screen-content > .actions{ background:#fff !important; border-top:0 !important; padding:8px 16px 20px !important; }
+html.mn-on .screen[data-screen="3"] .screen-content > .actions.mn-vacia{ display:none !important; }
+
+/* ---------- Avisos del hoyo ---------- */
+html.mn-on .screen[data-screen="3"] .mk-aviso{ border-radius:18px; padding:10px 14px; margin:10px 0 0; font:800 15px/1.25 Archivo,system-ui,Arial,sans-serif; text-align:center; background:#fff; border:1.5px solid #C9A54A; color:#17233D; }
+html.mn-on .screen[data-screen="3"] .mk-aviso.espera{ border-color:#DADFE3; color:#4A5568; }
+/* Con el teclado a la vista, lo que falta ya se ve en «Tu grupo» y en el botón apagado */
+html.mn-on #holeViewSection.mn-con .mk-aviso.espera, html.mn-on #holeViewSection.mn-con #hvCompleto{ display:none !important; }
+/* «Todo correcto. Pasando al hoyo 8…»: flota encima de los botones, sin mover el teclado */
+html.mn-on #holeViewSection.mn-con .mk-aviso.ok{ position:absolute; left:16px; right:16px; bottom:86px; z-index:5; margin:0; box-shadow:0 10px 26px rgba(15,22,38,.28); }
+html.mn-on .screen[data-screen="3"] .mk-barra{ height:6px; border-radius:999px; background:#DADFE3; margin-top:8px; overflow:hidden; }
+html.mn-on .screen[data-screen="3"] .mk-barra i{ background:#17233D; }
+html.mn-on .screen[data-screen="3"] .mk-aviso button{ display:block; width:100%; margin-top:8px; min-height:42px; border-radius:999px; border:1.5px solid #17233D; padding:8px 10px; font:800 15px Archivo,system-ui,Arial,sans-serif; color:#17233D; background:#fff; cursor:pointer; }
+html.mn-on .screen[data-screen="3"] .mk-aviso button:active{ transform:scale(.97); }
+html.mn-on .screen[data-screen="3"] .hv-completo{ margin:10px 0 0; padding:10px 14px; border-radius:18px; background:#fff; border:1.5px solid #C9A54A; color:#17233D; }
+html.mn-on .screen[data-screen="3"] .hv-completo b{ font:900 18px Archivo,system-ui,Arial,sans-serif; color:#17233D; }
+html.mn-on .screen[data-screen="3"] .hv-completo span{ font:600 15px Barlow,system-ui,Arial,sans-serif; color:#4A5568; }
+html.mn-on .screen[data-screen="3"] .mk-p{ font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif; color:#4A5568 !important; text-align:center; margin:14px 0; }
+html.mn-on .screen[data-screen="3"] .mr-aviso{ margin:10px 0 0; border-radius:18px; background:#fff; border:1.5px solid #C9A54A; color:#17233D; font:600 15px/1.3 Barlow,system-ui,Arial,sans-serif; }
+html.mn-on .screen[data-screen="3"] .mr-aviso b{ font:900 16px Archivo,system-ui,Arial,sans-serif; }
+
+/* «No coincide»: los dos números y dos botones */
+html.mn-on .tf-mal.mk-mal-card{ margin:10px 0 0 !important; border-radius:20px !important; background:#fff !important; border:2px solid #B3262E !important; color:#111316 !important; padding:12px 14px !important; gap:6px; }
+html.mn-on .tf-mal.mk-mal-card > b{ font:900 18px Archivo,system-ui,Arial,sans-serif !important; color:#B3262E !important; letter-spacing:.04em; }
+html.mn-on .tf-mal.mk-mal-card .mk-mal-fila{ margin:2px 0; }
+html.mn-on .tf-mal.mk-mal-card .mk-mal-fila p{ font:600 16px/1.3 Barlow,system-ui,Arial,sans-serif !important; color:#111316 !important; }
+html.mn-on .tf-mal.mk-mal-card .mk-mal-fila p b{ font:900 19px Archivo,system-ui,Arial,sans-serif !important; color:#17233D; }
+html.mn-on .tf-mal.mk-mal-card > span{ font:600 14px/1.35 Barlow,system-ui,Arial,sans-serif !important; color:#4A5568 !important; margin-top:2px; }
+html.mn-on .tf-mal.mk-mal-card .mk-mal-bot button{ flex:1 1 140px; min-height:48px; padding:6px 12px; border-radius:999px; font:900 15px/1.15 Archivo,system-ui,Arial,sans-serif; }
+html.mn-on .tf-mal.mk-mal-card .mk-mal-cambia{ background:#fff !important; color:#17233D !important; border:1.5px solid #17233D !important; }
+html.mn-on .tf-mal.mk-mal-card .mk-mal-deja{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important; border:0 !important; }
+
+/* Sin cobertura: aviso fijo abajo */
+html.mn-on .mk-cola{ background:#fff; border:1.5px solid #C9A54A; color:#17233D; font:800 14px Archivo,system-ui,Arial,sans-serif; }
+
+/* ---------- Partidas sin marcadores: una fila por jugador (misma letra y colores) ---------- */
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-scores{ margin-top:12px; gap:6px !important; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-cell{ border-radius:18px !important; background:#F2F4F6 !important; border:1px solid #DADFE3 !important; box-shadow:none !important; padding:6px 8px 6px 16px !important; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-cell.lead, html.mn-on .screen[data-screen="3"] #hvPlayers .hv-cell.cuenta{ background:#fff !important; border:2px solid #C9A54A !important; box-shadow:none !important; padding:5px 7px 5px 15px !important; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-n{ font:800 18px/1.1 Archivo,system-ui,Arial,sans-serif !important; color:#17233D !important; white-space:normal !important; grid-column:1 !important; min-width:0; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere !important; align-self:end; padding-top:2px; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-tp{ font:600 15px Barlow,system-ui,Arial,sans-serif !important; color:#4A5568 !important; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-tp b{ font:900 17px Archivo,system-ui,Arial,sans-serif !important; color:#8A6A1F !important; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-tp .gr-pips i{ background:#C9A54A !important; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box{ font-family:Archivo,system-ui,Arial,sans-serif !important; font-weight:900 !important; border-radius:9px; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-cell .stroke-box::placeholder{ color:#4A5568 !important; opacity:1; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-cell .result-box{ font:800 16px Archivo,system-ui,Arial,sans-serif !important; color:#17233D !important; background:#fff !important; border:1px solid #DADFE3 !important; border-radius:12px !important; }
+html.mn-on .screen[data-screen="3"] .hv-pareja{ box-shadow:inset 0 0 0 1.5px #DADFE3 !important; border-radius:20px; }
+html.mn-on .screen[data-screen="3"] #hvPlayers .hv-parejas{ margin-top:10px; }
+html.mn-on .screen[data-screen="3"] .hv-pareja-h b{ color:#8A6A1F !important; font:800 14px Archivo,system-ui,Arial,sans-serif; }
+html.mn-on .screen[data-screen="3"] .hv-pareja-h span{ color:#17233D !important; font-family:Archivo,system-ui,Arial,sans-serif; }
+
+/* ---------- Debajo de la hoja: clasificación, tarjeta, leyenda, distancia ---------- */
+html.mn-on .screen[data-screen="3"] .marcador-section{ padding:6px 16px 0 !important; }
+html.mn-on .tb-cl{ border-radius:18px; }
+html.mn-on .tb-cl-cab{ font:800 12px Archivo,system-ui,Arial,sans-serif; letter-spacing:.08em; color:#4A5568; }
+html.mn-on .tb-cl-n b{ font-family:Archivo,system-ui,Arial,sans-serif; font-weight:800; color:#17233D; }
+html.mn-on .tb-cl-fila.on{ background:#fff; box-shadow:inset 0 0 0 2px #C9A54A; }
+html.mn-on .tb-cl-fila.paga.on{ background:#FFF4D6; }
+html.mn-on .tb-tira-sec{ padding:10px 16px 0 !important; }
+html.mn-on .tb-tira-cab b{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.1em; color:#17233D; }
+html.mn-on .tb-ver{ color:#17233D; font:800 15px Archivo,system-ui,Arial,sans-serif; text-decoration:underline; text-decoration-color:#C9A54A; text-underline-offset:3px; }
+html.mn-on .tb-bloque{ border-radius:16px; }
+html.mn-on .tb-r-h{ background:#17233D; }
+html.mn-on .tb-h.actual{ background:#C9A54A; color:#16120A; }
+html.mn-on .tb-r-rc, html.mn-on .tb-pts{ color:#8A6A1F; }
+html.mn-on .tb-r-pt .tb-tot.b{ color:#17233D; }
+html.mn-on .mc-total span{ border-radius:16px; font:700 14px Barlow,system-ui,Arial,sans-serif; color:#4A5568; }
+html.mn-on .mc-total b{ font-family:Archivo,system-ui,Arial,sans-serif; color:#17233D; }
+html.mn-on .screen[data-screen="3"] .tb-leyenda{ font:700 14px Barlow,system-ui,Arial,sans-serif; }
+html.mn-on .screen[data-screen="3"] .green-arriba{ margin:6px 16px 0 !important; border-radius:18px !important; }
+html.mn-on .screen[data-screen="3"] .gps-btn{ background:#17233D !important; color:#fff !important; border-radius:999px !important; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.mn-on .screen[data-screen="3"] .gps-admin-btn{ color:#17233D !important; border-color:#17233D !important; }
+html.mn-on .screen[data-screen="3"] .toggle-grid-lbl{ color:#17233D !important; }
+/* Pestañas de grupo (solo las ve quien no juega) */
+html.mn-on #groupSwitchToggle .tab{ border:1.5px solid #17233D !important; color:#17233D !important; font:800 15px Archivo,system-ui,Arial,sans-serif !important; }
+html.mn-on #groupSwitchToggle .tab.active{ background:linear-gradient(160deg,#17233D,#0F1626) !important; color:#fff !important; border-color:#17233D !important; }
+html.mn-on .grp-flecha{ border:1.5px solid #17233D !important; color:#17233D !important; }
+html.mn-on .grp-centro b{ color:#17233D !important; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.mn-on .grp-centro b em{ color:#8A6A1F !important; }
+html.mn-on .grp-mio{ color:#17233D !important; border:1.5px solid #C9A54A !important; }
+
+/* «Me retiro» */
+html.mn-on .screen[data-screen="3"] .mr-bloque{ margin:18px 16px 8px; }
+html.mn-on .mr-bloque p{ font:600 14px Barlow,system-ui,Arial,sans-serif; color:#4A5568; }
+html.mn-on .mr-btn{ min-height:54px; border:2px solid #B3262E; color:#B3262E; font:900 17px Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; cursor:pointer; }
+html.mn-on .mr-caja{ border-radius:22px; font:600 16px/1.35 Barlow,system-ui,Arial,sans-serif; }
+html.mn-on .mr-caja h2{ font:900 24px/1.1 Archivo,system-ui,Arial,sans-serif; color:#B3262E; }
+html.mn-on .mr-ok, html.mn-on .mr-no{ min-height:58px; font:900 17px Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; cursor:pointer; }
+html.mn-on .mr-ok{ background:linear-gradient(180deg,#B3262E,#8A1A21); box-shadow:0 8px 18px rgba(179,38,46,.28); }
+html.mn-on .mr-no{ border:2px solid #C9A54A; color:#17233D; }
+html.mn-on .mr-err{ color:#B3262E; }
+
+/* ---------- Teclado grande (del 1 al 12 y «Borrar golpes») ---------- */
+html.mn-on #numPadOverlay{ background:rgba(15,22,38,.55); }
+html.mn-on #numPadOverlay .np-sheet{ background:#fff !important; border-top:3px solid #C9A54A !important; border-radius:24px 24px 0 0; padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 14px); }
+html.mn-on #numPadOverlay .np-title{ font:900 24px/1.12 Archivo,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; color:#17233D !important; }
+html.mn-on #numPadOverlay .np-sub{ font:italic 600 19px/1.2 'Playfair Display',Georgia,serif; color:#8A6A1F !important; margin-top:3px; }
+html.mn-on #numPadOverlay .np-sub b{ color:#8A6A1F !important; font-weight:600; }
+html.mn-on #numPadOverlay .np-close{ width:48px; height:48px; border:1.5px solid #17233D !important; color:#17233D !important; background:#fff; font-size:20px; }
+html.mn-on #numPadOverlay .np-lbl{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; color:#17233D !important; margin:6px 4px 8px; }
+html.mn-on #numPadOverlay #npGrid .np-key{ border-radius:18px; background:#F2F4F6 !important; border:1.5px solid #DADFE3 !important; color:#111316 !important; box-shadow:0 2px 0 #DADFE3,0 4px 10px rgba(23,35,61,.06); font-family:Archivo,system-ui,Arial,sans-serif; }
+html.mn-on #numPadOverlay #npGrid .np-key.is-par{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; border-color:#C9A54A !important; color:#16120A !important; box-shadow:0 2px 0 #A8873A,0 6px 14px rgba(201,165,74,.35); }
+html.mn-on #numPadOverlay #npGrid .np-key small{ font:900 12px/1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; text-transform:uppercase; color:inherit !important; margin-top:2px; }
+html.mn-on #numPadOverlay #npGrid .np-key.is-cur{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border-color:#17233D !important; color:#fff !important; box-shadow:0 2px 0 #0A0C10,0 6px 14px rgba(15,22,38,.28); }
+html.mn-on #numPadOverlay .np-clear{ height:54px; border-radius:999px; border:1.5px solid #B3262E; background:#fff; color:#B3262E !important; font:900 17px Archivo,system-ui,Arial,sans-serif; }
+html.mn-on #numPadOverlay .np-clear:active, html.mn-on #numPadOverlay .np-close:active{ transform:scale(.97); }
+
+/* ---------- Firmar y entregar la tarjeta (pantalla entera, en blanco) ---------- */
+html.mn-on .tf-fondo{ background:#fff !important; padding:16px; align-items:flex-start; }
+html.mn-on .tf-fondo .tf-caja{ margin:auto; gap:10px; color:#111316 !important; font-family:Barlow,system-ui,Arial,sans-serif; }
+html.mn-on .tf-fondo .tf-ic{ width:76px; height:76px; font:900 44px/1 Archivo,system-ui,Arial,sans-serif; color:#16120A; }
+html.mn-on .tf-fondo .tf-ic.ok{ background:linear-gradient(160deg,#17233D,#0F1626); color:#E9CF8C; box-shadow:0 0 0 1.5px rgba(217,190,122,.9); }
+html.mn-on .tf-fondo .tf-ic.mal{ background:linear-gradient(180deg,#B3262E,#8A1A21); color:#fff; }
+html.mn-on .tf-fondo .tf-t, html.mn-on .tf-fondo .tf-ic.ok + .tf-t{ font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.03em; color:#17233D; }
+html.mn-on .tf-fondo .tf-sub{ font:600 17px/1.3 Barlow,system-ui,Arial,sans-serif !important; color:#4A5568 !important; }
+html.mn-on .tf-fondo .tf-fila{ border-radius:16px; padding:10px 16px; background:#F2F4F6 !important; border:1px solid #DADFE3; font:800 17px/1.15 Archivo,system-ui,Arial,sans-serif; color:#17233D !important; text-align:left; }
+html.mn-on .tf-fondo .tf-fila b{ font:900 26px Archivo,system-ui,Arial,sans-serif; color:#17233D !important; white-space:nowrap; }
+html.mn-on .tf-fondo .tf-fila.tot{ background:#fff !important; border:2px solid #C9A54A; padding:9px 15px; }
+html.mn-on .tf-fondo .tf-fila b.mal{ font-size:16px; color:#B3262E !important; }
+html.mn-on .tf-fondo .tf-bien{ border-radius:16px; padding:12px 14px; background:#fff !important; border:1.5px solid #C9A54A !important; color:#17233D !important; font:600 16px/1.3 Barlow,system-ui,Arial,sans-serif !important; }
+html.mn-on .tf-fondo .tf-btn{ display:flex; align-items:center; justify-content:center; min-height:62px; padding:8px 16px; border-radius:999px; border:0; background:linear-gradient(180deg,#B3262E,#8A1A21) !important; color:#fff !important; font:900 19px/1.1 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.05em; box-shadow:0 8px 18px rgba(179,38,46,.28); }
+html.mn-on .tf-fondo .tf-btn.gris{ min-height:58px; background:#fff !important; color:#17233D !important; border:2px solid #C9A54A; box-shadow:none; }
+html.mn-on .tf-fondo .tf-btn.naranja{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important; box-shadow:none; }
+html.mn-on .tf-fondo .tf-btn.wa{ min-height:58px; background:#25D366 !important; color:#06200f !important; box-shadow:none; font-size:17px !important; }
+html.mn-on .tf-fondo .tf-p{ font:600 15px/1.4 Barlow,system-ui,Arial,sans-serif; color:#4A5568 !important; }
+html.mn-on .tf-fondo .tf-link{ font:800 16px Archivo,system-ui,Arial,sans-serif; color:#17233D !important; text-decoration-color:#C9A54A; text-underline-offset:3px; min-height:44px; }
+html.mn-on .tf-fondo .tf-aviso{ font:700 16px Barlow,system-ui,Arial,sans-serif; color:#B3262E !important; }
+
+/* En la versión de pruebas la banda naranja de arriba no tapa el principio */
+body:has(.pr-banda) .tf-fondo{ padding-top:calc(env(safe-area-inset-top, 0px) + 40px) !important; }
+
+/* ---------- Móvil pequeño (360×640): todo más junto, sin cortar nada ---------- */
+@media (max-height:700px){
+  html.mn-on body .screen.screen[data-screen="3"] .app-bar{ padding-top:4px !important; }
+  html.mn-on .screen[data-screen="3"] .app-bar .back{ height:38px; font-size:15px !important; padding:0 14px !important; }
+  .mn-esc{ width:36px; height:36px; }
+  html.mn-on .screen[data-screen="3"] .mk-cartel{ margin-top:4px; padding:3px 12px; }
+  .mn-cnt b{ font-size:18px; }
+  html.mn-on .screen[data-screen="3"] #holeViewSection{ padding-bottom:10px !important; }
+  html.mn-on .screen[data-screen="3"] .hole-card-header{ flex-direction:row; align-items:baseline; gap:10px !important; margin-top:2px !important; }
+  html.mn-on .screen[data-screen="3"] .hole-badge-big{ font-size:28px; }
+  html.mn-on .screen[data-screen="3"] #holeViewSection .hole-meta-row{ font-size:16px; }
+  .mn-prog{ margin-top:6px; } .mn-prog i{ height:5px; }
+  .mn-sel{ margin-top:7px; padding:6px 10px 6px 16px; border-radius:20px; }
+  .mn-sel-tx b{ font-size:21px; margin-top:1px; }
+  .mn-st{ margin-top:1px; }
+  .mn-put span{ display:none; }
+  html.mn-on .screen[data-screen="3"] .mn-put .mk-box{ width:36px; height:36px; font-size:20px; }
+  .mn-lbl{ margin:6px 4px 4px; font-size:12px; min-height:24px; }
+  .mn-falta, .mn-hecho, .mn-mas{ padding-top:2px; padding-bottom:2px; }
+  .mn-mas{ min-height:24px; }
+  .mn-keys{ gap:6px; min-height:144px; } .mn-k{ border-radius:16px; }
+  .mn-list{ gap:4px; }
+  .mn-pl{ min-height:35px; font-size:15px; border-radius:13px; }
+  .mn-r{ width:27px; height:27px; font-size:16px; }
+  .mn-bot{ margin-top:8px; }
+  html.mn-on .screen[data-screen="3"] .mn-bot .hole-nav-btn{ height:50px !important; }
+  html.mn-on .screen[data-screen="3"] .mn-bot #holePrevBtn{ flex-basis:108px; font-size:16px !important; }
+  html.mn-on .screen[data-screen="3"] .mn-bot #holeNextBtn{ font-size:17px !important; }
+  html.mn-on .screen[data-screen="3"] .mn-bot #finalizarRondaBtn{ min-height:50px !important; font-size:16px !important; }
+  html.mn-on #holeViewSection.mn-con .mk-aviso.ok{ bottom:70px; }
+  html.mn-on .tf-fondo .tf-caja{ gap:8px; }
+  html.mn-on .tf-fondo .tf-ic{ width:56px; height:56px; font-size:32px; }
+  html.mn-on .tf-fondo .tf-t, html.mn-on .tf-fondo .tf-ic.ok + .tf-t{ font-size:26px !important; }
+  html.mn-on .tf-fondo .tf-sub{ font-size:16px !important; }
+  html.mn-on .tf-fondo .tf-fila{ padding:7px 16px; }
+  html.mn-on .tf-fondo .tf-fila.tot{ padding:6px 15px; }
+  html.mn-on .tf-fondo .tf-fila b{ font-size:23px; }
+  html.mn-on .tf-fondo .tf-bien{ padding:9px 14px; font-size:15px !important; }
+  html.mn-on .tf-fondo .tf-btn{ min-height:56px; }
+}

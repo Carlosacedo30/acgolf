@@ -154,40 +154,83 @@
     };
   }
 
-  // ---------- Hoyo: dos columnas (yo + al que marco) ----------
+  // ---------- Hoyo: tarjeta «Marcas a», teclado a la vista y «Tu grupo» (diseño aprobado por Carlos, 15-nov-2026) ----------
+  // Se apunta lo mismo que antes (mis golpes y los del jugador al que marco). Cambia la forma: una tarjeta azul dice
+  // a quién se le están poniendo los golpes, el teclado está siempre a la vista y debajo sale la lista del grupo.
   function estadoTxt(mio, otro, quien){
     if(mio == null) return { cls:'', txt:'&nbsp;' };
-    if(otro == null) return { cls:'espera', txt:'⏳ Falta ' + quien };
-    return mio === otro ? { cls:'ok', txt:'✅ Coincide' } : { cls:'mal', txt:'⚠️ ' + (quien === 'tu marcador' ? 'Tu marcador puso ' : 'Él se puso ') + '<b>' + otro + '</b>' };
+    if(otro == null) return { cls:'espera', txt: quien === 'tu marcador' ? 'Falta que lo apunte tu marcador' : 'Falta que lo apunte él' };
+    return mio === otro ? { cls:'ok', txt:'✓ Coincide' } : { cls:'mal', txt:(quien === 'tu marcador' ? 'Tu marcador puso ' : 'Él se puso ') + '<b>' + otro + '</b>' };
   }
+  let selI = null, selClave = '', selSalta = false;   // a quién le estoy poniendo los golpes en este hoyo
+  const claseRes = (v, par) => { if(v == null || par == null || isNaN(par)) return ''; const d = v - par; return d <= -2 ? 'tb-eagle' : d === -1 ? 'tb-birdie' : d === 0 ? 'tb-par' : d === 1 ? 'tb-bogey' : 'tb-doble'; };
+  const valDe = (g, i, h) => i === miIdx() ? propio(i, h) : marca(g, i, h);   // lo que he apuntado YO a ese jugador
+  function elegirColumna(g, h){
+    const cols = [miIdx()].concat(marcados(g));
+    const clave = currentRoundCode + ':' + activeGroup + ':' + h;
+    const falta = cols.find(i => valDe(g, i, h) == null);
+    if(selClave !== clave || cols.indexOf(selI) < 0){ selClave = clave; selI = falta != null ? falta : cols[cols.length > 1 ? 1 : 0]; }
+    else if(selSalta && falta != null && valDe(g, selI, h) != null) selI = falta;   // apuntado uno, pasa solo al que falta
+    selSalta = false;
+    return selI;
+  }
+  const recibeEn = (i, si) => Math.max(0, si != null ? strokesForHole(hcpJuego(i), si) : 0);
   function htmlColumnas(g, h, par, si){
     const me = miIdx();
     const cols = [me].concat(marcados(g));
-    const tuPar = i => par != null ? par + Math.max(0, si != null ? strokesForHole(hcpJuego(i), si) : 0) : '—';
-    return '<div class="mk-cols" style="--n:' + cols.length + '">' + cols.map((i, k) => {
-      const esYo = k === 0;
-      const val = esYo ? propio(i, h) : marca(g, i, h);
-      const otro = esYo ? marca(g, i, h) : propio(i, h);
-      const st = estadoTxt(val, otro, esYo ? 'tu marcador' : corto(players[i]));
-      const marcadorDe = g.jugadores.find(x => +x.idx === i);
-      const sub = esYo ? 'Te marca ' + esc(corto(players[(marcadorDe || {}).marcador_idx])) : 'Recibe ' + Math.max(0, si != null ? strokesForHole(hcpJuego(i), si) : 0) + ' golpe(s)';
-      return '<div class="mk-col ' + st.cls + '">'
-        + '<span class="mk-rol' + (esYo ? ' yo' : '') + '">' + (esYo ? 'YO' : 'LO MARCAS TÚ') + '</span>'
-        + '<div class="mk-n">' + esc(corto(players[i])) + '</div>'
-        + '<div class="mk-sub">' + sub + '</div>'
-        + '<div class="mk-tp">' + (esYo ? 'Tu par' : 'Su par') + ' <b>' + tuPar(i) + '</b></div>'
-        + '<button type="button" class="mk-box' + (val != null ? ' filled' : '') + '" data-i="' + i + '" data-yo="' + (esYo ? 1 : 0) + '">' + (val != null ? val : '+') + '</button>'
-        + '<div class="mk-st">' + st.txt + '</div></div>';
-    }).join('') + '</div>';
+    const i = elegirColumna(g, h), esYo = i === me;
+    const val = valDe(g, i, h);
+    const otro = esYo ? marca(g, i, h) : propio(i, h);
+    const st = estadoTxt(val, otro, esYo ? 'tu marcador' : corto(players[i]));
+    const marcadorDe = g.jugadores.find(x => +x.idx === i);
+    const rec = recibeEn(i, si);
+    const sub = esYo ? 'Te marca ' + esc(corto(players[(marcadorDe || {}).marcador_idx])) : (rec === 0 ? 'No recibe golpes en este hoyo' : rec === 1 ? 'Recibe 1 golpe en este hoyo' : 'Recibe ' + rec + ' golpes en este hoyo');
+    const tuPar = par != null && !isNaN(par) ? par + rec : null;
+    let teclas = '';
+    for(let n = 1; n <= 9; n++) teclas += '<button type="button" class="mn-k' + (n === tuPar ? ' par' : '') + (n === val ? ' on' : '') + '" data-v="' + n + '"><span>' + n + '</span>' + (n === tuPar ? '<u>' + (esYo ? 'TU PAR' : 'SU PAR') + '</u>' : '') + '</button>';
+    const lista = players.map((n, k) => ({ n, k })).filter(p => p.n).map(p => {
+      const mio = cols.indexOf(p.k) >= 0;
+      let v = mio ? valDe(g, p.k, h) : propio(p.k, h);
+      if(v == null && !mio) v = marca(g, p.k, h);
+      return { n: p.n, k: p.k, mio, v };
+    });
+    const faltan = lista.filter(p => p.v == null).length;
+    return '<div class="mk-cols mn-marca">'
+      + '<div class="mn-sel ' + st.cls + (esYo ? ' soy' : '') + '">'
+        + '<div class="mn-sel-tx"><small>' + (esYo ? 'Tus golpes' : 'Marcas a') + '</small><b>' + esc(corto(players[i])) + '</b><span class="mn-st">' + (val == null ? sub : st.txt) + '</span></div>'
+        + (val != null ? '<div class="mn-put"><button type="button" class="mk-box filled ' + claseRes(val, par) + '" data-i="' + i + '" data-yo="' + (esYo ? 1 : 0) + '" aria-label="Cambiar o borrar los golpes">' + val + '</button><span>anotado</span></div>' : '')
+      + '</div>'
+      + '<div class="mn-lbl"><span>Golpes en este hoyo</span><button type="button" class="mn-mas" id="mnMas">10 o más</button></div>'
+      + '<div class="mn-keys">' + teclas + '</div>'
+      + '<div class="mn-lbl"><span>Tu grupo</span>' + (faltan ? '<span class="mn-falta">' + (faltan === 1 ? 'Falta 1 por marcar' : 'Faltan ' + faltan + ' por marcar') + '</span>' : '<span class="mn-hecho">✓ Hoyo completo</span>') + '</div>'
+      + '<div class="mn-list">' + lista.map(p => {
+          const et = p.mio ? 'button type="button" data-i="' + p.k + '"' : 'div';
+          return '<' + et + ' class="mn-pl' + (p.v == null ? ' no' : '') + (p.k === i ? ' yo' : '') + '"><span>' + esc(corto(p.n)) + (p.k === me ? ' <small>TÚ</small>' : '') + '</span>'
+            + (p.v == null ? '<em>Falta</em>' : '<i class="mn-r ' + claseRes(p.v, par) + '">' + p.v + '</i>') + '</' + (p.mio ? 'button' : 'div') + '>';
+        }).join('') + '</div>'
+      + '</div>';
+  }
+  // Teclado grande de siempre (del 1 al 12 y «Borrar golpes»): para 10 o más golpes y para borrar
+  function abrirTeclado(g, i, h, par, si){
+    const esYo = i === miIdx();
+    const actual = valDe(g, i, h);
+    openNumPad({ name: esYo ? players[i] + ' (tú)' : players[i] + ' · le marcas tú', hole: h, par: par, tuPar: par != null && !isNaN(par) ? par + recibeEn(i, si) : null, value: actual == null ? '' : String(actual),
+      onPick: v => { if(v !== '') selSalta = true; return esYo ? apuntarPropio(i, h, v) : apuntarMarca(g, i, h, v); } });
+    if(!esYo){   // a otro jugador se le dice «su par»
+      const s = document.querySelector('#npGrid .np-key.is-par small'); if(s) s.textContent = 'su par';
+      const b = document.querySelector('#npSub b'); if(b) b.textContent = b.textContent.replace('Tu par', 'Su par');
+    }
   }
   function enlazarColumnas(wrap, g, h, par, si){
-    wrap.querySelectorAll('.mk-box').forEach(b => b.onclick = () => {
-      const i = +b.dataset.i, esYo = b.dataset.yo === '1';
-      const rec = si != null ? strokesForHole(hcpJuego(i), si) : 0;
-      const actual = esYo ? propio(i, h) : marca(g, i, h);
-      openNumPad({ name: esYo ? players[i] + ' (tú)' : players[i] + ' · le marcas tú', hole: h, par: par, tuPar: par != null ? par + Math.max(0, rec) : null, value: actual == null ? '' : String(actual),
-        onPick: v => esYo ? apuntarPropio(i, h, v) : apuntarMarca(g, i, h, v) });
+    const me = miIdx();
+    wrap.querySelectorAll('.mn-k').forEach(b => b.onclick = () => {
+      const i = selI, v = b.dataset.v;
+      selSalta = true;
+      if(i === me) apuntarPropio(i, h, v); else apuntarMarca(g, i, h, v);
     });
+    wrap.querySelectorAll('.mk-box').forEach(b => b.onclick = () => abrirTeclado(g, +b.dataset.i, h, par, si));
+    const mas = wrap.querySelector('#mnMas'); if(mas) mas.onclick = () => abrirTeclado(g, selI, h, par, si);
+    wrap.querySelectorAll('.mn-pl[data-i]').forEach(b => b.onclick = () => { selI = +b.dataset.i; window.renderHoleView(); });
   }
   function apuntarPropio(i, h, v){
     const real = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + i + '"]');
@@ -300,7 +343,7 @@
         + '<span>El hoyo ' + (h + 1 <= nHoyos() ? (h + 1) : 'siguiente') + ' queda BLOQUEADO hasta que lo arregléis. Habladlo entre los dos: cada uno corrige solo su número, o acepta el del otro con un toque. No hace falta administrador.</span>';
       cols.parentNode.insertBefore(b, cols);
       b.querySelectorAll('.mk-mal-cambia').forEach(btn => btn.onclick = () => {
-        const it = items[+btn.dataset.k]; const bx = wrap.querySelector('.mk-box[data-i="' + it.i + '"]'); if(bx) bx.click();
+        const it = items[+btn.dataset.k]; selI = it.i; window.renderHoleView();
       });
       b.querySelectorAll('.mk-mal-deja').forEach(btn => btn.onclick = () => {
         const it = items[+btn.dataset.k]; btn.disabled = true;
@@ -316,14 +359,13 @@
     const nx = document.getElementById('holeNextBtn'), pv = document.getElementById('holePrevBtn');
     const sig = typeof hoyoSiguiente === 'function' ? hoyoSiguiente(h) : h + 1, ant = typeof hoyoAnterior === 'function' ? hoyoAnterior(h) : h - 1;
     const ultimo = h >= nHoyos();
-    if(nx){ nx.classList.toggle('mk-off', !ok && !ultimo); nx.classList.toggle('mk-go', ok && !ultimo); nx.innerHTML = '›<small>' + (ultimo ? 'FIN' : 'HOYO ' + sig) + '</small>'; }
-    if(pv){ pv.innerHTML = '‹<small>HOYO ' + ant + '</small>'; }
+    if(nx){ nx.classList.toggle('mk-off', !ok && !ultimo); nx.classList.toggle('mk-go', ok && !ultimo); }
     const w = document.getElementById('hvPlayers'); if(!w) return;
     let a = document.getElementById('mkAvisoHoyo'); if(a) a.remove();
     a = document.createElement('div'); a.id = 'mkAvisoHoyo';
     if(ok && !ultimo){
       a.className = 'mk-aviso ok';
-      a.innerHTML = '✅ Todo correcto. Pasando al hoyo ' + sig + '…<div class="mk-barra"><i></i></div><button type="button" id="mkQuedar">Quedarme en el hoyo ' + h + '</button>';
+      a.innerHTML = '✓ Todo correcto. Pasando al hoyo ' + sig + '…<div class="mk-barra"><i></i></div><button type="button" id="mkQuedar">Quedarme en el hoyo ' + h + '</button>';
       w.appendChild(a);
       a.querySelector('#mkQuedar').onclick = () => { clearTimeout(avanceTimer); llegada.completo = true; a.remove(); };
     } else if(!ok){
@@ -333,7 +375,7 @@
       const sinMarcador = g.jugadores.filter(j => propio(+j.idx, h) == null || marca(g, +j.idx, h) == null);
       if(malEn(g, h)) return;
       a.className = 'mk-aviso espera';
-      a.innerHTML = '⏳ No puedes pasar todavía: faltan marcas en este hoyo.';
+      a.innerHTML = 'No puedes pasar todavía: faltan marcas en este hoyo.';
       w.appendChild(a);
     }
   }
