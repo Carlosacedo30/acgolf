@@ -19,6 +19,11 @@
   let canal = null;
   let elegido = '';      // equipo que venía en el enlace (se guarda sin acentos ni espacios)
   let creando = false;
+  let pedida = false;    // se pidió una inscripción concreta (por enlace)
+  const esInvitado = () => document.documentElement.classList.contains('es-invitado');
+  const PEND = 'acgolfRyderPendiente';
+  const leerPend = () => { try { const v = JSON.parse(localStorage.getItem(PEND) || 'null'); return v && Date.now() - v.t < 7 * 864e5 ? v : null; } catch(e){ return null; } };
+  const borrarPend = () => { try { localStorage.removeItem(PEND); } catch(e){} };
   let ov = null;
 
   function deFila(row){
@@ -106,8 +111,16 @@
   function pintar(){
     const o = ventana();
     if(creando){ pintarCrear(o); return; }
+    if(esInvitado()){
+      o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-tj"><b style="font:900 21px Archivo,system-ui,sans-serif">Para apuntarte necesitas tu cuenta</b>'
+        + '<div class="ri-dat" style="color:#F2F4F5">En la Ryder no se admiten invitados. Crea tu cuenta en acgolf (es gratis y lleva un minuto) y vuelve a pulsar tu enlace de WhatsApp. Si ya la has creado y confirmado, te llevaremos a tu equipo.</div></div>'
+        + '<button type="button" class="ri-btn ri-pri" data-ri="cuenta">Crear mi cuenta</button></div>';
+      return;
+    }
     if(!r){
-      o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-vacio">Todavía no hay ninguna inscripción abierta.</div>'
+      o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-vacio">' + (pedida
+        ? 'No encontramos esta inscripción.<br>Puede que no estés en el grupo del organizador. Entra con el código de invitación del grupo y vuelve a pulsar tu enlace.'
+        : 'Todavía no hay ninguna inscripción abierta.') + '</div>'
         + (admin() ? '<button type="button" class="ri-btn ri-pri" data-ri="nueva">Abrir una inscripción</button>' : '') + '</div>';
       return;
     }
@@ -170,6 +183,7 @@
     return '¡Se abre la Ryder ' + e[0].nombre + ' – ' + e[1].nombre + '! Elige tu equipo y apúntate en acgolf. Un toque y listo:\n\n'
       + '👉 Soy del ' + e[0].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 0) + '\n'
       + '👉 Soy del ' + e[1].nombre.toUpperCase() + ': ' + enlaceEquipo(r, 1) + '\n\n'
+      + '¿No tienes cuenta? Créala gratis en acgolf.es y vuelve a pulsar tu enlace. No se admiten invitados.\n\n'
       + (e[0].capitan && e[1].capitan ? 'Capitanes: ' + e[0].capitan + ' (' + e[0].nombre + ') y ' + e[1].capitan + ' (' + e[1].nombre + ')\n' : '') + datosTxt(r);
   }
   async function crear(){
@@ -187,6 +201,7 @@
     const b = ev.target.closest('[data-ri]'); if(!b) return;
     const a = b.dataset.ri, i = Number(b.dataset.i);
     if(a === 'cerrar') return cerrar();
+    if(a === 'cuenta'){ if(window.acgolfGuardarCuenta){ cerrar(); window.acgolfGuardarCuenta(); } return; }
     if(a === 'nueva'){ creando = true; return pintar(); }
     if(a === 'atras'){ creando = false; return pintar(); }
     if(a === 'crear') return crear();
@@ -213,8 +228,11 @@
     const o = ventana(); o.hidden = false; document.body.style.overflow = 'hidden'; creando = false;
     if(equipo !== undefined) elegido = norm(equipo);
     o.innerHTML = '<div class="ri-in"><div class="ri-vacio">Cargando…</div></div>';
+    pedida = !!code;
+    if(esInvitado()){ r = null; pedida = false; pintar(); return; }
     try { r = await traer(code || null); } catch(e){ r = null; }
     if(r) vigilar();
+    borrarPend();
     pintar();
   }
   function cerrar(){
@@ -223,15 +241,18 @@
   }
   window.acgolfRyderIns = { abrir: () => abrir(null, ''), cerrar };
 
-  // Enlace de WhatsApp: ?ryder=CODIGO&equipo=betis → se abre en cuanto hay sesión
-  const qs = new URLSearchParams(location.search), codigo = (qs.get('ryder') || '').trim().toUpperCase();
-  if(codigo){
+  // Enlace de WhatsApp: ?ryder=CODIGO&equipo=betis. Se recuerda en el móvil (como la invitación del grupo) porque quien
+  // no tiene cuenta tiene que registrarse y confirmar su correo, y en esa vuelta el enlace se pierde. Se abre en cuanto hay sesión.
+  const qs = new URLSearchParams(location.search), cq = (qs.get('ryder') || '').trim().toUpperCase();
+  if(cq){ try { localStorage.setItem(PEND, JSON.stringify({ c: cq, e: (qs.get('equipo') || ''), t: Date.now() })); } catch(e){} }
+  const pend = leerPend();
+  if(pend){
     let n = 0;
     const t = setInterval(() => {
       if(++n > 120){ clearInterval(t); return; }
-      if(!window.miPerfil || typeof initSupabase !== 'function') return;
+      if(typeof initSupabase !== 'function' || !(window.miPerfil || esInvitado())) return;
       clearInterval(t);
-      abrir(codigo, qs.get('equipo') || '');
+      abrir(pend.c, pend.e || '');
     }, 500);
   }
   // Al volver a la app desde WhatsApp se refresca
