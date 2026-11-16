@@ -88,8 +88,9 @@
     });
     // Con marcadores: la hoja ocupa la pantalla entera y el teclado se queda con todo el sitio que sobra
     hv.classList.toggle('mn-con', !!hvP.querySelector('.mk-cols'));
-    // «Me retiro» va debajo de la hoja (marcador-retiro.js lo vuelve a crear en cada repintado)
-    hv.querySelectorAll('.mr-bloque').forEach(b => hv.after(b));
+    // «Me retiro» va al final de la tarjeta, debajo de la leyenda de colores (marcador-retiro.js lo vuelve a crear en cada repintado)
+    const finTarjeta = document.getElementById('tbLeyenda') || document.getElementById('tbTira');
+    document.querySelectorAll('.screen[data-screen="3"] .mr-bloque').forEach(bl => { if(finTarjeta && finTarjeta.parentNode) finTarjeta.after(bl); else hv.after(bl); });
 
     // El mismo escudo que el Inicio (inicio-nuevo.js lo copia de la portada del grupo)
     const de = document.getElementById('inEsc');

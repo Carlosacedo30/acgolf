@@ -10,8 +10,7 @@ html.mn-on .screen[data-screen="3"] .screen-content > *{ flex-shrink:0; }
 html.mn-on .screen[data-screen="3"] .screen-content > .app-bar,
 html.mn-on .screen[data-screen="3"] .screen-content > .mk-cartel,
 html.mn-on .screen[data-screen="3"] .screen-content > #groupSwitchSection,
-html.mn-on .screen[data-screen="3"] .screen-content > #holeViewSection,
-html.mn-on .screen[data-screen="3"] .screen-content > .mr-bloque{ order:-1; }
+html.mn-on .screen[data-screen="3"] .screen-content > #holeViewSection{ order:-1; }
 html.mn-on .screen[data-screen="3"] .screen-content > .actions{ order:9; }
 
 /* ---------- Arriba: ‹ Salir · escudo · Hoyo N de 18 ---------- */
