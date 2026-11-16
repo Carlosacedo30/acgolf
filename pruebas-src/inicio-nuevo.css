@@ -1,0 +1,230 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Inicio nuevo: estilo «fino y elegante» (DESIGN.md §2, §3, §4, §5 y §8; dibujo diseno-ref/inicio.html).
+   Solo toca la pantalla de Inicio (pantalla 0 sin nada abierto) y su barra de pestañas. Lo demás sigue igual. */
+
+/* ===== Fondo y márgenes (16 px a cada lado) ===== */
+html.in-on body:not(.nv-dentro), html.in-on body:not(.nv-dentro) .frame{ background:#0A0C10 !important; }
+html.in-on .screen[data-screen="0"]:not([data-foco]) .screen-content{ background:#0A0C10 !important; padding:0 16px 96px !important; color:#F4F1E8; overflow-x:hidden !important; }
+/* La cabecera antigua y los botones de arriba dejan su sitio a la nueva (Mi cuenta está en la barra de abajo) */
+html.in-on .screen[data-screen="0"]:not([data-foco]) .home-cab,
+html.in-on .screen[data-screen="0"]:not([data-foco]) #cgBarra,
+html.in-on .screen[data-screen="0"]:not([data-foco]) #homeAhora > .eyebrow{ display:none !important; }
+html.in-on .screen[data-screen="0"][data-foco] .in-foto,
+html.in-on .screen[data-screen="0"][data-foco] .in-hero,
+html.in-on .screen[data-screen="0"][data-foco] > .in-nav{ display:none !important; }
+
+/* ===== Foto del campo, escudo y nombre del grupo ===== */
+html.in-on .in-foto{ position:absolute; left:0; right:0; top:0; height:40vh; z-index:0; pointer-events:none;
+  background:linear-gradient(180deg,rgba(10,12,16,.45) 0%,rgba(10,12,16,.2) 30%,rgba(10,12,16,.7) 70%,#0A0C10 100%), url(hato-verde.webp) center 38%/cover; }
+html.in-on .in-hero, html.in-on .screen[data-screen="0"]:not([data-foco]) #homeAhora, html.in-on .screen[data-screen="0"]:not([data-foco]) .home-pie{ position:relative; z-index:1; }
+html.in-on .in-hero{ box-sizing:border-box; min-height:173px; padding:calc(env(safe-area-inset-top, 0px) + 44px) 0 16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:11px; }
+html.in-on .in-esc{ width:70px; height:70px; flex:0 0 auto; }
+html.in-on .in-esc:empty{ display:none; }
+html.in-on .in-esc.in-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0A0C10, 0 0 0 4px #E9CF8C, 0 6px 18px rgba(0,0,0,.4); }
+html.in-on .in-esc img, html.in-on .in-esc svg{ display:block; width:100%; height:100%; }
+html.in-on .in-esc.in-redondo img{ border-radius:50%; }
+html.in-on body .screen[data-screen="0"] #inNombre{ margin:0 -.1em 0 0 !important; padding:0 !important; max-width:100%; font:800 30px/1.05 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.1em !important; text-transform:uppercase !important;
+  text-align:center !important; color:#F4F1E8 !important; text-shadow:0 1px 10px rgba(0,0,0,.6) !important; overflow-wrap:anywhere; }
+
+/* ===== El bloque del Inicio: orden del dibujo ===== */
+html.in-on .screen[data-screen="0"]:not([data-foco]) #homeAhora{ display:flex !important; flex-direction:column; margin:0 !important; padding:0 !important; background:none !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }
+html.in-on #homeAhora > *{ order:25; }
+html.in-on .screen[data-screen="0"]:not([data-foco]) #convHome{ display:contents !important; }
+html.in-on #homeAhora > #prAbrirBtn{ order:1; }
+html.in-on #homeAhora #convHome > .ip-nuevo{ order:2; }
+html.in-on #homeAhora > .in-sec-ahora{ order:3; }
+html.in-on #homeAhora > #inTarjetas, html.in-on #homeAhora > #amBannerHome, html.in-on #homeAhora > #homeEnMarcha, html.in-on #homeAhora > #vvExtras{ order:4; }
+html.in-on #homeAhora > .in-sec-prox{ order:5; }
+html.in-on #homeAhora #convHome > .ip-card{ order:6; }
+html.in-on #homeAhora > .in-sec-liga{ order:7; }
+html.in-on #homeAhora > #inLiga{ order:8; }
+html.in-on #homeAhora > .in-sec-mas{ order:30; }
+html.in-on #homeAhora > .home-menu{ order:31; }
+html.in-on #homeAhora > #irHatoBtn{ order:32; }
+
+/* ===== Botón principal rojo «Crear partida» y dorado «Organizar partidos» ===== */
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn{ display:flex !important; align-items:center; justify-content:center; box-sizing:border-box; width:100% !important; height:62px !important; min-height:0 !important; margin:0 !important; padding:0 16px !important;
+  border:0 !important; border-radius:999px !important; background:linear-gradient(180deg,#B3262E,#8A1A21) !important; color:#fff !important;
+  font:800 19px/1.1 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.12em !important; text-transform:uppercase !important; text-align:center; text-shadow:none !important;
+  box-shadow:0 6px 18px rgba(179,38,46,.2) !important; animation:none !important; transition:transform .12s; cursor:pointer; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn svg, html.in-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn i,
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn::before, html.in-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn::after{ display:none !important; }
+html.in-on body #prAbrirBtn:active, html.in-on body #convHomeNew:active, html.in-on body #homeAhora .home-big-btn:active, html.in-on body #homeAhora .ip-apuntar:active,
+html.in-on body #homeAhora .ip-hora:active, html.in-on body #inLiga:active, html.in-on body #homeAhora .home-menu-btn:active, html.in-on .in-tab:active{ transform:scale(.97) !important; }
+html.in-on #homeAhora .ip-nuevo{ margin:10px 0 0 !important; padding:0 !important; background:none !important; border:0 !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew{ display:flex !important; align-items:center; justify-content:center; box-sizing:border-box; width:100% !important; height:52px !important; min-height:0 !important; margin:0 !important; padding:0 16px !important;
+  border:0 !important; border-radius:999px !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important;
+  font:700 18px/1.1 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.01em !important; text-transform:none !important; text-align:center; box-shadow:none !important; transition:transform .12s; cursor:pointer; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew span{ font:inherit !important; color:inherit !important; letter-spacing:inherit !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew .ip-logo-grupo, html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew svg{ display:none !important; }
+
+/* ===== Rótulos de bloque: AHORA · LO PRÓXIMO · TU LIGA ===== */
+html.in-on #homeAhora .in-sec{ font:700 12px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.24em; text-transform:uppercase; color:#B5BFD0; margin:22px 2px 9px; display:flex; align-items:center; gap:12px; }
+html.in-on #homeAhora .in-sec[hidden]{ display:none; }
+html.in-on #homeAhora .in-sec::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(217,190,122,.35),transparent); }
+
+/* ===== Ahora: «Te falta entregar tu tarjeta», aviso rojo con círculo fino, «!» y flecha (el cartel antiguo se esconde) ===== */
+html.in-on .screen[data-screen="0"]:not([data-foco]) > #tfInicio{ display:none !important; }
+html.in-on #inTarjetas{ display:flex; flex-direction:column; gap:8px; margin:0; }
+html.in-on #inTarjetas:empty{ display:none; }
+html.in-on #homeAhora > #inTarjetas:not(:empty) + #homeEnMarcha:not(:empty){ margin-top:8px !important; }
+html.in-on body #inTarjetas .in-aviso{ box-sizing:border-box; width:100%; margin:0; padding:13px 16px; display:flex; align-items:center; gap:14px; text-align:left; color:#F4F1E8; border-radius:18px;
+  background:linear-gradient(160deg,#4A1A20,#2A0C10); border:1px solid rgba(179,38,46,.8); box-shadow:none; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on body #inTarjetas button.in-aviso{ cursor:pointer; }
+html.in-on body #inTarjetas button.in-aviso:active{ transform:scale(.97); }
+html.in-on #inTarjetas .in-aviso-ic{ flex:0 0 38px; box-sizing:border-box; height:38px; border-radius:50%; border:1.5px solid #D8333D; color:#F4F1E8; display:flex; align-items:center; justify-content:center; font:700 21px/1 Archivo, system-ui, Arial, sans-serif; font-style:normal; }
+html.in-on #inTarjetas .in-aviso-tx{ flex:1; min-width:0; }
+html.in-on #inTarjetas .in-aviso-tx b{ display:block; font:700 18px/1.15 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on #inTarjetas .in-aviso-tx span{ display:block; font:600 16px/1.25 Barlow, system-ui, Arial, sans-serif; color:#E8C9CC; margin-top:3px; overflow-wrap:anywhere; }
+/* Las tarjetas que faltan de otros jugadores no son cosa tuya: tarjeta azul, sin «!» ni flecha */
+html.in-on body #inTarjetas .in-aviso.suave{ padding:13px 18px; background:linear-gradient(160deg,#17233D,#0F1626); border-color:rgba(217,190,122,.45); }
+html.in-on #inTarjetas .in-aviso.suave .in-aviso-tx span{ color:#B5BFD0; }
+
+/* ===== Ahora: partida en marcha, como aviso rojo con círculo fino y «!» ===== */
+html.in-on #homeAhora > #homeEnMarcha, html.in-on #homeAhora > #vvExtras{ margin:0 !important; padding:0 !important; display:flex; flex-direction:column; gap:8px; }
+html.in-on #homeAhora > #homeEnMarcha:empty, html.in-on #homeAhora > #vvExtras:empty{ display:none; }
+html.in-on #homeAhora > #homeEnMarcha + #vvExtras{ margin-top:8px !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha{ position:relative; box-sizing:border-box; margin:0 !important; padding:13px 16px 14px 68px !important; border-radius:18px !important; text-align:left !important;
+  background:linear-gradient(160deg,#4A1A20,#2A0C10) !important; border:1px solid rgba(179,38,46,.8) !important; box-shadow:none !important; }
+html.in-on #homeAhora .home-marcha::before{ content:'!'; position:absolute; left:16px; top:13px; box-sizing:border-box; width:38px; height:38px; border-radius:50%; border:1.5px solid #D8333D; color:#F4F1E8;
+  display:flex; align-items:center; justify-content:center; font:700 21px/1 Archivo, system-ui, Arial, sans-serif; }
+html.in-on body #homeAhora .home-marcha .home-marcha-t{ margin:0 !important; font:700 18px/1.15 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:0 !important; text-transform:none !important; color:#F4F1E8 !important; }
+html.in-on body #homeAhora .home-marcha .home-marcha-sub{ margin:3px 0 0 !important; font:600 16px/1.25 Barlow, system-ui, Arial, sans-serif !important; color:#E8C9CC !important; }
+html.in-on body #homeAhora .home-marcha .home-marcha-chips{ display:block !important; margin:2px 0 0 !important; padding:0 !important; }
+html.in-on body #homeAhora .home-marcha .home-marcha-chips span{ display:inline !important; margin:0 !important; padding:0 !important; background:none !important; border:0 !important; border-radius:0 !important; font:600 16px/1.25 Barlow, system-ui, Arial, sans-serif !important; color:#E8C9CC !important; }
+html.in-on body #homeAhora .home-marcha .home-marcha-chips span + span::before{ content:' · '; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha .home-big-btn{ display:flex !important; align-items:center; justify-content:center; box-sizing:border-box; width:calc(100% + 52px) !important; height:50px !important; min-height:0 !important; margin:12px 0 0 -52px !important; padding:0 14px !important;
+  border-radius:999px !important; border:1px solid #C9A54A !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important;
+  font:800 18px/1.1 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.02em !important; text-transform:none !important; text-align:center; box-shadow:none !important; animation:none !important; transition:transform .12s; cursor:pointer; }
+html.in-on body #homeAhora .home-marcha .home-big-btn + .home-big-btn{ margin-top:8px !important; background:transparent !important; color:#E9CF8C !important; border-color:rgba(217,190,122,.45) !important; font-weight:700 !important; }
+html.in-on body #homeAhora .home-marcha .home-marcha-borrar{ display:flex !important; align-items:center; justify-content:center; gap:6px; width:calc(100% + 52px) !important; min-height:42px; margin:8px 0 0 -52px !important; padding:0 !important; background:none !important; border:0 !important;
+  color:#E8C9CC !important; font:600 16px/1.2 Barlow, system-ui, Arial, sans-serif !important; text-decoration:underline; cursor:pointer; }
+/* Lo normal (un solo botón): toda la tarjeta se pulsa y lleva la flecha ›, como en el dibujo. El texto del botón sigue ahí para quien usa lector de pantalla */
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha:not(.vv-home-res){ padding-right:44px !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha:not(.vv-home-res) > .home-big-btn:last-child:not(.vt-admin-btn){ position:absolute; inset:0; width:100% !important; height:100% !important; margin:0 !important; padding:0 !important;
+  border:0 !important; border-radius:18px !important; background:transparent !important; color:transparent !important; font-size:0 !important; overflow:hidden; }
+html.in-on body #homeAhora .home-marcha:not(.vv-home-res) > .home-big-btn:last-child:not(.vt-admin-btn)[data-busy]{ background:rgba(10,12,16,.45) !important; }
+html.in-on body #homeAhora .home-marcha:not(.vv-home-res) > .home-big-btn:last-child:not(.vt-admin-btn)::after{ content:'' !important; display:block !important; position:absolute; right:20px; top:50%; width:10px; height:10px; box-sizing:border-box; margin-top:-5px;
+  border-right:1.5px solid #E9CF8C; border-top:1.5px solid #E9CF8C; transform:rotate(45deg); background:none !important; }
+/* El resumen de Curro y Lola no es un aviso: va en tarjeta azul, sin «!» */
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha.vv-home-res{ padding:14px 18px 16px !important; background:linear-gradient(160deg,#17233D,#0F1626) !important; border-color:rgba(217,190,122,.45) !important; }
+html.in-on #homeAhora .home-marcha.vv-home-res::before{ display:none; }
+html.in-on body #homeAhora .home-marcha.vv-home-res .home-marcha-sub{ color:#B5BFD0 !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha.vv-home-res .home-big-btn{ width:100% !important; margin-left:0 !important; }
+
+/* ===== Lo próximo: tarjeta azul con borde fino dorado ===== */
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card{ box-sizing:border-box; margin:0 0 8px !important; padding:16px 18px 18px !important; border-radius:18px !important;
+  background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; box-shadow:none !important; }
+html.in-on #homeAhora .ip-card:last-child{ margin-bottom:0 !important; }
+html.in-on body #homeAhora .ip-card .ip-fila{ display:flex !important; flex-direction:column !important; align-items:stretch !important; gap:0 !important; margin:0 !important; padding:0 !important; }
+html.in-on body #homeAhora .ip-card .ip-info{ display:block !important; min-width:0; margin:0 !important; padding:0 !important; cursor:pointer; }
+html.in-on body #homeAhora .ip-card .ip-eti{ margin:0 !important; font:700 12px/1.25 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.2em !important; text-transform:uppercase !important; color:#E9CF8C !important; }
+html.in-on body #homeAhora .ip-card.ip-card-liga:not(.hoy) .ip-eti{ display:none !important; }
+html.in-on body #homeAhora .ip-card .ip-liga-banda, html.in-on body #homeAhora .ip-card .ip-jornada{ display:block !important; margin:0 !important; padding:0 !important; background:none !important; border:0 !important; border-radius:0 !important; box-shadow:none !important;
+  font:700 12px/1.35 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.2em !important; text-transform:uppercase !important; color:#E9CF8C !important; }
+html.in-on body #homeAhora .ip-card.hoy .ip-liga-banda, html.in-on body #homeAhora .ip-card .ip-eti + .ip-jornada{ margin-top:4px !important; }
+html.in-on body #homeAhora .ip-card .ip-liga-banda .ip-liga-trofeo{ display:none !important; }
+html.in-on body #homeAhora .ip-card .ip-liga-banda b, html.in-on body #homeAhora .ip-card .ip-liga-banda .ip-liga-jn{ display:inline !important; margin:0 !important; padding:0 !important; background:none !important; border:0 !important; border-radius:0 !important; font:inherit !important; letter-spacing:inherit !important; color:inherit !important; }
+html.in-on body #homeAhora .ip-card .ip-liga-banda .ip-liga-jn::before{ content:' · '; }
+html.in-on body #homeAhora .ip-card .ip-cuando{ margin:9px 0 0 !important; font:italic 600 30px/1.1 'Playfair Display', Georgia, serif !important; letter-spacing:0 !important; text-transform:none !important; color:#E9CF8C !important; }
+html.in-on body #homeAhora .ip-card .ip-pie{ margin:6px 0 0 !important; font:600 17px/1.2 Barlow, system-ui, Arial, sans-serif !important; color:#B5BFD0 !important; }
+html.in-on body #homeAhora .ip-card .ip-pie i{ font-style:normal; color:#F4F1E8; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card .ip-apuntar{ display:flex !important; align-items:center; justify-content:center; box-sizing:border-box; width:100% !important; height:50px !important; min-height:0 !important; margin:14px 0 0 !important; padding:0 14px !important;
+  border-radius:999px !important; border:1px solid #C9A54A !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important;
+  font:800 18px/1.1 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.02em !important; text-transform:none !important; box-shadow:none !important; transition:transform .12s; cursor:pointer; }
+html.in-on body #homeAhora .ip-card .ip-ok{ display:block !important; margin:12px 0 0 !important; padding:0 !important; background:none !important; border:0 !important; font:700 18px/1.2 Archivo, system-ui, Arial, sans-serif !important; color:#E9CF8C !important; text-align:left !important; white-space:normal !important; }
+html.in-on body #homeAhora .ip-card .ip-horas{ display:flex !important; flex-wrap:wrap; gap:8px; margin:12px 0 0 !important; padding:0 !important; }
+html.in-on body #homeAhora .ip-card .ip-hora{ flex:1 1 auto; box-sizing:border-box; min-height:48px !important; padding:4px 18px !important; border-radius:999px !important; border:1px solid rgba(217,190,122,.45) !important; background:#121620 !important; color:#F4F1E8 !important;
+  font:700 17px/1.1 Archivo, system-ui, Arial, sans-serif !important; box-shadow:none !important; cursor:pointer; }
+html.in-on body #homeAhora .ip-card .ip-hora.sel{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; border-color:#C9A54A !important; color:#16120A !important; }
+html.in-on body #homeAhora .ip-card .ip-hora.no{ color:#E8C9CC !important; border-color:#242B38 !important; }
+html.in-on body #homeAhora .ip-card .ip-hora:disabled{ opacity:.45; }
+html.in-on body #homeAhora .ip-card .ip-hora small{ display:block; font:600 14px/1.1 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; }
+html.in-on body #homeAhora .ip-card .ip-cambiar{ display:block !important; width:100% !important; min-height:42px; margin:8px 0 -8px !important; padding:0 !important; background:none !important; border:0 !important; color:#B5BFD0 !important;
+  font:600 16px/1.2 Barlow, system-ui, Arial, sans-serif !important; text-align:center !important; text-decoration:underline; cursor:pointer; }
+
+/* ===== Tu liga: nombre de la liga y el puesto en cursiva dorada ===== */
+html.in-on #inLiga{ box-sizing:border-box; width:100%; margin:0; padding:13px 18px; display:flex; align-items:center; gap:14px; text-align:left; color:#F4F1E8; cursor:pointer;
+  border-radius:18px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on #inLiga[hidden]{ display:none; }
+html.in-on #inLiga .in-liga-tx{ flex:1; min-width:0; }
+html.in-on #inLiga .in-liga-tx b{ display:block; font:700 20px/1.1 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on #inLiga .in-liga-tx span{ display:block; font:600 17px/1.2 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-top:4px; }
+html.in-on #inLiga .in-liga-pos{ flex:0 0 auto; font:italic 600 34px/1 'Playfair Display', Georgia, serif; color:#E9CF8C; padding-left:16px; border-left:1px solid rgba(217,190,122,.45); height:44px; display:flex; align-items:center; }
+html.in-on .in-fl{ flex:0 0 auto; width:10px; height:10px; box-sizing:border-box; border-right:1.5px solid #E9CF8C; border-top:1.5px solid #E9CF8C; transform:rotate(45deg); margin-right:4px; }
+
+/* ===== Más: los botones de siempre, cada uno en su fila (hasta que estén Jugar, Liga y Mi cuenta) ===== */
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu #hmLiga{ display:none !important; } /* la clasificación está en «Tu liga» y en la pestaña Liga */
+/* Ganadores de la semana, Cartas, Ryder Cup y Campos de golf están en la pantalla Jugar (cada cosa en un solo sitio) */
+html.jg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="premios"], #hmCartas, #hmRyder, #hmCampos){ display:none !important; }
+/* y los que ya están en la pantalla Liga (liga-nueva.js) */
+html.lg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="medallas"], #hmLigas){ display:none !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora > .home-menu{ display:flex !important; flex-direction:column !important; gap:8px !important; margin:0 !important; padding:0 !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19){ position:relative; flex-direction:row !important; align-items:center !important; justify-content:flex-start !important; gap:14px !important; box-sizing:border-box;
+  width:100% !important; height:auto !important; min-height:62px !important; margin:0 !important; padding:9px 38px 9px 14px !important; border-radius:18px !important; background:#121620 !important; border:1px solid #242B38 !important; box-shadow:none !important;
+  color:#F4F1E8 !important; text-align:left !important; transition:transform .12s; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19) svg.ico{ flex:0 0 auto; box-sizing:content-box !important; width:22px !important; height:22px !important; margin:0 !important; padding:9px !important; border-radius:50% !important;
+  background:rgba(233,207,140,.08) !important; box-shadow:none !important; border:1px solid rgba(217,190,122,.45); color:#E9CF8C !important; stroke-width:1.6; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19) svg.hm-flecha{ display:none !important; }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19) > span{ flex:1; min-width:0; margin:0 !important; padding:0 !important; font:700 18px/1.2 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:0 !important; text-transform:none !important; text-align:left !important; color:#F4F1E8 !important; }
+html.in-on #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19)::after{ content:''; position:absolute; right:18px; top:50%; width:10px; height:10px; box-sizing:border-box; margin-top:-5px; border-right:1.5px solid #E9CF8C; border-top:1.5px solid #E9CF8C; transform:rotate(45deg); }
+html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn.hm-cartas, html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn.hm-hoyo19{ width:100% !important; margin:0 !important; border-radius:18px !important; }
+html.in-on body #homeAhora .hm-cartas .hc-nuevo{ right:auto !important; width:auto !important; display:inline-block !important; }
+html.in-on #homeAhora > #pbTarjeta, html.in-on #homeAhora > #invTarjeta{ margin-top:14px !important; }
+html.in-on #homeAhora > #irHatoBtn{ margin-top:8px !important; }
+html.in-on .screen[data-screen="0"]:not([data-foco]) .home-pie{ background:none !important; margin-left:-16px; margin-right:-16px; }
+
+/* ===== Barra de abajo: baja y lisa, la pestaña activa en pastilla dorada ===== */
+html.in-on .screen[data-screen="0"] > .in-nav{ position:absolute; left:16px; right:16px; bottom:12px; z-index:30; box-sizing:border-box; height:62px; margin:0; padding:0 7px; border-radius:999px; background:#121620; border:1px solid #242B38;
+  display:grid; grid-template-columns:repeat(4,auto); justify-content:space-between; align-items:center; }
+html.in-on .screen[data-screen="0"]:not(.active) > .in-nav{ display:none; }
+/* Lo que pasa por debajo de la barra se difumina (no se ve cortado) */
+html.in-on .screen[data-screen="0"] > .in-nav::before{ content:''; position:absolute; left:-17px; right:-17px; top:-27px; bottom:-13px; z-index:-1; pointer-events:none; background:linear-gradient(180deg,rgba(10,12,16,0) 0,#0A0C10 26px); }
+html.in-on .screen[data-screen="0"] > .in-nav::after{ content:''; position:absolute; inset:-1px; z-index:-1; border-radius:999px; background:#121620; border:1px solid #242B38; pointer-events:none; }
+html.in-on .in-tab{ position:relative; box-sizing:border-box; height:46px; margin:0; padding:0 12px; display:flex; align-items:center; justify-content:center; border:0; border-radius:999px; background:none; white-space:nowrap; cursor:pointer;
+  font:700 14px/1 Archivo, system-ui, Arial, sans-serif; color:#B5BFD0; text-transform:uppercase; letter-spacing:.06em; transition:transform .12s; -webkit-appearance:none; appearance:none; -webkit-tap-highlight-color:transparent; }
+html.in-on .in-tab.on{ color:#16120A; background:linear-gradient(180deg,#EBD08A,#C9A54A); padding:0 20px; font-weight:800; }
+html.in-on .in-punto{ position:absolute; top:-1px; right:1px; box-sizing:border-box; width:12px; height:12px; border-radius:50%; background:#D8333D; border:2px solid #121620; }
+html.in-on .in-punto[hidden]{ display:none; }
+/* Los avisos sueltos de abajo («Ver / Luego») se suben por encima de la barra para no taparla */
+html.in-on body:not(.nv-dentro) .ay-aviso, html.in-on body:not(.nv-dentro) .cg-prueba{ bottom:calc(env(safe-area-inset-bottom, 0px) + 160px) !important; }
+/* Solo en la versión de pruebas: la etiqueta «Pruebas» se pone arriba para no tapar la barra */
+html.in-on body:not(.nv-dentro) .pr-banda{ top:calc(env(safe-area-inset-top, 0px) + 34px); bottom:auto !important; }
+
+/* ===== Móvil pequeño (360×640): se compacta como en el dibujo ===== */
+@media (max-height:700px){
+  html.in-on .screen[data-screen="0"]:not([data-foco]) .screen-content{ padding-bottom:78px !important; }
+  html.in-on .in-hero{ min-height:124px; padding:calc(env(safe-area-inset-top, 0px) + 30px) 0 15px; gap:7px; }
+  html.in-on .in-esc{ width:40px; height:40px; }
+  html.in-on .in-esc.in-redondo{ box-shadow:0 0 0 2px #0A0C10, 0 0 0 3px #E9CF8C; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn{ height:52px !important; font-size:18px !important; }
+  html.in-on #homeAhora .ip-nuevo{ margin-top:7px !important; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #convHomeNew{ height:46px !important; font-size:17px !important; }
+  html.in-on #homeAhora .in-sec{ margin:11px 2px 6px; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha{ padding:7px 14px 9px 58px !important; border-radius:16px !important; }
+  html.in-on body #inTarjetas .in-aviso{ padding:7px 14px; gap:12px; border-radius:16px; }
+  html.in-on #inTarjetas .in-aviso-ic{ flex-basis:32px; height:32px; font-size:18px; }
+  html.in-on #inTarjetas .in-aviso-tx b{ font-size:17px; }
+  html.in-on #inTarjetas .in-aviso-tx span{ font-size:15px; margin-top:1px; }
+  html.in-on #homeAhora .home-marcha::before{ left:14px; top:9px; width:32px; height:32px; font-size:18px; }
+  html.in-on body #homeAhora .home-marcha .home-marcha-t{ font-size:17px !important; }
+  html.in-on body #homeAhora .home-marcha .home-marcha-sub, html.in-on body #homeAhora .home-marcha .home-marcha-chips span{ font-size:15px !important; margin-top:1px !important; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha .home-big-btn{ width:calc(100% + 44px) !important; height:42px !important; margin:8px 0 0 -44px !important; font-size:17px !important; }
+  html.in-on body #homeAhora .home-marcha .home-marcha-borrar{ width:calc(100% + 44px) !important; margin-left:-44px !important; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-marcha.vv-home-res{ padding:10px 16px 11px !important; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card{ padding:10px 16px 11px !important; border-radius:16px !important; }
+  html.in-on body #homeAhora .ip-card .ip-cuando{ font-size:25px !important; margin-top:5px !important; }
+  html.in-on body #homeAhora .ip-card .ip-pie{ font-size:16px !important; margin-top:3px !important; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card .ip-apuntar{ height:42px !important; margin-top:8px !important; font-size:17px !important; }
+  html.in-on body #homeAhora .ip-card .ip-ok{ margin-top:8px !important; font-size:17px !important; }
+  html.in-on #inLiga{ padding:8px 16px; border-radius:16px; }
+  html.in-on #inLiga .in-liga-tx b{ font-size:18px; }
+  html.in-on #inLiga .in-liga-tx span{ font-size:16px; margin-top:2px; }
+  html.in-on #inLiga .in-liga-pos{ font-size:28px; height:36px; padding-left:14px; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19){ min-height:56px !important; border-radius:16px !important; }
+  html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu-btn:not(.hm-cartas):not(.hm-hoyo19) > span{ font-size:17px !important; }
+  html.in-on .screen[data-screen="0"] > .in-nav{ height:52px; bottom:8px; padding:0 5px; }
+  html.in-on .screen[data-screen="0"] > .in-nav::before{ top:-23px; bottom:-9px; }
+  html.in-on .in-tab{ height:40px; padding:0 10px; }
+  html.in-on .in-tab.on{ padding:0 16px; }
+}

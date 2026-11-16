@@ -1,0 +1,83 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Pantalla Liga: estilo «fino y elegante» (DESIGN.md §2, §3, §4, §5, §8 y §9; dibujo diseno-ref/liga.html).
+   Es una hoja que se pone encima del Inicio, debajo de la barra de pestañas. No toca ninguna otra pantalla. */
+html.in-on #lgPant{ position:absolute; inset:0; z-index:20; box-sizing:border-box; overflow-x:hidden; overflow-y:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  background:#0A0C10; color:#F4F1E8; padding:calc(env(safe-area-inset-top, 0px) + 40px) 16px 96px; font:600 16px Barlow, system-ui, Arial, sans-serif; text-align:left; }
+html.in-on #lgPant::-webkit-scrollbar{ display:none; }
+html.in-on #lgPant[hidden], html.in-on #lgPant [hidden], html.in-on .screen[data-screen="0"][data-foco] > #lgPant{ display:none !important; }
+
+/* ===== Cabecera: nombre de la liga, jornada en cursiva dorada y escudo pequeño a la derecha ===== */
+html.in-on #lgPant .lg-cab{ display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 4px 22px 2px; }
+html.in-on #lgPant .lg-cab > div:first-child{ flex:1; min-width:0; }
+html.in-on body #lgPant .lg-titulo{ margin:0 !important; padding:0 !important; font:800 30px/1.05 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.04em !important; text-transform:uppercase !important; text-align:left !important; color:#F4F1E8 !important; text-shadow:none !important; overflow-wrap:break-word; }
+html.in-on body #lgPant .lg-sub{ margin:8px 0 0 !important; padding:0 !important; font:italic 600 19px/1.1 'Playfair Display', Georgia, serif !important; letter-spacing:0 !important; text-transform:none !important; color:#E9CF8C !important; }
+html.in-on #lgPant .lg-esc{ width:52px; height:52px; flex:0 0 auto; margin-right:4px; }
+html.in-on #lgPant .lg-esc:empty{ display:none; }
+html.in-on #lgPant .lg-esc.lg-redondo{ border-radius:50%; box-shadow:0 0 0 3px #0A0C10, 0 0 0 4px #E9CF8C; }
+html.in-on #lgPant .lg-esc img, html.in-on #lgPant .lg-esc svg{ display:block; width:100%; height:100%; }
+html.in-on #lgPant .lg-esc.lg-redondo img{ border-radius:50%; }
+
+/* ===== Tarjetas ===== */
+html.in-on #lgPant .lg-card{ border-radius:18px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); display:flex; flex-direction:column; overflow:hidden; }
+html.in-on #lgPant .lg-card + .lg-card{ margin-top:10px; }
+
+/* ===== Los 3 primeros ===== */
+html.in-on #lgPant .lg-pod{ min-height:62px; display:flex; align-items:center; gap:14px; padding:6px 20px 6px 14px; }
+html.in-on #lgPant .lg-pod + .lg-pod{ border-top:1px solid rgba(217,190,122,.18); }
+html.in-on #lgPant .lg-pos{ flex:0 0 44px; box-sizing:border-box; height:44px; border-radius:50%; border:1px solid rgba(217,190,122,.45); display:flex; align-items:center; justify-content:center; font:italic 600 20px/1 'Playfair Display', Georgia, serif; color:#E9CF8C; }
+html.in-on #lgPant .lg-nom{ flex:1; min-width:0; font:700 19px/1.15 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; overflow-wrap:break-word; }
+html.in-on #lgPant .lg-pts{ flex:0 0 auto; font:700 22px/1 Archivo, system-ui, Arial, sans-serif; font-variant-numeric:tabular-nums; color:#F4F1E8; white-space:nowrap; }
+html.in-on #lgPant .lg-pts small{ font:600 15px/1 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-left:5px; }
+html.in-on #lgPant .lg-pod.lg-oro{ min-height:70px; background:linear-gradient(90deg,rgba(233,207,140,.13),rgba(233,207,140,0) 75%); }
+html.in-on #lgPant .lg-pod.lg-oro .lg-pos{ background:linear-gradient(180deg,#EBD08A,#C9A54A); border-color:transparent; color:#16120A; font-weight:700; }
+html.in-on #lgPant .lg-pod.lg-oro .lg-nom{ color:#E9CF8C; font-size:20px; }
+html.in-on #lgPant .lg-pod.lg-oro .lg-pts{ color:#E9CF8C; font-size:26px; }
+html.in-on #lgPant .lg-pod.lg-oro .lg-pts small{ color:#E9CF8C; }
+html.in-on body #lgPant .lg-nota{ margin:0 !important; padding:16px 18px !important; font:600 16px/1.3 Barlow, system-ui, Arial, sans-serif !important; color:#B5BFD0 !important; text-align:left !important; }
+
+/* ===== Rótulo de bloque ===== */
+html.in-on #lgPant .lg-sec{ font:700 12px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.24em; text-transform:uppercase; color:#B5BFD0; margin:28px 2px 12px; display:flex; align-items:center; gap:12px; }
+html.in-on #lgPant .lg-sec::after{ content:''; flex:1; height:1px; background:linear-gradient(90deg,rgba(217,190,122,.35),transparent); }
+
+/* ===== Filas con icono fino en círculo dorado y flecha ===== */
+html.in-on body #lgPant .lg-row{ box-sizing:border-box; width:100%; min-height:68px; margin:0; padding:8px 18px 8px 14px; display:flex; align-items:center; gap:14px; text-align:left; color:#F4F1E8; cursor:pointer;
+  border:0; border-radius:0; background:none; box-shadow:none; text-shadow:none; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on body #lgPant .lg-row.lg-sin{ padding-left:18px; }
+html.in-on body #lgPant .lg-row:not([hidden]) ~ .lg-row{ border-top:1px solid rgba(217,190,122,.18); }
+html.in-on body #lgPant .lg-row:active{ transform:scale(.97); }
+html.in-on #lgPant .lg-ic{ flex:0 0 44px; box-sizing:border-box; height:44px; border-radius:50%; border:1px solid rgba(217,190,122,.45); display:flex; align-items:center; justify-content:center; }
+html.in-on #lgPant .lg-ic svg{ width:23px; height:23px; display:block; }
+html.in-on #lgPant .lg-tx{ flex:1; min-width:0; }
+html.in-on #lgPant .lg-tx b{ display:block; font:700 19px/1.15 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on #lgPant .lg-tx span{ display:block; font:600 16px/1.2 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-top:3px; }
+html.in-on #lgPant .lg-fl{ flex:0 0 auto; width:10px; height:10px; box-sizing:border-box; border-right:1.5px solid #E9CF8C; border-top:1.5px solid #E9CF8C; transform:rotate(45deg); margin-right:4px; }
+
+/* ===== Solo administrador: aparte, en recuadro de puntos ===== */
+html.in-on #lgPant .lg-adm{ margin-top:28px; border:1px dashed rgba(217,190,122,.6); border-radius:18px; padding:14px 0 4px; }
+html.in-on #lgPant .lg-adm > i{ display:block; font:700 12px/1 Archivo, system-ui, Arial, sans-serif; font-style:normal; letter-spacing:.24em; text-transform:uppercase; color:#E9CF8C; padding:0 18px 4px; }
+html.in-on #lgPant .lg-fin{ height:2px; }
+
+/* Solo en la versión de pruebas: la etiqueta «Pruebas» se aparta del título mientras se ve Liga */
+html.in-on body:not(.nv-dentro):has(#lgPant:not([hidden])) .pr-banda{ left:50%; transform:translateX(-50%); }
+
+/* ===== Móvil pequeño (360×640): se compacta como en el dibujo ===== */
+@media (max-height:700px){
+  html.in-on #lgPant{ padding-top:calc(env(safe-area-inset-top, 0px) + 22px); padding-bottom:70px; }
+  html.in-on #lgPant .lg-cab{ padding:4px 4px 12px 2px; }
+  html.in-on body #lgPant .lg-sub{ font-size:17px !important; margin-top:4px !important; }
+  html.in-on #lgPant .lg-esc{ width:40px; height:40px; }
+  html.in-on #lgPant .lg-esc.lg-redondo{ box-shadow:0 0 0 2px #0A0C10, 0 0 0 3px #E9CF8C; }
+  html.in-on #lgPant .lg-sec{ margin:18px 2px 8px; }
+  html.in-on #lgPant .lg-card, html.in-on #lgPant .lg-adm{ border-radius:16px; }
+  html.in-on body #lgPant .lg-row{ min-height:58px; padding:5px 16px 5px 12px; gap:12px; }
+  html.in-on body #lgPant .lg-row.lg-sin{ padding-left:16px; min-height:62px; }
+  html.in-on #lgPant .lg-pod{ min-height:56px; padding:5px 18px 5px 12px; gap:12px; }
+  html.in-on #lgPant .lg-pod.lg-oro{ min-height:60px; }
+  html.in-on #lgPant .lg-ic, html.in-on #lgPant .lg-pos{ flex-basis:38px; height:38px; }
+  html.in-on #lgPant .lg-ic svg{ width:21px; height:21px; }
+  html.in-on #lgPant .lg-pos{ font-size:18px; }
+  html.in-on #lgPant .lg-tx b, html.in-on #lgPant .lg-nom{ font-size:18px; }
+  html.in-on #lgPant .lg-tx span{ font-size:15px; margin-top:1px; }
+  html.in-on #lgPant .lg-adm{ margin-top:18px; padding-top:12px; }
+  html.in-on #lgPant .lg-fin{ height:14px; }
+}
