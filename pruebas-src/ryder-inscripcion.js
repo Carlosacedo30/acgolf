@@ -20,6 +20,7 @@
   let elegido = '';      // equipo que venía en el enlace (se guarda sin acentos ni espacios)
   let creando = false;
   let editando = false;   // el administrador cambia el día y el campo
+  let noPermitido = false; // la Ryder es solo para tres grupos
   let pedida = false;    // se pidió una inscripción concreta (por enlace)
   const esInvitado = () => document.documentElement.classList.contains('es-invitado');
   const PEND = 'acgolfRyderPendiente';
@@ -115,6 +116,10 @@
       o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-tj"><b style="font:900 21px Archivo,system-ui,sans-serif">Para apuntarte necesitas tu cuenta</b>'
         + '<div class="ri-dat" style="color:#F2F4F5">En la Ryder no se admiten invitados. Crea tu cuenta en acgolf (es gratis y lleva un minuto) y vuelve a pulsar tu enlace de WhatsApp. Si ya la has creado y confirmado, te llevaremos a tu equipo.</div></div>'
         + '<button type="button" class="ri-btn ri-pri" data-ri="cuenta">Crear mi cuenta</button></div>';
+      return;
+    }
+    if(!r && noPermitido){
+      o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-vacio">Esta Ryder es solo para los grupos Los Iscariotes, Cajapollos y Los Domingueros.</div></div>';
       return;
     }
     if(!r){
@@ -273,7 +278,9 @@
     o.innerHTML = '<div class="ri-in"><div class="ri-vacio">Cargando…</div></div>';
     pedida = !!code && !!porEnlace;
     if(esInvitado()){ r = null; pedida = false; pintar(); return; }
+    noPermitido = false;
     try { r = await traer(code || null); if(!r && code && !porEnlace) r = await traer(null); } catch(e){ r = null; }
+    if(!r){ try { const c = initSupabase(); if(c){ const { data } = await c.rpc('ryder_ins_permitido'); noPermitido = (data === false); } } catch(e){} }
     if(r){ vigilar(); try { localStorage.setItem(ULTIMA, r.code); } catch(e){} }
     borrarPend();
     pintar();
