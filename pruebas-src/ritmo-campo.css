@@ -34,3 +34,18 @@
 .rc-rt small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.06em; }
 .rc-vacio{ background:#1B1E22; border:1px solid #33383E; border-radius:18px; padding:18px 16px; text-align:center; }
 .rc-vacio b{ display:block; font:900 20px Archivo,system-ui,sans-serif; } .rc-vacio span{ display:block; font-size:16px; color:#9AA3AB; margin-top:6px; }
+/* Demostración simulada */
+.rc-demo-btn{ display:block; width:100%; min-height:54px; margin:2px 0 12px; border-radius:999px; border:1px solid rgba(198,242,78,.55); background:#24282D; color:#F2F4F5; font:900 18px Archivo,system-ui,sans-serif; cursor:pointer; }
+.rc-demo-btn:active, .rc-ctl button:active, .rc-salir:active{ transform:scale(.97); }
+.rc-es-demo .rc-demo-btn{ display:none; }
+.rc-banda{ display:flex; align-items:center; justify-content:space-between; gap:10px; background:#2F3A1C; border:1px solid #C6F24E; border-radius:999px; padding:6px 8px 6px 16px; font-size:15px; color:#F2F4F5; margin-bottom:8px; }
+.rc-banda b{ font:900 15px Archivo,system-ui,sans-serif; letter-spacing:.08em; color:#C6F24E; }
+.rc-prog{ height:6px; border-radius:999px; background:#33383E; overflow:hidden; margin-bottom:10px; }
+.rc-prog i{ display:block; height:100%; width:0; background:#C6F24E; }
+.rc-ctl{ display:flex; gap:6px; margin-bottom:10px; }
+.rc-ctl button{ flex:1; min-width:0; padding:0 4px; min-height:48px; border-radius:999px; border:1px solid rgba(198,242,78,.55); background:#24282D; color:#F2F4F5; font:900 16px Archivo,system-ui,sans-serif; cursor:pointer; }
+.rc-ctl button#rcPausa{ background:#C6F24E; color:#111316; border-color:#C6F24E; flex:2.2; }
+.rc-ctl button.on{ background:#2F3A1C; border-color:#C6F24E; }
+.rc-salir{ flex:none; min-height:40px; padding:0 18px; border-radius:999px; border:1px solid rgba(198,242,78,.55); background:#24282D; color:#F2F4F5; font:800 15px Archivo,system-ui,sans-serif; cursor:pointer; }
+.rc-demobar{ position:sticky; top:58px; z-index:1; background:#111316; padding-top:2px; }
+.rc-demobar:empty{ display:none; }

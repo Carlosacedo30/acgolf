@@ -80,7 +80,7 @@
     return '<div class="rc-mapa"><svg viewBox="0 0 ' + T.vb[0] + ' ' + T.vb[1] + '" role="img" aria-label="Circuito del campo con los grupos"><rect width="100%" height="100%" fill="#0e1f16"/>' + dibujos
       + '<path d="' + ruta + '" stroke="#C6F24E" stroke-width="3" stroke-dasharray="4 7" fill="none" opacity=".8"/>' + nums + pts + '</svg></div>';
   }
-  function pintar(lista, rondas){
+  function pintar(lista, rondas, ahoraMs){
     const cuerpo = ov.querySelector('.rc-cuerpo');
     const cnt = { v: 0, a: 0, r: 0 }; lista.forEach(e => { if(cnt[e.color] != null) cnt[e.color]++; });
     const ord = lista.slice().sort((a, b) => (b.retraso - a.retraso) || (a.num - b.num));
@@ -101,9 +101,76 @@
     cuerpo.innerHTML = (lista.length
       ? '<div class="rc-res"><div class="rc-n rc-v"><b>' + cnt.v + '</b><span>a tiempo</span></div><div class="rc-n rc-a"><b>' + cnt.a + '</b><span>se retrasan</span></div><div class="rc-n rc-r"><b>' + cnt.r + '</b><span>parados</span></div></div>'
         + cursos.map(c => circuito(lista, c)).join('') + atascos + '<div class="rc-lista">' + filas + '</div>'
-      : '<div class="rc-vacio"><b>No hay ninguna partida en juego</b><span>Cuando un grupo empiece a anotar hoyos, aparecerá aquí con su ritmo.</span></div>');
-    ov.querySelector('.rc-sub').textContent = lista.length + (lista.length === 1 ? ' grupo en juego' : ' grupos en juego') + ' · hora ' + horaTxt(Date.now()) + ' · se actualiza solo';
+      : (demo && demo.fin ? '<div class="rc-vacio"><b>Campeonato terminado</b><span>El último grupo acabó a las ' + horaTxt(demo.fin) + '. Duración del campeonato: ' + Math.floor((demo.fin - demo.sim.t0) / 3600000) + ' h ' + String(Math.round(((demo.fin - demo.sim.t0) % 3600000) / 60000)).padStart(2, '0') + ' min.</span></div>'
+        : '<div class="rc-vacio"><b>No hay ninguna partida en juego</b><span>Cuando un grupo empiece a anotar hoyos, aparecerá aquí con su ritmo.</span></div>'));
+    ov.querySelector('.rc-sub').textContent = demo ? (lista.length + (lista.length === 1 ? ' grupo en juego' : ' grupos en juego') + ' · hora simulada ' + horaTxt(ahoraMs)) : (lista.length + (lista.length === 1 ? ' grupo en juego' : ' grupos en juego') + ' · hora ' + horaTxt(ahoraMs || Date.now()) + ' · se actualiza solo');
     const cab = ov.querySelector('.rc-camp'); const nombre = rondas[0] && (rondas[0].course_name || ''); cab.textContent = nombre ? nombre + ' · hoy' : 'Hoy';
+  }
+  // ---------- Demostración simulada (para enseñarla al club): un campeonato inventado de 80 jugadores ----------
+  // Usa EXACTAMENTE el mismo cálculo y la misma pantalla que el ritmo real, pero con datos inventados y el reloj acelerado.
+  let demo = null;
+  const NOMBRES = ['Antonio', 'Manuel', 'José', 'Francisco', 'Juan', 'Javier', 'Rafael', 'Miguel', 'Pedro', 'Luis', 'Fernando', 'Alberto', 'Ángel', 'Ramón', 'Joaquín', 'Enrique', 'Andrés', 'Diego', 'Vicente', 'Ignacio'];
+  const APE = ['García', 'Martínez', 'López', 'Sánchez', 'Pérez', 'Gómez', 'Ruiz', 'Díaz', 'Moreno', 'Muñoz', 'Álvarez', 'Romero', 'Navarro', 'Torres', 'Domínguez', 'Gil', 'Vázquez', 'Serrano', 'Ramos', 'Blanco', 'Molina', 'Castro', 'Ortiz', 'Rubio', 'Marín', 'Sanz', 'Iglesias', 'Medina', 'Cortés', 'Garrido', 'Castillo', 'Santos', 'Lozano', 'Guerrero', 'Cano', 'Prieto', 'Méndez', 'Cruz', 'Gallego', 'Vidal'];
+  const alea = semilla => () => { semilla = (semilla * 1664525 + 1013904223) % 4294967296; return semilla / 4294967296; };
+  function simular(){
+    const r = alea(20261117), PAR = [5,4,4,4,3,3,3,5,3,5,3,5,4,4,3,4,4,4];
+    const d0 = new Date(); d0.setHours(8, 0, 0, 0); const t0 = d0.getTime();
+    const salidas = []; for(let i = 1; i <= 18; i++) salidas.push(i); salidas.push(1, 8);      // 20 grupos: 18 hoyos y los dos últimos por par 5
+    const grupos = salidas.map((s, i) => ({
+      s, i, players: [0, 1, 2, 3].map(j => NOMBRES[(i * 3 + j * 7) % NOMBRES.length] + ' ' + APE[(i * 2 + j * 9) % APE.length] + ' ' + APE[(i * 5 + j * 4 + 3) % APE.length]),
+      lento: i === 5 ? 3.5 : i === 12 ? 2 : 0,                                                    // el grupo 6 va lento todo el rato, el 13 un poco
+      ritmo: 0.93 + r() * 0.14, finish: [], tee: [],
+    }));
+    // Cola en cada hoyo: nadie sale hasta que el grupo de delante lleva 7 minutos jugando ese hoyo
+    const ultimoTee = Array(19).fill(-1e12), listo = grupos.map(g => t0), k = grupos.map(() => 0);
+    let pendientes = grupos.length * 18;
+    while(pendientes > 0){
+      let mejor = -1;
+      grupos.forEach((g, i) => { if(k[i] < 18 && (mejor < 0 || listo[i] < listo[mejor] || (listo[i] === listo[mejor] && i < mejor))) mejor = i; });
+      const g = grupos[mejor], h = (g.s - 1 + k[mejor]) % 18 + 1;
+      const ini = Math.max(listo[mejor], ultimoTee[h] + 7 * 60000);
+      let dur = (MIN_PAR[PAR[h - 1]] * g.ritmo + g.lento) * 60000;
+      if(mejor === 12 && k[mejor] === 5) dur += 17 * 60000;                                       // el grupo 13 pierde una bola en su 6.º hoyo
+      if(mejor === 17 && k[mejor] === 3) dur += 9 * 60000;                                        // y el 18 se para a buscar otra
+      ultimoTee[h] = ini; g.tee.push(ini); g.finish.push(ini + dur); listo[mejor] = ini + dur; k[mejor]++; pendientes--;
+    }
+    const fin = Math.max.apply(null, grupos.map(g => g.finish[17]));
+    return { t0, grupos, fin, PAR };
+  }
+  function rondaEn(sim, T){
+    const mg = sim.grupos.map(g => {
+      const sc = {}, horas = {}; const hechos = g.finish.filter(f => f <= T).length;
+      for(let q = 0; q < hechos; q++){ const h = (g.s - 1 + q) % 18 + 1; [0, 1, 2, 3].forEach(p => { (sc[p] = sc[p] || {})[h] = sim.PAR[h - 1] + (p % 2); }); horas[h] = Math.floor(g.finish[q] / 1000); }
+      const d = new Date(g.tee[0]);
+      return { players: g.players, handicaps: [10, 14, 18, 22], scores: sc, horas, hoyoSalida: g.s, hora: String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') };
+    });
+    return { code: 'DEMO', round_name: 'Campeonato (demostración)', course_id: 'hato-verde', course_name: 'Club Hato Verde', course_par: sim.PAR, updated_at: new Date(T).toISOString(), match_groups: mg };
+  }
+  function pasoDemo(){
+    if(!demo || !ov || ov.hidden) return;
+    if(!demo.pausa) demo.T = Math.min(demo.T + demo.vel * 60000 * 0.25, demo.sim.fin + 60000);
+    const ronda = rondaEn(demo.sim, demo.T), lista = repasar([ronda], demo.T);
+    if(!lista.length && demo.T >= demo.sim.fin){ demo.fin = demo.sim.fin; demo.pausa = true; } else demo.fin = 0;
+    ultimaLista = lista; pintar(lista, [ronda], demo.T);
+    const barra = ov.querySelector('.rc-prog i'); if(barra) barra.style.width = Math.min(100, (demo.T - demo.sim.t0) / (demo.sim.fin - demo.sim.t0) * 100) + '%';
+    const bp = ov.querySelector('#rcPausa'); if(bp) bp.textContent = demo.pausa ? (demo.fin ? '↻ Verla otra vez' : '▶ Seguir') : '⏸ Pausa';
+  }
+  function entrarDemo(){
+    demo = { sim: simular(), T: 0, vel: 3, pausa: false, fin: 0 }; demo.T = demo.sim.t0 + 6 * 60000;
+    clearInterval(timer);
+    ov.classList.add('rc-es-demo');
+    ov.querySelector('.rc-demobar').innerHTML = '<div class="rc-banda"><span><b>DEMOSTRACIÓN</b> · datos inventados</span><button type="button" class="rc-salir" id="rcSalirDemo">Salir</button></div>'
+      + '<div class="rc-prog"><i></i></div><div class="rc-ctl"><button type="button" id="rcPausa">⏸ Pausa</button><button type="button" data-vel="1">Lento</button><button type="button" data-vel="3" class="on">Normal</button><button type="button" data-vel="8">Rápido</button></div>';
+    const bar = ov.querySelector('.rc-demobar');
+    bar.querySelector('#rcPausa').onclick = () => { if(demo.fin){ demo.T = demo.sim.t0 + 6 * 60000; demo.fin = 0; demo.pausa = false; } else demo.pausa = !demo.pausa; pasoDemo(); };
+    bar.querySelectorAll('[data-vel]').forEach(b => b.onclick = () => { demo.vel = +b.dataset.vel; bar.querySelectorAll('[data-vel]').forEach(x => x.classList.toggle('on', x === b)); });
+    bar.querySelector('#rcSalirDemo').onclick = salirDemo;
+    ov.querySelector('.rc-camp').textContent = 'Club Hato Verde';
+    pasoDemo(); timer = setInterval(pasoDemo, 250);
+  }
+  function salirDemo(){
+    demo = null; clearInterval(timer); ov.classList.remove('rc-es-demo'); ov.querySelector('.rc-demobar').innerHTML = '';
+    cargar(); timer = setInterval(() => { if(!document.hidden && ov && !ov.hidden) cargar(); }, 15000);
   }
   async function cargar(){
     const client = initSupabase(); if(!client || !ov) return;
@@ -112,19 +179,20 @@
     if(error){ ov.querySelector('.rc-cuerpo').innerHTML = '<div class="rc-vacio"><b>No se pudo cargar</b><span>Revisa la conexión. Se intentará otra vez solo.</span></div>'; return; }
     const rondas = (data || []).filter(r => !/^(Convocatoria|Liga de amigos|Inscripción Ryder)$/.test(r.round_name || '') && r.course_id !== null);
     const lista = repasar(rondas, Date.now());
-    ultimaLista = lista; pintar(lista, rondas);
+    ultimaLista = lista; pintar(lista, rondas, Date.now());
   }
   function abrir(){
     if(!esAdmin()) return;
     if(!ov){
       ov = document.createElement('div'); ov.className = 'rc'; ov.id = 'rcOv'; ov.hidden = true;
-      ov.innerHTML = '<div class="rc-top"><button type="button" class="rc-volver" id="rcVolver">‹ Volver</button></div><div class="rc-cab"><span class="rc-etq">Ritmo del campo</span><h1 class="rc-camp"></h1><p class="rc-sub">Cargando…</p></div><div class="rc-cuerpo"><div class="rc-vacio"><span>Cargando…</span></div></div>';
+      ov.innerHTML = '<div class="rc-top"><button type="button" class="rc-volver" id="rcVolver">‹ Volver</button></div><div class="rc-cab"><span class="rc-etq">Ritmo del campo</span><h1 class="rc-camp"></h1><p class="rc-sub">Cargando…</p><button type="button" class="rc-demo-btn" id="rcVerDemo">▶ Ver demostración con 80 jugadores</button></div><div class="rc-demobar"></div><div class="rc-cuerpo"><div class="rc-vacio"><span>Cargando…</span></div></div>';
       document.body.appendChild(ov);
       ov.querySelector('#rcVolver').onclick = cerrar;
+      ov.querySelector('#rcVerDemo').onclick = entrarDemo;
     }
-    ov.hidden = false; cargar(); clearInterval(timer); timer = setInterval(() => { if(!document.hidden && ov && !ov.hidden) cargar(); }, 15000);
+    ov.hidden = false; demo = null; ov.classList.remove('rc-es-demo'); ov.querySelector('.rc-demobar').innerHTML = ''; cargar(); clearInterval(timer); timer = setInterval(() => { if(!document.hidden && ov && !ov.hidden) cargar(); }, 15000);
   }
-  function cerrar(){ if(ov) ov.hidden = true; clearInterval(timer); }
+  function cerrar(){ if(ov){ ov.hidden = true; if(demo){ demo = null; ov.classList.remove('rc-es-demo'); ov.querySelector('.rc-demobar').innerHTML = ''; } } clearInterval(timer); }
   window.acgolfRitmo.abrir = abrir; window.acgolfRitmo.cerrar = cerrar;
 
   // ---------- Botón (solo administrador) en el menú del Inicio ----------
