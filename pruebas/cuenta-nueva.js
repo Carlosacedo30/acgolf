@@ -59,7 +59,8 @@
     + tarjeta(fila('invitar', '<circle cx="10" cy="9.5" r="3.2"/><path d="M4 19c.7-3 3-4.6 6-4.6 1.2 0 2.3.3 3.2.7"/><path d="M18 14v6M15 17h6"/>', 'Invitar amigos', 'Enlace y QR del grupo'))
     + '<div class="cn-adm" id="cnAdm" hidden><i>Solo administrador</i>'
     +   fila('miembros', '<path d="M5 7h9M5 12h9M5 17h6"/><path d="M16 16.5l2 2 3.5-4"/>', 'Miembros', 'Quién está en el grupo')
-    +   fila('portada', '<rect x="4" y="5.5" width="16" height="13" rx="2"/><path d="M4 15.5l4.5-4 3.5 3 2.5-2 5.5 4.5"/><circle cx="15.5" cy="9.5" r="1.2"/>', 'Portada', 'Escudo, colores y campo') + '</div>'
+    +   fila('portada', '<rect x="4" y="5.5" width="16" height="13" rx="2"/><path d="M4 15.5l4.5-4 3.5 3 2.5-2 5.5 4.5"/><circle cx="15.5" cy="9.5" r="1.2"/>', 'Portada', 'Escudo, colores y campo')
+    +   fila('ayudajug', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Ayuda con un jugador', 'Hablar con soporte de acgolf') + '</div>'
     + '<div class="cn-sec">Avisos</div>'
     + '<div class="cn-avisos" id="cnAvisos"></div><div class="cn-msg" id="cnMsg" role="status"></div>'
     + mas('Ayuda y Sesión') + '</div>'
@@ -98,7 +99,7 @@
     if(!p || !C) return false;
     if(va === 'panel') return !!p.es_super;
     if(va === 'invitar') return !!(p.es_admin || p.grupo_tipo === 'liga');   // 17-nov: cualquier jugador del grupo puede mandar el enlace y el QR
-    if(va === 'miembros' || va === 'portada') return !!(p.es_admin && p.grupo_tipo === 'liga');
+    if(va === 'miembros' || va === 'portada' || va === 'ayudajug') return !!(p.es_admin && p.grupo_tipo === 'liga');
     return true;
   }
 

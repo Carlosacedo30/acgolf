@@ -872,9 +872,9 @@
     relojSop = setInterval(() => { if(!document.getElementById('spMsgs')){ paraSop(); return; } pintar(); }, 5000);
   }
   // La persona
-  function pantallaSoporte(volver){
+  function pantallaSoporte(volver, inicial){
     chatSop({
-      titulo: 'Soporte acgolf', sub: 'Te contestamos lo antes posible',
+      titulo: 'Soporte acgolf', sub: 'Te contestamos lo antes posible', inicial,
       aviso: 'Aquí solo hablas con el equipo de acgolf. Nadie más lo ve.',
       placeholder: 'Escribe tu mensaje…', vacio: '¡Hola! Cuéntanos qué te pasa y te ayudamos.',
       izq: 'acgolf', der: 'Tú', esMio: m => !m.de_soporte, volver,
@@ -903,7 +903,8 @@
     const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
     $('spLista').innerHTML = lista.map(h => '<button type="button" class="sp-row' + (h.sin_leer > 0 ? ' nuevo' : '') + '" data-u="' + esc(h.user_id) + '">'
       + '<span class="sp-av">' + esc(ini(h.nombre)) + '</span>'
-      + '<span class="sp-rt"><b>' + esc(h.nombre) + '</b><small>' + (h.ultimo_de_soporte ? 'Tú: ' : '') + esc(h.ultimo) + '</small></span>'
+      + '<span class="sp-rt"><b>' + esc(h.nombre) + '</b>' + (h.es_admin ? '<small class="sp-rol">Administrador · ' + esc(h.grupo || '') + '</small>' : '<small class="sp-rol">' + (h.grupo ? esc(h.grupo) : 'Sin nombre ni grupo') + '</small>')
+      + '<small>' + (h.ultimo_de_soporte ? 'Tú: ' : '') + esc(h.ultimo) + '</small></span>'
       + (h.sin_leer > 0 ? '<span class="sp-dot" aria-label="' + h.sin_leer + ' sin contestar">' + h.sin_leer + '</span>' : '<span class="sp-hora">' + esc(horaSop(h.ultimo_en)) + '</span>')
       + '</button>').join('');
     $('spLista').querySelectorAll('.sp-row').forEach(b => {
@@ -924,6 +925,7 @@
     });
   }
   // El super administrador elige a quién escribir primero (norma de Carlos: el mensaje sale firmado «soporte de acgolf», nunca con su nombre ni su teléfono)
+  const TEXTO_ADMIN = 'Un jugador de mi grupo no puede entrar. Se llama: …  Su correo es: …';
   const TEXTO_PRIMERO = 'Hola, somos el soporte de ayuda de acgolf. ¿Tienes algún problema para entrar? Cuéntanos y te ayudamos.';
   async function pantallaElegirPersona(perfil){
     paraSop();
@@ -1843,6 +1845,7 @@
       panel: () => pantallaSuper(perfil),
       misGrupos: () => pantallaMisGrupos(perfil),
       invitar: () => panelMiCuenta(perfil, 'invitar'),
+      ayudajug: () => pantallaSoporte(() => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.abrir(); }, TEXTO_ADMIN),
       miembros: () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false),
       portada: () => asistentePortada(perfil, true),
       datos: () => panelMiCuenta(perfil, 'datos'),

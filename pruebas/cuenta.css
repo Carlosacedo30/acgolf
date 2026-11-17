@@ -443,3 +443,5 @@ body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; 
 .sp-card b{ display:block; font:900 20px Archivo,Barlow,sans-serif; }
 .sp-card span{ display:block; margin:4px 0 10px; font:600 17px/1.35 Barlow,sans-serif; color:#D8E8AE; }
 .sp-card .cg-btn{ margin:0; }
+
+.sp-rol{ color:#C6F24E !important; font:800 13px Archivo,Barlow,sans-serif !important; }
