@@ -81,6 +81,9 @@ language sql stable security definer set search_path to 'public' as $$
     select g.id, g.nombre, m.player_name jugador
     from miembros m join grupos g on g.id = m.grupo_id
     where m.user_id = auth.uid() and g.id <> coalesce((select grupo_id from activo), '00000000-0000-0000-0000-000000000000'::uuid)
+      -- «Solo grupos donde juego» (Carlos, 17-nov): si solo eres administrador de un grupo y tu nombre no sale en ninguna partida suya del último año, no te avisa
+      and (not m.es_admin or exists (select 1 from rounds r2 where r2.grupo_id = g.id and r2.created_at > now() - interval '12 months'
+           and position(lower(m.player_name) in lower(r2.match_groups::text)) > 0))
   ),
   filas as (
     select 'convocatoria' tipo, mi.id gid, mi.nombre grupo, mi.jugador, r.code, r.match_groups, r.updated_at, r.created_at
