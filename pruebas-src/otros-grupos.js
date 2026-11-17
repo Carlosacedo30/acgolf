@@ -21,7 +21,14 @@
   const nodos = { otros: [], ryder: [] };
   const nodo = (html, fecha, hora) => { const t = document.createElement('template'); t.innerHTML = html.trim(); const n = t.content.firstChild; if(fecha) n.dataset.fecha = fecha; if(hora) n.dataset.hora = hora; return n; };
   const esFecha = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
-  const clave = n => n.dataset.fecha ? n.dataset.fecha + ' ' + (n.dataset.hora || '00:00') : '9999-99-99';   // sin fecha: al final
+  // Si una tarjeta propia viene sin fecha (versión guardada antigua), se saca del texto «Domingo 22»: el próximo día con ese nombre y número
+  function fechaDeTexto(n){
+    const m = /(Domingo|Lunes|Martes|Miércoles|Jueves|Viernes|Sábado)\s+(\d{1,2})/.exec((n.querySelector('.ip-cuando') || n).textContent || ''); if(!m) return '';
+    const d = new Date(); d.setHours(12, 0, 0, 0);
+    for(let i = 0; i < 400; i++){ if(DIAS[d.getDay()] === m[1] && d.getDate() === +m[2]) return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); d.setDate(d.getDate() + 1); }
+    return '';
+  }
+  const clave = n => { if(!n.dataset.fecha && n.classList.contains('ip-card')){ const f = fechaDeTexto(n); if(f) n.dataset.fecha = f; } return n.dataset.fecha ? n.dataset.fecha + ' ' + (n.dataset.hora || '00:00') : '9999-99-99'; };   // sin fecha: al final
   let obs = null;
   function colocar(){
     const box = document.getElementById('convHome'); if(!box) return;
