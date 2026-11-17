@@ -917,7 +917,10 @@
       placeholder: 'Escribe tu respuesta…', vacio: 'Todavía no hay mensajes.',
       izq: h.nombre, der: 'Tú (soporte)', esMio: m => !!m.de_soporte, volver: () => { ponPuntoSoporte(); pantallaBandeja(perfil); },
       cargar: async () => { const r = await client.rpc('sa_soporte_hilo', { p_user: h.user_id }); if(r.error) throw r.error; return r.data; },
-      mandar: async t => { const r = await client.rpc('sa_soporte_responder', { p_user: h.user_id, p_texto: t }); if(r.error) throw r.error; }
+      mandar: async t => {
+        const r = await client.rpc('sa_soporte_responder', { p_user: h.user_id, p_texto: t }); if(r.error) throw r.error;
+        try { client.functions.invoke('soporte-aviso', { body: { para: h.user_id } }); } catch(e){}   // le llega también un correo firmado «soporte de acgolf» (si falla, no pasa nada)
+      }
     });
   }
   // El super administrador elige a quién escribir primero (norma de Carlos: el mensaje sale firmado «soporte de acgolf», nunca con su nombre ni su teléfono)
