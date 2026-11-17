@@ -21,6 +21,9 @@
   ahora.appendChild(sec); ahora.appendChild(caja);
 
   // Convierte cada fila de la base en un aviso (o nada, si ya no vale)
+  // Cada jornada de una liga se organiza como una partida con el código «CODIGOLIGA» + «J» + número de jornada:
+  // si ya está organizada, sale UNA sola tarjeta (la partida, con el nombre de la liga) y no otra de «Próxima jornada».
+  let ligasPorCodigo = {}, codigosPartida = new Set();
   function aviso(f){
     const meta = metaDe(f.match_groups), yo = norm(f.jugador);
     if(f.tipo === 'convocatoria'){
@@ -29,7 +32,8 @@
       const apuntados = slots.reduce((a, g) => a + (Array.isArray(g.players) ? g.players.length : 0), 0);
       const estoy = slots.some(g => (g.players || []).some(n => norm(n) === yo));
       const horas = slots.map(g => g.time).filter(Boolean).sort();
-      return { orden: meta.date, tipo: 'Partida organizada', cuando: fecha(meta.date) + (horas[0] ? ' · ' + horas[0].slice(0, 5) : ''),
+      const mj = /^(.*)J(\d+)$/.exec(f.code || ''), lg = mj && ligasPorCodigo[mj[1]];
+      return { orden: meta.date, tipo: lg ? lg + ' · jornada ' + mj[2] : 'Partida organizada', cuando: fecha(meta.date) + (horas[0] ? ' · ' + horas[0].slice(0, 5) : ''),
                pie: apuntados + (apuntados === 1 ? ' apuntado' : ' apuntados') + (estoy ? ' · estás apuntado' : ''), boton: estoy ? '' : 'Ver y apuntarme', f };
     }
     if(f.tipo === 'liga'){
@@ -37,6 +41,7 @@
       const jornadas = (l.jornadas || []).filter(j => j && j.date).sort((a, b) => a.date.localeCompare(b.date));
       const prox = jornadas.find(j => j.date >= hoy());
       if(!prox) return null;                                   // liga terminada: no hay nada que avisar
+      if(codigosPartida.has(f.code + 'J' + prox.n)) return null; // esa jornada ya sale como partida organizada
       if(Array.isArray(l.jugadores) && l.jugadores.length && !l.jugadores.some(n => norm(typeof n === 'string' ? n : n && n.nombre) === yo)) return null;
       return { orden: prox.date, tipo: 'Liga', titulo: l.nombre || 'Liga', sub: 'Próxima jornada: ' + fecha(prox.date) + ' · jornada ' + prox.n + ' de ' + jornadas.length, f };
     }
@@ -48,6 +53,9 @@
   }
 
   function pintar(lista){
+    ligasPorCodigo = {}; codigosPartida = new Set();
+    lista.forEach(f => { if(f.tipo === 'liga') ligasPorCodigo[f.code] = (metaDe(f.match_groups).liga || {}).nombre || 'Liga'; });
+    lista.forEach(f => { if(f.tipo === 'convocatoria' && (metaDe(f.match_groups).date || '') >= hoy()) codigosPartida.add(f.code); });
     const avisos = lista.map(aviso).filter(Boolean).sort((a, b) => a.orden.localeCompare(b.orden));
     const html = avisos.map((a, i) => {
       const etq = '<span class="og-etq">' + esc(a.f.grupo) + '</span>';
