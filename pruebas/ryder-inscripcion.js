@@ -390,7 +390,7 @@
     if(ov) ov.hidden = true; document.body.style.overflow = '';
     if(/[?&]ryder=/.test(location.search)){ try { history.replaceState(null, '', location.pathname); } catch(e){} }
   }
-  window.acgolfRyderIns = { _imagen: x => imagenPantalla(x || r), abrir: () => { let u = ''; try { u = localStorage.getItem(ULTIMA) || ''; } catch(e){} return abrir(u || null, ''); }, cerrar };
+  window.acgolfRyderIns = { _imagen: x => imagenPantalla(x || r), abrir: () => { let u = ''; try { u = localStorage.getItem(ULTIMA) || ''; } catch(e){} return abrir(u || null, ''); }, abrirCodigo: code => abrir(code, '', true), cerrar };
 
   // Enlace de WhatsApp: ?ryder=CODIGO&equipo=betis. Se recuerda en el móvil (como la invitación del grupo) porque quien
   // no tiene cuenta tiene que registrarse y confirmar su correo, y en esa vuelta el enlace se pierde. Se abre en cuanto hay sesión.
