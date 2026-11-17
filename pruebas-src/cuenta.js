@@ -194,6 +194,7 @@
       + '<ol class="cg-pasos"><li><i>1</i><span>Abre tu correo. Puede tardar <b>un minuto</b>.</span></li>'
       + '<li><i>2</i><span>¿No lo ves? Mira en <b>«Correo no deseado»</b> o «Spam».</span></li>'
       + '<li><i>3</i><span>Pulsa el enlace <b>una sola vez</b> y vuelve aquí.</span></li></ol>'
+      + '<div class="cg-sigue"><b>¿Sigue sin llegar?</b> Dile al administrador de tu grupo que pida ayuda a soporte, o escribe a <b>avisos@acgolf.es</b>.</div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgYa">Ya lo he confirmado</button>'
       + '<button type="button" class="cg-btn ghost" id="cgReenviar" disabled>Reenviar el correo</button>'
@@ -1418,7 +1419,7 @@
       + (ve('datos') ? '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
         + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>' : '')
       + (parte ? '' : '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
-        + '<a class="cg-btn ghost" id="cgSoporte" href="mailto:avisos@acgolf.es?subject=' + encodeURIComponent('Ayuda con acgolf' + (perfil.grupo ? ' (' + perfil.grupo + ')' : '')) + '" style="text-align:center;text-decoration:none;box-sizing:border-box;">✉️ Escribir a soporte</a>'
+        + '<button type="button" class="cg-btn ghost" id="cgSoporte">💬 Escribir a soporte</button>'
         + '<button type="button" class="cg-btn danger" id="cgBorrar">Borrar mi cuenta</button>')
       + (ve('datos') ? '<p class="cg-legal"><a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a><br>Aceptadas el ' + esc(new Date(perfil.privacidad_aceptada_en).toLocaleDateString('es-ES')) + '</p>' : '')
       + '<button type="button" class="cg-btn" id="cgCerrar"' + (parte ? ' data-nv="‹ Volver"' : '') + '>' + (parte ? 'Volver' : 'Volver a la app') + '</button>');
@@ -1432,6 +1433,7 @@
     if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);
     if($('cgMiembros')) $('cgMiembros').onclick = () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false);
     if($('cgClave')) $('cgClave').onclick = pantallaNuevaClave;
+    if($('cgSoporte')) $('cgSoporte').onclick = () => pantallaSoporte(() => panelMiCuenta(perfil));
     if($('cgSalir')) $('cgSalir').onclick = cerrarSesion;
     if($('cgDatos')) $('cgDatos').onclick = e => ocupado(e.target, async () => {
       const { data, error } = await client.rpc('mis_datos');
@@ -1845,6 +1847,7 @@
       panel: () => pantallaSuper(perfil),
       misGrupos: () => pantallaMisGrupos(perfil),
       invitar: () => panelMiCuenta(perfil, 'invitar'),
+      soporte: () => pantallaSoporte(() => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.abrir(); }),
       ayudajug: () => pantallaSoporte(() => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.abrir(); }, TEXTO_ADMIN),
       miembros: () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false),
       portada: () => asistentePortada(perfil, true),

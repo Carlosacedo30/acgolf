@@ -70,7 +70,7 @@
     + tarjeta(fila('reglas', '<path d="M12 6.5c-2-1.3-4.5-1.5-7-1v12.5c2.5-.5 5-.3 7 1 2-1.3 4.5-1.5 7-1V5.5c-2.5-.5-5-.3-7 1z"/><path d="M12 6.5V19"/>', 'Reglas de golf'))
     + tarjeta(fila('manual', '<circle cx="12" cy="12" r="8"/><path d="M9.8 9.8a2.3 2.3 0 1 1 3.4 2c-.8.5-1.2 1-1.2 1.9"/><path d="M12 16.6v.1"/>', 'Manual de la app'))
     + tarjeta(enlace('hato', '<path d="M9 19.5V4.5l8 3.2-8 3.2"/><path d="M5 19.5c1.5-1 6.5-1 8 0"/>', 'App Hato Verde'))
-    + tarjeta(enlace('soporte', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Escribir a soporte'))
+    + tarjeta(fila('soporte', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Escribir a soporte', 'Te contestamos en la app'))
     + '<div class="cn-sec" id="cnSecRedes">Síguenos</div>'
     + '<div class="cn-redes">' + R.REDES.map(r => '<a class="cn-red" href="' + esc(r.url) + '" target="_blank" rel="noopener"><em>' + svg(LOGOS[r.c] || '') + '</em><span>' + esc(r.n) + '</span></a>').join('') + '</div>'
     + mas('Reseñas y Sesión') + '</div>'
@@ -95,7 +95,6 @@
     if(DE_SIEMPRE[va]) return !!document.querySelector(DE_SIEMPRE[va]);
     if(va === 'foto') return !!(p && window.acgolfAvatares);
     if(va === 'hato') return !!$('irHatoBtn');             // solo los grupos que juegan en Hato Verde (ir-hato.js)
-    if(va === 'soporte') return !!window.acgolfAyuda;
     if(!p || !C) return false;
     if(va === 'panel') return !!p.es_super;
     if(va === 'invitar') return !!(p.es_admin || p.grupo_tipo === 'liga');   // 17-nov: cualquier jugador del grupo puede mandar el enlace y el QR
@@ -128,8 +127,6 @@
     // App Hato Verde y soporte: los mismos enlaces de siempre
     const hato = $('irHatoBtn'), fh = caja.querySelector('[data-va="hato"]');
     if(hato && fh.getAttribute('href') !== hato.getAttribute('href')){ fh.setAttribute('href', hato.getAttribute('href')); if(hato.target) fh.target = hato.target; }
-    const fs = caja.querySelector('[data-va="soporte"]');
-    if(window.acgolfAyuda){ const h = window.acgolfAyuda.correoSoporte(); if(fs.getAttribute('href') !== h) fs.setAttribute('href', h); }
     // Avisos: los interruptores de siempre (cuenta.js y avisos-movil.js)
     if(p && window.acgolfCuenta && pintadoPara !== p){ pintadoPara = p; window.acgolfCuenta.avisos($('cnAvisos'), aviso); }
     // El mismo escudo que el Inicio (inicio-nuevo.js lo copia de la portada del grupo), también en la tarjeta «Mis grupos»
@@ -162,7 +159,7 @@
     const va = f.dataset.va, C = window.acgolfCuenta;
     if(DE_SIEMPRE[va]){ const b = document.querySelector(DE_SIEMPRE[va]); if(b) b.click(); return; }
     if(va === 'foto'){ window.acgolfAvatares.editar(window.miPerfil); return; }
-    if(va === 'hato' || va === 'soporte') return; // son enlaces
+    if(va === 'hato') return; // es un enlace
     if(!C) return;
     if(va === 'borrar') C.borrar(f, aviso);
     else if(typeof C[va] === 'function') C[va]();

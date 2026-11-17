@@ -445,3 +445,6 @@ body:has(.pr-banda)::after{ content:''; position:fixed; inset:0; z-index:99998; 
 .sp-card .cg-btn{ margin:0; }
 
 .sp-rol{ color:#C6F24E !important; font:800 13px Archivo,Barlow,sans-serif !important; }
+
+.cg-sigue{ margin:12px 0; padding:14px 16px; border-radius:16px; background:#1B1E22; border:1px solid #33383E; color:#F2F4F5; font:600 17px/1.4 Barlow,sans-serif; }
+.cg-sigue b{ color:#C6F24E; }
