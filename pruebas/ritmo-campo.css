@@ -1,0 +1,36 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Ritmo del campo (ritmo-campo.js). Estilo «Grafito deportivo». */
+.rc{ position:fixed; inset:0; z-index:9100; background:#111316; color:#F2F4F5; overflow-y:auto; -webkit-overflow-scrolling:touch; font-family:Barlow,system-ui,sans-serif; padding:0 16px 40px; box-sizing:border-box; }
+.rc[hidden]{ display:none; }
+.rc > *{ max-width:620px; margin-left:auto; margin-right:auto; }
+.rc-top{ position:sticky; top:0; padding:12px 0 6px; background:#111316; z-index:2; }
+.rc-volver{ min-height:46px; padding:0 20px; border-radius:999px; border:1px solid rgba(198,242,78,.55); background:#24282D; color:#F2F4F5; font:900 17px Archivo,system-ui,sans-serif; cursor:pointer; }
+.rc-volver:active{ transform:scale(.97); }
+.rc-etq{ display:inline-block; padding:4px 12px; border-radius:999px; background:#2F3A1C; border:1px solid #C6F24E; color:#C6F24E; font:900 13px/1.1 Archivo,system-ui,sans-serif; letter-spacing:.05em; text-transform:uppercase; }
+.rc-camp{ font:900 28px/1.1 Archivo,system-ui,sans-serif; margin:8px 0 2px; }
+.rc-sub{ font-size:17px; color:#9AA3AB; margin:0 0 12px; }
+.rc-res{ display:flex; gap:8px; margin-bottom:12px; }
+.rc-n{ flex:1; background:#1B1E22; border-radius:16px; padding:10px 12px; border:1px solid #33383E; }
+.rc-n b{ display:block; font:900 30px/1 Archivo,system-ui,sans-serif; }
+.rc-n span{ font-size:14px; color:#9AA3AB; }
+.rc-n.rc-v{ border-color:#C6F24E; } .rc-n.rc-v b{ color:#C6F24E; }
+.rc-n.rc-a{ border-color:#F5B83D; } .rc-n.rc-a b{ color:#F5B83D; }
+.rc-n.rc-r{ border-color:#E5484D; } .rc-n.rc-r b{ color:#E5484D; }
+.rc-mapa{ background:#0e1f16; border-radius:20px; overflow:hidden; margin-bottom:12px; border:1px solid #33383E; }
+.rc-mapa svg{ display:block; width:100%; height:auto; }
+.rc-nocir{ background:#1B1E22; border:1px solid #33383E; border-radius:16px; padding:12px 14px; color:#9AA3AB; font-size:16px; margin-bottom:12px; }
+.rc-aviso{ background:#1B1E22; border:1px solid #E5484D; border-radius:18px; padding:12px 14px; margin-bottom:10px; }
+.rc-aviso b{ display:block; font:900 18px Archivo,system-ui,sans-serif; color:#E5484D; }
+.rc-aviso span{ display:block; font-size:16px; color:#9AA3AB; margin-top:3px; }
+.rc-lista{ display:flex; flex-direction:column; gap:8px; }
+.rc-fila{ display:flex; align-items:center; gap:12px; background:#1B1E22; border:1px solid #33383E; border-radius:18px; padding:12px 14px; }
+.rc-fila.rc-a{ border-color:#F5B83D; } .rc-fila.rc-r{ border-color:#E5484D; }
+.rc-dot{ width:18px; height:18px; border-radius:50%; flex:none; }
+.rc-tx{ flex:1; min-width:0; }
+.rc-tx b{ display:block; font:800 18px Archivo,system-ui,sans-serif; }
+.rc-tx span{ display:block; font-size:16px; color:#9AA3AB; margin-top:2px; }
+.rc-tx .rc-nom{ color:#C9D0D6; font-size:15px; line-height:1.3; }
+.rc-rt{ text-align:right; font:900 19px Archivo,system-ui,sans-serif; flex:none; }
+.rc-rt small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.06em; }
+.rc-vacio{ background:#1B1E22; border:1px solid #33383E; border-radius:18px; padding:18px 16px; text-align:center; }
+.rc-vacio b{ display:block; font:900 20px Archivo,system-ui,sans-serif; } .rc-vacio span{ display:block; font-size:16px; color:#9AA3AB; margin-top:6px; }

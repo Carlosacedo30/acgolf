@@ -997,7 +997,7 @@ s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
 # Letra Playfair Display (cursiva dorada de la fecha y del puesto), cargada igual que Archivo
 s = s.replace('</head>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap">\n<link rel="stylesheet" href="inicio-nuevo.css?v=7">\n<link rel="stylesheet" href="jugar-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-nueva.css?v=1">\n<link rel="stylesheet" href="cuenta-nueva.css?v=2">\n</head>', 1)
-s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=4"></script>\n<script src="otros-grupos.js?v=5"></script>\n<script src="jugar-nuevo.js?v=2"></script>\n<script src="liga-nueva.js?v=1"></script>\n<script src="cuenta-nueva.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=4"></script>\n<script src="otros-grupos.js?v=5"></script>\n<script src="jugar-nuevo.js?v=3"></script>\n<script src="liga-nueva.js?v=1"></script>\n<script src="cuenta-nueva.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
@@ -1008,6 +1008,16 @@ s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
 s = s.replace('</head>', '<link rel="stylesheet" href="ryder-inscripcion.css?v=2">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ryder-inscripcion.js?v=9"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+EOF
+
+# --- Ritmo del campo (17-nov-2026): pantalla del administrador del club con el circuito y el semáforo de cada grupo ---
+python3 - <<'EOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
+s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-campo.css?v=1">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-campo.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
