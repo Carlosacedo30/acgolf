@@ -432,6 +432,7 @@
     $('cgTengoInv').onclick = () => pantallaTengoInvitacion(email, null);
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
     $('cgAyuda').onclick = () => pantallaSoporte(() => pantallaBienvenida(email));
+    avisoSoporteBienvenida(email);
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
   }
   // Saca el código de lo que peguen: el enlace entero, el mensaje de WhatsApp entero o solo el código
@@ -846,6 +847,7 @@
       + '<div class="sp-esc"><input id="spTxt" type="text" maxlength="600" placeholder="' + esc(o.placeholder) + '" autocomplete="off" enterkeyhint="send">'
       + '<button type="button" class="cg-btn sp-env" id="spEnv">Enviar</button></div>');
     const caja = $('spMsgs'), txt = $('spTxt'), env = $('spEnv');
+    if(o.inicial) txt.value = o.inicial;
     let ultimo = -1;
     const pintar = async () => {
       let lista; try { lista = await o.cargar(); } catch(e){ return; }
@@ -888,9 +890,11 @@
     paraSop();
     mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver al panel</button>'
       + '<div class="sp-tt"><b>Mensajes de soporte</b><span>Super administrador</span></div></div>'
+      + '<button type="button" class="cg-btn sp-nuevo" id="spNuevo">✍️ Escribir yo primero a alguien</button>'
       + '<div id="cgMsg" class="cg-msg"></div><div class="sp-lista" id="spLista"><p class="sp-aviso">Un momento…</p></div>'
       + '<p class="sp-aviso">Cada mensaje nuevo también te llega a tu correo.</p>');
     $('spAtras').onclick = () => pantallaPanel(perfil);
+    $('spNuevo').onclick = () => pantallaElegirPersona(perfil);
     const r = await client.rpc('sa_soporte_hilos');
     if(!$('spLista')) return;
     if(r.error){ $('spLista').innerHTML = ''; msg('No se pudo cargar. ' + r.error.message); return; }
@@ -907,14 +911,71 @@
       b.onclick = () => pantallaHiloSoporte(perfil, h);
     });
   }
-  function pantallaHiloSoporte(perfil, h){
+  function pantallaHiloSoporte(perfil, h, inicial){
     chatSop({
-      titulo: h.nombre, sub: h.email || '', aviso: '',
+      titulo: h.nombre, sub: h.email || '', aviso: inicial ? 'Es un mensaje nuevo: la persona verá un aviso al abrir la app. Firma «soporte de acgolf», sin tu nombre.' : '', inicial,
       placeholder: 'Escribe tu respuesta…', vacio: 'Todavía no hay mensajes.',
       izq: h.nombre, der: 'Tú (soporte)', esMio: m => !!m.de_soporte, volver: () => { ponPuntoSoporte(); pantallaBandeja(perfil); },
       cargar: async () => { const r = await client.rpc('sa_soporte_hilo', { p_user: h.user_id }); if(r.error) throw r.error; return r.data; },
       mandar: async t => { const r = await client.rpc('sa_soporte_responder', { p_user: h.user_id, p_texto: t }); if(r.error) throw r.error; }
     });
+  }
+  // El super administrador elige a quién escribir primero (norma de Carlos: el mensaje sale firmado «soporte de acgolf», nunca con su nombre ni su teléfono)
+  const TEXTO_PRIMERO = 'Hola, somos el soporte de ayuda de acgolf. ¿Tienes algún problema para entrar? Cuéntanos y te ayudamos.';
+  async function pantallaElegirPersona(perfil){
+    paraSop();
+    mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver</button>'
+      + '<div class="sp-tt"><b>Escribir a…</b><span>Elige una persona</span></div></div>'
+      + '<div class="sp-chips" id="spChips"></div>'
+      + '<input id="spBuscar" class="sp-buscar" type="search" placeholder="Buscar por nombre o correo" autocomplete="off">'
+      + '<div id="cgMsg" class="cg-msg"></div><div class="sp-lista" id="spLista"><p class="sp-aviso">Un momento…</p></div>');
+    $('spAtras').onclick = () => pantallaBandeja(perfil);
+    const r = await client.rpc('sa_soporte_personas');
+    if(!$('spLista')) return;
+    if(r.error){ $('spLista').innerHTML = ''; msg('No se pudo cargar. ' + r.error.message); return; }
+    const todas = r.data || [];
+    let filtro = 'sin', buscar = '';
+    const FIL = [['sin', 'Sin nombre ni grupo', x => x.sin_perfil], ['todos', 'Todos', () => true], ['sinconf', 'Sin confirmar', x => !x.confirmado]];
+    const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+    const pintar = () => {
+      $('spChips').innerHTML = FIL.map(f => '<button type="button" class="sp-chip' + (filtro === f[0] ? ' on' : '') + '" data-f="' + f[0] + '">' + f[1] + ' (' + todas.filter(f[2]).length + ')</button>').join('');
+      const fn = FIL.find(f => f[0] === filtro)[2];
+      const l = todas.filter(fn).filter(x => !buscar || (String(x.nombre || '') + ' ' + String(x.email || '')).toLowerCase().indexOf(buscar) > -1);
+      $('spLista').innerHTML = l.length ? l.map(x => '<button type="button" class="sp-row' + (x.confirmado ? '' : ' sp-off') + '" data-u="' + esc(x.user_id) + '">'
+        + '<span class="sp-av">' + esc(ini(x.nombre)) + '</span><span class="sp-rt"><b>' + esc(x.nombre) + '</b>'
+        + '<small>' + (!x.confirmado ? 'No ha confirmado el correo: no puede ver mensajes en la app' : x.sin_perfil ? 'Sin nombre ni grupo' : esc(x.grupo || 'Sin grupo')) + '</small></span></button>').join('')
+        : '<p class="sp-aviso">No hay nadie con ese filtro.</p>';
+      $('spChips').querySelectorAll('.sp-chip').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
+      $('spLista').querySelectorAll('.sp-row').forEach(b => b.onclick = () => {
+        const x = todas.find(y => String(y.user_id) === b.dataset.u);
+        if(!x.confirmado){ msg('Esa persona no ha confirmado su correo y no puede entrar en la app. Escríbele por correo.'); return; }
+        pantallaHiloSoporte(perfil, { user_id: x.user_id, nombre: x.nombre, email: x.email }, TEXTO_PRIMERO);
+      });
+    };
+    pintar();
+    $('spBuscar').oninput = e => { buscar = e.target.value.trim().toLowerCase(); pintar(); };
+  }
+  // La persona: aviso «acgolf te ha escrito» (en la bienvenida y en el Inicio) si hay mensajes de soporte sin leer
+  function avisoSoporteTarjeta(volver){
+    return '<div class="sp-card" id="spAviso"><b>💬 acgolf te ha escrito</b><span>El equipo de soporte te ha dejado un mensaje.</span>'
+      + '<button type="button" class="cg-btn" id="spVer">Ver el mensaje</button></div>';
+  }
+  function avisoSoporteBienvenida(email){
+    client.rpc('soporte_sin_leer_usuario').then(r => {
+      if(!(Number(r && r.data) > 0) || document.getElementById('spAviso')) return;
+      const card = document.querySelector('#cuentaGate .cg-card'); if(!card) return;
+      card.insertAdjacentHTML('afterbegin', avisoSoporteTarjeta());
+      $('spVer').onclick = () => pantallaSoporte(() => pantallaBienvenida(email));
+    }, () => {});
+  }
+  async function avisoSoporteInicio(){
+    try {
+      const r = await client.rpc('soporte_sin_leer_usuario');
+      if(!(Number(r && r.data) > 0) || document.getElementById('spAviso')) return;
+      const conv = document.getElementById('convHome'); if(!conv) return;
+      conv.insertAdjacentHTML('afterend', avisoSoporteTarjeta());
+      $('spVer').onclick = () => pantallaSoporte(() => { ocultar(); const a = document.getElementById('spAviso'); if(a) a.remove(); });
+    } catch(e){}
   }
   // Señal de «tienes preguntas por contestar»: círculo rojo con número en el Panel general y puntito rojo en «Mi cuenta»
   function ponPuntoSoporte(n){
@@ -1804,5 +1865,6 @@
     }
     ocultar();
     tarjetaInvitar(perfil);
+    avisoSoporteInicio();
   })();
 })();
