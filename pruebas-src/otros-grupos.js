@@ -1,6 +1,7 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // Avisos de TODOS mis grupos en el Inicio (norma de Carlos, 17-nov-2026).
-// Bloque «Tus otros grupos»: partidas organizadas, ligas y Ryder de los otros grupos donde juega la persona.
+// Tarjetas de los otros grupos donde juega la persona: partidas organizadas, ligas y Ryder.
+// ORDEN CRONOLÓGICO (norma de Carlos, 17-nov-2026): estas tarjetas y las del grupo activo van en UNA sola lista, de la fecha más próxima a la más lejana.
 // · Los datos vienen de la función de la base «avisos_otros_grupos» (solo lectura, solo de sus grupos).
 // · Cada aviso lleva la etiqueta con el nombre del grupo. Si solo juega en un grupo, el bloque no sale.
 // · Al tocar una partida o una liga, la app cambia a ese grupo («cambiar_grupo», como «Cambiar de grupo»). La Ryder se abre directamente.
@@ -16,9 +17,27 @@
   const fecha = iso => { const d = new Date(iso + 'T12:00:00'); return isNaN(d) ? '' : DIAS[d.getDay()] + ' ' + d.getDate(); };
   const metaDe = mg => ((Array.isArray(mg) ? mg : []).find(g => g && g.meta) || {}).meta || {};
 
-  const sec = document.createElement('div'); sec.className = 'in-sec og-sec'; sec.textContent = 'Tus otros grupos'; sec.hidden = true;
-  const caja = document.createElement('div'); caja.className = 'og-caja'; caja.id = 'ogCaja'; caja.hidden = true;
-  ahora.appendChild(sec); ahora.appendChild(caja);
+  // Las tarjetas ajenas viven DENTRO de #convHome, mezcladas con las del grupo activo y ordenadas por fecha y hora
+  const nodos = { otros: [], ryder: [] };
+  const nodo = (html, fecha, hora) => { const t = document.createElement('template'); t.innerHTML = html.trim(); const n = t.content.firstChild; if(fecha) n.dataset.fecha = fecha; if(hora) n.dataset.hora = hora; return n; };
+  const esFecha = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
+  const clave = n => n.dataset.fecha ? n.dataset.fecha + ' ' + (n.dataset.hora || '00:00') : '9999-99-99';   // sin fecha: al final
+  let obs = null;
+  function colocar(){
+    const box = document.getElementById('convHome'); if(!box) return;
+    const todos = Array.from(box.querySelectorAll(':scope > .ip-card')).concat(nodos.otros, nodos.ryder);
+    todos.sort((a, b) => clave(a) < clave(b) ? -1 : clave(a) > clave(b) ? 1 : 0);
+    const ya = Array.from(box.children).filter(n => todos.indexOf(n) >= 0);
+    if(ya.length === todos.length && ya.every((n, i) => n === todos[i]) && todos.length && box.lastElementChild === todos[todos.length - 1]) return;
+    if(obs) obs.disconnect();
+    todos.forEach(n => box.appendChild(n));
+    if(obs) obs.observe(box, { childList: true });
+  }
+  (function vigilar(n){
+    const box = document.getElementById('convHome');
+    if(!box){ if(n < 40) setTimeout(() => vigilar(n + 1), 500); return; }
+    obs = new MutationObserver(colocar); obs.observe(box, { childList: true }); colocar();
+  })(0);
 
   // Nombre de la Ryder: el que puso el organizador o, si no hay, «Equipo 1 – Equipo 2»
   function tituloRyder(mg){
@@ -38,7 +57,7 @@
       const estoy = slots.some(g => (g.players || []).some(n => norm(n) === yo));
       const horas = slots.map(g => g.time).filter(Boolean).sort();
       const mj = /^(.*)J(\d+)$/.exec(f.code || ''), lg = mj && ligasPorCodigo[mj[1]];
-      return { orden: meta.date, tipo: lg ? lg + ' · jornada ' + mj[2] : 'Partida organizada', cuando: fecha(meta.date) + (horas[0] ? ' · ' + horas[0].slice(0, 5) : ''),
+      return { orden: meta.date, hora: horas[0] ? horas[0].slice(0, 5) : '', tipo: lg ? lg + ' · jornada ' + mj[2] : 'Partida organizada', cuando: fecha(meta.date) + (horas[0] ? ' · ' + horas[0].slice(0, 5) : ''),
                pie: apuntados + (apuntados === 1 ? ' apuntado' : ' apuntados') + (estoy ? ' · estás apuntado' : ''), boton: estoy ? '' : 'Ver y apuntarme', f };
     }
     if(f.tipo === 'liga'){
@@ -64,21 +83,20 @@
     lista.forEach(f => { if(f.tipo === 'liga') ligasPorCodigo[f.code] = (metaDe(f.match_groups).liga || {}).nombre || 'Liga'; });
     lista.forEach(f => { if(f.tipo === 'convocatoria' && (metaDe(f.match_groups).date || '') >= hoy()) codigosPartida.add(f.code); });
     const avisos = lista.map(aviso).filter(Boolean).sort((a, b) => a.orden.localeCompare(b.orden));
-    const html = avisos.map((a, i) => {
+    avisos.forEach(a => { a.nodo = null; });
+    nodos.otros.forEach(n => n.remove());
+    nodos.otros = avisos.map((a, i) => {
       const etq = '<span class="og-etq">' + esc(a.f.grupo) + '</span>';
       const cuerpo = a.cuando
         ? '<span class="og-k">' + esc(a.tipo) + '</span><span class="og-cuando">' + esc(a.cuando) + '</span><span class="og-sub">' + esc(a.pie) + '</span>' + (a.boton ? '<span class="og-btn">' + esc(a.boton) + '</span>' : '')
         : '<span class="og-tit">' + esc(a.titulo) + '</span><span class="og-sub">' + esc(a.sub) + '</span>';
-      return '<button type="button" class="og-card' + (a.cuando ? ' og-conv' : '') + '" data-i="' + i + '">' + etq + cuerpo + (a.cuando ? '' : '<i class="in-fl" aria-hidden="true"></i>') + '</button>';
-    }).join('');
-    if(caja.dataset.html !== html){ caja.innerHTML = html; caja.dataset.html = html; }
-    caja._avisos = avisos;
-    sec.hidden = caja.hidden = !avisos.length;
+      const n = nodo('<button type="button" class="og-card og-otro' + (a.cuando ? ' og-conv' : '') + '">' + etq + cuerpo + (a.cuando ? '' : '<i class="in-fl" aria-hidden="true"></i>') + '</button>', esFecha(a.orden) ? a.orden : '', a.hora);
+      n._aviso = a; return n;
+    });
+    colocar();
   }
 
   // ---- «Juegas la Ryder»: aviso arriba del todo si estoy apuntado en la lista de una Ryder (de cualquiera de mis grupos) ----
-  const cajaRyder = document.createElement('div'); cajaRyder.className = 'og-ryder'; cajaRyder.id = 'ogRyder'; cajaRyder.hidden = true;
-  ahora.appendChild(cajaRyder);
   function pintarRyder(lista){
     const yo = norm(window.miPerfil && window.miPerfil.player_name);
     const items = lista.map(f => {
@@ -86,26 +104,29 @@
       const eq = (f.match_groups || []).filter(g => g && g.equipo);
       const mio = eq.find(g => (g.players || []).some(n => norm(n) === yo)); if(!mio) return null;
       const cuando = meta.fecha ? fecha(meta.fecha) + ' ' + new Date(meta.fecha + 'T12:00:00').toLocaleDateString('es-ES', { month: 'long' }) : 'Fecha por confirmar';
-      return { code: f.code, titulo: tituloRyder(f.match_groups), equipo: mio.nombre, color: mio.color || '#C6F24E', sub: 'Vas con el ' + mio.nombre + ' · ' + cuando + (meta.campo ? ' · ' + meta.campo : '') };
+      return { code: f.code, fecha: meta.fecha || '', titulo: tituloRyder(f.match_groups), equipo: mio.nombre, color: mio.color || '#C6F24E', sub: 'Vas con el ' + mio.nombre + ' · ' + cuando + (meta.campo ? ' · ' + meta.campo : '') };
     }).filter(Boolean);
-    const html = items.map((a, i) => '<button type="button" class="og-card og-juego" data-i="' + i + '"><span class="og-etq">Juegas la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-sub"><i class="og-pt" style="background:' + esc(a.color) + '"></i>' + esc(a.sub) + '</span><i class="in-fl" aria-hidden="true"></i></button>').join('');
-    if(cajaRyder.dataset.html !== html){ cajaRyder.innerHTML = html; cajaRyder.dataset.html = html; }
-    cajaRyder._items = items; cajaRyder.hidden = !items.length;
+    nodos.ryder.forEach(n => n.remove());
+    nodos.ryder = items.map(a => {
+      const n = nodo('<button type="button" class="og-card og-juego"><span class="og-etq">Juegas la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-sub"><i class="og-pt" style="background:' + esc(a.color) + '"></i>' + esc(a.sub) + '</span><i class="in-fl" aria-hidden="true"></i></button>', esFecha(a.fecha) ? a.fecha : '', '');
+      n._ryder = a; return n;
+    });
+    colocar();
   }
-  cajaRyder.addEventListener('click', ev => {
-    const b = ev.target.closest('.og-juego'); if(!b) return;
-    const a = (cajaRyder._items || [])[+b.dataset.i]; if(a && window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo) window.acgolfRyderIns.abrirCodigo(a.code);
-  });
 
-  caja.addEventListener('click', async ev => {
-    const b = ev.target.closest('.og-card'); if(!b) return;
-    const a = (caja._avisos || [])[+b.dataset.i]; if(!a) return;
-    if(a.f.tipo === 'ryder' && window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo){ window.acgolfRyderIns.abrirCodigo(a.f.code); return; }
-    b.disabled = true;
-    const { error } = await initSupabase().rpc('cambiar_grupo', { p_grupo: a.f.grupo_id });
-    if(error){ b.disabled = false; alert('No se pudo cambiar de grupo. Revisa la conexión e inténtalo otra vez.'); return; }
-    location.reload();
-  });
+  (function(){
+    const box = document.getElementById('convHome') || ahora;
+    box.addEventListener('click', async ev => {
+      const b = ev.target.closest('.og-card'); if(!b) return;
+      if(b._ryder){ if(window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo) window.acgolfRyderIns.abrirCodigo(b._ryder.code); return; }
+      const a = b._aviso; if(!a) return;
+      if(a.f.tipo === 'ryder' && window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo){ window.acgolfRyderIns.abrirCodigo(a.f.code); return; }
+      b.disabled = true;
+      const { error } = await initSupabase().rpc('cambiar_grupo', { p_grupo: a.f.grupo_id });
+      if(error){ b.disabled = false; alert('No se pudo cambiar de grupo. Revisa la conexión e inténtalo otra vez.'); return; }
+      location.reload();
+    });
+  })();
 
   async function cargar(){
     if(document.documentElement.classList.contains('es-invitado')) return;

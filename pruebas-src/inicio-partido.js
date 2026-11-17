@@ -88,7 +88,7 @@
           return '<button type="button" class="ip-hora' + (mi === k ? ' sel' : '') + '" data-c="' + esc(c.code) + '" data-k="' + k + '"' + (llena ? ' disabled' : '') + '>' + esc(convEtq(c, k)) + (llena ? '<small>llena</small>' : '') + '</button>';
         }).join('') + '<button type="button" class="ip-hora no" data-c="' + esc(c.code) + '" data-k="-1">No voy</button></div>' : '';
       const cambiar = mi >= 0 && !c.roundCode && abierta !== c.code ? '<button type="button" class="ip-cambiar" data-apuntar="' + esc(c.code) + '">Cambiar hora o decir que no voy</button>' : '';
-      return '<div class="ip-card' + (esHoy ? ' hoy' : '') + (ligaInfo(c) ? ' ip-card-liga' : '') + '">'
+      return '<div class="ip-card' + (esHoy ? ' hoy' : '') + (ligaInfo(c) ? ' ip-card-liga' : '') + '" data-fecha="' + esc(c.date) + '" data-hora="' + esc(String((c.times && c.times[0]) || '')) + '">'
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
         + '<div class="ip-eti">' + etiqueta + '</div>' + jornada(c) + '<div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
         + derecha + '</div>' + elegir + cambiar
