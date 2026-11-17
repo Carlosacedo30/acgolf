@@ -1339,7 +1339,7 @@
     const ve = k => !parte || parte === k;
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
       + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
-      + (perfil.es_admin && ve('invitar') ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
+      + ((perfil.es_admin || perfil.grupo_tipo === 'liga') && ve('invitar') ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
       + (window.acgolfAvatares && !parte ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
       + (perfil.es_super && !parte ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
@@ -1378,21 +1378,23 @@
       msg('Descargado: mis-datos-golf.json', true);
     });
     if($('cgBorrar')) $('cgBorrar').onclick = e => borrarCuenta(e.target, msg);
-    if(perfil.es_admin && ve('invitar')){
+    if((perfil.es_admin || perfil.grupo_tipo === 'liga') && ve('invitar')){
       const pintarInvita = (inv) => {
         const box = $('cgInvita'); if(!box) return;
         if(!inv){ box.remove(); return; }
         const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
         const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
-        box.innerHTML = '<b>Invita a tus amigos a «' + esc(inv.grupo) + '»</b>'
+        box.innerHTML = '<b>Invita a tus ' + (perfil.es_admin ? 'amigos' : 'compañeros') + ' a «' + esc(inv.grupo) + '»</b>'
           + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a tus amigos. Al abrirlo y crear su cuenta, entran directamente en tu grupo.</div>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
           + (window.acgolfQR ? '<div class="qr-caja"><b>Código QR del grupo</b><img id="cgQR" alt="Código QR para unirse a «' + esc(inv.grupo) + '»"><small>Para imprimir o enseñar en el móvil: al escanearlo entran directamente en el grupo.</small>'
               + '<a class="cg-btn ghost" id="cgQRBajar" download="QR-' + esc(String(inv.grupo).replace(/[^\wÀ-ÿ]+/g, '-')) + '.png">Descargar el QR</a></div>' : '')
-          + '<button type="button" class="cg-link" id="cgNuevoEnlace">Cambiar el enlace (el anterior deja de valer)</button>';
+          + '<button type="button" class="cg-btn ghost" id="cgCopiarEnlace">Copiar el enlace</button>'
+          + (perfil.es_admin ? '<button type="button" class="cg-link" id="cgNuevoEnlace">Cambiar el enlace (el anterior deja de valer)</button>' : '');
+        $('cgCopiarEnlace').onclick = async e => { try { await navigator.clipboard.writeText(texto); e.target.textContent = '¡Copiado!'; } catch(x){ prompt('Copia este mensaje:', texto); } };
         if(window.acgolfQR && $('cgQR')){ try { const png = window.acgolfQR.lamina(enlace, inv.grupo); $('cgQR').src = png; $('cgQRBajar').href = png; } catch(e){ const c = box.querySelector('.qr-caja'); if(c) c.remove(); } }
-        $('cgNuevoEnlace').onclick = async () => {
+        if($('cgNuevoEnlace')) $('cgNuevoEnlace').onclick = async () => {
           if(!confirm('¿Cambiar el enlace de invitación?\nEl enlace anterior dejará de funcionar.')) return;
           const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: true }); pintarInvita(r.data);
         };

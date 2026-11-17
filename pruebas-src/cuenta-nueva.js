@@ -56,7 +56,7 @@
     // ----- Trozo 2: Mi grupo · Avisos -----
     + '<div class="cn-parte" id="cnP2">'
     + '<div class="cn-sec">Mi grupo</div>'
-    + tarjeta(fila('invitar', '<circle cx="10" cy="9.5" r="3.2"/><path d="M4 19c.7-3 3-4.6 6-4.6 1.2 0 2.3.3 3.2.7"/><path d="M18 14v6M15 17h6"/>', 'Invitar amigos', 'Mandar el enlace del grupo'))
+    + tarjeta(fila('invitar', '<circle cx="10" cy="9.5" r="3.2"/><path d="M4 19c.7-3 3-4.6 6-4.6 1.2 0 2.3.3 3.2.7"/><path d="M18 14v6M15 17h6"/>', 'Invitar amigos', 'Enlace y QR del grupo'))
     + '<div class="cn-adm" id="cnAdm" hidden><i>Solo administrador</i>'
     +   fila('miembros', '<path d="M5 7h9M5 12h9M5 17h6"/><path d="M16 16.5l2 2 3.5-4"/>', 'Miembros', 'Quién está en el grupo')
     +   fila('portada', '<rect x="4" y="5.5" width="16" height="13" rx="2"/><path d="M4 15.5l4.5-4 3.5 3 2.5-2 5.5 4.5"/><circle cx="15.5" cy="9.5" r="1.2"/>', 'Portada', 'Escudo, colores y campo') + '</div>'
@@ -97,7 +97,7 @@
     if(va === 'soporte') return !!window.acgolfAyuda;
     if(!p || !C) return false;
     if(va === 'panel') return !!p.es_super;
-    if(va === 'invitar') return !!p.es_admin;              // el enlace del grupo solo lo tiene el administrador, como siempre
+    if(va === 'invitar') return !!(p.es_admin || p.grupo_tipo === 'liga');   // 17-nov: cualquier jugador del grupo puede mandar el enlace y el QR
     if(va === 'miembros' || va === 'portada') return !!(p.es_admin && p.grupo_tipo === 'liga');
     return true;
   }
