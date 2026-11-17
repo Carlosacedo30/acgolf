@@ -20,6 +20,11 @@
   const caja = document.createElement('div'); caja.className = 'og-caja'; caja.id = 'ogCaja'; caja.hidden = true;
   ahora.appendChild(sec); ahora.appendChild(caja);
 
+  // Nombre de la Ryder: el que puso el organizador o, si no hay, «Equipo 1 – Equipo 2»
+  function tituloRyder(mg){
+    const meta = metaDe(mg), eq = (Array.isArray(mg) ? mg : []).filter(g => g && g.equipo);
+    return meta.titulo || (eq.length >= 2 ? eq[0].nombre + ' – ' + eq[1].nombre : 'Ryder Cup');
+  }
   // Convierte cada fila de la base en un aviso (o nada, si ya no vale)
   // Cada jornada de una liga se organiza como una partida con el código «CODIGOLIGA» + «J» + número de jornada:
   // si ya está organizada, sale UNA sola tarjeta (la partida, con el nombre de la liga) y no otra de «Próxima jornada».
@@ -47,7 +52,9 @@
     }
     if(f.tipo === 'ryder'){
       if(meta.cerrada) return null;
-      return { orden: '0', tipo: 'Ryder', titulo: meta.titulo || 'Ryder Cup', sub: 'Inscripción abierta · apúntate a tu equipo', f };
+      // si ya estoy apuntado sale arriba como «Juegas la Ryder»: no se repite aquí (norma: un evento, una tarjeta)
+      if((f.match_groups || []).some(g => g && g.equipo && (g.players || []).some(n => norm(n) === yo))) return null;
+      return { orden: '0', tipo: 'Ryder', titulo: tituloRyder(f.match_groups), sub: 'Inscripción abierta · apúntate a tu equipo', f };
     }
     return null;
   }
@@ -69,6 +76,27 @@
     sec.hidden = caja.hidden = !avisos.length;
   }
 
+  // ---- «Juegas la Ryder»: aviso arriba del todo si estoy apuntado en la lista de una Ryder (de cualquiera de mis grupos) ----
+  const cajaRyder = document.createElement('div'); cajaRyder.className = 'og-ryder'; cajaRyder.id = 'ogRyder'; cajaRyder.hidden = true;
+  ahora.appendChild(cajaRyder);
+  function pintarRyder(lista){
+    const yo = norm(window.miPerfil && window.miPerfil.player_name);
+    const items = lista.map(f => {
+      const meta = metaDe(f.match_groups); if(meta.fecha && meta.fecha < hoy()) return null;
+      const eq = (f.match_groups || []).filter(g => g && g.equipo);
+      const mio = eq.find(g => (g.players || []).some(n => norm(n) === yo)); if(!mio) return null;
+      const cuando = meta.fecha ? fecha(meta.fecha) + ' ' + new Date(meta.fecha + 'T12:00:00').toLocaleDateString('es-ES', { month: 'long' }) : 'Fecha por confirmar';
+      return { code: f.code, titulo: tituloRyder(f.match_groups), equipo: mio.nombre, color: mio.color || '#C6F24E', sub: 'Vas con el ' + mio.nombre + ' · ' + cuando + (meta.campo ? ' · ' + meta.campo : '') };
+    }).filter(Boolean);
+    const html = items.map((a, i) => '<button type="button" class="og-card og-juego" data-i="' + i + '"><span class="og-etq">Juegas la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-sub"><i class="og-pt" style="background:' + esc(a.color) + '"></i>' + esc(a.sub) + '</span><i class="in-fl" aria-hidden="true"></i></button>').join('');
+    if(cajaRyder.dataset.html !== html){ cajaRyder.innerHTML = html; cajaRyder.dataset.html = html; }
+    cajaRyder._items = items; cajaRyder.hidden = !items.length;
+  }
+  cajaRyder.addEventListener('click', ev => {
+    const b = ev.target.closest('.og-juego'); if(!b) return;
+    const a = (cajaRyder._items || [])[+b.dataset.i]; if(a && window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo) window.acgolfRyderIns.abrirCodigo(a.code);
+  });
+
   caja.addEventListener('click', async ev => {
     const b = ev.target.closest('.og-card'); if(!b) return;
     const a = (caja._avisos || [])[+b.dataset.i]; if(!a) return;
@@ -81,7 +109,9 @@
 
   async function cargar(){
     if(document.documentElement.classList.contains('es-invitado')) return;
-    try { const r = await initSupabase().rpc('avisos_otros_grupos'); if(!r.error) pintar(Array.isArray(r.data) ? r.data : []); } catch(e){}
+    const client = initSupabase();
+    try { const r = await client.rpc('avisos_otros_grupos'); if(!r.error) pintar(Array.isArray(r.data) ? r.data : []); } catch(e){}
+    try { const r = await client.rpc('ryder_mia'); if(!r.error) pintarRyder(Array.isArray(r.data) ? r.data : []); } catch(e){}
   }
   (function esperar(n){
     if(window.miPerfil){ cargar(); return; }

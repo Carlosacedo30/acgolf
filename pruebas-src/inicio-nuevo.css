@@ -243,3 +243,15 @@ html.in-on #ogCaja .og-tit{ font:700 20px/1.1 Archivo, system-ui, Arial, sans-se
 html.in-on #ogCaja .og-sub{ font:600 17px/1.2 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-top:4px; }
 html.in-on #ogCaja .og-btn{ align-self:stretch; margin-top:10px; padding:12px 0; text-align:center; border-radius:999px; background:linear-gradient(180deg,#EBD08A,#C9A54A); color:#16120A; font:700 17px/1.1 Archivo, system-ui, Arial, sans-serif; }
 html.in-on #ogCaja .og-card .in-fl{ position:absolute; right:16px; top:50%; margin-top:-5px; }
+
+/* Juegas la Ryder: aviso arriba del Inicio (otros-grupos.js) */
+html.in-on #homeAhora > #ogRyder{ order:3; display:flex; flex-direction:column; gap:10px; margin-top:14px; }
+html.in-on #ogRyder[hidden]{ display:none; }
+html.in-on #ogRyder .og-card{ box-sizing:border-box; width:100%; position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; padding:14px 40px 14px 18px; border-radius:18px;
+  background:#2F3A1C; border:1px solid rgba(198,242,78,.55); color:#F4F1E8; cursor:pointer; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on #ogRyder .og-card:active{ transform:scale(.97); }
+html.in-on #ogRyder .og-etq{ display:inline-block; margin-bottom:6px; padding:4px 12px; border-radius:999px; background:#C6F24E; color:#111316; font:800 13px/1.1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.05em; text-transform:uppercase; }
+html.in-on #ogRyder .og-tit{ font:800 22px/1.1 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on #ogRyder .og-sub{ font:600 17px/1.25 Barlow, system-ui, Arial, sans-serif; color:#d9e4bd; margin-top:4px; }
+html.in-on #ogRyder .og-pt{ display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; vertical-align:-1px; }
+html.in-on #ogRyder .og-card .in-fl{ position:absolute; right:16px; top:50%; margin-top:-5px; }
