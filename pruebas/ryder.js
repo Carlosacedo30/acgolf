@@ -56,7 +56,7 @@
   };
   const coma = v => v == null ? '—' : String(v).replace('.', ',');
   const campoDe = id => { const l = typeof COURSES !== 'undefined' ? COURSES : []; return l.find(c => c.id === id) || l.find(c => c.id === 'hato-verde'); };
-  const nombresGrupo = () => (ryderJugadores ? Object.keys(ryderJugadores) : (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : [])).sort((a, b) => a.localeCompare(b, 'es'));
+  const nombresGrupo = () => { const base = ryderJugadores ? Object.keys(ryderJugadores) : (typeof FAVORITE_PLAYERS !== 'undefined' ? FAVORITE_PLAYERS.slice() : []); const extra = borrador && borrador.deLista ? Object.keys(borrador.equipo || {}) : []; return Array.from(new Set(base.concat(extra))).sort((a, b) => a.localeCompare(b, 'es')); };
   const ordenHcp = (l, getHcp) => { const f = getHcp || hcpDe; return l.slice().sort((x, y) => (f(x) == null ? 99 : f(x)) - (f(y) == null ? 99 : f(y)) || x.localeCompare(y, 'es')); };
   function fechaLarga(iso){
     if(!iso) return '';
@@ -238,8 +238,18 @@
       body.innerHTML = '<div class="ry-tit">Ryder Cup</div>'
         + '<p class="ry-p">Dos equipos, partidos a match play con hándicap en tres modalidades: foursome, fourball e individuales. Ganar un partido da 1 punto al equipo; empatarlo, medio punto a cada uno.</p>'
         + '<button type="button" class="ry-info-btn" id="ryInfo"><span aria-hidden="true">i</span>Cómo se juega: modalidades, puntos y quién sale primero</button>'
-        + (admin() ? '<button type="button" class="ry-btn" id="ryNueva">Crear una Ryder</button>' : '<p class="ry-p">Todavía no hay ninguna Ryder. La organiza el administrador del grupo.</p>');
+        + (admin()
+          ? '<div class="ry-publica"><b>Publica tu Ryder</b>'
+            + '<div class="ry-paso"><span>1</span><p>Pones el nombre, el día, el campo, y el nombre, color y capitán de cada equipo.</p></div>'
+            + '<div class="ry-paso"><span>2</span><p>Lo mandas al WhatsApp: se crean <b>dos enlaces</b>, uno por equipo. Cada jugador pulsa el suyo y elige con quién juega.</p></div>'
+            + '<div class="ry-paso"><span>3</span><p>Cuando cierres la lista, la app te prepara los partidos por hándicap y tú los cambias.</p></div>'
+            + '<button type="button" class="ry-btn" id="ryPublica">Publicar mi Ryder</button></div>'
+            + '<button type="button" class="ry-btn ry-sec" id="ryLista">Ver la lista de inscripción</button>'
+            + '<button type="button" class="ry-info-btn" id="ryNueva">Crear una Ryder eligiendo yo a los jugadores, sin lista</button>'
+          : '<button type="button" class="ry-btn" id="ryLista">Ver la lista de inscripción</button><p class="ry-p">Todavía no hay ninguna Ryder en marcha. La organiza el administrador del grupo.</p>');
       if($('ryNueva')) $('ryNueva').onclick = empezarCrear;
+      if($('ryPublica')) $('ryPublica').onclick = () => { cerrar(); if(window.acgolfRyderIns && window.acgolfRyderIns.nueva) window.acgolfRyderIns.nueva(); };
+      if($('ryLista')) $('ryLista').onclick = () => { cerrar(); if(window.acgolfRyderIns) window.acgolfRyderIns.abrir(); };
       $('ryInfo').onclick = verInfo;
       return;
     }
@@ -453,6 +463,19 @@
       date: hoyIso(), courseId: 'hato-verde', modos: { foursome: true, fourball: true, individual: true }, equipo: {}, duelos: [], sobran: [] };
     vista = 'crear'; ryderJugadores = null; cargarJugadoresRyder(); pintar();
   }
+  // «Publica tu Ryder»: al cerrar la lista de inscripción se pasa aquí con los equipos, colores, nombres y jugadores ya puestos.
+  // Se empieza en el paso 2 (hándicap de cada uno) y la app propone los partidos por hándicap en el paso 3.
+  function desdeLista(x){
+    const ov = ventana(); ov.hidden = false; document.body.classList.add('ry-abierta');
+    const nn = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const l = typeof COURSES !== 'undefined' ? COURSES : [];
+    const campo = x.campo ? l.find(c => nn(c.name).includes(nn(x.campo)) || nn(x.campo).includes(nn(c.name.replace(/^Club\s+/i, '')))) : null;
+    const [E1, E2] = x.equipos;
+    borrador = { paso: 2, deLista: true, titulo: x.titulo || ((E1.nombre + ' – ' + E2.nombre)), nombreA: E1.nombre, colorA: E1.color, nombreB: E2.nombre, colorB: E2.color,
+      date: x.fecha || hoyIso(), courseId: campo ? campo.id : 'hato-verde', modos: { foursome: true, fourball: true, individual: true }, equipo: {}, duelos: [], sobran: [] };
+    E1.players.forEach(n => { borrador.equipo[n] = 'A'; }); E2.players.forEach(n => { borrador.equipo[n] = 'B'; });
+    vista = 'crear'; ryderJugadores = null; cargarJugadoresRyder(); pintar();
+  }
   // Empareja por hándicap: individuales, el 1º contra el 1º…; parejas, los dos mejores juntos contra los dos mejores del otro…
   function emparejar(){
     const b = borrador;
@@ -590,5 +613,5 @@
     ref.parentNode.insertBefore(b, ref.nextSibling);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ponerBoton); else ponerBoton();
-  window.acgolfRyder = { abrir, _estado: estado, _puntos: puntos };
+  window.acgolfRyder = { abrir, desdeLista, _estado: estado, _puntos: puntos };
 })();

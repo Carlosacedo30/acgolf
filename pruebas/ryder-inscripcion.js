@@ -8,6 +8,7 @@
 (function(){
   const TAG = 'Inscripción Ryder';
   const COLORES = ['#D7263D', '#2E9E4F'];
+  const PALETA = [['#C8102E','Rojo'],['#1F4E9C','Azul'],['#0A9B4E','Verde'],['#E0A800','Amarillo'],['#6B3FA0','Morado'],['#E06A1B','Naranja'],['#2B2F36','Negro'],['#0E8C9A','Turquesa']];
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const admin = () => !!(window.miPerfil && window.miPerfil.es_admin);
   const yo = () => (window.miPerfil && window.miPerfil.player_name) || '';
@@ -33,11 +34,11 @@
     const meta = (mg.find(g => g && g.meta) || {}).meta || {};
     const eqs = mg.filter(g => g && g.equipo).slice(0, 2).map((g, i) => ({ nombre: String(g.nombre || ('Equipo ' + (i + 1))), color: g.color || COLORES[i], capitan: String(g.capitan || ''), players: Array.isArray(g.players) ? g.players.slice() : [] }));
     while(eqs.length < 2) eqs.push({ nombre: 'Equipo ' + (eqs.length + 1), color: COLORES[eqs.length], capitan: '', players: [] });
-    return { id: row.id, code: row.code, updatedAt: row.updated_at, titulo: meta.titulo || '', fecha: meta.fecha || '', campo: meta.campo || '', cerrada: !!meta.cerrada, equipos: eqs };
+    return { id: row.id, code: row.code, updatedAt: row.updated_at, titulo: meta.titulo || '', fecha: meta.fecha || '', campo: meta.campo || '', cerrada: !!meta.cerrada, abierta: (meta.abierta === undefined ? undefined : !!meta.abierta), equipos: eqs };
   }
   function aGrupos(x){
     return x.equipos.map((e, i) => ({ equipo: String(i + 1), nombre: e.nombre, color: e.color, capitan: e.capitan || '', players: e.players, handicaps: [], scores: {} }))
-      .concat([{ players: [], handicaps: [], scores: {}, meta: { titulo: x.titulo, fecha: x.fecha, campo: x.campo, cerrada: !!x.cerrada } }]);
+      .concat([{ players: [], handicaps: [], scores: {}, meta: Object.assign({ titulo: x.titulo, fecha: x.fecha, campo: x.campo, cerrada: !!x.cerrada }, x.abierta === undefined ? {} : { abierta: !!x.abierta }) }]);
   }
   const esCap = (x, n) => x.equipos.some(e => e.capitan && norm(e.capitan) === norm(n));
   const tituloDe = x => x.titulo || (x.equipos[0].nombre + ' – ' + x.equipos[1].nombre);
@@ -119,7 +120,7 @@
       return;
     }
     if(!r && noPermitido){
-      o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-vacio">Esta Ryder es solo para los grupos Los Iscariotes, Cajapollos y Los Domingueros.</div></div>';
+      o.innerHTML = '<div class="ri-in">' + cabecera(null) + '<div class="ri-vacio">Esta Ryder es solo para los jugadores del grupo que la organiza. Pídele al organizador que la abra a otros grupos.</div></div>';
       return;
     }
     if(!r){
@@ -160,6 +161,7 @@
         + '<button type="button" class="ri-btn ri-pri" data-ri="wa">Mandar al WhatsApp</button>'
         + '<button type="button" class="ri-btn ri-sec" data-ri="watexto">Mandar solo el texto al WhatsApp</button>'
         + '<button type="button" class="ri-btn ri-sec" data-ri="copiar">Copiar el mensaje</button>'
+        + '<button type="button" class="ri-btn ri-pri" data-ri="preparar">' + (x.cerrada ? 'Preparar los partidos' : 'Cerrar la lista y preparar los partidos') + '</button>'
         + '<button type="button" class="ri-btn ri-sec" data-ri="editar">Cambiar día y campo</button>'
         + '<button type="button" class="ri-btn ri-sec" data-ri="cerrarlista">' + (x.cerrada ? 'Abrir la lista otra vez' : 'Cerrar la lista') + '</button>'
         + '<button type="button" class="ri-link" data-ri="borrar">Borrar esta inscripción</button></div>';
@@ -203,20 +205,32 @@
     o.innerHTML = '<div class="ri-in">' + cabecera(r).replace('Ryder Cup</div>', 'Cambiar día y campo</div>')
       + '<label class="ri-lab">Día (déjalo vacío si aún no se sabe)<input id="riF" type="date" class="ri-inp" value="' + esc(r.fecha) + '" min="' + hoy + '"></label>'
       + '<label class="ri-lab">Campo (déjalo vacío si aún no se sabe)<input id="riC" class="ri-inp" maxlength="60" placeholder="Por confirmar" value="' + esc(r.campo) + '"></label>'
+      + (r.abierta === undefined ? '' : '<label class="ri-check"><input type="checkbox" id="riAb"' + (r.abierta ? ' checked' : '') + '><span><b>Abrir a jugadores de otros grupos</b><br>Si lo dejas apagado, solo se apuntan los de tu grupo.</span></label>')
       + '<button type="button" class="ri-btn ri-pri" data-ri="guardarEd">Guardar</button>'
       + '<button type="button" class="ri-link" data-ri="volverEd">Volver</button></div>';
   }
   function pintarCrear(o){
     const hoy = new Date().toISOString().slice(0, 10);
-    o.innerHTML = '<div class="ri-in">' + cabecera(null).replace('Ryder Cup</h1>', 'Nueva inscripción</h1>')
-      + '<label class="ri-lab">Equipo 1<input id="riE1" class="ri-inp" maxlength="24" value="Sevilla"></label>'
-      + '<label class="ri-lab">Capitán del equipo 1 (nombre completo)<input id="riK1" class="ri-inp" maxlength="60" value="Juan Ramon Burgos Cantos"></label>'
-      + '<label class="ri-lab">Equipo 2<input id="riE2" class="ri-inp" maxlength="24" value="Betis"></label>'
-      + '<label class="ri-lab">Capitán del equipo 2 (nombre completo)<input id="riK2" class="ri-inp" maxlength="60" value="Jose Moises Romero Martinez"></label>'
-      + '<label class="ri-lab">Día (puedes dejarlo vacío)<input id="riF" type="date" class="ri-inp" min="' + hoy + '"></label>'
-      + '<label class="ri-lab">Campo (puedes dejarlo vacío)<input id="riC" class="ri-inp" maxlength="60" placeholder="Por confirmar"></label>'
+    const paleta = k => '<div class="ri-cols">' + PALETA.map(([c, n]) => '<button type="button" class="ri-col' + (nuevoCol[k] === c ? ' sel' : '') + '" data-ri="col" data-k="' + k + '" data-c="' + c + '" style="background:' + c + '" aria-label="' + n + '"></button>').join('') + '</div>';
+    o.innerHTML = '<div class="ri-in">' + cabecera(null).replace('Ryder Cup</h1>', 'Publica tu Ryder</h1>')
+      + '<div class="ri-dat">Pones los equipos y mandas dos enlaces al WhatsApp: cada jugador pulsa el suyo y elige con quién juega.</div>'
+      + '<label class="ri-lab">Nombre del evento (puedes dejarlo vacío)<input id="riT" class="ri-inp" maxlength="40" placeholder="Ryder Cup" value="' + esc(nuevoTxt.t) + '"></label>'
+      + '<label class="ri-lab">Equipo 1<input id="riE1" class="ri-inp" maxlength="24" value="' + esc(nuevoTxt.e1) + '"></label>' + paleta(0)
+      + '<label class="ri-lab">Capitán del equipo 1 (nombre completo, puedes dejarlo vacío)<input id="riK1" class="ri-inp" maxlength="60" value="' + esc(nuevoTxt.k1) + '"></label>'
+      + '<label class="ri-lab">Equipo 2<input id="riE2" class="ri-inp" maxlength="24" value="' + esc(nuevoTxt.e2) + '"></label>' + paleta(1)
+      + '<label class="ri-lab">Capitán del equipo 2 (nombre completo, puedes dejarlo vacío)<input id="riK2" class="ri-inp" maxlength="60" value="' + esc(nuevoTxt.k2) + '"></label>'
+      + '<label class="ri-lab">Día (puedes dejarlo vacío)<input id="riF" type="date" class="ri-inp" min="' + hoy + '" value="' + esc(nuevoTxt.f) + '"></label>'
+      + '<label class="ri-lab">Campo (puedes dejarlo vacío)<input id="riC" class="ri-inp" maxlength="60" placeholder="Por confirmar" value="' + esc(nuevoTxt.c) + '"></label>'
+      + '<label class="ri-check"><input type="checkbox" id="riAb"' + (nuevoTxt.ab ? ' checked' : '') + '><span><b>Abrir a jugadores de otros grupos</b><br>Apagado: cada grupo tiene su propia Ryder y solo se apuntan los de tu grupo.</span></label>'
       + '<button type="button" class="ri-btn ri-pri" data-ri="crear">Abrir la inscripción</button>'
       + '<button type="button" class="ri-link" data-ri="atras">Volver</button></div>';
+  }
+  const nuevoCol = ['#C8102E', '#1F4E9C'];
+  const nuevoTxt = { t: '', e1: 'Rojos', e2: 'Azules', k1: '', k2: '', f: '', c: '', ab: false };
+  function guardarForm(){
+    const g = id => { const e = document.getElementById(id); return e ? e.value : ''; };
+    nuevoTxt.t = g('riT'); nuevoTxt.e1 = g('riE1'); nuevoTxt.e2 = g('riE2'); nuevoTxt.k1 = g('riK1'); nuevoTxt.k2 = g('riK2'); nuevoTxt.f = g('riF'); nuevoTxt.c = g('riC');
+    const ab = document.getElementById('riAb'); if(ab) nuevoTxt.ab = ab.checked;
   }
   function mensaje(){
     const e = r.equipos;
@@ -328,8 +342,10 @@
     const client = initSupabase(); if(!client) return;
     const n1 = (document.getElementById('riE1').value || '').trim(), n2 = (document.getElementById('riE2').value || '').trim();
     if(!n1 || !n2 || norm(n1) === norm(n2)){ alert('Pon dos nombres de equipo distintos.'); return; }
-    const x = { titulo: '', fecha: document.getElementById('riF').value || '', campo: (document.getElementById('riC').value || '').trim(), cerrada: false,
-      equipos: [{ nombre: n1, color: COLORES[0] }, { nombre: n2, color: COLORES[1] }].map((e, k) => { const c = (document.getElementById(k ? 'riK2' : 'riK1').value || '').trim(); return Object.assign(e, { capitan: c, players: c ? [c] : [] }); }) };
+    if(nuevoCol[0] === nuevoCol[1]){ alert('Elige un color distinto para cada equipo.'); return; }
+    const x = { titulo: (document.getElementById('riT').value || '').trim(), fecha: document.getElementById('riF').value || '', campo: (document.getElementById('riC').value || '').trim(), cerrada: false,
+      abierta: !!(document.getElementById('riAb') && document.getElementById('riAb').checked),
+      equipos: [{ nombre: n1, color: nuevoCol[0] }, { nombre: n2, color: nuevoCol[1] }].map((e, k) => { const c = (document.getElementById(k ? 'riK2' : 'riK1').value || '').trim(); return Object.assign(e, { capitan: c, players: c ? [c] : [] }); }) };
     const { data, error } = await client.from('rounds').insert({ code: genRoundCode(), course_id: null, course_name: 'Ryder Cup', round_name: TAG, scoring_type: 'stableford', match_groups: aGrupos(x) })
       .select('id, code, match_groups, updated_at').single();
     if(error){ console.error(error); alert('No se pudo abrir la inscripción. Revisa la conexión.'); return; }
@@ -341,6 +357,7 @@
     if(a === 'cerrar') return cerrar();
     if(a === 'cuenta'){ if(window.acgolfGuardarCuenta){ cerrar(); window.acgolfGuardarCuenta(); } return; }
     if(a === 'nueva'){ creando = true; return pintar(); }
+    if(a === 'col'){ guardarForm(); nuevoCol[Number(b.dataset.k)] = b.dataset.c; return pintar(); }
     if(a === 'atras'){ creando = false; return pintar(); }
     if(a === 'crear') return crear();
     if(a === 'editar'){ editando = true; return pintar(); }
@@ -348,7 +365,8 @@
     if(a === 'guardarEd'){
       const f = document.getElementById('riF').value || '', c = (document.getElementById('riC').value || '').trim();
       b.disabled = true;
-      const ok = await cambiar(x => { x.fecha = f; x.campo = c; return null; });
+      const ab = document.getElementById('riAb');
+      const ok = await cambiar(x => { x.fecha = f; x.campo = c; if(ab && x.abierta !== undefined) x.abierta = ab.checked; return null; });
       if(ok) editando = false; else b.disabled = false;
       return pintar();
     }
@@ -358,6 +376,11 @@
       else if(a === 'salir'){ if(confirm('¿Quitarte de la lista?')) await conmigo(0); }
       else if(a === 'quitar'){ if(confirm('¿Quitar a ' + b.dataset.n + ' de la lista?')) await quitar(b.dataset.n); }
       else if(a === 'pasar') await pasar(b.dataset.n, i);
+      else if(a === 'preparar'){
+        if(!window.acgolfRyder || !window.acgolfRyder.desdeLista){ alert('No está disponible ahora mismo.'); }
+        else if(!r.cerrada && !confirm('Se cierra la lista y pasas a preparar los partidos. ¿Seguimos?')) { /* nada */ }
+        else { const ok = r.cerrada || await cambiar(x => { x.cerrada = true; return null; }); if(ok){ const lista = r; cerrar(); window.acgolfRyder.desdeLista(lista); } }
+      }
       else if(a === 'cerrarlista') await cambiar(x => { x.cerrada = !x.cerrada; return null; });
       else if(a === 'marcador') mandarWA(mensajeMarcador());
       else if(a === 'wa') mandarWA(mensaje());
@@ -390,7 +413,7 @@
     if(ov) ov.hidden = true; document.body.style.overflow = '';
     if(/[?&]ryder=/.test(location.search)){ try { history.replaceState(null, '', location.pathname); } catch(e){} }
   }
-  window.acgolfRyderIns = { _imagen: x => imagenPantalla(x || r), abrir: () => { let u = ''; try { u = localStorage.getItem(ULTIMA) || ''; } catch(e){} return abrir(u || null, ''); }, abrirCodigo: code => abrir(code, '', true), cerrar };
+  window.acgolfRyderIns = { _imagen: x => imagenPantalla(x || r), abrir: () => { let u = ''; try { u = localStorage.getItem(ULTIMA) || ''; } catch(e){} return abrir(u || null, ''); }, abrirCodigo: code => abrir(code, '', true), nueva: async () => { await abrir(null, ''); if(!r){ creando = true; pintar(); } else { editando = false; } }, cerrar };
 
   // Enlace de WhatsApp: ?ryder=CODIGO&equipo=betis. Se recuerda en el móvil (como la invitación del grupo) porque quien
   // no tiene cuenta tiene que registrarse y confirmar su correo, y en esa vuelta el enlace se pierde. Se abre en cuanto hay sesión.

@@ -122,3 +122,11 @@ body.ry-abierta{ overflow:hidden; }
 .ry-det-c ul{ margin:0 0 10px; padding-left:20px; }
 .ry-det-c li{ margin-bottom:8px; }
 .ry-det-c b{ color:#F2F4F5; }
+
+/* Publica tu Ryder (tarjeta con los pasos) */
+.ry-publica{ background:#1B1E22; border:1px solid #33383E; border-radius:18px; padding:16px; margin:12px 0; }
+.ry-publica > b{ font:900 20px 'Archivo', system-ui, sans-serif; color:#F2F4F5; }
+.ry-paso{ display:flex; gap:12px; align-items:flex-start; margin-top:10px; }
+.ry-paso span{ flex:none; width:28px; height:28px; border-radius:50%; background:#C6F24E; color:#111316; font:900 16px 'Archivo', system-ui, sans-serif; display:flex; align-items:center; justify-content:center; }
+.ry-paso p{ margin:0; font-size:17px; line-height:1.35; color:#C9D0D6; }
+.ry-btn.ry-sec{ background:#24282D; color:#F2F4F5; border:1.5px solid rgba(198,242,78,.55); }
