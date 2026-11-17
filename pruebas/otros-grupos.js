@@ -71,25 +71,9 @@
     location.reload();
   });
 
-  // Norma estricta (17-nov-2026): la agenda es solo de los grupos donde la persona juega.
-  // Si el grupo activo es uno que solo supervisa (super administrador), su agenda no sale en el Inicio y se avisa.
-  const avisoSup = document.createElement('div'); avisoSup.className = 'og-sup'; avisoSup.id = 'ogSup'; avisoSup.hidden = true;
-  ahora.insertBefore(avisoSup, sec);
-  async function vigilarSupervision(client){
-    try {
-      const r = await client.rpc('mis_grupos'); if(r.error) return;
-      const act = (r.data || []).find(g => g.activo);
-      const sup = !!act && act.miembro === false;
-      document.documentElement.classList.toggle('og-sup-on', sup);
-      avisoSup.hidden = !sup;
-      if(sup) avisoSup.innerHTML = '<b>Estás supervisando «' + esc(act.nombre) + '»</b><span>No juegas en este grupo, así que sus partidas no salen en tu agenda. Abajo tienes los avisos de los grupos donde juegas.</span>';
-    } catch(e){}
-  }
   async function cargar(){
     if(document.documentElement.classList.contains('es-invitado')) return;
-    const client = initSupabase();
-    vigilarSupervision(client);
-    try { const r = await client.rpc('avisos_otros_grupos'); if(!r.error) pintar(Array.isArray(r.data) ? r.data : []); } catch(e){}
+    try { const r = await initSupabase().rpc('avisos_otros_grupos'); if(!r.error) pintar(Array.isArray(r.data) ? r.data : []); } catch(e){}
   }
   (function esperar(n){
     if(window.miPerfil){ cargar(); return; }
