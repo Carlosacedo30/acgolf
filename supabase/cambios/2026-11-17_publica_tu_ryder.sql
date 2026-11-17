@@ -104,7 +104,9 @@ language sql stable security definer set search_path to 'public' as $$
   )
   select coalesce(jsonb_agg(jsonb_build_object('tipo', f.tipo, 'grupo_id', f.gid, 'grupo', f.grupo, 'jugador', f.jugador,
            'code', f.code, 'match_groups', f.match_groups, 'updated_at', f.updated_at) order by f.created_at desc), '[]'::jsonb)
-  from filas f;
+  from filas f
+  -- Modo incógnito (norma de Carlos, 17-nov): si el grupo activo es uno donde la persona NO es miembro (super administrador mirando), no se mezcla su agenda
+  where exists (select 1 from miembros mm where mm.user_id = auth.uid() and mm.grupo_id = (select grupo_id from activo));
 $$;
 revoke all on function public.avisos_otros_grupos() from public, anon;
 grant execute on function public.avisos_otros_grupos() to authenticated;
