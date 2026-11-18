@@ -338,6 +338,9 @@
       if(prBarrasOn() && nombres.length) g.barras = nombres.map(prBarra); else delete g.barras;
       g.scores = {};
       delete g.modo; delete g.parejas;
+      // Partido organizado que sale por un hoyo (p. ej. el 10): cada grupo conserva su hoyo de salida
+      const hs = prDesde && Array.isArray(prDesde.hoyos) ? Number(prDesde.hoyos[i]) : 0;
+      if(hs > 1 && hs <= 18 && Number(prHoyos) !== 9) g.hoyoSalida = hs; else delete g.hoyoSalida;
     });
     configGroup = 0;
     if(typeof writeConfigFields === 'function') writeConfigFields(0);
