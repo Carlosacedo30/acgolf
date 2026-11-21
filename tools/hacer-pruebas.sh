@@ -1120,7 +1120,7 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=9">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n<link rel="stylesheet" href="crear-partida-nuevo.css?v=3">\n<link rel="stylesheet" href="confirmar-nuevo.css?v=2">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=9">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n<link rel="stylesheet" href="crear-partida-nuevo.css?v=3">\n<link rel="stylesheet" href="confirmar-nuevo.css?v=3">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=4"></script>\n<script src="liga-pasos.js?v=4"></script>\n<script src="confirmar-nuevo.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF

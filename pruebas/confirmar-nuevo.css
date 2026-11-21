@@ -12,3 +12,14 @@
 .cf-bot button:active{ transform:scale(.97); }
 .cf-card .cf-t{ text-transform:none !important; letter-spacing:0 !important; text-align:left !important; }
 .cf-card button:focus, .cf-card button:focus-visible{ outline:2px solid #E9CF8C !important; outline-offset:2px; box-shadow:none !important; }
+
+/* Avisos fijos de la pantalla (partida sin terminar / incompleta) */
+html.in-on #duplicateRoundOverlay, html.in-on #incompleteRoundOverlay{ background:rgba(5,7,10,.72) !important; align-items:center; justify-content:center; padding:20px; }
+html.in-on #duplicateRoundOverlay .modal-card, html.in-on #incompleteRoundOverlay .modal-card{ box-sizing:border-box; width:100%; max-width:420px; padding:22px 20px 18px; border-radius:24px; background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1.5px solid rgba(217,190,122,.75) !important; box-shadow:0 20px 60px rgba(0,0,0,.5); color:#F4F1E8; }
+html.in-on #duplicateRoundOverlay .eyebrow, html.in-on #incompleteRoundOverlay .eyebrow{ font:800 24px/1.2 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:0 !important; text-transform:none !important; color:#F4F1E8 !important; }
+html.in-on #duplicateRoundOverlay p, html.in-on #incompleteRoundOverlay p{ font:600 18px/1.4 Barlow,system-ui,Arial,sans-serif !important; color:#D9DEE8; margin:10px 0 20px !important; }
+html.in-on #duplicateRoundOverlay .actions, html.in-on #incompleteRoundOverlay .actions{ display:grid !important; gap:10px; padding:0 !important; background:transparent !important; }
+html.in-on #duplicateRoundOverlay .btn, html.in-on #incompleteRoundOverlay .btn{ min-height:60px; border-radius:999px !important; font:800 19px Archivo,system-ui,Arial,sans-serif !important; display:flex; align-items:center; justify-content:center; text-align:center; width:auto !important; margin:0 !important; }
+html.in-on #duplicateRoundOverlay .btn.primary, html.in-on #incompleteRoundOverlay .btn.primary{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important; border:0 !important; }
+html.in-on #duplicateRoundOverlay .btn.ghost, html.in-on #incompleteRoundOverlay .btn.ghost{ background:transparent !important; border:1px solid rgba(217,190,122,.6) !important; color:#E9CF8C !important; }
+html.in-on #duplicateRoundOverlay .btn:active, html.in-on #incompleteRoundOverlay .btn:active{ transform:scale(.97); }
