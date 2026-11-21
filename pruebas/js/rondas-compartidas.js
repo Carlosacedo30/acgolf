@@ -64,7 +64,7 @@
   // Activar este móvil desde dentro de la app: tocar 5 veces seguidas el título "Últimas partidas"
   async function promptAdminKey(){
     if(getAdminKey()){
-      if(confirm('Este móvil ya puede borrar partidas.\n¿Quitarle el permiso?')){
+      if(await acgolfConfirmar('Este móvil ya puede borrar partidas.\n¿Quitarle el permiso?')){
         try { localStorage.removeItem('golfAppAdminKey'); } catch(e){}
         renderRecentRounds();
       }
@@ -157,8 +157,8 @@
   }
   (function setupBackButtons(){
     const s3 = document.getElementById('s3Back');
-    if(s3) s3.addEventListener('click', ()=>{
-      if(currentRoundId && !confirm('¿Salir de esta partida?\nQueda guardada y la puedes retomar desde "Últimas partidas".')) return;
+    if(s3) s3.addEventListener('click', async ()=>{
+      if(currentRoundId && !await acgolfConfirmar('¿Salir de esta partida?\nQueda guardada y la puedes retomar desde "Últimas partidas".')) return;
       leaveCurrentRound();
     });
     const s4 = document.getElementById('s4Back');
@@ -449,7 +449,7 @@
       btn.addEventListener('click', async ()=>{
         if(btn.dataset.busy) return;
         const aviso = btn.dataset.terminada ? '\nOjo: está terminada. Sus golpes saldrán de la liga y los hándicaps se recalcularán.' : '';
-        if(!confirm('¿Borrar la partida "' + btn.dataset.title + '"?\nSe borrará para todos los jugadores y no se puede deshacer.' + aviso)) return;
+        if(!await acgolfConfirmar('¿Borrar la partida "' + btn.dataset.title + '"?\nSe borrará para todos los jugadores y no se puede deshacer.' + aviso)) return;
         btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
         const res = await deleteSharedRound(btn.dataset.deleteCode);
         if(res.ok){ renderRecentRounds(); }
