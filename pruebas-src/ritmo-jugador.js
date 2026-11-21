@@ -12,12 +12,13 @@
   const R = () => window.acgolfRitmo;
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const HORAS = 20000;
-  let ronda = null, codigoCargado = null, ultimaCarga = 0, cargando = false, abierto = false;
+  let ronda = null, codigoCargado = null, ultimaCarga = 0, cargando = false;
 
-  const aviso = document.createElement('div'); aviso.id = 'rjAviso'; aviso.className = 'rj-aviso'; aviso.hidden = true;
-  const mapa = document.createElement('div'); mapa.id = 'rjMapa'; mapa.className = 'rj-mapa'; mapa.hidden = true;
+  // Una tira SIEMPRE visible arriba (también con marcadores, donde la hoja ocupa la pantalla): el aviso de ritmo.
+  // Al tocarla se abre el mapa del campo y los otros grupos en una pantalla aparte.
+  const aviso = document.createElement('button'); aviso.type = 'button'; aviso.id = 'rjAviso'; aviso.className = 'rj-aviso rj-s'; aviso.hidden = true;
   hv.insertBefore(aviso, hvP);
-  hv.after(mapa);
+  let ov = null, ultimo = null;
 
   const base = id => String(id || '').replace(/-9v?$/, '');
   const offDe = id => /-9v$/.test(String(id || '')) ? 9 : 0;
@@ -40,28 +41,18 @@
     return 'hoyo ' + e.juegaEn + (e.retraso >= 8 ? ' · se retrasa ' + e.retraso + ' min' : ' · a tiempo');
   }
 
-  function pintar(){
-    if(!R() || !R()._estadoGrupo || !ronda || (typeof currentRoundCode !== 'undefined' && currentRoundCode !== codigoCargado)){ aviso.hidden = true; mapa.hidden = true; return; }
-    const ahora = Date.now();
-    const gi = typeof activeGroup !== 'undefined' ? +activeGroup : 0;
-    const grupos = (ronda.match_groups || []).map((g, i) => ({ g, i })).filter(x => x.g && (x.g.players || []).filter(Boolean).length);
-    const lista = grupos.map(x => { const e = R()._estadoGrupo(ronda, x.g, ahora); e.num = x.i + 1; return e; });
-    const yo = lista.find(e => e.num === gi + 1);
-    if(!yo){ aviso.hidden = true; mapa.hidden = true; return; }
-
-    // ----- Aviso -----
-    if(yo.sinDatos || yo.fin){ aviso.hidden = true; }
-    else {
-      const c = yo.color;   // v · a · r
-      const t = c === 'v' ? ['✓', 'Buen ritmo', 'Vais al día. ¡Seguid así!']
-        : c === 'a' ? ['!', 'Vais ' + yo.retraso + ' minutos tarde', 'Intentad ir un poco más ágiles. Sin prisa, pero sin parar.']
-        : ['!', 'Vais ' + yo.retraso + ' minutos tarde', 'Hay que acelerar el paso: se está frenando el campo.'];
-      const h = '<i class="rj-ic">' + t[0] + '</i><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></div>';
-      if(aviso.dataset.k !== c + h){ aviso.dataset.k = c + h; aviso.className = 'rj-aviso rj-' + c; aviso.innerHTML = h; }
-      aviso.hidden = false;
+  function pantallaMapa(){
+    if(!ov){
+      ov = document.createElement('div'); ov.className = 'rj-ov'; ov.id = 'rjOv'; ov.hidden = true;
+      ov.innerHTML = '<div class="rj-ov-top"><button type="button" class="rj-ov-volver" id="rjVolver">‹ Volver a marcar</button></div><div class="rj-ov-cuerpo" id="rjOvCuerpo"></div>';
+      document.body.appendChild(ov);
+      ov.querySelector('#rjVolver').onclick = () => { ov.hidden = true; };
     }
-
-    // ----- Mapa y lista (se abre con el botón; así no quita sitio al teclado) -----
+    return ov;
+  }
+  function pintarMapa(){
+    if(!ov || ov.hidden || !ultimo) return;
+    const { lista, yo } = ultimo;
     const T = R()._trazado && R()._trazado[base(ronda.course_id)];
     const vivos = lista.filter(e => !e.fin);
     const filas = [yo].concat(lista.filter(e => e !== yo)).map(e => {
@@ -69,14 +60,32 @@
       return '<div class="rj-f' + (e === yo ? ' rj-yo' : '') + '"><span class="rj-n">' + e.num + '</span><span class="rj-t"><b>' + (e === yo ? 'Vosotros · ' : 'Grupo ' + e.num + ' · ') + esc(textoGrupo(e)) + '</b><small>' + esc(quien) + '</small></span></div>';
     }).join('');
     const circ = T && R()._circuito ? R()._circuito(vivos.filter(e => e.juegaEn), ronda.course_id, { base: base(ronda.course_id), off: offDe(ronda.course_id), mio: yo.g }) : '';
-    const html = '<button type="button" class="rj-btn" id="rjBtn" aria-expanded="' + abierto + '">' + (abierto ? 'Ocultar el mapa del campo' : 'Ver el mapa del campo y los otros grupos') + '</button>'
-      + (abierto ? '<div class="rj-card"><h3>Dónde está cada grupo</h3>' + (circ || '<p class="rj-nocir">Este campo aún no tiene el circuito dibujado. Abajo ves la lista de grupos.</p>') + '<div class="rj-lst">' + filas + '</div></div>' : '');
-    if(mapa.dataset.k !== html){
-      mapa.dataset.k = html; mapa.innerHTML = html;
-      const b = mapa.querySelector('#rjBtn'); if(b) b.onclick = () => { abierto = !abierto; mapa.dataset.k = ''; pintar(); };
-    }
-    mapa.hidden = false;
+    const html = '<h2 class="rj-ov-h">Dónde está cada grupo</h2><p class="rj-ov-p">' + esc(ronda.course_name || '') + ' · se actualiza solo</p>'
+      + (circ || '<p class="rj-nocir">Este campo aún no tiene el circuito dibujado. Abajo ves la lista de grupos.</p>') + '<div class="rj-lst">' + filas + '</div>';
+    const c = ov.querySelector('#rjOvCuerpo'); if(c.dataset.k !== html){ c.dataset.k = html; c.innerHTML = html; }
   }
+
+  function pintar(){
+    if(!R() || !R()._estadoGrupo || !ronda || (typeof currentRoundCode !== 'undefined' && currentRoundCode !== codigoCargado)){ aviso.hidden = true; return; }
+    const ahora = Date.now();
+    const gi = typeof activeGroup !== 'undefined' ? +activeGroup : 0;
+    const grupos = (ronda.match_groups || []).map((g, i) => ({ g, i })).filter(x => x.g && (x.g.players || []).filter(Boolean).length);
+    const lista = grupos.map(x => { const e = R()._estadoGrupo(ronda, x.g, ahora); e.num = x.i + 1; return e; });
+    const yo = lista.find(e => e.num === gi + 1);
+    if(!yo){ aviso.hidden = true; return; }
+    ultimo = { lista, yo };
+    const c = yo.sinDatos || yo.fin ? 's' : yo.color;   // s = sin datos · v · a · r
+    const t = c === 's' ? ['⚑', yo.fin ? 'Habéis terminado' : 'Ritmo del campo', yo.fin ? 'Mira dónde está cada grupo.' : 'Se activa al apuntar el primer hoyo.']
+      : c === 'v' ? ['✓', 'Buen ritmo', 'Vais al día. ¡Seguid así!']
+      : c === 'a' ? ['!', 'Vais ' + yo.retraso + ' minutos tarde', 'Intentad ir un poco más ágiles. Sin prisa, pero sin parar.']
+      : ['!', 'Vais ' + yo.retraso + ' minutos tarde', 'Hay que acelerar el paso: se está frenando el campo.'];
+    const h = '<i class="rj-ic">' + t[0] + '</i><span class="rj-tx"><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></span><span class="rj-mp">Mapa ›</span>';
+    if(aviso.dataset.k !== c + h){ aviso.dataset.k = c + h; aviso.className = 'rj-aviso rj-' + c; aviso.innerHTML = h; }
+    aviso.setAttribute('aria-label', t[1] + '. Toca para ver el mapa del campo y los otros grupos');
+    aviso.hidden = false;
+    pintarMapa();
+  }
+  aviso.onclick = () => { pantallaMapa().hidden = false; pintarMapa(); const c = ov.querySelector('#rjOvCuerpo'); if(c) c.scrollTop = 0; };
 
   // Se actualiza al marcar cada hoyo y cada 20 segundos mientras se mira la pantalla
   const orig = window.renderHoleView;
@@ -87,5 +96,5 @@
       return r;
     };
   }
-  setInterval(() => { if(!document.hidden && hv.offsetParent !== null) cargar(); else if(hv.offsetParent === null){ aviso.hidden = true; mapa.hidden = true; } }, HORAS);
+  setInterval(() => { if(!document.hidden && hv.offsetParent !== null) cargar(); else if(hv.offsetParent === null){ aviso.hidden = true; if(ov) ov.hidden = true; } }, HORAS);
 })();

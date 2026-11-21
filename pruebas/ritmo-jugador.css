@@ -1,23 +1,33 @@
-/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. */
 /* Ritmo en la pantalla de marcar (ritmo-jugador.js). Pantalla de marcar = fondo blanco (norma de Carlos, 13-nov-2026). */
-.rj-aviso{ display:flex; align-items:center; gap:12px; margin:6px 0 8px; padding:10px 14px; border-radius:18px; border:2px solid; font-family:Barlow,system-ui,sans-serif; color:#111316; }
-.rj-aviso[hidden], .rj-mapa[hidden]{ display:none; }
-.rj-aviso b{ display:block; font:900 19px/1.15 Archivo,system-ui,sans-serif; }
-.rj-aviso span{ display:block; font-size:16px; line-height:1.25; margin-top:2px; }
-.rj-ic{ flex:none; width:38px; height:38px; border-radius:50%; display:grid; place-items:center; font:900 22px Archivo,system-ui,sans-serif; font-style:normal; }
+.rj-aviso{ display:flex; align-items:center; gap:10px; width:100%; box-sizing:border-box; margin:6px 0; padding:8px 12px; border-radius:18px; border:2px solid; text-align:left; font-family:Barlow,system-ui,sans-serif; color:#111316; cursor:pointer; }
+.rj-aviso[hidden]{ display:none; }
+.rj-aviso:active{ transform:scale(.98); }
+.rj-tx{ flex:1; min-width:0; }
+.rj-tx b{ display:block; font:900 18px/1.15 Archivo,system-ui,sans-serif; }
+.rj-tx span{ display:block; font-size:15px; line-height:1.2; margin-top:1px; }
+.rj-mp{ flex:none; font:900 15px Archivo,system-ui,sans-serif; padding:6px 12px; border-radius:999px; background:#fff; border:1px solid #2E7D32; color:#111316; }
+.rj-ic{ flex:none; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font:900 20px Archivo,system-ui,sans-serif; font-style:normal; }
+.rj-s{ background:#F2F4F6; border-color:#DADFE3; } .rj-s .rj-ic{ background:#9AA3AB; color:#fff; }
 .rj-v{ background:#EAF6DC; border-color:#2E7D32; } .rj-v .rj-ic{ background:#2E7D32; color:#fff; }
 .rj-a{ background:#FFF3D6; border-color:#E0A100; } .rj-a .rj-ic{ background:#E0A100; color:#111316; }
 .rj-r{ background:#FDE3E3; border-color:#E5484D; } .rj-r .rj-ic{ background:#E5484D; color:#fff; }
-.rj-mapa{ margin:8px 16px; font-family:Barlow,system-ui,sans-serif; color:#111316; }
-.rj-btn{ display:block; width:100%; min-height:54px; border-radius:999px; border:1px solid #2E7D32; background:#fff; color:#111316; font:900 17px Archivo,system-ui,sans-serif; cursor:pointer; }
-.rj-btn:active{ transform:scale(.97); }
-.rj-card{ margin-top:10px; background:#F2F4F6; border:1px solid #DADFE3; border-radius:18px; padding:10px; }
-.rj-card h3{ margin:2px 4px 8px; font:900 15px Archivo,system-ui,sans-serif; color:#4a5058; text-transform:uppercase; letter-spacing:.04em; }
-.rj-card .rc-mapa{ margin:0; }
+/* Móviles pequeños (p. ej. 360×640): la tira ocupa solo una línea para dejar sitio al teclado */
+@media (max-height:700px){ .rj-tx span{ display:none; } .rj-aviso{ padding:6px 10px; margin:4px 0; } .rj-ic{ width:30px; height:30px; font-size:18px; } }
+/* Pantalla del mapa */
+.rj-ov{ position:fixed; inset:0; z-index:9200; background:#fff; color:#111316; overflow-y:auto; -webkit-overflow-scrolling:touch; font-family:Barlow,system-ui,sans-serif; padding:0 16px 40px; box-sizing:border-box; }
+.rj-ov[hidden]{ display:none; }
+.rj-ov > *{ max-width:620px; margin-left:auto; margin-right:auto; }
+.rj-ov-top{ position:sticky; top:0; padding:12px 0 8px; background:#fff; z-index:2; }
+.rj-ov-volver{ min-height:50px; padding:0 22px; border-radius:999px; border:0; background:#C6F24E; color:#111316; font:900 18px Archivo,system-ui,sans-serif; cursor:pointer; }
+.rj-ov-volver:active{ transform:scale(.97); }
+.rj-ov-h{ font:900 26px/1.1 Archivo,system-ui,sans-serif; margin:6px 0 2px; }
+.rj-ov-p{ font-size:16px; color:#4a5058; margin:0 0 10px; }
+.rj-ov .rc-mapa{ margin:0 0 6px; border-radius:18px; overflow:hidden; border:1px solid #DADFE3; }
 .rj-nocir{ margin:4px; font-size:16px; color:#4a5058; }
 .rj-lst{ margin-top:8px; }
-.rj-f{ display:flex; gap:10px; align-items:flex-start; padding:8px 2px; border-top:1px solid #DADFE3; }
-.rj-n{ flex:none; min-width:28px; height:28px; border-radius:50%; background:#9AA3AB; color:#fff; display:grid; place-items:center; font:900 15px Archivo,system-ui,sans-serif; }
+.rj-f{ display:flex; gap:10px; align-items:flex-start; padding:10px 2px; border-top:1px solid #DADFE3; }
+.rj-n{ flex:none; min-width:30px; height:30px; border-radius:50%; background:#9AA3AB; color:#fff; display:grid; place-items:center; font:900 16px Archivo,system-ui,sans-serif; }
 .rj-yo .rj-n{ background:#E0A100; color:#111316; }
-.rj-t b{ display:block; font:800 16px/1.2 Archivo,system-ui,sans-serif; }
-.rj-t small{ display:block; font-size:15px; line-height:1.3; color:#4a5058; margin-top:2px; }
+.rj-t b{ display:block; font:800 17px/1.2 Archivo,system-ui,sans-serif; }
+.rj-t small{ display:block; font-size:16px; line-height:1.3; color:#4a5058; margin-top:2px; }
