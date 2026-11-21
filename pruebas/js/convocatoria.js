@@ -351,7 +351,7 @@
     if(conv.roundCode){ renderConv(); return; }
     const withPlayers = conv.times.map((t, i) => ({ t, names: conv.groups[i] || [], hoyo: (conv.hoyos && conv.hoyos[i]) || null, etq: convEtq(conv, i) })).filter(x => x.names.length);
     if(!withPlayers.length){ alert('Todavía no se ha apuntado nadie.'); return; }
-    if(!confirm(convAlTiro(conv)
+    if(!await acgolfConfirmar(convAlTiro(conv)
       ? '¿Crear la partida al tiro con ' + withPlayers.length + ' grupos?\nCada grupo empieza en su hoyo: ' + withPlayers.map(x => x.etq.toLowerCase()).join(', ') + '.'
       : '¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
     const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
@@ -437,7 +437,7 @@
   // Solo el administrador: borra la convocatoria para todos (la partida creada desde ella, si la hay, no se toca)
   async function convDelete(btn){
     if(!conv || btn.dataset.busy) return;
-    if(!confirm('¿Borrar el partido del ' + convLongDate(conv.date) + '?\n' + (conv.roundCode ? 'También se borra la partida que se creó con los apuntados. ' : '') + 'Desaparece para todos los jugadores y no se puede deshacer.')) return;
+    if(!await acgolfConfirmar('¿Borrar el partido del ' + convLongDate(conv.date) + '?\n' + (conv.roundCode ? 'También se borra la partida que se creó con los apuntados. ' : '') + 'Desaparece para todos los jugadores y no se puede deshacer.')) return;
     btn.dataset.busy = '1'; btn.textContent = 'Borrando…';
     if(conv.roundCode){ try { await deleteSharedRound(conv.roundCode); } catch(e){} }
     const res = await deleteSharedRound(conv.code);

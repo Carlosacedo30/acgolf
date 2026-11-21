@@ -524,7 +524,7 @@
         + '<button type="button" class="tf-btn" data-i="' + i + '">CERRAR YO</button></div></div>').join('');
     c.querySelectorAll('button[data-i]').forEach(b => b.onclick = async () => {
       const p = adminLista[+b.dataset.i]; if(!p) return;
-      if(!confirm('¿Cerrar la tarjeta de ' + p.jugador + '?\n\nQueda dada por válida y anotado que la cerraste tú. Ya no se podrá cambiar.')) return;
+      if(!await acgolfConfirmar('¿Cerrar la tarjeta de ' + p.jugador + '?\n\nQueda dada por válida y anotado que la cerraste tú. Ya no se podrá cambiar.')) return;
       b.disabled = true; b.textContent = 'CERRANDO…';
       const { error } = await initSupabase().rpc('cerrar_tarjeta_admin', { p_code: p.code, p_grupo: p.grupo, p_idx: p.idx });
       if(error) alert(String(error.message || 'No se pudo cerrar. Revisa la cobertura.'));
@@ -574,7 +574,7 @@
     const rc = document.getElementById('mkRecargar'); if(rc) rc.onclick = () => { aviso = ''; cargar(true); };
     const en = document.getElementById('mkEntregar');
     if(en) en.onclick = async () => {
-      if(!confirm('¿Entregas tu tarjeta?\n\nDespués ya no se puede cambiar.')) return;
+      if(!await acgolfConfirmar('¿Entregas tu tarjeta?\n\nDespués ya no se puede cambiar.')) return;
       en.disabled = true; en.textContent = 'Entregando…'; aviso = '';
       const { data, error } = await initSupabase().rpc('entregar_tarjeta', { p_code: currentRoundCode, p_grupo: +activeGroup });
       if(error) aviso = String(error.message || 'No se pudo entregar. Revisa la cobertura.');

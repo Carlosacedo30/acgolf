@@ -1101,12 +1101,26 @@ assert s.count(a2) == 1
 s = s.replace(a2, "window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'favoritos'); }));", 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
+# --- Avisos «¿Seguro?» con el diseño nuevo (confirmar-nuevo.js): salir de una partida, borrar partida/partido, crear partida con los apuntados ---
+python3 - <<'EOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:50], s.count(a))
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b, 1))
+R = 'pruebas/js/rondas-compartidas.js'
+cambia(R, "if(s3) s3.addEventListener('click', ()=>{\n      if(currentRoundId && !confirm('¿Salir", "if(s3) s3.addEventListener('click', async ()=>{\n      if(currentRoundId && !await acgolfConfirmar('¿Salir")
+cambia(R, "if(!confirm('¿Borrar la partida \"'", "if(!await acgolfConfirmar('¿Borrar la partida \"'")
+cambia(R, "if(confirm('Este móvil ya puede borrar partidas.", "if(await acgolfConfirmar('Este móvil ya puede borrar partidas.")
+C = 'pruebas/js/convocatoria.js'
+cambia(C, "if(!confirm(convAlTiro(conv)", "if(!await acgolfConfirmar(convAlTiro(conv)")
+cambia(C, "if(!confirm('¿Borrar el partido del '", "if(!await acgolfConfirmar('¿Borrar el partido del '")
+EOF
 # --- Ritmo en la pantalla de marcar (21-nov-2026): aviso verde/ámbar/rojo y mapa con los grupos; va DESPUÉS de marcar-nuevo y de ritmo-campo ---
 python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=9">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n<link rel="stylesheet" href="crear-partida-nuevo.css?v=3">\n</head>', 1)
-s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=4"></script>\n<script src="liga-pasos.js?v=4"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=9">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n<link rel="stylesheet" href="crear-partida-nuevo.css?v=3">\n<link rel="stylesheet" href="confirmar-nuevo.css?v=2">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=4"></script>\n<script src="liga-pasos.js?v=4"></script>\n<script src="confirmar-nuevo.js?v=1"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
