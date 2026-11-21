@@ -121,13 +121,50 @@
     if(nueva) nueva.addEventListener('click', function(){ ligaForm = null; ligaPintarForm(); });
     var tit = document.getElementById('ligaTitulo'); if(tit) tit.style.display = 'none';
   }
+
+  // ---------- «Una liga» (clasificación) ----------
+  function ligaNueva(){
+    var body = document.getElementById('ligaCuerpo'); if(!body || !activo()) return;
+    var card = body.closest('.conv-card'); if(!card || !body.querySelector('.lg-t')) return;
+    card.classList.remove('lgl', 'lgp'); card.classList.add('lgv');
+    var tit = document.getElementById('ligaTitulo'); if(tit) tit.style.display = '';
+    var l = (typeof ligasTodas !== 'undefined' && typeof ligaAbierta !== 'undefined') ? ligasTodas.find(function(x){ return x.code === ligaAbierta; }) : null;
+    var hoy = ligaHoy(), jug = l ? l.jornadas.filter(function(j){ return j.date < hoy; }).length : 0;
+    var sub = body.querySelector('.lg-sub');
+    if(sub && l){ var nj = Math.min(jug + 1, l.jornadas.length); sub.innerHTML = '<span class="lgv-jor">' + (jug >= l.jornadas.length ? 'Liga terminada' : 'Jornada ' + nj + ' de ' + l.jornadas.length) + '</span><small>' + sub.textContent + '</small>'; }
+    // clasificación en tarjetas (la tabla completa queda detrás de «Ver todos los datos»)
+    var yo = (window.miPerfil && window.miPerfil.player_name) ? String(window.miPerfil.player_name) : '';
+    var yoC = yo && typeof ligaCortoN === 'function' ? ligaCortoN(yo) : yo;
+    var filas = Array.prototype.slice.call(body.querySelectorAll('.lg-t tbody tr'));
+    var hayPts = !body.querySelector('.lg-aviso') || !/empiezan a contar/.test(body.textContent);
+    var lis = filas.map(function(tr){
+      var c = tr.children, pos = c[0].textContent.trim(), nom = c[1].textContent.trim(), pts = c[2].textContent.trim(), pr = c[3].textContent.trim();
+      var gris = tr.classList.contains('lg-gris'), top = /^[123]$/.test(pos);
+      var cl = 'lgv-fila' + (pos === '1' ? ' oro' : (top ? ' top' : '')) + (gris ? ' gris' : '') + (yoC && nom === yoC ? ' yo' : '');
+      return '<div class="' + cl + '"><i>' + (pos === '–' ? '' : pos + '.º') + '</i><div><b>' + esc(nom) + '</b><small>' + (yoC && nom === yoC ? '<em>Tú</em> · ' : '') + pr + (pr === '1' ? ' jugada' : ' jugadas') + '</small></div><strong>' + pts + '</strong></div>';
+    });
+    var N = 5, caja = document.createElement('div'); caja.className = 'lgv-cla';
+    caja.innerHTML = '<div class="lgv-cab"><span>Jugador</span><span>Puntos</span></div>' + lis.map(function(h, i){ return i < N ? h : h.replace('lgv-fila', 'lgv-fila mas'); }).join('')
+      + (lis.length > N ? '<button type="button" class="lgv-mas" id="lgvMas">Ver los ' + lis.length + ' jugadores <b>›</b></button>' : '');
+    var tw = body.querySelector('.lg-tabla-w');
+    if(tw){
+      tw.parentNode.insertBefore(caja, tw);
+      var det = document.createElement('button'); det.type = 'button'; det.className = 'lgv-det'; det.textContent = 'Ver todos los datos (promedio, descartes…)';
+      tw.hidden = true; tw.parentNode.insertBefore(det, tw);
+      det.addEventListener('click', function(){ tw.hidden = !tw.hidden; det.textContent = tw.hidden ? 'Ver todos los datos (promedio, descartes…)' : 'Ocultar los datos'; });
+    }
+    var mas = document.getElementById('lgvMas');
+    if(mas) mas.addEventListener('click', function(){ caja.classList.toggle('abierta'); mas.firstChild.textContent = caja.classList.contains('abierta') ? 'Ver solo los 5 primeros ' : 'Ver los ' + lis.length + ' jugadores '; });
+  }
   function envolver(){
     if(typeof window.ligaPintarForm !== 'function' || window.ligaPintarForm.__pasos) return;
     var orig = window.ligaPintarForm;
     var nuevo = function(){ orig(); try { montar(); } catch(e){ console.error(e); } };
     nuevo.__pasos = true; window.ligaPintarForm = nuevo;
+    var verO = window.ligaVer;
+    if(typeof verO === 'function') window.ligaVer = async function(){ var c = document.querySelector('.conv-card.lgv'); if(c) c.classList.remove('lgv'); var r = await verO.apply(this, arguments); try { ligaNueva(); } catch(e){ console.error(e); } return r; };
     var lista = window.ligaPintarLista;
-    if(typeof lista === 'function') window.ligaPintarLista = function(){ paso = 1; var c = document.querySelector('.conv-card.lgp'); if(c) c.classList.remove('lgp'); var r = lista.apply(this, arguments); try { listaNueva(); } catch(e){ console.error(e); } return r; };
+    if(typeof lista === 'function') window.ligaPintarLista = function(){ paso = 1; var c = document.querySelector('.conv-card.lgp, .conv-card.lgv'); if(c) c.classList.remove('lgp', 'lgv'); var r = lista.apply(this, arguments); try { listaNueva(); } catch(e){ console.error(e); } return r; };
   }
   envolver();
 })();
