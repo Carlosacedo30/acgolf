@@ -50,3 +50,20 @@ html.in-on #convOverlay .field input:focus, html.in-on #convOverlay .field selec
 html.in-on #convOverlay input[type="date"]::-webkit-calendar-picker-indicator, html.in-on #convOverlay input[type="time"]::-webkit-calendar-picker-indicator{ background:#E9CF8C; }
 html.in-on #convOverlay .conv-eyebrow{ color:#9AA3B0; }
 html.in-on #convOverlay small, html.in-on #convOverlay .field small{ color:#9AA3B0; font-size:15px; }
+
+/* Retoques de la revisión de diseño (21-nov-2026) */
+html.in-on #convOverlay #convTiempo.tq{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:18px; padding:14px 16px; }
+html.in-on #convOverlay .tq-t{ color:#9AA3B0; font-family:Archivo,system-ui,Arial,sans-serif; letter-spacing:.15em; }
+html.in-on #convOverlay .tq-p, html.in-on #convOverlay .tq-res span, html.in-on #convOverlay .tq-datos{ color:#B5BFD0; }
+html.in-on #convOverlay .tq-cons{ color:#E9CF8C; }
+html.in-on #convOverlay .tq-horas div{ background:#121620; border:1px solid #242B38; }
+html.in-on #convOverlay .tq-horas small, html.in-on #convOverlay .tq-nota{ font-size:15px; color:#9AA3B0; }
+html.in-on #convBody .conv-mas-partida{ border:1.5px dashed rgba(217,190,122,.55) !important; color:#E9CF8C; }
+html.in-on #convBody .conv-row-name.av-con{ display:flex; align-items:center; gap:10px; min-width:0; line-height:1.2; }
+html.in-on #convBody .conv-row-name .av{ flex:0 0 auto; }
+html.in-on #convBody .conv-row-tag{ flex:0 0 auto; margin-left:8px; font-size:15px; padding:4px 10px; }
+html.in-on #convBody .conv-btn.wa{ background:transparent; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; padding:15px 14px; font-size:17px; }
+html.in-on #convBody > .conv-eyebrow:first-child{ display:none; }
+html.in-on #convBody .conv-tee-x{ border:1.5px solid rgba(179,38,46,.8); color:#FF8A90; background:transparent; }
+html.in-on #convOverlay .bc-sel-nota{ font-size:15px; color:#9AA3B0; }
+html.in-on #convBody .conv-created{ background:rgba(233,207,140,.10); border:1px solid rgba(217,190,122,.45); color:#F4F1E8; }

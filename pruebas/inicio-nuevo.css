@@ -253,3 +253,5 @@ html.in-on .og-juego .in-fl{ position:absolute; right:16px; top:50%; margin-top:
 
 html.in-on #homeAhora #convHome > .og-card{ order:6; }
 html.in-on body #homeAhora .ip-card .ip-cuando .in-salidas{ display:flex; flex-direction:column; gap:2px; margin-top:6px; font:800 20px/1.2 Archivo,system-ui,Arial,sans-serif; font-style:normal; letter-spacing:.01em; color:#F4F1E8; }
+html.in-on body #homeAhora .ip-card .ip-cuando .in-salidas{ color:#E9CF8C; font-size:21px; }
+@media (max-height:700px){ html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card .ip-apuntar{ height:46px !important; } }

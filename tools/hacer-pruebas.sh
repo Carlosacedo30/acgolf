@@ -1022,7 +1022,7 @@ p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
 # Letra Playfair Display (cursiva dorada de la fecha y del puesto), cargada igual que Archivo
-s = s.replace('</head>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap">\n<link rel="stylesheet" href="inicio-nuevo.css?v=8">\n<link rel="stylesheet" href="jugar-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-nueva.css?v=1">\n<link rel="stylesheet" href="cuenta-nueva.css?v=2">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap">\n<link rel="stylesheet" href="inicio-nuevo.css?v=9">\n<link rel="stylesheet" href="jugar-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-nueva.css?v=1">\n<link rel="stylesheet" href="cuenta-nueva.css?v=2">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=5"></script>\n<script src="otros-grupos.js?v=5"></script>\n<script src="jugar-nuevo.js?v=3"></script>\n<script src="liga-nueva.js?v=1"></script>\n<script src="cuenta-nueva.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
@@ -1094,7 +1094,7 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=6">\n<link rel="stylesheet" href="organizar-nuevo.css?v=4">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=6">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n</head>', 1)
 s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
