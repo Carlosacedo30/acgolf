@@ -1,0 +1,233 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Barrido 1 del diseño nuevo (21-nov-2026): Clasificación de la liga, ventanas de ayuda (Normas, Jugadores de la liga,
+   Greens en el mapa, foto del hoyo, Reglas, Sevilla–Betis, Historia, Consejos) y restos en lima de Inicio.
+   Solo cambia el aspecto (DESIGN.md). Solo con el diseño nuevo (html.in-on). */
+
+/* ===== Cabecera de pantallas sueltas (Consejos = 5, Clasificación = 6) ===== */
+html.in-on .screen:is([data-screen="5"],[data-screen="6"]), html.in-on .screen:is([data-screen="5"],[data-screen="6"]) .screen-content{ background:#0A0C10 !important; color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; overflow-x:hidden; }
+html.in-on .screen:is([data-screen="5"],[data-screen="6"]) .screen-content{ padding-bottom:110px !important; }
+html.in-on .screen:is([data-screen="5"],[data-screen="6"]) .app-bar{ background:#0A0C10 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; padding-left:16px !important; padding-right:16px !important; padding-bottom:8px !important; color:#F4F1E8; text-align:left; }
+html.in-on .screen:is([data-screen="5"],[data-screen="6"]) .app-bar h1{ margin:6px 0 4px !important; font:900 30px/1.08 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em !important; text-transform:uppercase !important; color:#F4F1E8 !important; text-align:left; }
+html.in-on .screen:is([data-screen="5"],[data-screen="6"]) .app-bar .meta{ font:italic 600 17px/1.3 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; text-align:left; }
+html.in-on .screen:is([data-screen="5"],[data-screen="6"]) .actions .btn{ background:transparent !important; border:1.5px solid rgba(217,190,122,.55) !important; color:#E9CF8C !important; border-radius:999px !important; font:800 17px Archivo,system-ui,Arial,sans-serif !important; box-shadow:none !important; }
+
+/* ===== Clasificación de la liga (clasif-liga.js) ===== */
+html.in-on #clNuevo{ padding:4px 16px 24px; color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; }
+html.in-on #clNuevo .cl-tab{ min-height:52px; border:1.5px solid rgba(217,190,122,.55); background:transparent; color:#E9CF8C; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #clNuevo .cl-tab.on{ background:linear-gradient(#EBD08A,#C9A54A); border-color:transparent; color:#16120A; }
+html.in-on #clNuevo .cl-sel{ background:#121620; border:1px solid #242B38; border-radius:18px; padding:10px 16px 8px; }
+html.in-on #clNuevo .cl-sel small{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; color:#9AA3B0; }
+html.in-on #clNuevo .cl-sel select{ color:#F4F1E8; font:800 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #clNuevo .cl-sel select option{ background:#121620; color:#F4F1E8; }
+html.in-on #clNuevo .cl-sel:focus-within{ border-color:#E9CF8C; }
+html.in-on #clNuevo .cl-sub{ font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #clNuevo .cl-h2{ font:900 22px Archivo,system-ui,Arial,sans-serif; letter-spacing:.02em; text-transform:uppercase; color:#F4F1E8; }
+html.in-on #clNuevo .cl-yo{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.55); border-radius:22px; padding:16px; }
+html.in-on #clNuevo .cl-yo small{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; color:#E9CF8C; }
+html.in-on #clNuevo .cl-yo-g b{ font:italic 700 50px/1 'Playfair Display',Georgia,serif; color:#E9CF8C; }
+html.in-on #clNuevo .cl-yo-g span{ font:800 20px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-yo p{ font:600 17px/1.35 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #clNuevo .cl-yo p b{ color:#E9CF8C; }
+html.in-on #clNuevo .cl-yo-no{ background:#121620; border-color:#242B38; }
+html.in-on #clNuevo .cl-yo-no small{ color:#9AA3B0; }
+html.in-on #clNuevo .cl-podio > div{ background:#121620; border:1px solid #242B38; border-radius:18px; color:#F4F1E8; }
+html.in-on #clNuevo .cl-podio .cl-p1{ background:linear-gradient(160deg,#17233D,#0F1626); border-color:rgba(217,190,122,.55); }
+html.in-on #clNuevo .cl-podio i{ font:italic 700 24px 'Playfair Display',Georgia,serif; color:#E9CF8C; }
+html.in-on #clNuevo .cl-podio b{ font:800 16px/1.15 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-podio span{ font:900 24px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-podio .cl-p1 span{ color:#E9CF8C; }
+html.in-on #clNuevo .cl-soy{ box-shadow:0 0 0 2px #E9CF8C inset; }
+html.in-on #clNuevo .cl-fila{ background:#121620; border:1px solid #242B38; border-radius:16px; padding:14px; }
+html.in-on #clNuevo .cl-fila b{ font:800 18px/1.2 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-pos{ font:italic 700 22px 'Playfair Display',Georgia,serif; color:#E9CF8C; width:32px; }
+html.in-on #clNuevo .cl-pt{ font:900 24px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-chip{ font:800 15px Archivo,system-ui,Arial,sans-serif; padding:5px 12px; background:#0A0C10; border:1px solid #242B38; color:#B5BFD0; }
+html.in-on #clNuevo .cl-chip.ok{ background:rgba(233,207,140,.12); border-color:rgba(217,190,122,.7); color:#E9CF8C; }
+html.in-on #clNuevo .cl-chip.no{ color:#6B7482; }
+html.in-on #clNuevo .cl-btn{ min-height:58px; border:1.5px solid rgba(217,190,122,.55); background:transparent; color:#E9CF8C; font:800 17px Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; padding:8px 16px; }
+html.in-on #clNuevo .cl-card{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:20px; padding:14px 16px; font:600 16px/1.45 Barlow,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-card b{ color:#E9CF8C; }
+html.in-on #clNuevo .cl-barra{ background:#242B38; }
+html.in-on #clNuevo .cl-barra i{ background:linear-gradient(90deg,#C9A54A,#EBD08A); }
+html.in-on #clNuevo .cl-copa{ background:#121620; border:1px solid rgba(217,190,122,.45); }
+html.in-on #clNuevo .cl-anio b{ font:900 24px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #clNuevo .cl-anio button{ border:1.5px solid rgba(217,190,122,.55); background:transparent; color:#E9CF8C; font:900 22px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #clNuevo .cl-vacio-msg{ background:#121620; border:1px solid #242B38; border-radius:18px; font:600 17px/1.4 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #clNuevo .cl-tab:active, html.in-on #clNuevo .cl-btn:active, html.in-on #clNuevo .cl-anio button:active{ transform:scale(.97); }
+/* pasador de meses de la liga antigua (hoy oculto por clasif-liga.css) */
+html.in-on .screen[data-screen="6"] .liga-month .hole-nav-btn{ background:transparent !important; border:1.5px solid rgba(217,190,122,.55) !important; color:#E9CF8C !important; border-radius:999px !important; }
+html.in-on .screen[data-screen="6"] .liga-month-label{ font:900 20px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on .screen[data-screen="6"] .liga-month-sub{ color:#B5BFD0; font-size:15px; }
+
+/* ===== Ventanas a pantalla completa (Reglas, Historia, Sevilla–Betis, Greens en el mapa) ===== */
+html.in-on :is(#reglasOverlay,#historiaOverlay,#derbiOverlay,#greensMapaOverlay){ background:#0A0C10 !important; }
+html.in-on :is(#reglasOverlay,#historiaOverlay,#derbiOverlay,#greensMapaOverlay) .derbi-card{ background:#0A0C10 !important; color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; overflow-x:hidden; padding-bottom:32px; }
+html.in-on :is(#reglasOverlay,#historiaOverlay) .reglas-cab{ padding:56px 16px 12px !important; background:#0A0C10 !important; text-align:left; }
+html.in-on :is(#reglasOverlay,#historiaOverlay,#derbiOverlay) .derbi-cab-k{ font:800 13px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.2em !important; text-transform:uppercase; color:#9AA3B0 !important; }
+html.in-on :is(#reglasOverlay,#historiaOverlay) .reglas-cab h2, html.in-on #greensMapaOverlay .gm-cab h2{ margin:6px 0 6px !important; font:900 30px/1.08 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em !important; text-transform:uppercase; color:#F4F1E8 !important; }
+html.in-on :is(#reglasOverlay,#historiaOverlay) .reglas-cab p, html.in-on #greensMapaOverlay .gm-cab p{ font:italic 600 17px/1.35 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; }
+html.in-on :is(#reglasOverlay,#historiaOverlay,#derbiOverlay,#greensMapaOverlay,#ligaOverlay) .conv-close{ border:1.5px solid rgba(217,190,122,.6) !important; background:transparent !important; color:#E9CF8C !important; }
+html.in-on :is(#reglasOverlay,#historiaOverlay,#derbiOverlay,#greensMapaOverlay) .pantalla-volver{ width:100% !important; margin:0 0 6px !important; padding:0 16px !important; }
+
+/* --- Reglas de golf --- */
+html.in-on #reglasBody{ padding:0 16px; }
+html.in-on #reglasOverlay .rg-tag{ font:800 15px Archivo,system-ui,Arial,sans-serif; padding:5px 12px; }
+html.in-on #reglasOverlay .rg-sin{ background:#1E7A45; } html.in-on #reglasOverlay .rg-uno{ background:#B26B00; } html.in-on #reglasOverlay .rg-dos{ background:#B3262E; } html.in-on #reglasOverlay .rg-var{ background:#3A4252; }
+html.in-on #reglasOverlay .rg-casa{ background:linear-gradient(#EBD08A,#C9A54A) !important; color:#16120A !important; }
+html.in-on #reglasOverlay .rg-sec-t{ margin:22px 2px 10px; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; color:#9AA3B0 !important; }
+html.in-on #reglasOverlay details.rg-item{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.35); border-radius:20px; box-shadow:none !important; }
+html.in-on #reglasOverlay details.rg-item[open], html.in-on #reglasOverlay details.rg-item.rg-local{ border-color:#E9CF8C; box-shadow:none !important; }
+html.in-on #reglasOverlay details.rg-item > summary{ color:#F4F1E8; }
+html.in-on #reglasOverlay .rg-ico{ color:#E9CF8C !important; }
+html.in-on #reglasOverlay .rg-st b{ font:800 19px/1.2 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #reglasOverlay .rg-st small{ font:600 15px/1.3 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #reglasOverlay .rg-mas::before, html.in-on #reglasOverlay .rg-mas::after{ background:#E9CF8C; }
+html.in-on #reglasOverlay .rg-pasos{ font:600 17px/1.45 Barlow,system-ui,Arial,sans-serif; color:#D9DEE8; }
+html.in-on #reglasOverlay .rg-pasos li::marker{ color:#E9CF8C !important; }
+html.in-on #reglasOverlay .rg-pasos b, html.in-on #reglasOverlay .rg-ficha-d b{ color:#F4F1E8; }
+html.in-on #reglasOverlay .rg-ficha{ background:#121620 !important; border:1px solid #242B38; border-radius:14px; }
+html.in-on #reglasOverlay .rg-ficha-t{ font:800 17px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C !important; }
+html.in-on #reglasOverlay .rg-ficha-d{ font:600 16.5px/1.45 Barlow,system-ui,Arial,sans-serif; color:#D9DEE8; }
+html.in-on #reglasOverlay .rg-pie{ font:600 15px/1.45 Barlow,system-ui,Arial,sans-serif; color:#9AA3B0; }
+
+/* --- Historia del golf --- */
+html.in-on #historiaOverlay #hgBody{ color:#F4F1E8; }
+html.in-on #historiaOverlay .hg-saltos a{ background:transparent; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; font:800 15px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #historiaOverlay .hg-saltos a:active{ transform:scale(.97); }
+html.in-on #historiaOverlay .hg-foto img{ background:#121620; }
+html.in-on #historiaOverlay figcaption{ font-size:15px; color:#9AA3B0; }
+html.in-on #historiaOverlay :is(.hg-k,.hg-ano){ font-family:Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-k{ font-size:13px; }
+html.in-on #historiaOverlay .hg-ano{ font-size:15px; }
+html.in-on #historiaOverlay .hg-sec-t{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; color:#9AA3B0; }
+html.in-on #historiaOverlay :is(h3,h4,h5,.hg-intro){ color:#F4F1E8; }
+html.in-on #historiaOverlay :is(h3,h4,h5){ font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on #historiaOverlay .hg-cap{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.35); }
+html.in-on #historiaOverlay .hg-cifra{ background:#121620; box-shadow:inset 0 0 0 1px #242B38; }
+html.in-on #historiaOverlay .hg-cifra b{ font-family:Archivo,system-ui,Arial,sans-serif; font-weight:900; color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-cifra span{ color:#F4F1E8; }
+html.in-on #historiaOverlay .hg-cifra small{ font-size:15px; color:#B5BFD0; }
+html.in-on #historiaOverlay .hg-hito::before{ background:#E9CF8C; box-shadow:0 0 0 4px #0A0C10; }
+html.in-on #historiaOverlay .hg-art, html.in-on #historiaOverlay .hg-web{ background:#121620; box-shadow:inset 0 0 0 1px #242B38; }
+html.in-on #historiaOverlay .hg-art span{ font-size:15px; color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-web span{ font-size:15px; color:#B5BFD0; }
+html.in-on #historiaOverlay .hg-web b{ color:#F4F1E8; }
+html.in-on #historiaOverlay .hg-web b::after, html.in-on #historiaOverlay .hg-web em.es{ color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-web em{ font-size:15px; color:#9AA3B0; }
+html.in-on #historiaOverlay .hg-webs-g{ color:#F4F1E8; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on #historiaOverlay .hg-seve-caja{ background:linear-gradient(160deg,#17233D,#0F1626); box-shadow:none; border:1px solid rgba(217,190,122,.55); }
+html.in-on #historiaOverlay .hg-seve-caja .hg-cifra{ background:#121620; }
+html.in-on #historiaOverlay details.hg-rep{ background:#121620; border:1px solid #242B38; }
+html.in-on #historiaOverlay details.hg-rep[open]{ box-shadow:none; border-color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-rep-t b{ color:#F4F1E8; }
+html.in-on #historiaOverlay .hg-rep-t i{ font-family:Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-rep-txt p:first-child::first-letter{ font-family:'Playfair Display',Georgia,serif; font-style:italic; color:#E9CF8C; }
+html.in-on #historiaOverlay .hg-pie{ font-size:15px; color:#9AA3B0; }
+
+/* --- Especial Sevilla–Betis (los colores de los equipos no cambian) --- */
+html.in-on #derbiOverlay :is(.dbi-intro,.dbi-sec,.dbi-paso){ background:linear-gradient(160deg,#17233D,#0F1626) !important; box-shadow:none !important; border:1px solid rgba(217,190,122,.45); border-radius:20px; color:#F4F1E8; }
+html.in-on #derbiOverlay .dbi-paso{ border-color:rgba(217,190,122,.7); }
+html.in-on #derbiOverlay .dbi-paso-t{ font-family:Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #derbiOverlay .dbi-paso-sub, html.in-on #derbiOverlay .dbi-nota{ color:#B5BFD0; font-size:15px; }
+html.in-on #derbiOverlay .dbi-intro b, html.in-on #derbiOverlay .dbi-intro strong{ color:#E9CF8C; }
+html.in-on #derbiOverlay .dbi-sec-t{ font:800 13px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.2em; color:#9AA3B0 !important; }
+html.in-on #derbiOverlay .dbi-consejo, html.in-on #derbiOverlay .dbi-m-vs, html.in-on #derbiOverlay .dbi-jug em{ color:#E9CF8C !important; }
+html.in-on #derbiOverlay .dbi-bal-num span{ font-size:14px; color:#B5BFD0; }
+html.in-on #derbiOverlay .dbi-col{ background:#121620 !important; border:1px solid #242B38; }
+html.in-on #derbiOverlay .dbi-col-h small{ font-size:14px; }
+html.in-on #derbiOverlay :is(.dbi-jug,.dbi-partida){ background:#17233D !important; }
+html.in-on #derbiOverlay .dbi-jug em{ font-size:14px; }
+html.in-on #derbiOverlay .dbi-vacio{ color:#9AA3B0; }
+html.in-on #derbiOverlay .dbi-btn{ border-radius:999px !important; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on #derbiOverlay .dbi-btn-oro, html.in-on #greensMapaOverlay .dbi-btn-oro{ background:linear-gradient(#EBD08A,#C9A54A) !important; color:#16120A !important; border-radius:999px !important; font:800 18px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #derbiOverlay .dbi-btn-quitar{ box-shadow:none; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; }
+html.in-on #derbiOverlay .dbi-campo{ border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; border-radius:999px; }
+html.in-on #derbiOverlay .dbi-campo.on{ background:linear-gradient(#EBD08A,#C9A54A); color:#16120A; border-color:transparent; }
+html.in-on #derbiOverlay .dbi-elige-btn.on{ border-color:#E9CF8C !important; box-shadow:0 0 0 3px rgba(233,207,140,.3) !important; }
+html.in-on #derbiOverlay .dbi-elige-btn.on span{ background:linear-gradient(#EBD08A,#C9A54A) !important; color:#16120A !important; }
+html.in-on #derbiOverlay .dbi-btn:active, html.in-on #derbiOverlay .dbi-campo:active{ transform:scale(.97); }
+
+/* --- Greens en el mapa --- */
+html.in-on #greensMapaOverlay .gm-campo{ border:1.5px solid rgba(217,190,122,.55); background:transparent; color:#E9CF8C; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #greensMapaOverlay .gm-campo.on{ background:linear-gradient(#EBD08A,#C9A54A); border-color:transparent; color:#16120A; }
+html.in-on #greensMapaOverlay .gm-estado{ background:#121620; border:1px solid #242B38; border-radius:14px; color:#F4F1E8; font-size:16px; }
+html.in-on #greensMapaOverlay .gm-estado b{ color:#E9CF8C; }
+html.in-on #greensMapaOverlay .gm-mapa{ background:#121620; border:1px solid rgba(217,190,122,.35); }
+html.in-on #greensMapaOverlay .gm-resumen{ font:600 16px Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #greensMapaOverlay .gm-resumen b{ color:#F4F1E8; }
+html.in-on #greensMapaOverlay .gm-hoyo{ background:#121620; border:1.5px solid #242B38; color:#B5BFD0; font:800 18px Archivo,system-ui,Arial,sans-serif; border-radius:14px; }
+html.in-on #greensMapaOverlay .gm-hoyo.ok{ color:#E9CF8C; border-color:rgba(217,190,122,.45); }
+html.in-on #greensMapaOverlay .gm-hoyo.nuevo{ background:linear-gradient(#EBD08A,#C9A54A); border-color:transparent; color:#16120A; }
+html.in-on #greensMapaOverlay .gm-hoyo.sel{ box-shadow:0 0 0 3px #F4F1E8; }
+html.in-on #greensMapaOverlay .gm-campo:active, html.in-on #greensMapaOverlay .gm-hoyo:active, html.in-on #greensMapaOverlay .dbi-btn:active{ transform:scale(.97); }
+html.in-on .gm-pin{ background:#E9CF8C; color:#16120A; box-shadow:0 0 0 3px #0A0C10, 0 2px 8px rgba(0,0,0,.5); }
+html.in-on .gm-pin.nuevo{ background:#F4F1E8; }
+html.in-on .gm-mapa .leaflet-control-attribution{ font-size:11px; }
+
+/* --- Foto del hoyo en grande --- */
+html.in-on #holeMapOverlay{ background:rgba(10,12,16,.94); }
+html.in-on #holeMapOverlay img{ border:1px solid rgba(217,190,122,.45); }
+html.in-on #holeMapOverlay .hole-map-close{ min-height:52px; padding:12px 36px; background:transparent; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; font:800 18px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #holeMapOverlay .hole-map-close:active{ transform:scale(.97); }
+html.in-on .hole-map-card, html.in-on .green-arriba{ background:linear-gradient(160deg,#17233D,#0F1626) !important; }
+
+/* ===== Ventanas pequeñas: Normas de la liga y Jugadores de la liga ===== */
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay){ background:rgba(5,7,10,.82) !important; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) .modal-card{ box-sizing:border-box; background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; border-radius:22px !important; box-shadow:0 20px 50px rgba(0,0,0,.6) !important; color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; overflow-x:hidden; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) h2{ font:900 24px/1.1 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em; text-transform:uppercase; color:#F4F1E8 !important; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) .section-sub{ font:600 15px/1.4 Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; }
+html.in-on #normasOverlay .normas-h{ font:800 17px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #normasOverlay .normas-ul{ font:600 16px/1.45 Barlow,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #normasOverlay .normas-ul li::marker{ color:#E9CF8C; }
+html.in-on #normasOverlay .normas-firma{ border-top:1px solid rgba(217,190,122,.18); }
+html.in-on #normasOverlay .normas-ok{ color:#E9CF8C; font-size:17px; }
+html.in-on #normasOverlay select, html.in-on #leaguePlayersOverlay input{ background:#121620 !important; border:1px solid #242B38 !important; border-radius:14px !important; color:#F4F1E8 !important; font:600 17px Barlow,system-ui,Arial,sans-serif !important; }
+html.in-on #normasOverlay select:focus, html.in-on #leaguePlayersOverlay input:focus{ border-color:#E9CF8C !important; outline:none; box-shadow:0 0 0 3px rgba(233,207,140,.2) !important; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) .lp-lbl{ font:800 13px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.12em; text-transform:uppercase; color:#9AA3B0 !important; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) .btn.primary{ background:linear-gradient(#EBD08A,#C9A54A) !important; border:0 !important; color:#16120A !important; border-radius:999px !important; box-shadow:none !important; font:800 17px Archivo,system-ui,Arial,sans-serif !important; min-height:54px; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) .btn.ghost{ background:transparent !important; border:1.5px solid rgba(217,190,122,.55) !important; color:#E9CF8C !important; border-radius:999px !important; box-shadow:none !important; font:800 17px Archivo,system-ui,Arial,sans-serif !important; min-height:52px; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) .btn:active{ transform:scale(.97); }
+html.in-on #leaguePlayersOverlay .lp-row{ border-top:1px solid rgba(217,190,122,.18); padding:12px 0; gap:8px; }
+html.in-on #leaguePlayersOverlay .lp-name{ font:700 17px/1.2 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #leaguePlayersOverlay .lp-name small{ font:600 15px Barlow,system-ui,Arial,sans-serif; color:#9AA3B0; }
+html.in-on #leaguePlayersOverlay .lp-hcp-fixed{ font:800 19px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #leaguePlayersOverlay .lp-del{ font:800 15px Archivo,system-ui,Arial,sans-serif; color:#FF8A90; border:1.5px solid rgba(179,38,46,.8); padding:9px 12px; }
+html.in-on #leaguePlayersOverlay .lp-reset{ background:linear-gradient(#4A1A20,#2A0C10); border:1px solid rgba(179,38,46,.8); border-radius:18px; }
+html.in-on #leaguePlayersOverlay .lp-reset-btn{ background:linear-gradient(#B3262E,#8A1A21); border-radius:999px; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #leaguePlayersOverlay .empty-hint{ color:#9AA3B0; font-size:16px; }
+html.in-on #ligaOverlay .lg-aviso{ font-size:15px; color:#B5BFD0; }
+
+/* ===== Consejos de golf (pantalla 5) ===== */
+html.in-on #consejosContent{ padding:0 16px; }
+html.in-on #consejosContent section.cj-dia{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.55) !important; border-radius:22px; color:#F4F1E8 !important; }
+html.in-on #consejosContent .cj-dia-k{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; color:#E9CF8C; }
+html.in-on #consejosContent .cj-dia-t{ font:600 19px/1.4 Barlow,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #consejosContent details.cj-ap{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.35) !important; border-radius:20px; box-shadow:none !important; }
+html.in-on #consejosContent details.cj-ap[open]{ border-color:#E9CF8C !important; box-shadow:none !important; }
+html.in-on #consejosContent details.cj-ap > summary{ color:#F4F1E8; }
+html.in-on #consejosContent .cj-num{ width:34px; height:34px; background:transparent !important; border:1px solid rgba(217,190,122,.55); color:#E9CF8C !important; font:italic 700 17px 'Playfair Display',Georgia,serif; }
+html.in-on #consejosContent details.cj-ap > summary svg.ico{ color:#E9CF8C !important; }
+html.in-on #consejosContent .cj-st b{ font:800 19px/1.15 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #consejosContent .cj-st small{ color:#B5BFD0; }
+html.in-on #consejosContent .cj-mas::before, html.in-on #consejosContent .cj-mas::after{ background:#E9CF8C; }
+html.in-on #consejosContent .cj-h{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; color:#9AA3B0 !important; }
+html.in-on #consejosContent :is(.cj-lista li,.cj-pasos li,.cj-ficha){ background:#121620 !important; border:1px solid #242B38; color:#F4F1E8; }
+html.in-on #consejosContent .cj-ficha{ border-left:3px solid #E9CF8C !important; }
+html.in-on #consejosContent .cj-lista li::before{ background:#E9CF8C !important; }
+html.in-on #consejosContent .cj-pasos li b{ background:linear-gradient(#EBD08A,#C9A54A) !important; color:#16120A !important; font:800 15px Archivo,system-ui,Arial,sans-serif; width:28px; height:28px; flex:none; }
+html.in-on #consejosContent .cj-ficha-t{ font:800 17px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C !important; }
+html.in-on #consejosContent .cj-ficha-d{ color:#D9DEE8; }
+html.in-on #consejosContent .cj-cita{ background:rgba(233,207,140,.08) !important; border:1px solid rgba(217,190,122,.35); font:italic 600 18px/1.45 'Playfair Display',Georgia,serif; color:#E9CF8C; }
+
+/* ===== Inicio, Jugar, Liga y Mi cuenta: restos en lima ===== */
+html.in-on .og-otro .og-etq{ background:rgba(233,207,140,.12) !important; border:1px solid rgba(217,190,122,.6) !important; color:#E9CF8C !important; }
+html.in-on .med-aviso{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; border-radius:20px !important; color:#F4F1E8; padding:14px 16px; }
+html.in-on .med-aviso p{ font:600 16px/1.45 Barlow,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on .med-aviso p strong{ color:#E9CF8C; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on .med-aviso .ico{ color:#E9CF8C; }
+html.in-on .med-aviso-fila span{ color:#B5BFD0; }
+html.in-on .home-pie-btn{ color:#B5BFD0 !important; font:700 15px Archivo,system-ui,Arial,sans-serif !important; }
+html.in-on .app-copyright{ color:#6B7482 !important; }
+html.in-on #historiaOverlay .hg-rep-t small{ color:#B5BFD0; }
+html.in-on :is(#reglasOverlay,#historiaOverlay) .reglas-cab .derbi-cab-k{ text-align:left !important; }
+html.in-on :is(#normasOverlay,#leaguePlayersOverlay) :is(.nv-volver,.pantalla-volver){ background:transparent !important; padding:0 !important; }

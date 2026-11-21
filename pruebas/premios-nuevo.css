@@ -1,0 +1,206 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Ganadores de la semana, Medallas y Salón de campeones con el diseño nuevo (DESIGN.md). Solo cambia el aspecto.
+   Las insignias de medalla conservan sus colores (bronce, plata, oro, diamante) porque identifican la medalla. */
+
+/* ===================== Pantalla «Ganadores» y «Medallas» abiertas desde el Inicio, Jugar o Liga ===================== */
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]){ background:#0A0C10 !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) .screen-content{
+  background:#0A0C10 !important; color:#F4F1E8; padding:max(6px, env(safe-area-inset-top)) 16px 110px !important; overflow-x:hidden !important; box-sizing:border-box; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVolver{
+  position:sticky; top:0; z-index:5; display:flex !important; align-items:center; gap:6px; width:100% !important; box-sizing:border-box; min-height:52px !important; height:auto !important;
+  margin:0 0 6px !important; padding:0 6px !important; border:0 !important; border-radius:0 !important; background:#0A0C10 !important; box-shadow:none !important;
+  color:#E9CF8C !important; font:800 18px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em !important; text-transform:none !important; text-align:left !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVolver:active{ transform:scale(.97); }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVacio{
+  margin:8px 0 0 !important; padding:18px !important; border-radius:22px !important; background:linear-gradient(160deg,#17233D,#0F1626) !important;
+  border:1px solid rgba(217,190,122,.45) !important; color:#B5BFD0 !important; font:600 17px/1.4 Barlow,system-ui,Arial,sans-serif !important; box-shadow:none !important; }
+
+/* ---- Tarjeta común ---- */
+html.in-on body :is(#premiosHome,#medallasHome){ margin:0 !important; padding:0 !important; background:none !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; color:#F4F1E8 !important; font-family:Barlow,system-ui,Arial,sans-serif; }
+html.in-on body :is(#premiosHome,#medallasHome)::before, html.in-on body :is(#premiosHome,#medallasHome)::after{ display:none !important; }
+html.in-on body #premiosHome .nv-tit{ margin:6px 0 14px !important; padding:0 !important; font:900 30px/1.08 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.03em !important; text-transform:uppercase !important; color:#F4F1E8 !important; text-align:left !important; text-shadow:none !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-head{ margin:0 0 12px !important; padding:0 !important; background:none !important; border:0 !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .eyebrow{ display:flex !important; align-items:center; gap:8px; margin:0 0 8px !important; font:800 13px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.2em !important; text-transform:uppercase !important; color:#9AA3B0 !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .eyebrow svg{ color:#E9CF8C !important; stroke:#E9CF8C; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-grupo{ font:800 20px Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8 !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-fechas{ font:italic 600 18px/1.3 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .empty-hint{ margin:0 !important; padding:18px !important; border-radius:22px !important; background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; color:#B5BFD0 !important; font:600 17px/1.4 Barlow,system-ui,Arial,sans-serif !important; text-align:center; }
+
+/* ---- Pasador de semanas ---- */
+html.in-on body #premiosHome .liga-month.gn-pasador{ display:flex !important; align-items:center; gap:8px; margin:0 0 14px !important; padding:10px !important; border-radius:22px !important;
+  background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; box-shadow:none !important; }
+html.in-on body #premiosHome .gn-pasador .hole-nav-btn{ flex:0 0 auto; width:52px !important; height:52px !important; padding:0 !important; border-radius:50% !important;
+  display:flex !important; align-items:center; justify-content:center; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; border:0 !important; color:#16120A !important; box-shadow:none !important; opacity:1 !important; }
+html.in-on body #premiosHome .gn-pasador .hole-nav-btn:disabled{ background:transparent !important; border:1px solid #242B38 !important; color:#3A4252 !important; }
+html.in-on body #premiosHome .gn-pasador .hole-nav-btn:not(:disabled):active{ transform:scale(.97); }
+html.in-on body #premiosHome .gn-pasador .liga-month-txt{ flex:1; min-width:0; text-align:center; }
+html.in-on body #premiosHome .gn-pasador .liga-month-label{ font:800 22px/1.15 Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8 !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body #premiosHome .gn-pasador .liga-month-sub{ margin-top:2px; font:italic 600 17px/1.25 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; }
+html.in-on body #premiosHome .nv-hoy{ display:block; width:100%; box-sizing:border-box; min-height:50px; margin:-4px 0 14px !important; padding:0 18px !important; border-radius:999px !important;
+  border:1.5px solid rgba(217,190,122,.55) !important; background:transparent !important; color:#E9CF8C !important; font:800 17px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em; }
+html.in-on body #premiosHome .nv-hoy[hidden]{ display:none !important; }
+html.in-on body #premiosHome .nv-hoy:active{ transform:scale(.97); }
+
+/* ---- Cada premio en su tarjeta ---- */
+html.in-on body :is(#premiosHome,#medallasHome) .premios-lista{ display:flex !important; flex-direction:column; gap:10px !important; margin:0 !important; padding:0 !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio{ display:flex !important; align-items:flex-start; gap:14px !important; margin:0 !important; padding:14px 16px !important; border-radius:20px !important;
+  background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; box-shadow:none !important; color:#F4F1E8 !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio[hidden]{ display:none !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio-ico{ flex:0 0 auto; width:44px !important; height:44px !important; margin:0 !important; border-radius:50% !important; display:flex !important; align-items:center; justify-content:center;
+  background:rgba(233,207,140,.08) !important; border:1px solid rgba(217,190,122,.55) !important; color:#E9CF8C !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio-ico svg, html.in-on body :is(#premiosHome,#medallasHome) .premio-ico svg.ico{ width:22px !important; height:22px !important; color:#E9CF8C !important; stroke:currentColor; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio-txt{ flex:1; min-width:0; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio-titulo{ margin:2px 0 3px !important; font:800 13px/1.2 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.16em !important; text-transform:uppercase !important; color:#E9CF8C !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio-quien{ font:800 19px/1.2 Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8 !important; overflow-wrap:anywhere; }
+html.in-on body :is(#premiosHome,#medallasHome) .premio-detalle{ margin-top:3px; font:600 15px/1.35 Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; }
+html.in-on body #premiosHome .premio-regalo{ display:none !important; }   /* sin patrocinador por ahora (norma de Carlos, 21-nov-2026) */
+/* El que va ganando: tarjeta destacada con borde de oro */
+html.in-on body #premiosHome .premio.top{ padding:18px 16px !important; border:1.5px solid #E9CF8C !important; box-shadow:0 0 0 1px rgba(233,207,140,.25) !important; }
+html.in-on body #premiosHome .premio.top .premio-ico{ width:52px !important; height:52px !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; border:0 !important; color:#16120A !important; }
+html.in-on body #premiosHome .premio.top .premio-ico svg{ width:26px !important; height:26px !important; color:#16120A !important; }
+html.in-on body #premiosHome .premio.top .premio-quien{ font:900 25px/1.12 Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8 !important; }
+html.in-on body #premiosHome .premio.top .premio-detalle{ margin-top:6px; font:italic 700 20px/1.2 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; }
+
+/* ---- Clasificación de la semana (se despliega con «Ver completa») ---- */
+html.in-on body #premiosHome .gn-lista{ display:flex; flex-direction:column; gap:8px; margin:10px 0 0 !important; padding:0 !important; background:none !important; border:0 !important; }
+html.in-on body #premiosHome .gn-lista[hidden]{ display:none !important; }
+html.in-on body #premiosHome .gn-fila{ display:flex !important; align-items:center; gap:12px; margin:0 !important; padding:12px 16px !important; min-height:56px; box-sizing:border-box; border-radius:16px !important;
+  background:#121620 !important; border:1px solid #242B38 !important; color:#F4F1E8 !important; }
+html.in-on body #premiosHome .gn-pos{ flex:0 0 30px; font:italic 700 20px 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; text-align:center; }
+html.in-on body #premiosHome .gn-nom{ flex:1; min-width:0; font:700 17px/1.2 Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8 !important; }
+html.in-on body #premiosHome .gn-neto{ flex:0 0 auto; font:600 16px Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; }
+
+/* ---- Botones ---- */
+html.in-on body :is(#premiosHome,#medallasHome) .vc-btn, html.in-on body #medallasHome .home-link{
+  display:flex !important; align-items:center; justify-content:center; width:100% !important; box-sizing:border-box; min-height:52px !important; margin:12px 0 0 !important; padding:10px 18px !important;
+  border-radius:999px !important; border:1.5px solid rgba(217,190,122,.55) !important; background:transparent !important; box-shadow:none !important;
+  color:#E9CF8C !important; font:800 17px/1.2 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em !important; text-transform:none !important; text-align:center !important; text-decoration:none !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-wa{
+  display:flex !important; align-items:center; justify-content:center; gap:10px; width:100% !important; box-sizing:border-box; min-height:58px !important; margin:12px 0 0 !important; padding:10px 18px !important;
+  border-radius:999px !important; border:0 !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; box-shadow:none !important;
+  color:#16120A !important; font:800 18px/1.2 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.03em !important; text-transform:uppercase !important; text-decoration:none !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-wa svg{ width:22px !important; height:22px !important; color:#16120A !important; fill:currentColor; flex:0 0 auto; }
+html.in-on body #medallasHome .premios-wa svg{ fill:none; stroke:currentColor; }
+html.in-on body :is(#premiosHome,#medallasHome) :is(.vc-btn,.premios-wa,.home-link):active{ transform:scale(.97); }
+
+/* ---- Medallas nuevas (Inicio y Liga) ---- */
+html.in-on body #medallasHome .premios-head .eyebrow{ display:flex !important; margin:6px 0 4px !important; font:900 30px/1.08 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.03em !important; color:#F4F1E8 !important; }
+html.in-on body #medallasHome .premios-head .eyebrow svg{ width:28px !important; height:28px !important; flex:0 0 auto; }
+html.in-on body #medallasHome > .premios-fechas{ margin:0 !important; padding:18px !important; border-radius:22px !important; background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; font:600 17px/1.4 Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; text-align:center; }
+html.in-on body #medallasHome .med-fila{ flex-direction:column; gap:10px !important; cursor:pointer; }
+html.in-on body #medallasHome .med-fila:active{ transform:scale(.97); }
+html.in-on body #medallasHome .med-fila .premio-ico.med-fila-icos{ width:auto !important; height:auto !important; border:0 !important; background:none !important; border-radius:0 !important; justify-content:flex-start; flex-wrap:wrap; gap:6px; width:100% !important; max-width:none !important; }
+
+/* Insignias: más grandes y con letra Archivo; los colores de cada medalla no cambian */
+html.in-on body .med-ins{ font-family:Archivo,system-ui,Arial,sans-serif !important; font-weight:800 !important; }
+html.in-on body :is(.med-fila-icos,.med-jug-icos) .med-ins{ width:34px !important; height:34px !important; font-size:13px !important; }
+html.in-on body :is(.med-fila-icos,.med-jug-icos) .med-ins.largo{ font-size:11px !important; }
+
+/* Lista de jugadores con sus medallas (Liga y «Vitrinas de la liga») */
+html.in-on body :is(#ligaMedallas,.med-lista){ display:flex !important; flex-direction:column; gap:8px !important; }
+html.in-on body .med-jug{ display:grid !important; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"nom n" "icos icos"; align-items:center; gap:8px 10px !important; width:100% !important; box-sizing:border-box;
+  margin:0 !important; padding:14px 16px !important; border-radius:18px !important; background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; box-shadow:none !important;
+  color:#F4F1E8 !important; text-align:left !important; font-family:Barlow,system-ui,Arial,sans-serif; cursor:pointer; }
+html.in-on body .med-jug:active{ transform:scale(.97); }
+html.in-on body .med-jug-nom{ grid-area:nom; display:flex; align-items:center; gap:8px; min-width:0; max-width:none !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; font:800 18px/1.2 Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8 !important; }
+html.in-on body .med-jug-icos{ grid-area:icos; display:flex !important; flex-wrap:wrap; gap:6px !important; justify-content:flex-start !important; min-width:0; }
+html.in-on body .med-jug-icos:empty{ display:none !important; }
+html.in-on body .med-jug-n{ grid-area:n; font:800 17px Archivo,system-ui,Arial,sans-serif !important; color:#E9CF8C !important; white-space:nowrap; }
+
+/* ---- Ventana de medallas: pantalla entera del diseño nuevo ---- */
+html.in-on body #medallasOverlay{ position:fixed !important; inset:0 !important; z-index:9000 !important; padding:0 !important; display:flex; align-items:stretch !important; justify-content:center !important; background:#0A0C10 !important; backdrop-filter:none !important; }
+html.in-on body:has(.pr-banda) #medallasOverlay{ top:calc(env(safe-area-inset-top, 0px) + 26px) !important; }   /* debajo de la banda «Versión de pruebas» */
+html.in-on body #medallasOverlay[hidden]{ display:none !important; }
+html.in-on body #medallasOverlay .modal-card.med-card{ box-sizing:border-box; width:100% !important; max-width:480px !important; height:100% !important; max-height:none !important; margin:0 !important;
+  border-radius:0 !important; border:0 !important; box-shadow:none !important; background:#0A0C10 !important; color:#F4F1E8 !important;
+  padding:max(6px, env(safe-area-inset-top)) 16px 40px !important; overflow-x:hidden !important; overflow-y:auto !important; font-family:Barlow,system-ui,Arial,sans-serif; }
+html.in-on body #medallasOverlay .modal-card.med-card::before, html.in-on body #medallasOverlay .modal-card.med-card::after{ display:none !important; }
+html.in-on body #medallasOverlay .conv-close{ display:none !important; }
+html.in-on body #medallasOverlay .med-volver{ display:inline-flex; align-items:center; min-height:46px; margin:2px 0 8px !important; padding:0 18px !important; border-radius:999px !important;
+  border:1.5px solid rgba(217,190,122,.55) !important; background:transparent !important; color:#E9CF8C !important; font:800 17px Archivo,system-ui,Arial,sans-serif !important; }
+html.in-on body #medallasOverlay .med-volver:active{ transform:scale(.97); }
+html.in-on body #medallasOverlay .med-titulo{ display:flex; align-items:center; gap:10px; margin:6px 0 6px !important; padding:0 !important; font:900 28px/1.1 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em !important;
+  text-transform:uppercase !important; color:#F4F1E8 !important; text-align:left !important; overflow-wrap:anywhere; }
+html.in-on body #medallasOverlay .med-titulo svg{ flex:0 0 auto; width:28px; height:28px; color:#E9CF8C !important; stroke:currentColor; }
+html.in-on body #medallasOverlay .med-titulo .av{ flex:0 0 auto; margin:0 !important; }
+html.in-on body #medallasOverlay .section-sub{ margin:0 0 14px !important; font:italic 600 18px/1.3 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; }
+html.in-on body #medallasOverlay .med-stats{ display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px !important; margin:0 0 14px !important; }
+html.in-on body #medallasOverlay .med-stat{ min-width:0; padding:10px 4px !important; border-radius:16px !important; background:#121620 !important; border:1px solid #242B38 !important; text-align:center; }
+html.in-on body #medallasOverlay .med-stat-v{ font:900 24px/1.1 Archivo,system-ui,Arial,sans-serif !important; color:#E9CF8C !important; }
+html.in-on body #medallasOverlay .med-stat-t{ margin-top:3px; font:600 14px/1.15 Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; }
+html.in-on body #medallasOverlay .med-grid{ display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:10px !important; }
+html.in-on body #medallasOverlay .med{ min-width:0; display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 10px !important; border-radius:20px !important; text-align:center;
+  background:#121620 !important; border:1px dashed #3A4252 !important; box-shadow:none !important; color:#9AA3B0 !important; }
+html.in-on body #medallasOverlay .med.ok{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.55) !important; color:#F4F1E8 !important; }
+html.in-on body #medallasOverlay .med .med-ico .med-ins{ width:52px !important; height:52px !important; font-size:17px !important; }
+html.in-on body #medallasOverlay .med .med-ico .med-ins.largo{ font-size:15px !important; }
+html.in-on body #medallasOverlay .med:not(.ok) .med-ico{ opacity:.45; filter:grayscale(1); }
+html.in-on body #medallasOverlay .med-nom{ font:800 17px/1.2 Archivo,system-ui,Arial,sans-serif !important; color:inherit !important; }
+html.in-on body #medallasOverlay .med.ok .med-nom{ color:#F4F1E8 !important; }
+html.in-on body #medallasOverlay .med-txt{ font:600 15px/1.3 Barlow,system-ui,Arial,sans-serif !important; color:#9AA3B0 !important; }
+html.in-on body #medallasOverlay .med.ok .med-txt{ color:#E9CF8C !important; }
+
+/* ===================== Salón de campeones ===================== */
+html.in-on body #salonSection{ margin-top:22px !important; }
+html.in-on body #salonSection .sl-pared{ border-radius:22px !important; overflow:hidden; color:#F4F1E8 !important; font-family:Barlow,system-ui,Arial,sans-serif !important;
+  background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; box-shadow:none !important; }
+html.in-on body #salonSection :is(.sl-moldura,.sl-zocalo){ display:none !important; }
+html.in-on body #salonSection .sl-cab{ padding:18px 16px 6px !important; gap:10px !important; }
+html.in-on body #salonSection .sl-cab h2{ margin:0 !important; font:900 28px/1.1 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.03em !important; text-transform:uppercase !important; color:#F4F1E8 !important; text-shadow:none !important; }
+html.in-on body #salonSection .sl-cab p{ margin:0 !important; font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; }
+html.in-on body #salonSection .sl-anio{ display:flex !important; align-items:center; justify-content:space-between; padding:6px !important; border-radius:999px !important; background:#121620 !important; border:1px solid #242B38 !important; }
+html.in-on body #salonSection .sl-anio span{ font:italic 700 20px 'Playfair Display',Georgia,serif !important; color:#E9CF8C !important; }
+html.in-on body #salonSection .sl-anio button{ width:48px !important; height:48px !important; border-radius:50% !important; border:0 !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important;
+  font:800 26px/1 Archivo,system-ui,Arial,sans-serif !important; display:flex; align-items:center; justify-content:center; padding:0 0 3px !important; opacity:1 !important; }
+html.in-on body #salonSection .sl-anio button:disabled{ background:transparent !important; border:1px solid #242B38 !important; color:#3A4252 !important; }
+html.in-on body #salonSection .sl-anio button:not(:disabled):active{ transform:scale(.97); }
+/* Lámparas de latón: se quedan como adorno, con el dorado del diseño */
+html.in-on body #salonSection .sl-lamparas{ padding:14px 14% 0 !important; }
+html.in-on body #salonSection .sl-lamparas i{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; box-shadow:0 10px 30px 6px rgba(233,207,140,.18) !important; }
+html.in-on body #salonSection .sl-lamparas i::after{ background:#C9A54A !important; }
+html.in-on body #salonSection .sl-nota{ color:#B5BFD0 !important; font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif !important; }
+html.in-on body #salonSection .sl-cuadros{ gap:18px 10px !important; padding:18px 14px 20px !important; }
+html.in-on body #salonSection .sl-cuadro:active{ transform:scale(.97); }
+/* Marcos (en la pared y en la ventana) */
+html.in-on body :is(#salonSection,.sl-hoja) .sl-marco{ padding:5px !important; border-radius:6px !important; background:#0A0C10 !important; border:1px solid rgba(217,190,122,.55) !important; box-shadow:0 8px 16px rgba(0,0,0,.45) !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-paspartu{ padding:2px !important; background:linear-gradient(135deg,#EBD08A,#C9A54A) !important; border-radius:3px; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-paspartu::before{ background:#121620 !important; box-shadow:none !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-paspartu::after{ background:linear-gradient(125deg, rgba(255,255,255,.10), rgba(255,255,255,0) 40%) !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-foto{ background:#17233D !important; box-shadow:0 0 0 1px rgba(217,190,122,.35) !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-sinfoto{ color:#E9CF8C !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-juego{ background:#17233D !important; color:#E9CF8C !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-juego span{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important; font:800 12px Archivo,system-ui,Arial,sans-serif !important; padding:3px 8px !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-vacio{ background:#121620 !important; border:1.5px dashed #3A4252 !important; color:#9AA3B0 !important; font:700 13px/1.2 Archivo,system-ui,Arial,sans-serif !important; }
+/* Placa: dorada, con el nombre entero (si no cabe, en dos líneas) */
+html.in-on body :is(#salonSection,.sl-hoja) .sl-placa{ padding:5px 6px !important; border-radius:8px !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; box-shadow:none !important; color:#16120A !important; gap:1px; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-placa b{ font:800 12px/1.2 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.06em !important; text-transform:uppercase; text-shadow:none !important; }
+html.in-on body :is(#salonSection,.sl-hoja) .sl-placa span{ font:700 14px/1.2 Barlow,system-ui,Arial,sans-serif !important; white-space:normal !important; overflow:visible !important; text-overflow:clip !important; overflow-wrap:anywhere; text-shadow:none !important; }
+
+/* Ventana para ver o editar un cuadro */
+html.in-on body .sl-velo{ background:rgba(5,8,12,.78) !important; }
+html.in-on body .sl-hoja{ background:#0A0C10 !important; color:#F4F1E8 !important; border:1px solid rgba(217,190,122,.45) !important; border-bottom:0 !important; border-radius:24px 24px 0 0 !important;
+  padding:20px 16px calc(20px + env(safe-area-inset-bottom)) !important; gap:12px !important; font-family:Barlow,system-ui,Arial,sans-serif !important; overflow-x:hidden; }
+html.in-on body .sl-hoja h3{ margin:0 !important; font:900 24px/1.15 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em; text-transform:uppercase; color:#F4F1E8 !important; }
+html.in-on body .sl-hoja .sl-grande{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.45) !important; border-radius:22px !important; box-shadow:none !important; }
+html.in-on body .sl-hoja .sl-grande .sl-placa b{ font-size:13px !important; }
+html.in-on body .sl-hoja .sl-grande .sl-placa span{ font-size:17px !important; }
+html.in-on body .sl-hoja .sl-lab{ margin-top:4px; font:800 13px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.16em; text-transform:uppercase; color:#9AA3B0 !important; }
+html.in-on body .sl-hoja .sl-sel{ min-height:56px; border-radius:16px !important; background:#121620 !important; border:1px solid #242B38 !important; color:#F4F1E8 !important; font:600 17px Barlow,system-ui,Arial,sans-serif !important; padding:0 14px !important; }
+html.in-on body .sl-hoja .sl-sel:focus{ border-color:#E9CF8C !important; outline:none; box-shadow:0 0 0 3px rgba(233,207,140,.2); }
+html.in-on body .sl-hoja .sl-nota{ font:600 15px/1.4 Barlow,system-ui,Arial,sans-serif !important; color:#B5BFD0 !important; }
+html.in-on body .sl-hoja .sl-btn{ min-height:54px; border-radius:999px !important; border:1.5px solid rgba(217,190,122,.55) !important; background:transparent !important; color:#E9CF8C !important;
+  font:800 17px/1.2 Archivo,system-ui,Arial,sans-serif !important; padding:6px 12px !important; }
+html.in-on body .sl-hoja .sl-btn.sl-prin{ min-height:60px; margin-top:6px; border:0 !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important; font-size:18px !important; letter-spacing:.03em; text-transform:uppercase; }
+html.in-on body .sl-hoja :is(.sl-btn,.sl-enlace):active{ transform:scale(.97); }
+html.in-on body .sl-hoja .sl-enlace{ min-height:48px; color:#E9CF8C !important; font:700 17px Barlow,system-ui,Arial,sans-serif !important; }
+html.in-on body .sl-hoja .sl-enlace[hidden]{ display:none !important; }
+html.in-on body .sl-hoja .sl-error{ color:#FF8A90 !important; font:600 16px Barlow,system-ui,Arial,sans-serif !important; }
+
+/* Móvil pequeño */
+@media (max-width:370px){
+  html.in-on body #premiosHome .premio.top .premio-quien{ font-size:23px !important; }
+  html.in-on body #salonSection .sl-cuadros{ gap:16px 8px !important; padding:16px 10px 18px !important; }
+  html.in-on body #medallasOverlay .med-stat-v{ font-size:21px !important; }
+}
+/* Semana sin tarjetas: el título ya está arriba, no se repite */
+html.in-on body #premiosHome > .eyebrow{ display:none !important; }

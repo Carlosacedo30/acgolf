@@ -1,0 +1,226 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Ryder Cup e inscripción «Apuntarme a la Ryder» con el diseño nuevo (DESIGN.md). Solo cambia el aspecto.
+   Los colores de EQUIPO (rojo, azul… que elige el organizador) se quedan como colores de equipo:
+   puntos, rayas, barras y fondos de cada equipo. Todo lo demás (fondo, tarjetas, botones, letras) es del diseño nuevo. */
+
+/* ================= Ryder Cup (ryder.js · #ryOverlay) ================= */
+html.in-on #ryOverlay{ background:#0A0C10 !important; padding-left:16px; padding-right:16px; padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 110px); overflow-x:hidden; }
+html.in-on #ryOverlay .ry-caja{ color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; font-weight:600; }
+html.in-on #ryOverlay .ry-cargando{ color:#B5BFD0; font:600 18px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-tit{ font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#F4F1E8; margin:10px 2px 12px; }
+html.in-on #ryOverlay .ry-p{ font:600 17px/1.45 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #ryOverlay .ry-p b{ color:#F4F1E8; }
+html.in-on #ryOverlay .ry-nota{ font:600 15px/1.45 Barlow,system-ui,Arial,sans-serif; color:#9AA3B0; }
+html.in-on #ryOverlay .ry-aviso{ font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif; color:#E8C9CC; background:linear-gradient(160deg,#4A1A20,#2A0C10); border:1px solid rgba(179,38,46,.8); border-radius:18px; padding:12px 14px; }
+html.in-on #ryOverlay .ry-msg{ color:#FF8A90; font:700 16px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-centro{ text-align:center; }
+
+/* «‹ Volver al inicio» pegado arriba: tapa lo que pasa por detrás al desplazar */
+html.in-on #ryOverlay > .pantalla-volver{ box-shadow:0 -48px 0 16px #0A0C10 !important; }
+
+/* Botones: pastilla. Principal dorado, secundario con borde dorado, borrar en rojo */
+html.in-on #ryOverlay .ry-btn{ display:flex; align-items:center; justify-content:center; min-height:58px; padding:14px 18px; margin-top:12px; border-radius:999px; border:0;
+  background:linear-gradient(#EBD08A,#C9A54A); color:#16120A; font:900 18px/1.2 Archivo,system-ui,Arial,sans-serif; letter-spacing:.03em; text-align:center; white-space:normal; transition:transform .1s; }
+html.in-on #ryOverlay .ry-btn:active, html.in-on #ryOverlay .ry-info-btn:active, html.in-on #ryOverlay .ry-fila:active, html.in-on #ryOverlay .ry-jug:active,
+html.in-on #ryOverlay .ry-mm:active, html.in-on #ryOverlay .ry-h:active, html.in-on #ryOverlay .ry-volver:active, html.in-on #ryOverlay .ry-col:active{ transform:scale(.97); }
+html.in-on #ryOverlay .ry-btn.ghost, html.in-on #ryOverlay .ry-btn.ry-sec{ background:transparent; color:#E9CF8C; border:1.5px solid rgba(217,190,122,.55); }
+html.in-on #ryOverlay .ry-btn.borrar{ background:transparent; color:#FF8A90; border:1.5px solid rgba(179,38,46,.8); }
+html.in-on #ryOverlay #ryMio, html.in-on #ryOverlay #ryGuardar, html.in-on #ryOverlay #ryCrear{ background:linear-gradient(#B3262E,#8A1A21); color:#fff; box-shadow:0 6px 18px rgba(179,38,46,.2); }
+html.in-on #ryOverlay .ry-volver{ color:#E9CF8C; font:800 18px Archivo,system-ui,Arial,sans-serif; padding:10px 2px; min-height:44px; }
+
+/* «Cómo se juega» (botón con la i) y «Crear sin lista» */
+html.in-on #ryOverlay .ry-info-btn{ min-height:58px; margin:4px 0 8px; padding:12px 16px; border-radius:18px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45);
+  color:#F4F1E8; font:700 17px/1.3 Archivo,system-ui,Arial,sans-serif; transition:transform .1s; }
+html.in-on #ryOverlay .ry-info-btn span{ width:34px; height:34px; background:transparent; border:1px solid rgba(217,190,122,.55); color:#E9CF8C; font:italic 600 19px 'Playfair Display',Georgia,serif; }
+
+/* Publica tu Ryder (pasos) */
+html.in-on #ryOverlay .ry-publica{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:22px; padding:18px 16px; margin:14px 0 4px; }
+html.in-on #ryOverlay .ry-publica > b{ font:900 20px Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#F4F1E8; }
+html.in-on #ryOverlay .ry-paso span{ width:30px; height:30px; background:transparent; border:1px solid rgba(217,190,122,.55); color:#E9CF8C; font:800 16px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-paso p{ color:#B5BFD0; font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-paso p b{ color:#F4F1E8; }
+
+/* Cabecera del marcador: los dos equipos (sus colores se quedan) */
+html.in-on #ryOverlay .ry-cab{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:22px; }
+html.in-on #ryOverlay .ry-cab-t{ font:900 22px/1.15 Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#F4F1E8; padding:16px 16px 12px; }
+html.in-on #ryOverlay .ry-cab-t small{ font:italic 600 17px/1.3 'Playfair Display',Georgia,serif; text-transform:none; letter-spacing:0; color:#E9CF8C; margin-top:6px; }
+html.in-on #ryOverlay .ry-eq{ font:800 17px/1.15 Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-num{ font:900 44px/1 Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-prev{ color:#9AA3B0; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; }
+html.in-on #ryOverlay .ry-prev span{ color:#F4F1E8; font:900 22px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-meta{ color:#E9CF8C; font:800 17px/1.3 Archivo,system-ui,Arial,sans-serif; }
+
+/* Títulos de cada modalidad */
+html.in-on #ryOverlay .ry-sesion{ font:900 20px/1.15 Archivo,system-ui,Arial,sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#F4F1E8; margin:24px 2px 10px; }
+html.in-on #ryOverlay .ry-sesion small{ font:italic 600 16px/1.3 'Playfair Display',Georgia,serif; letter-spacing:0; text-transform:none; color:#E9CF8C; }
+
+/* Cada partido: fila oscura; el nombre en claro y una raya del color de su equipo */
+html.in-on #ryOverlay .ry-fila{ background:#121620; border:1px solid #242B38; border-radius:18px; padding:14px 12px 10px; color:#F4F1E8; transition:transform .1s; }
+html.in-on #ryOverlay .ry-fila.mio{ border-color:#E9CF8C; box-shadow:0 0 0 1px #E9CF8C inset; }
+html.in-on #ryOverlay .ry-j{ color:#F4F1E8 !important; font:700 17px/1.15 Archivo,system-ui,Arial,sans-serif; border-left:4px solid var(--c, transparent); padding-left:8px; }
+html.in-on #ryOverlay .ry-j.b{ border-left:0; border-right:4px solid var(--c, transparent); padding-left:0; padding-right:8px; }
+html.in-on #ryOverlay .ry-j small{ color:#9AA3B0; font:600 14px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-est{ border-radius:14px; }
+html.in-on #ryOverlay .ry-est b{ font:900 18px/1.1 Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-est small{ font:800 12px Archivo,system-ui,Arial,sans-serif; letter-spacing:.08em; }
+html.in-on #ryOverlay .ry-est.grande{ border-radius:18px; }
+html.in-on #ryOverlay .ry-est.grande b{ font-size:21px; }
+html.in-on #ryOverlay .ry-rec{ color:#9AA3B0; font:600 14px/1.3 Barlow,system-ui,Arial,sans-serif; margin-top:4px; }
+
+/* Resumen de puntos */
+html.in-on #ryOverlay .ry-rp-fila{ background:#121620; border:1px solid #242B38; border-radius:16px; padding:12px 14px; }
+html.in-on #ryOverlay .ry-rp-nom{ color:#F4F1E8; font:600 16px/1.3 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-rp-nom b{ color:#F4F1E8 !important; font-weight:700; }
+html.in-on #ryOverlay .ry-rp-nom b::before{ content:''; display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:0; background:var(--c, transparent); }
+html.in-on #ryOverlay .ry-rp-pts{ font:800 15px Archivo,system-ui,Arial,sans-serif; border-radius:999px; }
+
+/* Cómo se juega (apartados que se abren) */
+html.in-on #ryOverlay .ry-det{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:18px; margin:10px 0; }
+html.in-on #ryOverlay .ry-det summary{ font:700 18px/1.3 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; padding:16px 48px 16px 16px; }
+html.in-on #ryOverlay .ry-det summary::after{ color:#E9CF8C; font-weight:400; }
+html.in-on #ryOverlay .ry-det[open] summary{ border-bottom:1px solid rgba(217,190,122,.18); margin-bottom:12px; }
+html.in-on #ryOverlay .ry-det-c{ color:#B5BFD0; font:600 16px/1.5 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-det-c b{ color:#F4F1E8; }
+html.in-on #ryOverlay .ry-det-c li::marker{ color:#E9CF8C; }
+
+/* Anotar mi partido */
+html.in-on #ryOverlay .ry-duelo-t{ font:800 21px/1.3 Archivo,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #ryOverlay .ry-duelo-t span{ color:#F4F1E8 !important; border-bottom:4px solid var(--c, transparent); padding-bottom:1px; }
+html.in-on #ryOverlay .ry-hoyos{ gap:6px; }
+html.in-on #ryOverlay .ry-h{ border:1px solid #242B38; background:#121620; color:#F4F1E8; font:800 16px Archivo,system-ui,Arial,sans-serif; transition:transform .1s; }
+html.in-on #ryOverlay .ry-h.hecho{ background:var(--c); border-color:var(--c); color:#fff; }
+html.in-on #ryOverlay .ry-h.sel{ border-color:#E9CF8C; box-shadow:0 0 0 3px #E9CF8C; }
+html.in-on #ryOverlay .ry-hoyo-info{ color:#F4F1E8; font:600 18px/1.5 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-hoyo-info b{ font:900 20px Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; }
+html.in-on #ryOverlay .ry-hoyo-info span{ color:#E9CF8C; font:italic 600 17px 'Playfair Display',Georgia,serif; }
+html.in-on #ryOverlay .ry-cont{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-top:5px solid var(--c, rgba(217,190,122,.45)); border-radius:20px; padding:12px 8px; }
+html.in-on #ryOverlay .ry-cont-n{ color:#F4F1E8 !important; font:800 18px/1.2 Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-cont-f b{ font:900 46px/1 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #ryOverlay .ry-mm{ background:transparent; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; font:700 30px/1 Archivo,system-ui,Arial,sans-serif; transition:transform .1s; }
+
+/* Crear una Ryder */
+html.in-on #ryOverlay .ry-lbl{ color:#9AA3B0; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.12em; text-transform:uppercase; margin:16px 0 4px; }
+html.in-on #ryOverlay .ry-lbl input, html.in-on #ryOverlay .ry-lbl select{ background:#121620; border:1px solid #242B38; border-radius:14px; color:#F4F1E8; font:600 17px Barlow,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; padding:13px 14px; min-height:50px; }
+html.in-on #ryOverlay .ry-lbl input:focus, html.in-on #ryOverlay .ry-lbl select:focus, html.in-on #ryOverlay .ry-fed-inp:focus, html.in-on #ryOverlay .ry-sel:focus{ border-color:#E9CF8C; outline:none; box-shadow:0 0 0 3px rgba(233,207,140,.2); }
+html.in-on #ryOverlay input[type="date"]{ color-scheme:dark; }
+html.in-on #ryOverlay input[type="date"]::-webkit-calendar-picker-indicator, html.in-on #riOverlay input[type="date"]::-webkit-calendar-picker-indicator{ background:#E9CF8C !important; }
+html.in-on #ryOverlay .ry-dos{ grid-template-columns:1fr; gap:0; }
+html.in-on #ryOverlay .ry-dos .ry-lbl{ min-width:0; }
+html.in-on #ryOverlay .ry-colores{ gap:12px; }
+html.in-on #ryOverlay .ry-col{ width:44px; height:44px; border:2px solid rgba(255,255,255,.15); transition:transform .1s; }
+html.in-on #ryOverlay .ry-col.sel{ border-color:#0A0C10; box-shadow:0 0 0 3px #E9CF8C; }
+html.in-on #ryOverlay .ry-sub{ font:900 18px Archivo,system-ui,Arial,sans-serif; letter-spacing:.06em; text-transform:uppercase; color:#F4F1E8; margin:22px 2px 8px; }
+html.in-on #ryOverlay .ry-check{ background:#121620; border:1px solid #242B38; border-radius:16px; color:#B5BFD0; font:600 16px/1.35 Barlow,system-ui,Arial,sans-serif; padding:14px; }
+html.in-on #ryOverlay .ry-check b{ color:#F4F1E8; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-check input{ accent-color:#E9CF8C; }
+html.in-on #ryOverlay .ry-resumen span{ background:#121620; border-width:2px; border-radius:16px; color:#B5BFD0; font:600 15px/1.3 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-resumen span b{ color:#F4F1E8; }
+html.in-on #ryOverlay .ry-p b[style]{ color:#F4F1E8 !important; border-bottom:3px solid var(--c, transparent); }
+html.in-on #ryOverlay .ry-jug{ background:#121620; border:1px solid #242B38; border-radius:16px; color:#F4F1E8; padding:12px 16px; transition:transform .1s; }
+html.in-on #ryOverlay .ry-jug.en{ color:#fff; border-width:1px; }
+html.in-on #ryOverlay .ry-jug span{ font:700 18px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-jug small{ color:#9AA3B0; font:600 15px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-jug.en small{ color:rgba(255,255,255,.9); }
+html.in-on #ryOverlay .ry-fed-row{ background:#121620; border:1px solid #242B38; border-radius:16px; }
+html.in-on #ryOverlay .ry-fed-row span{ color:#F4F1E8; font:700 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #ryOverlay .ry-fed-inp{ background:#0A0C10; border:1px solid rgba(217,190,122,.55); border-radius:999px; color:#E9CF8C; font:800 19px Archivo,system-ui,Arial,sans-serif; min-height:44px; }
+html.in-on #ryOverlay .ry-par{ grid-template-columns:1fr; gap:6px; padding:12px; background:#121620; border:1px solid #242B38; border-radius:18px; }
+html.in-on #ryOverlay .ry-vs{ text-align:center; color:#E9CF8C; font:italic 600 17px 'Playfair Display',Georgia,serif; }
+html.in-on #ryOverlay .ry-sel{ background:#0A0C10; border:1px solid #242B38; border-left:4px solid var(--c, #242B38); border-radius:12px; color:#F4F1E8 !important; font:700 16px Barlow,system-ui,Arial,sans-serif; min-height:44px; }
+
+/* Avisos que salen abajo al crear la Ryder */
+html.in-on .ry-toast{ background:#17233D !important; color:#F4F1E8 !important; border:1px solid rgba(217,190,122,.55) !important; border-radius:999px !important; font:700 16px Barlow,system-ui,Arial,sans-serif !important; bottom:96px !important; }
+
+/* ================= Inscripción «Apuntarme a la Ryder» (ryder-inscripcion.js · #riOverlay) ================= */
+html.in-on #riOverlay{ background:#0A0C10; color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; overflow-x:hidden; }
+html.in-on #riOverlay .ri-in{ padding:calc(env(safe-area-inset-top, 0px) + 30px) 16px calc(env(safe-area-inset-bottom, 0px) + 110px); font-weight:600; }
+html.in-on #riOverlay .ri-x{ width:46px; height:46px; background:#0A0C10; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; font:700 20px Archivo,system-ui,Arial,sans-serif; z-index:3; transition:transform .1s; }
+html.in-on #riOverlay .ri-k{ color:#D9BE7A; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; }
+html.in-on #riOverlay .ri-h{ font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#F4F1E8; margin-top:6px; overflow-wrap:anywhere; }
+html.in-on #riOverlay .ri-dat{ color:#B5BFD0; font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-in > .ri-dat:first-of-type{ font:italic 600 17px/1.35 'Playfair Display',Georgia,serif; color:#E9CF8C; }
+html.in-on #riOverlay .ri-tj{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:22px; }
+html.in-on #riOverlay .ri-tj > b[style]{ font-family:Archivo,system-ui,Arial,sans-serif !important; color:#F4F1E8; }
+html.in-on #riOverlay .ri-tj .ri-dat[style]{ color:#B5BFD0 !important; }
+html.in-on #riOverlay .ri-ok{ background:rgba(233,207,140,.10); border-color:rgba(217,190,122,.55); }
+html.in-on #riOverlay .ri-ok b{ font:900 19px/1.2 Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #riOverlay .ri-ok span{ color:#B5BFD0; font:600 16px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-eq b{ font:800 20px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #riOverlay .ri-eq small{ color:#9AA3B0; font:600 15px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-nom{ font:800 21px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #riOverlay .ri-btn{ display:flex; align-items:center; justify-content:center; min-height:58px; padding:14px 16px; border-radius:999px; font:900 18px/1.2 Archivo,system-ui,Arial,sans-serif; letter-spacing:.03em; white-space:normal; overflow-wrap:anywhere; }
+html.in-on #riOverlay .ri-pri{ background:linear-gradient(#EBD08A,#C9A54A); border-color:transparent; color:#16120A; }
+html.in-on #riOverlay .ri-sec{ background:transparent; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; }
+html.in-on #riOverlay .ri-x:active, html.in-on #riOverlay .ri-mini:active, html.in-on #riOverlay .ri-col:active, html.in-on #riOverlay .ri-link:active{ transform:scale(.97); }
+html.in-on #riOverlay .ri-peq{ color:#9AA3B0; font-size:15px; }
+html.in-on #riOverlay .ri-dos .ri-tj{ padding:14px 12px; }
+html.in-on #riOverlay .ri-dos .ri-eq b{ font-size:17px !important; overflow-wrap:anywhere; }
+html.in-on #riOverlay .ri-cnt{ font:900 40px/1 Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #riOverlay .ri-li{ font:600 16px/1.3 Barlow,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #riOverlay .ri-li > div{ border-top:1px solid rgba(217,190,122,.18); min-width:0; }
+html.in-on #riOverlay .ri-li > div{ flex-wrap:wrap; }
+html.in-on #riOverlay .ri-li > div > span:first-child{ min-width:0; overflow-wrap:break-word; }
+/* con los botones del administrador: el nombre entero arriba y los botones debajo, a la derecha */
+html.in-on #riOverlay .ri-li > div > span:first-child:not(:last-child){ flex:1 1 100%; }
+html.in-on #riOverlay .ri-li > div > span:last-child:not(:first-child){ flex:none; margin-left:auto; white-space:nowrap; }
+html.in-on #riOverlay .ri-li .yo{ color:#E9CF8C; font-weight:800; }
+html.in-on #riOverlay .ri-li .vacio{ color:#9AA3B0; }
+html.in-on #riOverlay .ri-mini{ background:transparent; border:1px solid rgba(217,190,122,.55); color:#E9CF8C; min-width:38px; height:38px; font:700 16px Archivo,system-ui,Arial,sans-serif; transition:transform .1s; }
+html.in-on #riOverlay .ri-mini[data-ri="quitar"]{ border-color:rgba(179,38,46,.8); color:#FF8A90; }
+html.in-on #riOverlay .ri-adm{ border:1.5px dashed rgba(217,190,122,.45); border-radius:22px; padding:16px; margin-top:22px; }
+html.in-on #riOverlay .ri-adm h3{ color:#D9BE7A; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; }
+html.in-on #riOverlay .ri-link{ color:#E9CF8C; font:700 16px Barlow,system-ui,Arial,sans-serif; padding:12px; min-height:44px; }
+html.in-on #riOverlay .ri-adm .ri-link[data-ri="borrar"]{ color:#FF8A90; }
+html.in-on #riOverlay .ri-lab{ color:#9AA3B0; font:800 13px/1.35 Archivo,system-ui,Arial,sans-serif; letter-spacing:.1em; text-transform:uppercase; margin-top:18px; }
+html.in-on #riOverlay .ri-inp{ background:#121620; border:1px solid #242B38; border-radius:14px; color:#F4F1E8; font:600 17px Barlow,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; padding:13px 14px; min-height:50px; }
+html.in-on #riOverlay .ri-inp::placeholder{ color:#6B7482; }
+html.in-on #riOverlay .ri-inp:focus{ border-color:#E9CF8C; outline:none; box-shadow:0 0 0 3px rgba(233,207,140,.2); }
+html.in-on #riOverlay input[type="date"]{ color-scheme:dark; }
+html.in-on #riOverlay .ri-vacio{ color:#B5BFD0; font:600 18px/1.45 Barlow,system-ui,Arial,sans-serif; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:22px; padding:24px 18px; margin-top:22px; }
+html.in-on #riOverlay .ri-cap{ background:linear-gradient(#EBD08A,#C9A54A); color:#16120A; font-size:12px; }
+
+/* Capitanes (la raya de arriba y el aro son del color de su equipo) */
+html.in-on #riOverlay .ri-capt{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-top:5px solid var(--c); border-radius:20px; }
+html.in-on #riOverlay .ri-ini{ background:#0A0C10; color:#F4F1E8; font:900 24px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-capt small{ color:#D9BE7A; font:800 12px/1.3 Archivo,system-ui,Arial,sans-serif; letter-spacing:.1em; }
+html.in-on #riOverlay .ri-capt b{ color:#F4F1E8; font:800 18px/1.15 Archivo,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-vs{ color:#E9CF8C; font:italic 600 18px 'Playfair Display',Georgia,serif; }
+
+/* Marcador de apuntados */
+html.in-on #riOverlay .ri-mar .ri-k{ color:#D9BE7A; }
+html.in-on #riOverlay .ri-nums small{ color:#9AA3B0; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; }
+html.in-on #riOverlay .ri-nums span{ font:900 46px/1 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #riOverlay .ri-tira{ background:#121620; border:1px solid #242B38; height:20px; }
+html.in-on #riOverlay .ri-pica{ color:#E9CF8C; }
+
+/* Publica tu Ryder: colores de equipo e interruptor «Abrir a otros grupos» */
+html.in-on #riOverlay .ri-cols{ gap:12px; }
+html.in-on #riOverlay .ri-col{ width:44px; height:44px; border:2px solid rgba(255,255,255,.15); transition:transform .1s; }
+html.in-on #riOverlay .ri-col.sel{ border-color:#0A0C10; box-shadow:0 0 0 3px #E9CF8C; }
+html.in-on #riOverlay .ri-check{ background:#121620; border:1px solid #242B38; border-radius:16px; color:#B5BFD0; font:600 16px/1.35 Barlow,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-check b{ color:#F4F1E8; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #riOverlay .ri-check input{ accent-color:#E9CF8C; }
+
+/* Aviso que sale abajo («Foto copiada…») */
+html.in-on .ri-toast{ background:linear-gradient(#EBD08A,#C9A54A) !important; color:#16120A !important; bottom:96px !important; }
+
+/* ================= Inicio: tarjeta «Juegas la Ryder» (otros-grupos.js) — sin lima ================= */
+html.in-on body .og-card.og-juego{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1px solid rgba(217,190,122,.55) !important; border-radius:20px !important; }
+html.in-on body .og-juego .og-etq{ background:linear-gradient(#EBD08A,#C9A54A) !important; border:0 !important; color:#16120A !important; }
+html.in-on body .og-juego .og-sub{ color:#B5BFD0 !important; }
+
+/* ================= Móvil pequeño (360×640) ================= */
+@media (max-width:370px){
+  html.in-on #ryOverlay .ry-tit, html.in-on #riOverlay .ri-h{ font-size:26px; }
+  html.in-on #ryOverlay .ry-fila{ padding:12px 8px 8px; gap:6px; }
+  html.in-on #ryOverlay .ry-est{ min-width:84px; padding:8px 6px; }
+  html.in-on #ryOverlay .ry-j{ font-size:16px; }
+  html.in-on #ryOverlay .ry-num{ font-size:38px; padding:10px 12px; }
+  html.in-on #ryOverlay .ry-hoyos{ gap:4px; }
+  html.in-on #ryOverlay .ry-h{ font-size:15px; }
+  html.in-on #ryOverlay .ry-cont-f b{ font-size:40px; }
+  html.in-on #riOverlay .ri-capt{ padding:12px 8px; }
+  html.in-on #riOverlay .ri-capt b{ font-size:16px; }
+  html.in-on #riOverlay .ri-dos{ gap:8px; }
+  html.in-on #riOverlay .ri-dos .ri-tj{ padding:12px 10px; }
+}
