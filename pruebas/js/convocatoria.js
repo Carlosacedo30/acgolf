@@ -303,7 +303,7 @@
     const cm = document.getElementById('convMarc'); if(cm) cm.addEventListener('click', ()=>{ convMarc = !convMarc; renderConv(); });
     body.querySelectorAll('[data-quitar]').forEach(b => b.addEventListener('click', async ()=>{
       const i = Number(b.dataset.quitar); const hora = convEtq(conv, i); const n = (conv.groups[i] || []).length;
-      if(!confirm('¿Quitar el horario de las ' + hora + '?' + (n ? '\n' + (n === 1 ? 'El apuntado se queda' : 'Los ' + n + ' apuntados se quedan') + ' sin hora y ' + (n === 1 ? 'tendrá' : 'tendrán') + ' que apuntarse en otra.' : ''))) return;
+      if(!await acgolfConfirmar('¿Quitar el horario de las ' + hora + '?' + (n ? '\n' + (n === 1 ? 'El apuntado se queda' : 'Los ' + n + ' apuntados se quedan') + ' sin hora y ' + (n === 1 ? 'tendrá' : 'tendrán') + ' que apuntarse en otra.' : ''))) return;
       b.disabled = true;
       await convMutate(c => {
         if(c.roundCode) return 'La partida ya está creada: ya no se pueden quitar horarios.';

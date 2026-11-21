@@ -168,8 +168,8 @@
     setTimeout(()=> gmMapa.invalidateSize(), 60);
     await gmIrAlCampo();
   }
-  function gmCerrar(){
-    if(gmCambiados.size && !confirm('Hay ' + gmCambiados.size + ' greens sin guardar. ¿Salir sin guardar?')) return;
+  async function gmCerrar(){
+    if(gmCambiados.size && !await acgolfConfirmar('Hay ' + gmCambiados.size + ' greens sin guardar. ¿Salir sin guardar?')) return;
     const ov = document.getElementById('greensMapaOverlay'); if(ov) ov.hidden = true;
   }
 
@@ -178,9 +178,9 @@
     const c = document.getElementById('gmCerrar'); if(c) c.addEventListener('click', gmCerrar);
     const t = document.getElementById('gmTraer'); if(t) t.addEventListener('click', ()=> gmTraerDelMapa(t));
     const g = document.getElementById('gmGuardar'); if(g) g.addEventListener('click', ()=> gmGuardar(g));
-    document.querySelectorAll('.gm-campo').forEach(x => x.addEventListener('click', ()=>{
+    document.querySelectorAll('.gm-campo').forEach(x => x.addEventListener('click', async ()=>{
       if(x.dataset.c === gmCampo) return;
-      if(gmCambiados.size && !confirm('Hay greens sin guardar en ' + GM_CAMPOS[gmCampo].nombre + '. ¿Cambiar de campo sin guardar?')) return;
+      if(gmCambiados.size && !await acgolfConfirmar('Hay greens sin guardar en ' + GM_CAMPOS[gmCampo].nombre + '. ¿Cambiar de campo sin guardar?')) return;
       gmCampo = x.dataset.c; gmIrAlCampo();
     }));
   })();

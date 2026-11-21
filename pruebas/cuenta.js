@@ -174,7 +174,7 @@
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ msg('Escribe bien tu correo.'); return; }
       if(password.length < 8){ msg('La contraseña tiene que tener al menos 8 caracteres.'); return; }
       const sospecha = correoSospechoso(email);
-      if(sospecha && !confirm('¿Seguro que tu correo es «' + email + '»?\n\nQuizá querías escribir «' + email.split('@')[0] + '@' + sospecha + '». Si te equivocas, el correo no te llegará.\n\nPulsa Aceptar si está bien, o Cancelar para corregirlo.')) return;
+      if(sospecha && !await acgolfConfirmar('¿Seguro que tu correo es «' + email + '»?\n\nQuizá querías escribir «' + email.split('@')[0] + '@' + sospecha + '». Si te equivocas, el correo no te llegará.\n\nPulsa Aceptar si está bien, o Cancelar para corregirlo.')) return;
       try { localStorage.setItem('acgolfNombreAlta', nombre); } catch(x){}
       nombreMeta = nombre;
       const { data, error } = await client.auth.signUp({ email, password, options:{ data:{ nombre }, emailRedirectTo: location.origin + location.pathname } });
@@ -346,7 +346,7 @@
       if(!nombre){ msg('Escribe tu nombre.'); return; }
       if(hcp === null){ msg('Escribe tu hándicap.'); return; }
       if($('cgAcepto') && !$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
-      if(!confirm('¿Crear el grupo «' + grupo + '»?\n\nTú serás su administrador. Después podrás invitar a los demás con un enlace.')) return;
+      if(!await acgolfConfirmar('¿Crear el grupo «' + grupo + '»?\n\nTú serás su administrador. Después podrás invitar a los demás con un enlace.')) return;
       const { error } = await client.rpc('crear_grupo', { p_nombre: grupo, p_player: nombre, p_hcp: hcp, p_version: VERSION_PRIVACIDAD });
       if(error){ msg(traducir(error)); return; }
       location.reload();
@@ -558,7 +558,7 @@
     $('cgEmpezar').onclick = e => ocupado(e.target, async () => {
       if(!elegido){ msg('Toca tu nombre en la lista.'); return; }
       if(!$('cgAcepto').checked){ msg('Para seguir tienes que aceptar la política de privacidad.'); return; }
-      if(!confirm('¿Eres ' + elegido + '?\n\nTu cuenta quedará unida a este nombre.')) return;
+      if(!await acgolfConfirmar('¿Eres ' + elegido + '?\n\nTu cuenta quedará unida a este nombre.')) return;
       const { error } = await client.rpc('crear_mi_perfil', { p_player: elegido, p_version: VERSION_PRIVACIDAD });
       if(error){ msg(traducir(error)); return; }
       location.reload();
@@ -1075,7 +1075,7 @@
       msg('Enviado a ' + data.a + '. Mira tu correo en un minuto.', true);
     });
     $('pmRedes').onclick = e => ocupado(e.currentTarget, async () => {
-      if(!confirm('¿Mandar ahora el aviso de redes a todos los jugadores con avisos activados en el móvil?')) return;
+      if(!await acgolfConfirmar('¿Mandar ahora el aviso de redes a todos los jugadores con avisos activados en el móvil?')) return;
       const elRedes = $('paRedesMsg');
       const msgRedes = (txt, ok) => { if(elRedes){ elRedes.textContent = txt || ''; elRedes.className = 'cg-msg' + (ok ? ' ok' : ''); } };
       if(!window.acgolfAvisosMovil || !window.acgolfAvisosMovil.avisarRedes){ msgRedes('No está disponible ahora mismo.'); return; }
@@ -1181,7 +1181,7 @@
       location.reload();
     }));
     gate.querySelectorAll('[data-borrar]').forEach(b => b.onclick = async () => {
-      if(!confirm('¿Borrar «' + b.dataset.n + '» con todos sus jugadores y partidas para siempre?')) return;
+      if(!await acgolfConfirmar('¿Borrar «' + b.dataset.n + '» con todos sus jugadores y partidas para siempre?')) return;
       const { error } = await client.rpc('sa_borrar_grupo', { p_grupo: b.dataset.borrar });
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'grupos');
@@ -1215,7 +1215,7 @@
     });
     gate.querySelectorAll('[data-enviar]').forEach(b => b.onclick = () => enviarCodigo(b.dataset.enviar, b.dataset.gr));
     gate.querySelectorAll('[data-anular]').forEach(b => b.onclick = async () => {
-      if(!confirm('¿Anular el código ' + b.dataset.anular + '?\nYa no servirá para nada.')) return;
+      if(!await acgolfConfirmar('¿Anular el código ' + b.dataset.anular + '?\nYa no servirá para nada.')) return;
       const { error } = await client.rpc('sa_anular_codigo_admin', { p_codigo: b.dataset.anular });
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'codigos');
@@ -1236,14 +1236,14 @@
       msg('Correo reenviado a ' + email + '. Que pulse el enlace del correo para terminar.', true);
     }));
     gate.querySelectorAll('[data-borrar-u]').forEach(b => b.onclick = async () => {
-      if(!confirm('¿Borrar la cuenta de ' + b.dataset.e + '?\n\nNo había terminado el alta. Si luego quiere entrar, tendrá que crear la cuenta otra vez.')) return;
+      if(!await acgolfConfirmar('¿Borrar la cuenta de ' + b.dataset.e + '?\n\nNo había terminado el alta. Si luego quiere entrar, tendrá que crear la cuenta otra vez.')) return;
       const { error } = await client.rpc('sa_borrar_usuario', { p_user: b.dataset.borrarU });
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'usuarios');
     });
     gate.querySelectorAll('[data-super]').forEach(b => b.onclick = async () => {
       const quitar = b.dataset.on === '1';
-      if(!confirm(quitar ? '¿Quitarle el super administrador?' : '¿Hacerle super administrador?\nPodrá ver y cambiar todos los grupos y usuarios.')) return;
+      if(!await acgolfConfirmar(quitar ? '¿Quitarle el super administrador?' : '¿Hacerle super administrador?\nPodrá ver y cambiar todos los grupos y usuarios.')) return;
       const { error } = await client.rpc('sa_cambiar_rol', { p_user: b.dataset.super, p_rol: quitar ? 'no_super' : 'super_admin' });
       if(error){ msg(traducir(error)); return; }
       pantallaSuper(perfil, 'usuarios');
@@ -1330,7 +1330,7 @@
       msg('Añadido: ' + data, true);
     });
     gate.querySelectorAll('[data-quitar]').forEach(b => b.onclick = async () => {
-      if(!confirm('¿Quitar a ' + b.dataset.n + ' del grupo?\nSus partidas jugadas se quedan; él deja de ver el grupo.')) return;
+      if(!await acgolfConfirmar('¿Quitar a ' + b.dataset.n + ' del grupo?\nSus partidas jugadas se quedan; él deja de ver el grupo.')) return;
       const { error } = await client.rpc('ga_quitar', { p_grupo: grupoId, p_user: b.dataset.quitar });
       if(error){ msg(traducir(error)); return; }
       pantallaMiembros(perfil, grupoId, grupoNombre, desdeSuper);
@@ -1383,14 +1383,14 @@
     if($('cgMovil')) window.acgolfAvisosMovil.pintar($('cgMovil'), perfil, aviso, TX.movil);
   }
   async function cerrarSesion(){
-    if(!confirm('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
+    if(!await acgolfConfirmar('¿Cerrar sesión en este móvil?\nPara volver a entrar necesitarás tu correo y tu contraseña.')) return;
     await client.auth.signOut();
     try { localStorage.removeItem('acgolfEsAdmin'); } catch(e){}
     location.reload();
   }
   function borrarCuenta(boton, aviso){
     return ocupado(boton, async () => {
-      if(!confirm('¿Borrar tu cuenta?\n\nSe borrarán tu correo y tu contraseña en unos días. Las partidas que ya jugaste se quedan en la liga, porque son también de tus compañeros.\n\nNo se puede deshacer.')) return;
+      if(!await acgolfConfirmar('¿Borrar tu cuenta?\n\nSe borrarán tu correo y tu contraseña en unos días. Las partidas que ya jugaste se quedan en la liga, porque son también de tus compañeros.\n\nNo se puede deshacer.')) return;
       const { data, error } = await client.rpc('pedir_baja');
       if(error || !data){ aviso(traducir(error)); return; }
       await client.auth.signOut();
@@ -1465,7 +1465,7 @@
         $('cgCopiarEnlace').onclick = async e => { try { await navigator.clipboard.writeText(texto); e.target.textContent = '¡Copiado!'; } catch(x){ prompt('Copia este mensaje:', texto); } };
         if(window.acgolfQR && $('cgQR')){ try { const png = window.acgolfQR.lamina(enlace, inv.grupo); $('cgQR').src = png; $('cgQRBajar').href = png; } catch(e){ const c = box.querySelector('.qr-caja'); if(c) c.remove(); } }
         if($('cgNuevoEnlace')) $('cgNuevoEnlace').onclick = async () => {
-          if(!confirm('¿Cambiar el enlace de invitación?\nEl enlace anterior dejará de funcionar.')) return;
+          if(!await acgolfConfirmar('¿Cambiar el enlace de invitación?\nEl enlace anterior dejará de funcionar.')) return;
           const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: true }); pintarInvita(r.data);
         };
       };
@@ -1647,7 +1647,7 @@
       else if(!(n > 0)){ msg('No hay a quién enviarlo.'); return; }
       const quien = alc === 'persona' ? para : alc === 'elegir' ? (n === 1 ? 'la persona elegida' : 'las ' + n + ' personas elegidas') : (n === 1 ? 'la persona' : 'las ' + n + ' personas') + (alc === 'grupo' ? ' del grupo «' + $('cpGrupo').selectedOptions[0].textContent.replace(/ \(\d+\)$/, '') + '»' : '');
       const antes = actual().ultimo && alc !== 'persona' && alc !== 'elegir' ? '\n\nOJO: esta promoción ya se envió el ' + fecha(actual().ultimo.cuando) + ' a ' + actual().ultimo.correos + ' personas.' : '';
-      if(!confirm('¿Enviar «' + p.asunto + '» a ' + quien + '?\n\nSale desde avisos@acgolf.es y no se puede deshacer.' + antes)) return;
+      if(!await acgolfConfirmar('¿Enviar «' + p.asunto + '» a ' + quien + '?\n\nSale desde avisos@acgolf.es y no se puede deshacer.' + antes)) return;
       const { data, error } = await client.functions.invoke('promocion', { body: { accion: 'enviar', promo: p, alcance: alc === 'elegir' ? 'personas' : alc, ids: alc === 'elegir' ? [...marcados] : undefined, grupo: alc === 'grupo' ? $('cpGrupo').value : null, para, confirmo: alc === 'persona' ? 1 : n } });
       if(error || !data || !data.enviados){ msg('No se pudo enviar. ' + ((data && data.error) || (error && error.message) || '')); return; }
       mostrar(cabecera('Correo enviado', 'Se ha enviado a ' + data.enviados + (data.enviados === 1 ? ' persona' : ' personas') + ' desde avisos@acgolf.es.')
@@ -1673,7 +1673,7 @@
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(para)){ msg('Escribe bien el correo del destinatario.'); return; }
       if(!asunto){ msg('Pon un asunto.'); return; }
       if(!texto){ msg('Escribe el texto.'); return; }
-      if(!confirm('¿Enviar este correo a ' + para + '?\n\nSale desde avisos@acgolf.es.')) return;
+      if(!await acgolfConfirmar('¿Enviar este correo a ' + para + '?\n\nSale desde avisos@acgolf.es.')) return;
       const { data, error } = await client.functions.invoke('avisar', { body: { libre: true, para, asunto, texto } });
       if(error || !data || !data.enviados){ msg('No se pudo enviar. ' + ((data && data.error) || (error && error.message) || '')); return; }
       mostrar(cabecera('Correo enviado', 'Se ha enviado a ' + esc(data.a) + ' desde avisos@acgolf.es.')

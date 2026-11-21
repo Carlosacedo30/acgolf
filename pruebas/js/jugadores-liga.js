@@ -45,7 +45,7 @@
     }).join('');
     box.querySelectorAll('.lp-del').forEach(b => b.addEventListener('click', async ()=>{
       const p = leaguePlayers[+b.dataset.i];
-      if(!confirm('¿Quitar a ' + p.name + ' de la liga?\nSus rondas y su hándicap se conservan; solo deja de salir en la lista.')) return;
+      if(!await acgolfConfirmar('¿Quitar a ' + p.name + ' de la liga?\nSus rondas y su hándicap se conservan; solo deja de salir en la lista.')) return;
       try {
         const { data, error } = await initSupabase().rpc('remove_player', { p_key: getAdminKey(), p_name: p.name });
         if(error) throw error;
@@ -86,7 +86,7 @@
   }
 
   async function resetStats(btn){
-    if(!confirm('¿Reiniciar hándicaps y liga?\n\n• Las partidas jugadas hasta ahora dejan de contar para el hándicap y la clasificación.\n• Cada jugador vuelve a su hándicap inicial de esta lista.\n• No se borra ninguna partida.')) return;
+    if(!await acgolfConfirmar('¿Reiniciar hándicaps y liga?\n\n• Las partidas jugadas hasta ahora dejan de contar para el hándicap y la clasificación.\n• Cada jugador vuelve a su hándicap inicial de esta lista.\n• No se borra ninguna partida.')) return;
     const old = btn.textContent; btn.textContent = 'Reiniciando…';
     try {
       const { data, error } = await initSupabase().rpc('reset_stats', { p_key: getAdminKey() });

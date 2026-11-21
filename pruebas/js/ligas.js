@@ -502,7 +502,7 @@ async function ligaCrear(){
   if(cal.some(j => j.date < ligaHoy())){ alert('Hay alguna jornada con fecha pasada. Revisa el calendario.'); return; }
   if(new Set(cal.map(j => j.date)).size < cal.length){ alert('Hay dos jornadas el mismo día. Revisa el calendario.'); return; }
   if(f.regla === 'fijas' && !f.fijas.filter(r => r <= f.jornadas).length){ alert('Elige qué rondas cuentan.'); return; }
-  if(!confirm('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' rondas de ' + (f.hoyos === 9 ? '9 hoyos (' + (f.mitad === 'vuelta' ? 'vuelta, del 10 al 18' : 'ida, del 1 al 9') + ')' : '18 hoyos') + ' (' + (f.formato === 'stableford' ? 'Stableford' : 'Stroke Play') + ').\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
+  if(!await acgolfConfirmar('¿Crear «' + f.nombre + '»?\n' + f.jugadores.length + ' jugadores, ' + f.jornadas + ' rondas de ' + (f.hoyos === 9 ? '9 hoyos (' + (f.mitad === 'vuelta' ? 'vuelta, del 10 al 18' : 'ida, del 1 al 9') + ')' : '18 hoyos') + ' (' + (f.formato === 'stableford' ? 'Stableford' : 'Stroke Play') + ').\nDel ' + ligaFechaCortaJ(cal[0].date) + ' al ' + ligaFechaCortaJ(cal[cal.length - 1].date) + '.')) return;
   const client = initSupabase(); if(!client) return;
   btn.textContent = 'Creando…'; btn.disabled = true;
   try {
@@ -816,7 +816,7 @@ async function ligaGuardarJornada(l, j, cfg, c, callado){
 }
 
 async function ligaBorrar(l, btn){
-  if(!confirm('¿Borrar la liga «' + l.nombre + '»?\nSe borran también sus convocatorias pendientes. Las partidas ya jugadas no se tocan.')) return;
+  if(!await acgolfConfirmar('¿Borrar la liga «' + l.nombre + '»?\nSe borran también sus convocatorias pendientes. Las partidas ya jugadas no se tocan.')) return;
   btn.textContent = 'Borrando…';
   const client = initSupabase();
   const codigos = l.jornadas.map(j => ligaCodigoJornada(l, j.n));

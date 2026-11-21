@@ -443,7 +443,7 @@
   async function borrarPartida(){
     if(!partida) return;
     const empezada = calcular().sim.cerrados > 0;
-    if(!confirm('¿Borrar esta partida de cartas?\n' + (empezada ? 'Ya se ha jugado algún hoyo: se pierden las cartas y los puntos. ' : '') + 'Desaparece para todos y no se puede deshacer.')) return;
+    if(!await acgolfConfirmar('¿Borrar esta partida de cartas?\n' + (empezada ? 'Ya se ha jugado algún hoyo: se pierden las cartas y los puntos. ' : '') + 'Desaparece para todos y no se puede deshacer.')) return;
     const b = $('caBorrar'); if(b){ b.disabled = true; b.textContent = 'Borrando…'; }
     const res = typeof deleteSharedRound === 'function' ? await deleteSharedRound(partida.code) : { ok: false };
     if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar.'); if(b){ b.disabled = false; b.textContent = 'Borrar esta partida'; } return; }
@@ -454,7 +454,7 @@
     pintar(); subir();
   }
   async function quitar(nombre){
-    if(!confirm('¿Quitar a ' + nombre + ' de la partida?')) return;
+    if(!await acgolfConfirmar('¿Quitar a ' + nombre + ' de la partida?')) return;
     await cambiar(r => { const j = r.jug.find(x => x.nombre === nombre); if(!j) return false; j.fuera = true; });
     pintar();
   }

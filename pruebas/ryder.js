@@ -374,7 +374,7 @@
   }
 
   async function borrar(){
-    if(!ryder || !confirm('¿Borrar esta Ryder?\nDesaparece para todos y no se puede deshacer.')) return;
+    if(!ryder || !await acgolfConfirmar('¿Borrar esta Ryder?\nDesaparece para todos y no se puede deshacer.')) return;
     const res = typeof deleteSharedRound === 'function' ? await deleteSharedRound(ryder.code) : { ok: false };
     if(!res || !res.ok){ alert((res && res.msg) || 'No se pudo borrar.'); return; }
     const client = initSupabase();
@@ -450,7 +450,7 @@
       pintar();
     };
     if($('ryQuitar')) $('ryQuitar').onclick = async () => {
-      if(!confirm('¿Borrar los golpes del hoyo ' + (hoyoSel + 1) + '?')) return;
+      if(!await acgolfConfirmar('¿Borrar los golpes del hoyo ' + (hoyoSel + 1) + '?')) return;
       const hh = hoyoSel, i = dueloIdx;
       await cambiar(r => { const x = r.duelos[i]; if(!x) return; x.ga.concat(x.gb).forEach(l => { if(l) l[hh] = null; }); });
       cuentas = null; pintar();

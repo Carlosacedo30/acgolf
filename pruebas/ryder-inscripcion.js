@@ -373,12 +373,12 @@
     if(b.dataset.busy) return; b.dataset.busy = '1';
     try {
       if(a === 'ap') await apuntar(i);
-      else if(a === 'salir'){ if(confirm('¿Quitarte de la lista?')) await conmigo(0); }
-      else if(a === 'quitar'){ if(confirm('¿Quitar a ' + b.dataset.n + ' de la lista?')) await quitar(b.dataset.n); }
+      else if(a === 'salir'){ if(await acgolfConfirmar('¿Quitarte de la lista?')) await conmigo(0); }
+      else if(a === 'quitar'){ if(await acgolfConfirmar('¿Quitar a ' + b.dataset.n + ' de la lista?')) await quitar(b.dataset.n); }
       else if(a === 'pasar') await pasar(b.dataset.n, i);
       else if(a === 'preparar'){
         if(!window.acgolfRyder || !window.acgolfRyder.desdeLista){ alert('No está disponible ahora mismo.'); }
-        else if(!r.cerrada && !confirm('Se cierra la lista y pasas a preparar los partidos. ¿Seguimos?')) { /* nada */ }
+        else if(!r.cerrada && !await acgolfConfirmar('Se cierra la lista y pasas a preparar los partidos. ¿Seguimos?')) { /* nada */ }
         else { const ok = r.cerrada || await cambiar(x => { x.cerrada = true; return null; }); if(ok){ const lista = r; cerrar(); window.acgolfRyder.desdeLista(lista); } }
       }
       else if(a === 'cerrarlista') await cambiar(x => { x.cerrada = !x.cerrada; return null; });
@@ -387,7 +387,7 @@
       else if(a === 'watexto') soloTexto(mensaje());
       else if(a === 'copiar'){ try { await navigator.clipboard.writeText(mensaje()); b.textContent = '¡Copiado!'; } catch(e){ prompt('Copia este mensaje:', mensaje()); } }
       else if(a === 'borrar'){
-        if(confirm('¿Borrar la inscripción?\nDesaparece para todos y no se puede deshacer.')){
+        if(await acgolfConfirmar('¿Borrar la inscripción?\nDesaparece para todos y no se puede deshacer.')){
           const res = await deleteSharedRound(r.code);
           if(!res || !res.ok) alert((res && res.msg) || 'No se pudo borrar');
           else { r = null; pintar(); }
