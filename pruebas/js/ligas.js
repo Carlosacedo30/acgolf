@@ -140,14 +140,20 @@ function ligaCalendario(inicio, jornadas, campo, cada, fechas, salida){
   return out;
 }
 // Salida al tiro: hoyos repartidos por el campo (8 grupos: 1, 3, 5, 7, 10, 12, 14, 16)
-function ligaHoyosPorDefecto(g){ return Array.from({ length: g }, (_, i) => 1 + Math.round(i * 18 / g)); }
+function ligaHoyosPorDefecto(g, nh, mitad){
+  if(Number(nh) === 9){ const lo = mitad === 'vuelta' ? 10 : 1; return Array.from({ length: g }, (_, i) => lo + Math.floor(i * 9 / g) % 9); }
+  return Array.from({ length: g }, (_, i) => 1 + Math.round(i * 18 / g));
+}
 function ligaNumGrupos(l){ return Math.max(1, Math.ceil(l.jugadores.length / 4)); }
 // Horas y hoyos de una jornada: normal, una salida cada 10 min por el 1; al tiro, todos a la vez cada uno en su hoyo
 function ligaSalidas(l, j, g){
   const hora = j.hora || l.hora;
   if(j.salida !== 'tiro'){ const hi = Number(j.hoyoInicio || l.hoyoInicio) || 1; return { times: ligaHoras(hora, g), hoyos: Array(g).fill(hi > 1 ? hi : null) }; }
-  const def = ligaHoyosPorDefecto(g);
-  return { times: Array(g).fill(hora), hoyos: def.map((h, i) => (j.hoyos && j.hoyos[i]) || h) };
+  const nh = Number(j.nh || l.hoyos) === 9 ? 9 : 18, vu = (j.mitad || l.mitad) === 'vuelta' ? 'vuelta' : 'ida';
+  const def = ligaHoyosPorDefecto(g, nh, vu), lo = vu === 'vuelta' ? 10 : 1;
+  const vale = h => nh === 18 || (h >= lo && h <= lo + 8);   // en 9 hoyos solo valen los de esa media vuelta
+  const propios = j.hoyos && j.hoyos.length >= g && j.hoyos.slice(0, g).every(h => h && vale(h)) && new Set(j.hoyos.slice(0, g)).size === g;   // si alguno no vale (p. ej. el 13 en una Ida), se reparten de nuevo
+  return { times: Array(g).fill(hora), hoyos: propios ? j.hoyos.slice(0, g) : (nh === 9 ? def : def.map((h, i) => (j.hoyos && j.hoyos[i]) || h)) };
 }
 // Hoyo de salida (1 a 18) con − y +
 function ligaHoyoMas(h, d){ return d > 0 ? h % 18 + 1 : (h + 16) % 18 + 1; }
@@ -394,7 +400,7 @@ function ligaPintarForm(){
     + '<div class="conv-eyebrow">7 · Salida</div>'
     + '<div class="lg-dos">' + [['normal', 'Por un hoyo'], ['tiro', 'Al tiro']].map(c => '<button type="button" class="lg-opc' + (f.salida === c[0] ? ' on' : '') + '" data-salida="' + c[0] + '">' + c[1] + '</button>').join('') + '</div>'
     + '<div class="lg-aviso">' + (f.salida === 'tiro'
-        ? 'Al tiro: todos los grupos salen a la vez, cada uno por un hoyo distinto' + (nGrupos ? ' (' + ligaHoyosPorDefecto(nGrupos).join(', ') + ')' : '') + '. Los hoyos de cada grupo se pueden cambiar luego en cada jornada.'
+        ? 'Al tiro: todos los grupos salen a la vez, cada uno por un hoyo distinto' + (nGrupos ? ' (' + ligaHoyosPorDefecto(nGrupos, f.hoyos === 9 ? 9 : 18, f.mitad).join(', ') + ')' : '') + '. Los hoyos de cada grupo se pueden cambiar luego en cada jornada.'
         : (nGrupos ? 'Salidas por el hoyo ' + (f.hoyoInicio || 1) + ' cada 10 minutos: ' + ligaHoras(f.hora, nGrupos).map(t => t.replace(/^0/, '')).join(', ') + '.' : 'Salidas por el hoyo ' + (f.hoyoInicio || 1) + ' cada 10 minutos.')) + '</div>'
     + (f.salida === 'tiro' ? '' : ligaPasoHoyo(f.hoyoInicio || 1, 'lgHoyoIni'))
 
@@ -652,7 +658,7 @@ async function ligaConfigJornada(l, n, res){
   // Partidas de la jornada con sus jugadores: se tocan para moverlos de partida o quitarlos esta jornada
   const pintarPartidas = () => {
     const grupos = cfg.grupos;
-    const jj = Object.assign({}, j, { hora: cfg.hora, salida: cfg.salida === 'tiro' ? 'tiro' : undefined, hoyos: cfg.hoyos, hoyoInicio: cfg.hoyoInicio });
+    const jj = Object.assign({}, j, { hora: cfg.hora, salida: cfg.salida === 'tiro' ? 'tiro' : undefined, hoyos: cfg.hoyos, hoyoInicio: cfg.hoyoInicio, nh: cfg.nh, mitad: cfg.mitad });
     const sal = ligaSalidas(l, jj, grupos.length);
     const etq = i => cfg.salida === 'tiro' ? 'Hoyo ' + (sal.hoyos[i] || 1) : String(sal.times[i] || '').replace(/^0/, '') + (cfg.hoyoInicio > 1 ? ' · hoyo ' + cfg.hoyoInicio : '');
     const fuera = l.jugadores.filter(n => !grupos.some(g => g.includes(n)));
@@ -703,7 +709,7 @@ async function ligaConfigJornada(l, n, res){
         + '<div class="conv-eyebrow">Salida</div>'
         + '<div class="lg-dos">' + [['normal', 'Por un hoyo'], ['tiro', 'Al tiro']].map(x => '<button type="button" class="lg-opc' + (cfg.salida === x[0] ? ' on' : '') + '" data-s="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>'
         + (cfg.salida === 'tiro'
-            ? '<div class="lg-aviso">Todos salen a la vez. Elige por qué hoyo sale cada grupo:</div>'
+            ? '<div class="lg-aviso">Todos salen a la vez' + (cfg.nh === 9 ? ' (media vuelta: hoyos ' + (cfg.mitad === 'vuelta' ? '10 al 18' : '1 al 9') + ')' : '') + '. Elige por qué hoyo sale cada grupo:</div>'
               + '<div class="lg-tiro">' + cfg.hoyos.map((h, i) => '<div class="lg-tiro-f"><div class="lg-tiro-g"><b>Grupo ' + (i + 1) + '</b>'
                   + (cfg.grupos[i] && cfg.grupos[i].length ? '<small>' + cfg.grupos[i].map(x => ligaEsc(String(x).split(/\s+/)[0])).join(', ') + '</small>' : '') + '</div>'
                   + '<button type="button" class="lg-mas lg-mas-p" data-i="' + i + '" data-d="-1" aria-label="Hoyo anterior">−</button>'
@@ -729,12 +735,14 @@ async function ligaConfigJornada(l, n, res){
     body.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.courseId = b.dataset.c; pintar(); }));
     body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'buscar'); }));
     body.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.salida = b.dataset.s; pintar(); }));
-    body.querySelectorAll('[data-nh]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.nh = Number(b.dataset.nh) === 9 ? 9 : 18; pintar(); }));
-    body.querySelectorAll('[data-mi]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.mitad = b.dataset.mi === 'vuelta' ? 'vuelta' : 'ida'; pintar(); }));
+    body.querySelectorAll('[data-nh]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.nh = Number(b.dataset.nh) === 9 ? 9 : 18; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; pintar(); }));
+    body.querySelectorAll('[data-mi]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.mitad = b.dataset.mi === 'vuelta' ? 'vuelta' : 'ida'; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; pintar(); }));
     body.querySelectorAll('[data-hoyoini]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.hoyoInicio = ligaHoyoMas(cfg.hoyoInicio, Number(b.dataset.hoyoini)); pintar(); }));
     body.querySelectorAll('.lg-mas-p').forEach(b => b.addEventListener('click', ()=>{
       leer(); const i = Number(b.dataset.i);
-      cfg.hoyos[i] = Number(b.dataset.d) > 0 ? cfg.hoyos[i] % 18 + 1 : (cfg.hoyos[i] + 16) % 18 + 1; pintar();
+      if(cfg.nh === 9){ const lo = cfg.mitad === 'vuelta' ? 10 : 1; cfg.hoyos[i] = lo + ((cfg.hoyos[i] - lo) + (Number(b.dataset.d) > 0 ? 1 : 8)) % 9; }
+      else cfg.hoyos[i] = Number(b.dataset.d) > 0 ? cfg.hoyos[i] % 18 + 1 : (cfg.hoyos[i] + 16) % 18 + 1;
+      pintar();
     }));
     const fe = document.getElementById('ljFecha'); if(fe) fe.addEventListener('change', ()=>{ leer(); pintar(); });
     const ab = document.getElementById('ljAbrir'); if(ab) ab.addEventListener('click', async ()=>{
@@ -752,7 +760,7 @@ async function ligaConfigJornada(l, n, res){
     }));
     const ot = document.getElementById('ljOtros'); if(ot) ot.addEventListener('click', ()=>{ leer(); verOtros = !verOtros; if(!verOtros) elegido = null; pintar(); });
     const mp = document.getElementById('ljMasPartida'); if(mp) mp.addEventListener('click', ()=>{
-      leer(); if(cfg.grupos.length < MAX_GROUPS){ cfg.grupos.push([]); cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), cfg.grupos.length).hoyos; } pintar();
+      leer(); if(cfg.grupos.length < MAX_GROUPS){ cfg.grupos.push([]); cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; } pintar();
     });
     const rp = document.getElementById('ljRepartir'); if(rp) rp.addEventListener('click', ()=>{
       leer();
@@ -760,7 +768,7 @@ async function ligaConfigJornada(l, n, res){
       const ng = Math.max(1, Math.ceil(juegan.length / 4));
       const nuevos = Array.from({ length: ng }, () => []);
       juegan.slice().sort(() => Math.random() - 0.5).forEach((x, i) => nuevos[i % ng].push(x));
-      cfg.grupos = nuevos; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), ng).hoyos; elegido = null; pintar();
+      cfg.grupos = nuevos; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), ng).hoyos; elegido = null; pintar();
     });
     document.getElementById('ljVolver').addEventListener('click', ()=> ligaVer(l.code));
     const gu = document.getElementById('ljGuardar'); if(gu) gu.addEventListener('click', async ()=>{

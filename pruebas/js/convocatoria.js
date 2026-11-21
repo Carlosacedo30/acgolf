@@ -356,7 +356,7 @@
       : '¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
     const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
-      hoyoSalida: x.hoyo || undefined,
+      hoyoSalida: x.hoyo ? ((/-9v$/.test(String(course.id)) && x.hoyo > 9) ? x.hoyo - 9 : x.hoyo) : undefined,   // vuelta (10-18): el hoyo 13 es el 4.º de la media vuelta
       hora: (!x.hoyo && /^\d{1,2}:\d{2}$/.test(String(x.t || ''))) ? String(x.t) : undefined,
       nueve: course.nueve ? true : undefined,
       players: x.names.slice(0, 4),

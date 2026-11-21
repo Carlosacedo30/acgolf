@@ -487,7 +487,7 @@ s = re.sub(r'(<script src="js/rondas-compartidas\.js\?v=\d+"></script>)', r'\1\n
 s = re.sub(r'<script src="js/aviso-acgolf\.js\?v=\d+"></script>\n', '', s)
 s = re.sub(r'(js/partida-rapida\.js\?v=)\d+', r'\g<1>1112', s)  # sube la versión: partido con salida por el 10
 s = re.sub(r'<script src="js/(tarjeta-blanca|resumen-jugador)\.js\?v=\d+"></script>\n', '', s)
-s = s.replace('</body>', '<script src="idioma-en-3.js?v=2"></script>\n<script src="idioma-en-2.js?v=3"></script>\n<script src="idioma-en.js?v=5"></script>\n<script src="idiomas/fr/idioma-fr.js?v=3"></script>\n<script src="idiomas/fr/idioma-fr-2.js?v=4"></script>\n<script src="idioma.js?v=8"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=7"></script>\n<script src="js/tarjeta-blanca.js?v=4"></script>\n<script src="anotar-compacta.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=7"></script>\n<script src="cartas-motor.js?v=1"></script>\n<script src="cartas.js?v=1"></script>\n<script src="hoyo19-foto.js?v=2"></script>\n<script src="hoyo19-hilo.js?v=8"></script>\n<script src="liga-compartir.js?v=1"></script>\n<script src="hoyo19.js?v=4"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=3"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=6"></script>\n<script src="manual.js?v=11"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=2"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=4"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=10"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=18"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=16"></script>\n<script src="aviso-cerrada.js?v=1"></script>\n<script src="redes.js?v=8"></script>\n<script src="redes-aviso.js?v=1"></script>\n<script src="tele-directo.js?v=14"></script>\n<script src="en-vivo.js?v=29"></script>\n<script src="partido-a-partida.js?v=4"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
+s = s.replace('</body>', '<script src="idioma-en-3.js?v=2"></script>\n<script src="idioma-en-2.js?v=3"></script>\n<script src="idioma-en.js?v=5"></script>\n<script src="idiomas/fr/idioma-fr.js?v=3"></script>\n<script src="idiomas/fr/idioma-fr-2.js?v=4"></script>\n<script src="idioma.js?v=8"></script>\n<script src="cuenta-ajustes.js?v=1"></script>\n<script src="grupos.js?v=1"></script>\n<script src="marcador.js?v=7"></script>\n<script src="js/tarjeta-blanca.js?v=4"></script>\n<script src="anotar-compacta.js?v=3"></script>\n<script src="js/resumen-jugador.js?v=3"></script>\n<script src="enlace-partida.js?v=3"></script>\n<script src="aviso-partida.js?v=4"></script>\n<script src="avatares.js?v=2"></script>\n<script src="reserva-club.js?v=2"></script>\n<script src="ryder.js?v=7"></script>\n<script src="cartas-motor.js?v=1"></script>\n<script src="cartas.js?v=1"></script>\n<script src="hoyo19-foto.js?v=2"></script>\n<script src="hoyo19-hilo.js?v=8"></script>\n<script src="liga-compartir.js?v=1"></script>\n<script src="hoyo19.js?v=4"></script>\n<script src="contador.js?v=2"></script>\n<script src="faltan-tarjeta.js?v=1"></script>\n<script src="patro-cuenta.js?v=1"></script>\n<script src="navegacion.js?v=3"></script>\n<script src="ganadores.js?v=2"></script>\n<script src="inicio-partido.js?v=6"></script>\n<script src="manual.js?v=11"></script>\n<script src="scramble.js?v=2"></script>\n<script src="salon.js?v=2"></script>\n<script src="ver-completa.js?v=2"></script>\n<script src="ayuda.js?v=4"></script>\n<script src="clasif-oculta.js?v=1"></script>\n<script src="intro-video.js?v=10"></script>\n<script src="patro-destacado.js?v=2"></script>\n<script src="qrcode.js?v=1"></script>\n<script src="qr-grupo.js?v=1"></script>\n<script src="campos-cadiz.js?v=4"></script>\n<script src="buscador-campos.js?v=18"></script>\n<script src="promo-bolas.js?v=2"></script>\n<script src="ir-hato.js?v=2"></script>\n<script src="como-jugue.js?v=2"></script>\n<script src="caddie-curro.js?v=16"></script>\n<script src="aviso-cerrada.js?v=1"></script>\n<script src="redes.js?v=8"></script>\n<script src="redes-aviso.js?v=1"></script>\n<script src="tele-directo.js?v=14"></script>\n<script src="en-vivo.js?v=29"></script>\n<script src="partido-a-partida.js?v=5"></script>\n<div class="pr-banda">Pruebas</div>\n</body>', 1)
 assert 'js/ligas.js' in s and 'cuenta-ajustes.js' in s and 'cuenta.js' in s and 'almacen.js' in s and 'grupos.js' in s and 'avatares.js' in s and 'avatares.css' in s and 'reserva-club.js' in s and 'ryder.js' in s and 'ryder.css' in s and 'cartas.js' in s and 'cartas-motor.js' in s and 'cartas.css' in s and 'contador.js' in s and 'contador.css' in s and 'faltan-tarjeta.js' in s and 'faltan-tarjeta.css' in s and 'patro-cuenta.js' in s and 'navegacion.js' in s and 'navegacion.css' in s and 'ganadores.js' in s and 'inicio-partido.js' in s and 'inicio-partido.css' in s and 'manual.js' in s and 'manual.css' in s and 'scramble.js' in s and 'scramble.css' in s and 'salon.js' in s and 'ver-completa.js' in s and 'planes.css' in s and 'ayuda.js' in s and 'clasif-oculta.js' in s and 'patro-destacado.js' in s and 'intro-video.js' in s and 'intro-video.css' in s and 'qr-grupo.js' in s and 'salon.css' in s and 'hoyo19.js' in s and 'hoyo19.css' in s and 'hoyo19-hilo.js' in s and 'hoyo19-foto.js' in s and 'hoyo19-hilo.css' in s and 'liga-compartir.js' in s and 'liga-compartir.css' in s
 open(p, 'w', encoding='utf-8').write(s)
 m = 'pruebas/manifest.json'
@@ -591,7 +591,7 @@ cambia(C, """    const course = convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
       hoyoSalida: x.hoyo || undefined,""", """    const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
-      hoyoSalida: x.hoyo || undefined,
+      hoyoSalida: x.hoyo ? ((/-9v$/.test(String(course.id)) && x.hoyo > 9) ? x.hoyo - 9 : x.hoyo) : undefined,   // vuelta (10-18): el hoyo 13 es el 4.º de la media vuelta
       nueve: course.nueve ? true : undefined,""")
 # Crear partida: se borra la mitad elegida al abrirla de nuevo
 cambia('pruebas/js/partida-rapida.js', """    prDesde = null;
@@ -611,8 +611,8 @@ cambia(L, """        + '<div class="conv-eyebrow">Campo</div>'
         + ligaBotonesCampo(cfg.courseId, 'data-c', false)""")
 cambia(L, """    body.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.salida = b.dataset.s; pintar(); }));""",
 """    body.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.salida = b.dataset.s; pintar(); }));
-    body.querySelectorAll('[data-nh]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.nh = Number(b.dataset.nh) === 9 ? 9 : 18; pintar(); }));
-    body.querySelectorAll('[data-mi]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.mitad = b.dataset.mi === 'vuelta' ? 'vuelta' : 'ida'; pintar(); }));""")
+    body.querySelectorAll('[data-nh]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.nh = Number(b.dataset.nh) === 9 ? 9 : 18; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; pintar(); }));
+    body.querySelectorAll('[data-mi]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.mitad = b.dataset.mi === 'vuelta' ? 'vuelta' : 'ida'; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; pintar(); }));""")
 cambia(L, """  j.date = cfg.date; j.courseId = cfg.courseId;
 """, """  j.date = cfg.date; j.courseId = cfg.courseId;
   if(cfg.nh){
@@ -621,6 +621,31 @@ cambia(L, """  j.date = cfg.date; j.courseId = cfg.courseId;
   }
 """)
 cambia(L, """txt = ligaCampoCorto(j.courseId) + ' · ' + (j.salida""", """txt = ligaCampoCorto(j.courseId) + ((j.nh || l.hoyos) === 9 ? ' · 9 hoyos ' + (((j.mitad || l.mitad) === 'vuelta') ? '(vuelta)' : '(ida)') : '') + ' · ' + (j.salida""")
+# Al tiro en ligas de 9 hoyos: los hoyos de salida son los de la media vuelta (Ida 1-9 / Vuelta 10-18)
+cambia(L, """function ligaHoyosPorDefecto(g){ return Array.from({ length: g }, (_, i) => 1 + Math.round(i * 18 / g)); }""",
+"""function ligaHoyosPorDefecto(g, nh, mitad){
+  if(Number(nh) === 9){ const lo = mitad === 'vuelta' ? 10 : 1; return Array.from({ length: g }, (_, i) => lo + Math.floor(i * 9 / g) % 9); }
+  return Array.from({ length: g }, (_, i) => 1 + Math.round(i * 18 / g));
+}""")
+cambia(L, """  const def = ligaHoyosPorDefecto(g);
+  return { times: Array(g).fill(hora), hoyos: def.map((h, i) => (j.hoyos && j.hoyos[i]) || h) };""",
+"""  const nh = Number(j.nh || l.hoyos) === 9 ? 9 : 18, vu = (j.mitad || l.mitad) === 'vuelta' ? 'vuelta' : 'ida';
+  const def = ligaHoyosPorDefecto(g, nh, vu), lo = vu === 'vuelta' ? 10 : 1;
+  const vale = h => nh === 18 || (h >= lo && h <= lo + 8);   // en 9 hoyos solo valen los de esa media vuelta
+  const propios = j.hoyos && j.hoyos.length >= g && j.hoyos.slice(0, g).every(h => h && vale(h)) && new Set(j.hoyos.slice(0, g)).size === g;   // si alguno no vale (p. ej. el 13 en una Ida), se reparten de nuevo
+  return { times: Array(g).fill(hora), hoyos: propios ? j.hoyos.slice(0, g) : (nh === 9 ? def : def.map((h, i) => (j.hoyos && j.hoyos[i]) || h)) };""")
+cambia(L, """ligaHoyosPorDefecto(nGrupos).join(', ')""", """ligaHoyosPorDefecto(nGrupos, f.hoyos === 9 ? 9 : 18, f.mitad).join(', ')""")
+cambia(L, """const jj = Object.assign({}, j, { hora: cfg.hora, salida: cfg.salida === 'tiro' ? 'tiro' : undefined, hoyos: cfg.hoyos, hoyoInicio: cfg.hoyoInicio });""",
+"""const jj = Object.assign({}, j, { hora: cfg.hora, salida: cfg.salida === 'tiro' ? 'tiro' : undefined, hoyos: cfg.hoyos, hoyoInicio: cfg.hoyoInicio, nh: cfg.nh, mitad: cfg.mitad });""")
+cambia(L, """cfg.grupos.push([]); cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), cfg.grupos.length).hoyos;""",
+"""cfg.grupos.push([]); cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos;""")
+cambia(L, """cfg.grupos = nuevos; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro' }), ng).hoyos;""",
+"""cfg.grupos = nuevos; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), ng).hoyos;""")
+cambia(L, """cfg.hoyos[i] = Number(b.dataset.d) > 0 ? cfg.hoyos[i] % 18 + 1 : (cfg.hoyos[i] + 16) % 18 + 1; pintar();""",
+"""if(cfg.nh === 9){ const lo = cfg.mitad === 'vuelta' ? 10 : 1; cfg.hoyos[i] = lo + ((cfg.hoyos[i] - lo) + (Number(b.dataset.d) > 0 ? 1 : 8)) % 9; }
+      else cfg.hoyos[i] = Number(b.dataset.d) > 0 ? cfg.hoyos[i] % 18 + 1 : (cfg.hoyos[i] + 16) % 18 + 1;
+      pintar();""")
+cambia(L, """Todos salen a la vez. Elige por qué hoyo sale cada grupo:</div>'""", """Todos salen a la vez' + (cfg.nh === 9 ? ' (media vuelta: hoyos ' + (cfg.mitad === 'vuelta' ? '10 al 18' : '1 al 9') + ')' : '') + '. Elige por qué hoyo sale cada grupo:</div>'""")
 # Partida cerrada (más de 12 horas): si alguien intenta cambiar un golpe, se le avisa de que no se ha guardado
 cambia('pruebas/js/rondas-compartidas.js', """      } catch(e){
         console.error('No se pudo guardar solo el grupo; se guarda la partida entera', e);
@@ -726,7 +751,7 @@ def cambia(p, a, b):
     s = open(p, encoding='utf-8').read()
     assert s.count(a) == 1, (p, a[:60])
     open(p, 'w', encoding='utf-8').write(s.replace(a, b))
-cambia('pruebas/js/convocatoria.js', "      hoyoSalida: x.hoyo || undefined,\n", "      hoyoSalida: x.hoyo || undefined,\n      hora: (!x.hoyo && /^\\d{1,2}:\\d{2}$/.test(String(x.t || ''))) ? String(x.t) : undefined,\n")
+cambia('pruebas/js/convocatoria.js', "      hoyoSalida: x.hoyo ? ((/-9v$/.test(String(course.id)) && x.hoyo > 9) ? x.hoyo - 9 : x.hoyo) : undefined,   // vuelta (10-18): el hoyo 13 es el 4.º de la media vuelta\n", "      hoyoSalida: x.hoyo ? ((/-9v$/.test(String(course.id)) && x.hoyo > 9) ? x.hoyo - 9 : x.hoyo) : undefined,   // vuelta (10-18): el hoyo 13 es el 4.º de la media vuelta\n      hora: (!x.hoyo && /^\\d{1,2}:\\d{2}$/.test(String(x.t || ''))) ? String(x.t) : undefined,\n")
 cambia('pruebas/js/rondas-compartidas.js', "      return out;\n    });\n  }\n\n  function getLocalRoundHistory", "      if(g && /^\\d{1,2}:\\d{2}$/.test(String(g.hora || ''))) out.hora = String(g.hora); // hora de salida del grupo\n      return out;\n    });\n  }\n\n  function getLocalRoundHistory")
 EOF
 # --- Reforma del marcador: flechas grandes, cartel de grupo, hoja de golpes (marcador-reforma.js/.css) ---
