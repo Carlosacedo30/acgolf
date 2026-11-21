@@ -1,0 +1,63 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Inscripción a la Ryder por equipos (ryder-inscripcion.js). Estilo «Grafito deportivo». */
+.ri-ov{ position:fixed; inset:0; z-index:9100; background:#111316; color:#F2F4F5; overflow-y:auto; -webkit-overflow-scrolling:touch; font-family:Barlow,system-ui,sans-serif; }
+.ri-ov[hidden]{ display:none; }
+.ri-in{ max-width:560px; margin:0 auto; padding:18px 16px 40px; }
+.ri-x{ position:sticky; top:8px; float:right; width:46px; height:46px; border-radius:50%; border:0; background:rgba(255,255,255,.1); color:#F2F4F5; font-size:22px; cursor:pointer; }
+.ri-k{ font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.16em; color:#C6F24E; text-transform:uppercase; }
+.ri-h{ font:900 30px/1.1 Archivo,system-ui,sans-serif; margin:4px 0 0; }
+.ri-dat{ font-size:17px; color:#9AA3AB; margin-top:6px; }
+.ri-tj{ background:#1B1E22; border:1px solid #33383E; border-radius:18px; padding:16px; margin-top:14px; }
+.ri-ok{ background:#2F3A1C; border-color:rgba(198,242,78,.55); }
+.ri-ok b{ font:900 20px Archivo,system-ui,sans-serif; }
+.ri-ok span{ display:block; font-size:16px; color:#d9e4bd; margin-top:3px; }
+.ri-eq{ display:flex; align-items:center; gap:12px; }
+.ri-pt{ width:16px; height:16px; border-radius:50%; flex:none; }
+.ri-eq b{ font:800 22px Archivo,system-ui,sans-serif; }
+.ri-eq small{ display:block; font-size:15px; color:#9AA3AB; margin-top:1px; }
+.ri-nom{ font:800 22px Archivo,system-ui,sans-serif; margin-top:8px; }
+.ri-btn{ display:block; width:100%; text-align:center; border-radius:999px; padding:17px 12px; font:900 18px Archivo,system-ui,sans-serif; margin-top:12px; cursor:pointer; border:1.5px solid transparent; transition:transform .1s; }
+.ri-btn:active{ transform:scale(.97); }
+.ri-btn[disabled]{ opacity:.5; }
+.ri-pri{ background:#C6F24E; color:#111316; }
+.ri-sec{ background:#24282D; border-color:rgba(198,242,78,.55); color:#F2F4F5; }
+.ri-peq{ font-size:15px; color:#9AA3AB; text-align:center; margin:12px 6px 0; line-height:1.35; }
+.ri-dos{ display:flex; gap:10px; margin-top:14px; }
+.ri-dos .ri-tj{ flex:1; margin-top:0; padding:14px; min-width:0; }
+.ri-cnt{ font:900 38px/1 Archivo,system-ui,sans-serif; margin-top:8px; }
+.ri-li{ margin-top:8px; font-size:16px; line-height:1.3; }
+.ri-li > div{ padding:8px 0; border-top:1px solid #33383E; display:flex; align-items:center; gap:6px; justify-content:space-between; }
+.ri-li > div:first-child{ border-top:0; }
+.ri-li .yo{ color:#C6F24E; font-weight:700; }
+.ri-li .vacio{ color:#9AA3AB; font-size:15px; }
+.ri-mini{ flex:none; border:1px solid #4A5058; background:#24282D; color:#F2F4F5; border-radius:999px; min-width:36px; height:34px; font-size:15px; cursor:pointer; }
+.ri-adm{ border:1.5px dashed #4A5058; border-radius:18px; padding:14px; margin-top:18px; }
+.ri-adm h3{ font:800 13px Archivo,system-ui,sans-serif; letter-spacing:.12em; color:#9AA3AB; text-transform:uppercase; margin:0 0 4px; }
+.ri-link{ display:block; margin:14px auto 0; background:none; border:0; color:#9AA3AB; font-size:15px; text-decoration:underline; cursor:pointer; }
+.ri-lab{ display:block; font:800 15px Archivo,system-ui,sans-serif; margin-top:14px; }
+.ri-inp{ width:100%; margin-top:6px; background:#1B1E22; border:1px solid #4A5058; border-radius:14px; padding:14px; font-size:18px; color:#F2F4F5; font-family:inherit; box-sizing:border-box; }
+.ri-vacio{ text-align:center; color:#9AA3AB; font-size:18px; margin-top:40px; line-height:1.4; }
+.ri-cap{ display:inline-block; margin-left:8px; font:800 11px Archivo,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#111316; background:#C6F24E; border-radius:999px; padding:2px 8px; vertical-align:middle; }
+
+.ri-caps{ display:flex; align-items:stretch; gap:8px; margin-top:16px; }
+.ri-capt{ flex:1; min-width:0; background:#1B1E22; border:1px solid #33383E; border-top:5px solid var(--c); border-radius:18px; padding:14px 10px 14px; text-align:center; }
+.ri-ini{ display:flex; align-items:center; justify-content:center; width:62px; height:62px; margin:0 auto 8px; border-radius:50%; background:#24282D; border:3px solid var(--c); font:900 24px Archivo,system-ui,sans-serif; color:#F2F4F5; }
+.ri-capt small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.1em; text-transform:uppercase; color:#C6F24E; }
+.ri-capt b{ display:block; margin-top:5px; font:900 19px/1.15 Archivo,system-ui,sans-serif; overflow-wrap:anywhere; }
+.ri-vs{ align-self:center; font:900 15px Archivo,system-ui,sans-serif; color:#9AA3AB; }
+
+.ri-mar{ margin-top:14px; }
+.ri-nums{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:10px; }
+.ri-nums small{ display:block; font:800 12px Archivo,system-ui,sans-serif; letter-spacing:.14em; color:#9AA3AB; margin-bottom:2px; }
+.ri-nums span{ font:900 44px/1 Archivo,system-ui,sans-serif; }
+.ri-tira{ display:flex; height:22px; border-radius:999px; overflow:hidden; margin-top:12px; background:#24282D; }
+.ri-tira i{ display:block; height:100%; transition:width .5s; }
+.ri-pica{ margin-top:12px; font:italic 600 19px/1.3 "Playfair Display",Georgia,serif; color:#E9CF8C; text-align:center; }
+
+/* Publica tu Ryder: colores de cada equipo e interruptor «Abrir a otros grupos» */
+.ri-cols{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+.ri-col{ width:42px; height:42px; border-radius:50%; border:3px solid transparent; cursor:pointer; padding:0; }
+.ri-col.sel{ border-color:#F2F4F5; box-shadow:0 0 0 2px #111316 inset; }
+.ri-check{ display:flex; gap:12px; align-items:flex-start; margin-top:18px; background:#1B1E22; border:1px solid #33383E; border-radius:16px; padding:14px; font-size:16px; line-height:1.35; color:#9AA3AB; cursor:pointer; }
+.ri-check input{ width:26px; height:26px; flex:none; accent-color:#C6F24E; margin-top:2px; }
+.ri-check b{ color:#F2F4F5; font:800 17px Archivo,system-ui,sans-serif; }

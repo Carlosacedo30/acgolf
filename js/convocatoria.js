@@ -149,7 +149,7 @@
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;
-    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
+    const nuevoBtn = (isAdmin || window.miPerfilId) ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
     if(!lista.length){
       box.innerHTML = nuevoBtn;
       const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));

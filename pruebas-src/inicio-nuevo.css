@@ -156,7 +156,7 @@ html.in-on .in-fl{ flex:0 0 auto; width:10px; height:10px; box-sizing:border-box
 /* ===== Más: los botones de siempre, cada uno en su fila (hasta que estén Jugar, Liga y Mi cuenta) ===== */
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu #hmLiga{ display:none !important; } /* la clasificación está en «Tu liga» y en la pestaña Liga */
 /* Ganadores de la semana, Cartas, Ryder Cup y Campos de golf están en la pantalla Jugar (cada cosa en un solo sitio) */
-html.jg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="premios"], #hmCartas, #hmRyder, #hmCampos){ display:none !important; }
+html.jg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="premios"], #hmCartas, #hmRyder, #hmRyderIns, #hmCampos){ display:none !important; }
 /* y los que ya están en la pantalla Liga (liga-nueva.js) */
 html.lg-hay body .screen[data-screen="0"]:not([data-foco]) #homeAhora .home-menu :is([data-foco="medallas"], #hmLigas){ display:none !important; }
 html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora > .home-menu{ display:flex !important; flex-direction:column !important; gap:8px !important; margin:0 !important; padding:0 !important; }
@@ -228,3 +228,30 @@ html.in-on body:not(.nv-dentro) .pr-banda{ top:calc(env(safe-area-inset-top, 0px
   html.in-on .in-tab{ height:40px; padding:0 10px; }
   html.in-on .in-tab.on{ padding:0 16px; }
 }
+
+/* ===== Tus otros grupos: avisos de los demás grupos donde juega la persona (otros-grupos.js) ===== */
+html.in-on .og-card.og-otro{ box-sizing:border-box; width:100%; position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; padding:14px 40px 14px 18px; border-radius:18px;
+  background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); color:#F4F1E8; cursor:pointer; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on .og-card.og-otro:active{ transform:scale(.97); }
+html.in-on .og-otro .og-etq{ display:inline-block; margin-bottom:6px; padding:4px 12px; border-radius:999px; background:#2F3A1C; border:1px solid #C6F24E; color:#C6F24E; font:800 13px/1.1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.05em; text-transform:uppercase; }
+html.in-on .og-otro .og-k{ font:700 12px/1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#D9BE7A; }
+html.in-on .og-otro .og-cuando{ margin-top:6px; font:italic 600 28px/1.1 'Playfair Display', Georgia, serif; color:#E9CF8C; }
+html.in-on .og-otro .og-tit{ font:700 20px/1.1 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on .og-otro .og-sub{ font:600 17px/1.2 Barlow, system-ui, Arial, sans-serif; color:#B5BFD0; margin-top:4px; }
+html.in-on .og-otro .og-btn{ align-self:stretch; margin-top:10px; padding:12px 0; text-align:center; border-radius:999px; background:linear-gradient(180deg,#EBD08A,#C9A54A); color:#16120A; font:700 17px/1.1 Archivo, system-ui, Arial, sans-serif; }
+html.in-on .og-otro .in-fl{ position:absolute; right:16px; top:50%; margin-top:-5px; }
+
+/* Juegas la Ryder: aviso arriba del Inicio (otros-grupos.js) */
+html.in-on .og-card.og-juego{ box-sizing:border-box; width:100%; position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:2px; text-align:left; padding:14px 40px 14px 18px; border-radius:18px;
+  background:#2F3A1C; border:1px solid rgba(198,242,78,.55); color:#F4F1E8; cursor:pointer; transition:transform .12s; -webkit-appearance:none; appearance:none; }
+html.in-on .og-card.og-juego:active{ transform:scale(.97); }
+html.in-on .og-juego .og-etq{ display:inline-block; margin-bottom:6px; padding:4px 12px; border-radius:999px; background:#C6F24E; color:#111316; font:800 13px/1.1 Archivo, system-ui, Arial, sans-serif; letter-spacing:.05em; text-transform:uppercase; }
+html.in-on .og-juego .og-tit{ font:800 22px/1.1 Archivo, system-ui, Arial, sans-serif; color:#F4F1E8; }
+html.in-on .og-juego .og-sub{ font:600 17px/1.25 Barlow, system-ui, Arial, sans-serif; color:#d9e4bd; margin-top:4px; }
+html.in-on .og-juego .og-pt{ display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:8px; vertical-align:-1px; }
+html.in-on .og-juego .in-fl{ position:absolute; right:16px; top:50%; margin-top:-5px; }
+
+html.in-on #homeAhora #convHome > .og-card{ order:6; }
+html.in-on body #homeAhora .ip-card .ip-cuando .in-salidas{ display:flex; flex-direction:column; gap:2px; margin-top:6px; font:800 20px/1.2 Archivo,system-ui,Arial,sans-serif; font-style:normal; letter-spacing:.01em; color:#F4F1E8; }
+html.in-on body #homeAhora .ip-card .ip-cuando .in-salidas{ color:#E9CF8C; font-size:21px; }
+@media (max-height:700px){ html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card .ip-apuntar{ height:46px !important; } }

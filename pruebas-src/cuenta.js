@@ -194,6 +194,7 @@
       + '<ol class="cg-pasos"><li><i>1</i><span>Abre tu correo. Puede tardar <b>un minuto</b>.</span></li>'
       + '<li><i>2</i><span>¿No lo ves? Mira en <b>«Correo no deseado»</b> o «Spam».</span></li>'
       + '<li><i>3</i><span>Pulsa el enlace <b>una sola vez</b> y vuelve aquí.</span></li></ol>'
+      + '<div class="cg-sigue"><b>¿Sigue sin llegar?</b> Dile al administrador de tu grupo que pida ayuda a soporte, o escribe a <b>avisos@acgolf.es</b>.</div>'
       + '<div id="cgMsg" class="cg-msg"></div>'
       + '<button type="button" class="cg-btn" id="cgYa">Ya lo he confirmado</button>'
       + '<button type="button" class="cg-btn ghost" id="cgReenviar" disabled>Reenviar el correo</button>'
@@ -427,9 +428,12 @@
       + '<button type="button" class="cg-camino" id="cgNuevoGrupo"><span class="cg-camino-ico" aria-hidden="true">⛳</span>'
       +   '<span class="cg-camino-txt"><b>Crear mi grupo</b><small>Empiezas tu propio grupo. Aunque estés solo, ya puedes jugar. Luego invitas a tus amigos.</small></span><i aria-hidden="true">›</i></button>'
       + queEsGrupo
+      + '<button type="button" class="cg-btn ghost cg-ayuda" id="cgAyuda">💬 ¿Necesitas ayuda? Escríbenos</button>'
       + '<button type="button" class="cg-link" id="cgSalir">No soy ' + esc(email || 'yo') + ': salir</button>');
     $('cgTengoInv').onclick = () => pantallaTengoInvitacion(email, null);
     $('cgNuevoGrupo').onclick = () => botonNuevoGrupo(email, null);
+    $('cgAyuda').onclick = () => pantallaSoporte(() => pantallaBienvenida(email));
+    avisoSoporteBienvenida(email);
     $('cgSalir').onclick = async () => { await client.auth.signOut(); location.reload(); };
   }
   // Saca el código de lo que peguen: el enlace entero, el mensaje de WhatsApp entero o solo el código
@@ -822,6 +826,187 @@
   const fecha = d => d ? new Date(d).toLocaleDateString('es-ES', { day:'numeric', month:'short', year:'numeric' }) : '';
   const ROL = { group_admin: 'Administrador', user: 'Jugador' };
 
+  // ---------- Soporte por mensajes (norma de Carlos, 16-nov-2026) ----------
+  // La persona escribe a «Soporte acgolf» y solo ve su hilo. El super administrador lo ve en Panel general → «Mensajes de soporte».
+  // Nadie ve el teléfono ni el correo del otro. Se mira la base de datos SOLO con el hilo abierto (cada 5 s).
+  const horaSop = iso => { try { const d = new Date(iso), h = d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    return d.toDateString() === new Date().toDateString() ? h : d.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) + ' · ' + h; } catch(e){ return ''; } };
+  let relojSop = null;
+  const paraSop = () => { if(relojSop){ clearInterval(relojSop); relojSop = null; } };
+  // lista = mensajes; esMio(m) dice si va a la derecha; quien = rótulo del otro lado
+  function burbujasSop(lista, esMio, quienIzq, quienDer){
+    return lista.map(m => '<div class="sp-b ' + (esMio(m) ? 'sp-m' : 'sp-s') + '">' + esc(m.texto).replace(/\n/g, '<br>')
+      + '<small>' + (esMio(m) ? quienDer : quienIzq) + ' · ' + horaSop(m.cuando) + '</small></div>').join('');
+  }
+  // Pantalla de chat (la usan la persona y el super administrador): cargar() devuelve los mensajes, mandar(texto) los envía
+  function chatSop(o){
+    paraSop();
+    mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver</button>'
+      + '<div class="sp-tt"><b>' + esc(o.titulo) + '</b><span>' + esc(o.sub) + '</span></div></div>'
+      + (o.aviso ? '<p class="sp-aviso">' + esc(o.aviso) + '</p>' : '')
+      + '<div class="sp-msgs" id="spMsgs" aria-live="polite"></div><div id="cgMsg" class="cg-msg"></div>'
+      + '<div class="sp-esc"><input id="spTxt" type="text" maxlength="600" placeholder="' + esc(o.placeholder) + '" autocomplete="off" enterkeyhint="send">'
+      + '<button type="button" class="cg-btn sp-env" id="spEnv">Enviar</button></div>');
+    const caja = $('spMsgs'), txt = $('spTxt'), env = $('spEnv');
+    if(o.inicial) txt.value = o.inicial;
+    let ultimo = -1;
+    const pintar = async () => {
+      let lista; try { lista = await o.cargar(); } catch(e){ return; }
+      if(!Array.isArray(lista) || !$('spMsgs')) return;
+      const id = lista.length ? lista[lista.length - 1].id : 0;
+      if(id === ultimo) return;
+      const abajo = ultimo === -1 || caja.scrollTop + caja.clientHeight >= caja.scrollHeight - 40;
+      ultimo = id;
+      caja.innerHTML = (lista.length ? '' : '<div class="sp-b sp-s">' + esc(o.vacio) + '</div>') + burbujasSop(lista, o.esMio, o.izq, o.der);
+      if(abajo) caja.scrollTop = caja.scrollHeight;
+    };
+    const enviar = async () => {
+      const t = txt.value.trim(); if(!t || env.disabled) return;
+      env.disabled = true; msg('');
+      try { await o.mandar(t); txt.value = ''; await pintar(); } catch(e){ msg((e && e.message) || 'No se pudo enviar. Inténtalo otra vez.'); }
+      env.disabled = false; txt.focus();
+    };
+    env.onclick = enviar;
+    txt.onkeydown = e => { if(e.key === 'Enter'){ e.preventDefault(); enviar(); } };
+    $('spAtras').onclick = () => { paraSop(); o.volver(); };
+    pintar();
+    relojSop = setInterval(() => { if(!document.getElementById('spMsgs')){ paraSop(); return; } pintar(); }, 5000);
+  }
+  // La persona
+  function pantallaSoporte(volver, inicial){
+    chatSop({
+      titulo: 'Soporte acgolf', sub: 'Te contestamos lo antes posible', inicial,
+      aviso: 'Aquí solo hablas con el equipo de acgolf. Nadie más lo ve.',
+      placeholder: 'Escribe tu mensaje…', vacio: '¡Hola! Cuéntanos qué te pasa y te ayudamos.',
+      izq: 'acgolf', der: 'Tú', esMio: m => !m.de_soporte, volver,
+      cargar: async () => { const r = await client.rpc('soporte_mis_mensajes'); if(r.error) throw r.error; return r.data; },
+      mandar: async t => {
+        const r = await client.rpc('soporte_enviar', { p_texto: t }); if(r.error) throw r.error;
+        try { client.functions.invoke('soporte-aviso', { body: {} }); } catch(e){}   // avisa por correo al super administrador (si falla, no pasa nada)
+      }
+    });
+  }
+  // El super administrador: bandeja con todas las conversaciones
+  async function pantallaBandeja(perfil){
+    paraSop();
+    mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver al panel</button>'
+      + '<div class="sp-tt"><b>Mensajes de soporte</b><span>Super administrador</span></div></div>'
+      + '<button type="button" class="cg-btn sp-nuevo" id="spNuevo">✍️ Escribir yo primero a alguien</button>'
+      + '<div id="cgMsg" class="cg-msg"></div><div class="sp-lista" id="spLista"><p class="sp-aviso">Un momento…</p></div>'
+      + '<p class="sp-aviso">Cada mensaje nuevo también te llega a tu correo.</p>');
+    $('spAtras').onclick = () => pantallaPanel(perfil);
+    $('spNuevo').onclick = () => pantallaElegirPersona(perfil);
+    const r = await client.rpc('sa_soporte_hilos');
+    if(!$('spLista')) return;
+    if(r.error){ $('spLista').innerHTML = ''; msg('No se pudo cargar. ' + r.error.message); return; }
+    const lista = r.data || [];
+    if(!lista.length){ $('spLista').innerHTML = '<p class="sp-aviso">Todavía no te ha escrito nadie.</p>'; return; }
+    const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+    $('spLista').innerHTML = lista.map(h => '<button type="button" class="sp-row' + (h.sin_leer > 0 ? ' nuevo' : '') + '" data-u="' + esc(h.user_id) + '">'
+      + '<span class="sp-av">' + esc(ini(h.nombre)) + '</span>'
+      + '<span class="sp-rt"><b>' + esc(h.nombre) + '</b>' + (h.es_admin ? '<small class="sp-rol">Administrador · ' + esc(h.grupo || '') + '</small>' : '<small class="sp-rol">' + (h.grupo ? esc(h.grupo) : 'Sin nombre ni grupo') + '</small>')
+      + '<small>' + (h.ultimo_de_soporte ? 'Tú: ' : '') + esc(h.ultimo) + '</small></span>'
+      + (h.sin_leer > 0 ? '<span class="sp-dot" aria-label="' + h.sin_leer + ' sin contestar">' + h.sin_leer + '</span>' : '<span class="sp-hora">' + esc(horaSop(h.ultimo_en)) + '</span>')
+      + '</button>').join('');
+    $('spLista').querySelectorAll('.sp-row').forEach(b => {
+      const h = lista.find(x => String(x.user_id) === b.dataset.u);
+      b.onclick = () => pantallaHiloSoporte(perfil, h);
+    });
+  }
+  function pantallaHiloSoporte(perfil, h, inicial){
+    chatSop({
+      titulo: h.nombre, sub: h.email || '', aviso: inicial ? 'Es un mensaje nuevo: la persona verá un aviso al abrir la app. Firma «soporte de acgolf», sin tu nombre.' : '', inicial,
+      placeholder: 'Escribe tu respuesta…', vacio: 'Todavía no hay mensajes.',
+      izq: h.nombre, der: 'Tú (soporte)', esMio: m => !!m.de_soporte, volver: () => { ponPuntoSoporte(); pantallaBandeja(perfil); },
+      cargar: async () => { const r = await client.rpc('sa_soporte_hilo', { p_user: h.user_id }); if(r.error) throw r.error; return r.data; },
+      mandar: async t => {
+        const r = await client.rpc('sa_soporte_responder', { p_user: h.user_id, p_texto: t }); if(r.error) throw r.error;
+        try { client.functions.invoke('soporte-aviso', { body: { para: h.user_id } }); } catch(e){}   // le llega también un correo firmado «soporte de acgolf» (si falla, no pasa nada)
+      }
+    });
+  }
+  // El super administrador elige a quién escribir primero (norma de Carlos: el mensaje sale firmado «soporte de acgolf», nunca con su nombre ni su teléfono)
+  const TEXTO_ADMIN = 'Un jugador de mi grupo no puede entrar. Se llama: …  Su correo es: …';
+  const TEXTO_PRIMERO = 'Hola, somos el soporte de ayuda de acgolf. ¿Tienes algún problema para entrar? Cuéntanos y te ayudamos.';
+  async function pantallaElegirPersona(perfil){
+    paraSop();
+    mostrar('<div class="sp-top"><button type="button" class="pn-atras sp-atras" id="spAtras">‹ Volver</button>'
+      + '<div class="sp-tt"><b>Escribir a…</b><span>Elige una persona</span></div></div>'
+      + '<div class="sp-chips" id="spChips"></div>'
+      + '<input id="spBuscar" class="sp-buscar" type="search" placeholder="Buscar por nombre o correo" autocomplete="off">'
+      + '<div id="cgMsg" class="cg-msg"></div><div class="sp-lista" id="spLista"><p class="sp-aviso">Un momento…</p></div>');
+    $('spAtras').onclick = () => pantallaBandeja(perfil);
+    const r = await client.rpc('sa_soporte_personas');
+    if(!$('spLista')) return;
+    if(r.error){ $('spLista').innerHTML = ''; msg('No se pudo cargar. ' + r.error.message); return; }
+    const todas = r.data || [];
+    let filtro = 'sin', buscar = '';
+    const FIL = [['sin', 'Sin nombre ni grupo', x => x.sin_perfil], ['todos', 'Todos', () => true], ['sinconf', 'Sin confirmar', x => !x.confirmado]];
+    const ini = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
+    const pintar = () => {
+      $('spChips').innerHTML = FIL.map(f => '<button type="button" class="sp-chip' + (filtro === f[0] ? ' on' : '') + '" data-f="' + f[0] + '">' + f[1] + ' (' + todas.filter(f[2]).length + ')</button>').join('');
+      const fn = FIL.find(f => f[0] === filtro)[2];
+      const l = todas.filter(fn).filter(x => !buscar || (String(x.nombre || '') + ' ' + String(x.email || '')).toLowerCase().indexOf(buscar) > -1);
+      $('spLista').innerHTML = l.length ? l.map(x => '<button type="button" class="sp-row' + (x.confirmado ? '' : ' sp-off') + '" data-u="' + esc(x.user_id) + '">'
+        + '<span class="sp-av">' + esc(ini(x.nombre)) + '</span><span class="sp-rt"><b>' + esc(x.nombre) + '</b>'
+        + '<small>' + (!x.confirmado ? 'No ha confirmado el correo: no puede ver mensajes en la app' : x.sin_perfil ? 'Sin nombre ni grupo' : esc(x.grupo || 'Sin grupo')) + '</small></span></button>').join('')
+        : '<p class="sp-aviso">No hay nadie con ese filtro.</p>';
+      $('spChips').querySelectorAll('.sp-chip').forEach(b => b.onclick = () => { filtro = b.dataset.f; pintar(); });
+      $('spLista').querySelectorAll('.sp-row').forEach(b => b.onclick = () => {
+        const x = todas.find(y => String(y.user_id) === b.dataset.u);
+        if(!x.confirmado){ msg('Esa persona no ha confirmado su correo y no puede entrar en la app. Escríbele por correo.'); return; }
+        pantallaHiloSoporte(perfil, { user_id: x.user_id, nombre: x.nombre, email: x.email }, TEXTO_PRIMERO);
+      });
+    };
+    pintar();
+    $('spBuscar').oninput = e => { buscar = e.target.value.trim().toLowerCase(); pintar(); };
+  }
+  // La persona: aviso «acgolf te ha escrito» (en la bienvenida y en el Inicio) si hay mensajes de soporte sin leer
+  function avisoSoporteTarjeta(volver){
+    return '<div class="sp-card" id="spAviso"><b>💬 acgolf te ha escrito</b><span>El equipo de soporte te ha dejado un mensaje.</span>'
+      + '<button type="button" class="cg-btn" id="spVer">Ver el mensaje</button></div>';
+  }
+  function avisoSoporteBienvenida(email){
+    client.rpc('soporte_sin_leer_usuario').then(r => {
+      if(!(Number(r && r.data) > 0) || document.getElementById('spAviso')) return;
+      const card = document.querySelector('#cuentaGate .cg-card'); if(!card) return;
+      card.insertAdjacentHTML('afterbegin', avisoSoporteTarjeta());
+      $('spVer').onclick = () => pantallaSoporte(() => pantallaBienvenida(email));
+    }, () => {});
+  }
+  async function avisoSoporteInicio(){
+    try {
+      const r = await client.rpc('soporte_sin_leer_usuario');
+      if(!(Number(r && r.data) > 0) || document.getElementById('spAviso')) return;
+      const conv = document.getElementById('convHome'); if(!conv) return;
+      conv.insertAdjacentHTML('afterend', avisoSoporteTarjeta());
+      $('spVer').onclick = () => pantallaSoporte(() => { ocultar(); const a = document.getElementById('spAviso'); if(a) a.remove(); });
+    } catch(e){}
+  }
+  // Señal de «tienes preguntas por contestar»: círculo rojo con número en el Panel general y puntito rojo en «Mi cuenta»
+  function ponPuntoSoporte(n){
+    const poner = v => {
+      const t = document.querySelector('#inNav .in-tab[data-tab="cuenta"]'); if(!t) return;
+      let i = t.querySelector('.in-punto');
+      if(!i){ t.insertAdjacentHTML('beforeend', '<i class="in-punto" hidden></i>'); i = t.querySelector('.in-punto'); }
+      i.hidden = !v; window.acgolfSopPendientes = v;
+    };
+    if(typeof n === 'number'){ poner(n); return Promise.resolve(n); }
+    return client.rpc('sa_soporte_sin_leer').then(r => { const v = Number(r && r.data) || 0; poner(v); return v; }, () => 0);
+  }
+  function ponCirculoSoporte(){
+    ponPuntoSoporte().then(v => {
+      const f = $('pnSop'); if(!f || !v) return;
+      const fl = f.querySelector('.cn-fl'); if(!fl || f.querySelector('.sp-dot')) return;
+      fl.insertAdjacentHTML('beforebegin', '<span class="sp-dot" aria-label="' + v + ' sin contestar">' + v + '</span>');
+    });
+  }
+  function vigilarSoporte(){
+    const mira = () => { if(!document.hidden) ponPuntoSoporte(); };
+    setTimeout(mira, 3000); setInterval(mira, 60000);
+    document.addEventListener('visibilitychange', mira);
+  }
+
   // Panel general: todo ordenado en botones; cada uno abre su pantalla (con «‹ Volver al panel»)
   // Panel general (diseño aprobado por Carlos, 15-nov-2026; DESIGN.md §9 y dibujo diseno-ref/cuenta/panel.html; estilos en cuenta-nueva.css).
   // Pantalla aparte, sin barra de pestañas: «‹ Volver» arriba (a Mi cuenta) y «VOLVER A LA APP» fijo abajo (al Inicio).
@@ -835,6 +1020,7 @@
       + '<div class="pn-zona"><i>Super administrador</i><h1>Panel general</h1><p>Elige qué quieres hacer</p></div>'
       + '<div class="pn-main" id="pnMain"><div class="pn-filas">'
       + '<div class="cn-sec">Jugadores</div>'
+      + B('pnSop', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Mensajes de soporte', 'Lo que te escriben los jugadores')
       + B('pnPro', '<path d="M5 10v4h3l6 4V6l-6 4H5z"/><path d="M17 9.5a3.5 3.5 0 0 1 0 5"/>', 'Promociones', 'Correos a los jugadores y avisos en redes')
       + B('pnAvi', '<path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5l1.5-1.5z"/><path d="M10.3 20.2a1.9 1.9 0 0 0 3.4 0"/>', 'Avisos', 'Quién tiene los avisos del móvil')
       + '<div class="cn-sec">Seguimiento</div>'
@@ -855,6 +1041,8 @@
     $('pnApp').onclick = () => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.cerrar(); };
     $('pnEst').onclick = () => pantallaSuper(perfil, 'seguimiento');
     $('pnPro').onclick = () => pantallaMenuPromos(perfil);
+    $('pnSop').onclick = () => pantallaBandeja(perfil);
+    ponCirculoSoporte();
     $('pnAvi').onclick = () => pantallaSuper(perfil, 'avisos');
     $('pnRes').onclick = () => pantallaResumenes(perfil);
     $('pnGru').onclick = () => pantallaSuper(perfil, 'grupos');
@@ -1218,7 +1406,7 @@
     const ve = k => !parte || parte === k;
     mostrar('<div class="cg-head"><div class="cg-eyebrow">Mi cuenta</div><h1 class="cg-title">' + esc(perfil.player_name) + '</h1>'
       + '<p class="cg-sub">' + (perfil.grupo ? 'Grupo <b>' + esc(perfil.grupo) + '</b><br>' : '') + esc(perfil.email) + (perfil.es_admin ? ' · <b>Administrador</b>' : '') + '</p></div>'
-      + (perfil.es_admin && ve('invitar') ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
+      + ((perfil.es_admin || perfil.grupo_tipo === 'liga') && ve('invitar') ? '<div class="cg-invita" id="cgInvita"><b>Invita a tus amigos</b><div class="cg-p" style="margin:6px 0;">Cargando enlace…</div></div>' : '')
       + '<div id="cgMsg" class="cg-msg"></div>'
       + (window.acgolfAvatares && !parte ? '<button type="button" class="cg-btn" id="cgAvatar">' + window.acgolfAvatares.html(perfil.player_name, 'sm') + (perfil.es_admin ? 'Fotos y avatares' : 'Mi foto o avatar') + '</button>' : '')
       + (perfil.es_super && !parte ? '<button type="button" class="cg-btn" id="cgSuper">🛡️ Panel de super administrador</button>' : '')
@@ -1231,7 +1419,7 @@
       + (ve('datos') ? '<button type="button" class="cg-btn ghost" id="cgDatos">Descargar mis datos</button>'
         + '<button type="button" class="cg-btn ghost" id="cgClave">Cambiar mi contraseña</button>' : '')
       + (parte ? '' : '<button type="button" class="cg-btn ghost" id="cgSalir">Cerrar sesión en este móvil</button>'
-        + '<a class="cg-btn ghost" id="cgSoporte" href="mailto:avisos@acgolf.es?subject=' + encodeURIComponent('Ayuda con acgolf' + (perfil.grupo ? ' (' + perfil.grupo + ')' : '')) + '" style="text-align:center;text-decoration:none;box-sizing:border-box;">✉️ Escribir a soporte</a>'
+        + '<button type="button" class="cg-btn ghost" id="cgSoporte">💬 Escribir a soporte</button>'
         + '<button type="button" class="cg-btn danger" id="cgBorrar">Borrar mi cuenta</button>')
       + (ve('datos') ? '<p class="cg-legal"><a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad</a> · <a href="condiciones.html" target="_blank" rel="noopener">Condiciones de uso</a><br>Aceptadas el ' + esc(new Date(perfil.privacidad_aceptada_en).toLocaleDateString('es-ES')) + '</p>' : '')
       + '<button type="button" class="cg-btn" id="cgCerrar"' + (parte ? ' data-nv="‹ Volver"' : '') + '>' + (parte ? 'Volver' : 'Volver a la app') + '</button>');
@@ -1245,6 +1433,7 @@
     if($('cgSuper')) $('cgSuper').onclick = () => pantallaSuper(perfil);
     if($('cgMiembros')) $('cgMiembros').onclick = () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false);
     if($('cgClave')) $('cgClave').onclick = pantallaNuevaClave;
+    if($('cgSoporte')) $('cgSoporte').onclick = () => pantallaSoporte(() => panelMiCuenta(perfil));
     if($('cgSalir')) $('cgSalir').onclick = cerrarSesion;
     if($('cgDatos')) $('cgDatos').onclick = e => ocupado(e.target, async () => {
       const { data, error } = await client.rpc('mis_datos');
@@ -1257,21 +1446,23 @@
       msg('Descargado: mis-datos-golf.json', true);
     });
     if($('cgBorrar')) $('cgBorrar').onclick = e => borrarCuenta(e.target, msg);
-    if(perfil.es_admin && ve('invitar')){
+    if((perfil.es_admin || perfil.grupo_tipo === 'liga') && ve('invitar')){
       const pintarInvita = (inv) => {
         const box = $('cgInvita'); if(!box) return;
         if(!inv){ box.remove(); return; }
         const enlace = APP_PRUEBAS + '?unirse=' + encodeURIComponent(inv.codigo);
         const texto = '⛳ Te invito a «' + inv.grupo + '» en acgolf, la app de golf entre amigos.\n\n1️⃣ Pulsa este enlace y crea tu cuenta:\n' + enlace + '\n\n2️⃣ Si la app te pide un código, escribe solo esto:\n' + inv.codigo;
-        box.innerHTML = '<b>Invita a tus amigos a «' + esc(inv.grupo) + '»</b>'
+        box.innerHTML = '<b>Invita a tus ' + (perfil.es_admin ? 'amigos' : 'compañeros') + ' a «' + esc(inv.grupo) + '»</b>'
           + '<div class="cg-p" style="margin:6px 0;">Manda este enlace a tus amigos. Al abrirlo y crear su cuenta, entran directamente en tu grupo.</div>'
           + '<div class="cg-enlace">' + esc(enlace) + '</div>'
           + '<a class="cg-btn" href="https://wa.me/?text=' + encodeURIComponent(texto) + '" target="_blank" rel="noopener">Enviar por WhatsApp</a>'
           + (window.acgolfQR ? '<div class="qr-caja"><b>Código QR del grupo</b><img id="cgQR" alt="Código QR para unirse a «' + esc(inv.grupo) + '»"><small>Para imprimir o enseñar en el móvil: al escanearlo entran directamente en el grupo.</small>'
               + '<a class="cg-btn ghost" id="cgQRBajar" download="QR-' + esc(String(inv.grupo).replace(/[^\wÀ-ÿ]+/g, '-')) + '.png">Descargar el QR</a></div>' : '')
-          + '<button type="button" class="cg-link" id="cgNuevoEnlace">Cambiar el enlace (el anterior deja de valer)</button>';
+          + '<button type="button" class="cg-btn ghost" id="cgCopiarEnlace">Copiar el enlace</button>'
+          + (perfil.es_admin ? '<button type="button" class="cg-link" id="cgNuevoEnlace">Cambiar el enlace (el anterior deja de valer)</button>' : '');
+        $('cgCopiarEnlace').onclick = async e => { try { await navigator.clipboard.writeText(texto); e.target.textContent = '¡Copiado!'; } catch(x){ prompt('Copia este mensaje:', texto); } };
         if(window.acgolfQR && $('cgQR')){ try { const png = window.acgolfQR.lamina(enlace, inv.grupo); $('cgQR').src = png; $('cgQRBajar').href = png; } catch(e){ const c = box.querySelector('.qr-caja'); if(c) c.remove(); } }
-        $('cgNuevoEnlace').onclick = async () => {
+        if($('cgNuevoEnlace')) $('cgNuevoEnlace').onclick = async () => {
           if(!confirm('¿Cambiar el enlace de invitación?\nEl enlace anterior dejará de funcionar.')) return;
           const r = await client.rpc('invitacion_de_mi_grupo', { p_nuevo: true }); pintarInvita(r.data);
         };
@@ -1650,11 +1841,14 @@
     // si cambian los permisos o "quién soy", se recarga una vez para que toda la app lo tenga en cuenta
     if(eraAdmin !== !!perfil.es_admin || eraYo !== (perfil.solo_control ? '' : perfil.player_name)){ location.reload(); return; }
     botonMiCuenta(perfil);
+    if(perfil.es_super) vigilarSoporte();   // puntito rojo si hay mensajes de soporte sin contestar
     // Lo que usa la pantalla Mi cuenta nueva (cuenta-nueva.js): las mismas pantallas y funciones de siempre
     window.acgolfCuenta = {
       panel: () => pantallaSuper(perfil),
       misGrupos: () => pantallaMisGrupos(perfil),
       invitar: () => panelMiCuenta(perfil, 'invitar'),
+      soporte: () => pantallaSoporte(() => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.abrir(); }),
+      ayudajug: () => pantallaSoporte(() => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.abrir(); }, TEXTO_ADMIN),
       miembros: () => pantallaMiembros(perfil, perfil.grupo_id, perfil.grupo, false),
       portada: () => asistentePortada(perfil, true),
       datos: () => panelMiCuenta(perfil, 'datos'),
@@ -1680,5 +1874,6 @@
     }
     ocultar();
     tarjetaInvitar(perfil);
+    avisoSoporteInicio();
   })();
 })();

@@ -27,14 +27,14 @@
 <link rel="stylesheet" href="tiempo.css?v=1">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&display=swap">
 
-<link rel="stylesheet" href="cuenta.css?v=30">
+<link rel="stylesheet" href="cuenta.css?v=35">
 <link rel="stylesheet" href="seguimiento.css?v=4">
 <link rel="stylesheet" href="en-vivo.css?v=12">
 <link rel="stylesheet" href="tele-directo.css?v=5">
 <link rel="stylesheet" href="redes.css?v=4">
 <link rel="stylesheet" href="idioma.css?v=2">
 <link rel="stylesheet" href="avatares.css?v=1">
-<link rel="stylesheet" href="ryder.css?v=3">
+<link rel="stylesheet" href="ryder.css?v=4">
 <link rel="stylesheet" href="contador.css?v=2">
 <link rel="stylesheet" href="faltan-tarjeta.css?v=1">
 <link rel="stylesheet" href="navegacion.css?v=1">
@@ -45,10 +45,8 @@
 <link rel="stylesheet" href="ver-completa.css?v=1">
 <link rel="stylesheet" href="planes.css?v=2">
 <link rel="stylesheet" href="ayuda.css?v=2">
-<link rel="stylesheet" href="patro-destacado.css?v=1">
 <link rel="stylesheet" href="intro-video.css?v=2">
 <link rel="stylesheet" href="buscador-campos.css?v=10">
-<link rel="stylesheet" href="promo-bolas.css?v=2">
 <link rel="stylesheet" href="ir-hato.css?v=2">
 <link rel="stylesheet" href="anotar-limpio.css?v=1">
 <link rel="stylesheet" href="anotar-compacta.css?v=1">
@@ -67,11 +65,19 @@
 <link rel="stylesheet" href="marcador-retiro.css?v=1">
 <link rel="stylesheet" href="clasif-liga.css?v=2">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap">
-<link rel="stylesheet" href="inicio-nuevo.css?v=3">
+<link rel="stylesheet" href="inicio-nuevo.css?v=9">
 <link rel="stylesheet" href="jugar-nuevo.css?v=1">
 <link rel="stylesheet" href="liga-nueva.css?v=1">
-<link rel="stylesheet" href="cuenta-nueva.css?v=1">
+<link rel="stylesheet" href="cuenta-nueva.css?v=2">
+<link rel="stylesheet" href="cuenta-lista.css?v=2">
+<link rel="stylesheet" href="ryder-inscripcion.css?v=2">
+<link rel="stylesheet" href="ritmo-campo.css?v=3">
 <link rel="stylesheet" href="marcar-nuevo.css?v=1">
+<link rel="stylesheet" href="sin-patrocinador.css?v=2">
+<link rel="stylesheet" href="ritmo-jugador.css?v=6">
+<link rel="stylesheet" href="organizar-nuevo.css?v=5">
+<link rel="stylesheet" href="volver-nuevo.css?v=1">
+<link rel="stylesheet" href="liga-pasos.css?v=11">
 </head>
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.js" integrity="sha384-Rj26LVGvoeRVR6+mwQmFfcR3QOBEwT+ZmuCWpuiqeTzJpCs0ER4ITAWGb4Hiy3Ok" crossorigin="anonymous"></script>
@@ -140,9 +146,6 @@
             <h1 class="pv2-titulo">Los<br><span>Iscariotes</span></h1>
           </div>
         </div>
-        <a class="home-patro" href="https://bolarecuperada.com" target="_blank" rel="noopener sponsored">
-          <span>Patrocina</span><img src="logo-bolarecuperada-h.png?v=1" alt="Bolarecuperada.com" width="88" height="32">
-        </a>
         <section class="home-ahora" id="homeAhora">
           <div class="eyebrow">Ahora mismo</div>
           <div id="homeEnMarcha"></div>
@@ -626,7 +629,7 @@
 <script src="visitas.js?v=2"></script>
 <script src="portada.js?v=6"></script>
 <script src="avisos-movil.js?v=6"></script>
-<script src="cuenta.js?v=57"></script>
+<script src="cuenta.js?v=62"></script>
 <script src="seguimiento.js?v=7"></script>
 <script src="js/historial-jugadores.js?v=28"></script>
 <script src="js/scorecard.js?v=2810"></script>
@@ -648,7 +651,7 @@
 <script src="js/convocatoria.js?v=1710"></script>
 <script src="js/portada.js?v=4"></script>
 <script src="js/home-menu.js?v=8"></script>
-<script src="js/partida-rapida.js?v=1111"></script>
+<script src="js/partida-rapida.js?v=1113"></script>
 <script src="js/greens-mapa.js?v=1"></script>
 <script src="js/reglas.js?v=2"></script>
 <script src="js/historia-golf.js?v=6"></script>
@@ -677,7 +680,7 @@
 <script src="aviso-partida.js?v=4"></script>
 <script src="avatares.js?v=2"></script>
 <script src="reserva-club.js?v=2"></script>
-<script src="ryder.js?v=7"></script>
+<script src="ryder.js?v=8"></script>
 <script src="cartas-motor.js?v=1"></script>
 <script src="cartas.js?v=1"></script>
 <script src="hoyo19-foto.js?v=2"></script>
@@ -689,20 +692,18 @@
 <script src="patro-cuenta.js?v=1"></script>
 <script src="navegacion.js?v=3"></script>
 <script src="ganadores.js?v=2"></script>
-<script src="inicio-partido.js?v=5"></script>
+<script src="inicio-partido.js?v=6"></script>
 <script src="manual.js?v=11"></script>
 <script src="scramble.js?v=2"></script>
 <script src="salon.js?v=2"></script>
 <script src="ver-completa.js?v=2"></script>
 <script src="ayuda.js?v=4"></script>
 <script src="clasif-oculta.js?v=1"></script>
-<script src="intro-video.js?v=9"></script>
-<script src="patro-destacado.js?v=2"></script>
+<script src="intro-video.js?v=10"></script>
 <script src="qrcode.js?v=1"></script>
 <script src="qr-grupo.js?v=1"></script>
 <script src="campos-cadiz.js?v=4"></script>
 <script src="buscador-campos.js?v=18"></script>
-<script src="promo-bolas.js?v=2"></script>
 <script src="ir-hato.js?v=2"></script>
 <script src="como-jugue.js?v=2"></script>
 <script src="caddie-curro.js?v=16"></script>
@@ -711,18 +712,24 @@
 <script src="redes-aviso.js?v=1"></script>
 <script src="tele-directo.js?v=14"></script>
 <script src="en-vivo.js?v=30"></script>
-<script src="partido-a-partida.js?v=3"></script>
+<script src="partido-a-partida.js?v=5"></script>
 <script src="marcador-reforma.js?v=1"></script>
 <script src="marcador-mesa.js?v=2"></script>
 <script src="marcador-tarjeta.js?v=1"></script>
 <script src="marcador-retiro.js?v=2"></script>
 <script src="marcador-solo-grupo.js?v=1"></script>
 <script src="clasif-liga.js?v=2"></script>
-<script src="inicio-nuevo.js?v=4"></script>
-<script src="jugar-nuevo.js?v=2"></script>
+<script src="inicio-nuevo.js?v=5"></script>
+<script src="otros-grupos.js?v=5"></script>
+<script src="jugar-nuevo.js?v=3"></script>
 <script src="liga-nueva.js?v=1"></script>
-<script src="cuenta-nueva.js?v=1"></script>
+<script src="cuenta-nueva.js?v=5"></script>
+<script src="ryder-inscripcion.js?v=9"></script>
+<script src="ritmo-campo.js?v=6"></script>
 <script src="marcar-nuevo.js?v=1"></script>
+<script src="ritmo-jugador.js?v=3"></script>
+<script src="seguimiento-carlos.js?v=3"></script>
+<script src="liga-pasos.js?v=4"></script>
 <div class="pr-banda">Pruebas</div>
 </body>
 </html>

@@ -1,0 +1,69 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Organizar partidos con el diseño nuevo (dibujo aprobado por Carlos, 21-nov-2026). Solo cambia el aspecto. */
+html.in-on #convOverlay{ padding:0; align-items:stretch; justify-content:center; background:#0A0C10; }
+html.in-on #convOverlay .conv-card{ box-sizing:border-box; width:100%; max-width:480px; height:100%; max-height:none; border-radius:0; border:0; box-shadow:none; background:#0A0C10; color:#F4F1E8; padding:max(14px, env(safe-area-inset-top)) 16px 96px; overflow-x:hidden; overflow-y:auto; font-family:Barlow,system-ui,Arial,sans-serif; }
+html.in-on #convOverlay .conv-head{ text-align:left; display:flex; align-items:center; gap:12px; margin:4px 0 8px; }
+html.in-on #convOverlay .conv-head img{ margin:0; width:54px; height:54px; }
+html.in-on #convOverlay .conv-head h2{ margin:0; font:900 30px Archivo,system-ui,Arial,sans-serif; letter-spacing:.04em; text-transform:uppercase; color:#F4F1E8; }
+html.in-on #convBody .conv-when{ text-align:left; margin:12px 0 0; padding:16px 16px 0; border-radius:22px 22px 0 0; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-bottom:0; font:900 24px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #convBody .conv-where{ text-align:left; margin:0 0 4px; padding:2px 16px 16px; border-radius:0 0 22px 22px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-top:0; font-size:17px; color:#B5BFD0; }
+html.in-on #convBody .conv-eyebrow{ margin:22px 2px 8px; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#9AA3B0; }
+html.in-on #convBody .conv-tees{ grid-template-columns:1fr; gap:12px; margin-top:12px; }
+html.in-on #convBody .conv-tee{ border-radius:22px; padding:16px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); }
+html.in-on #convBody .conv-tee-h{ align-items:center; margin-bottom:8px; }
+html.in-on #convBody .conv-tee-time{ font:900 22px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #convBody .conv-tee-n{ font:800 15px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; background:#121620; border:1px solid #242B38; border-radius:999px; padding:4px 12px; }
+html.in-on #convBody .conv-seat{ font-size:17px; padding:11px 14px; margin-top:6px; border-radius:14px; background:#121620; border:1px dashed #3A4252; color:#6B7482; white-space:normal; }
+html.in-on #convBody .conv-seat.filled{ border:1px solid #242B38; color:#F4F1E8; font-weight:600; }
+html.in-on #convBody .conv-seat.me{ border-color:#E9CF8C; background:#2A2410; color:#E9CF8C; font-weight:800; }
+html.in-on #convBody .conv-created{ border-radius:18px; background:#12301E; border:1px solid #1E7A3C; color:#F4F1E8; font-size:17px; padding:14px; }
+html.in-on #convBody .search-box, html.in-on #convBody .conv-search{ background:#121620; border:1px solid #242B38; border-radius:999px; padding:12px 18px; color:#9AA3B0; }
+html.in-on #convBody .conv-search input{ font:600 17px Barlow,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #convBody .conv-row{ border:1px solid #242B38; background:#121620; border-radius:16px; margin-top:8px; padding:14px 16px; }
+html.in-on #convBody .conv-row-name{ font-size:18px; color:#F4F1E8; }
+html.in-on #convBody .conv-row.me .conv-row-name{ color:#E9CF8C; }
+html.in-on #convBody .conv-row.open{ border-radius:16px 16px 0 0; background:#17233D; }
+html.in-on #convBody .conv-row-tag{ background:#0A0C10; color:#B5BFD0; font:800 14px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #convBody .conv-row-tag.in{ background:#E9CF8C; color:#16120A; }
+html.in-on #convBody .conv-pick{ background:#17233D; border-radius:0 0 16px 16px; border:1px solid #242B38; border-top:0; flex-wrap:wrap; padding:6px 10px 12px; }
+html.in-on #convBody .conv-pick-btn{ font:800 16px Archivo,system-ui,Arial,sans-serif; border-radius:999px; border:1.5px solid rgba(217,190,122,.55); background:transparent; color:#E9CF8C; padding:12px 8px; }
+html.in-on #convBody .conv-pick-btn.sel{ background:linear-gradient(#EBD08A,#C9A54A); color:#16120A; border-color:transparent; }
+html.in-on #convBody .conv-pick-btn.no{ border-color:#B3262E; color:#FF8A90; }
+html.in-on #convBody .conv-btn{ border-radius:999px; padding:18px 14px; font:900 18px Archivo,system-ui,Arial,sans-serif; letter-spacing:.06em; text-transform:uppercase; border:1.5px solid rgba(217,190,122,.55); background:transparent; color:#E9CF8C; }
+html.in-on #convBody .conv-btn:active, html.in-on #convBody .conv-pick-btn:active{ transform:scale(.97); }
+html.in-on #convBody .conv-btn.primary{ background:linear-gradient(#B3262E,#8A1A21); border-color:transparent; color:#fff; box-shadow:none; }
+html.in-on #convBody .conv-btn.wa{ background:#25D366; border-color:#25D366; color:#06210F; }
+html.in-on #convBody .conv-btn.borrar{ background:transparent; border-color:#B3262E; color:#FF8A90; }
+html.in-on #convBody .conv-link{ font:700 16px Barlow,system-ui,Arial,sans-serif; color:#E9CF8C; padding:12px; }
+html.in-on #convOverlay .field label{ color:#9AA3B0; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+html.in-on #convOverlay .field input, html.in-on #convOverlay .field select{ background:#121620; border:1px solid #242B38; border-radius:14px; color:#F4F1E8; font:600 17px Barlow,system-ui,Arial,sans-serif; padding:12px 14px; }
+@media (max-height:700px){ html.in-on #convBody .conv-tee{ padding:12px; } html.in-on #convBody .conv-seat{ padding:9px 12px; } }
+
+/* Formulario «Organizar partido»: sin lima, todo en dorado y azul del diseño nuevo */
+html.in-on #convOverlay .bc-sel-b{ background:#121620; border:1px solid #242B38; color:#F4F1E8; font:600 18px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #convOverlay .bc-sel-b .bc-ico{ color:#E9CF8C; }
+html.in-on #convOverlay .bc-sel-b.on, html.in-on #convOverlay .bc-btn.fav.on, html.in-on #convOverlay .bc-chip.on, html.in-on #convOverlay .bc-btn.lima{ background:linear-gradient(#EBD08A,#C9A54A); border-color:transparent; color:#16120A; font-weight:800; }
+html.in-on #convOverlay .bc-sel-b.on .bc-ico{ color:#16120A; }
+html.in-on #convOverlay .bc-btn:not(.lima):not(.on){ border-color:rgba(217,190,122,.55); color:#E9CF8C; }
+html.in-on #convOverlay .bc-ico{ color:#E9CF8C; }
+html.in-on #convOverlay .field input:focus, html.in-on #convOverlay .field select:focus, html.in-on #convOverlay .search-box:focus-within{ border-color:#E9CF8C; background-color:#17233D; box-shadow:0 0 0 3px rgba(233,207,140,.2); outline:none; }
+html.in-on #convOverlay input[type="date"]::-webkit-calendar-picker-indicator, html.in-on #convOverlay input[type="time"]::-webkit-calendar-picker-indicator{ background:#E9CF8C; }
+html.in-on #convOverlay .conv-eyebrow{ color:#9AA3B0; }
+html.in-on #convOverlay small, html.in-on #convOverlay .field small{ color:#9AA3B0; font-size:15px; }
+
+/* Retoques de la revisión de diseño (21-nov-2026) */
+html.in-on #convOverlay #convTiempo.tq{ background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); border-radius:18px; padding:14px 16px; }
+html.in-on #convOverlay .tq-t{ color:#9AA3B0; font-family:Archivo,system-ui,Arial,sans-serif; letter-spacing:.15em; }
+html.in-on #convOverlay .tq-p, html.in-on #convOverlay .tq-res span, html.in-on #convOverlay .tq-datos{ color:#B5BFD0; }
+html.in-on #convOverlay .tq-cons{ color:#E9CF8C; }
+html.in-on #convOverlay .tq-horas div{ background:#121620; border:1px solid #242B38; }
+html.in-on #convOverlay .tq-horas small, html.in-on #convOverlay .tq-nota{ font-size:15px; color:#9AA3B0; }
+html.in-on #convBody .conv-mas-partida{ border:1.5px dashed rgba(217,190,122,.55) !important; color:#E9CF8C; }
+html.in-on #convBody .conv-row-name.av-con{ display:flex; align-items:center; gap:10px; min-width:0; line-height:1.2; }
+html.in-on #convBody .conv-row-name .av{ flex:0 0 auto; }
+html.in-on #convBody .conv-row-tag{ flex:0 0 auto; margin-left:8px; font-size:15px; padding:4px 10px; }
+html.in-on #convBody .conv-btn.wa{ background:transparent; border:1.5px solid rgba(217,190,122,.55); color:#E9CF8C; padding:15px 14px; font-size:17px; }
+html.in-on #convBody > .conv-eyebrow:first-child{ display:none; }
+html.in-on #convBody .conv-tee-x{ border:1.5px solid rgba(179,38,46,.8); color:#FF8A90; background:transparent; }
+html.in-on #convOverlay .bc-sel-nota{ font-size:15px; color:#9AA3B0; }
+html.in-on #convBody .conv-created{ background:rgba(233,207,140,.10); border:1px solid rgba(217,190,122,.45); color:#F4F1E8; }

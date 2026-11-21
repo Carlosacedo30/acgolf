@@ -32,7 +32,9 @@
     if(typeof convAlTiro === 'function' && convAlTiro(conv)) return original(btn);
     const fresh = await convFetch(conv.code); if(fresh) conv = fresh;
     if(conv.roundCode){ renderConv(); return; }
-    const grupos = conv.times.map((t, i) => (conv.groups[i] || []).slice()).filter(g => g.length);
+    const conJug = conv.times.map((t, i) => i).filter(i => (conv.groups[i] || []).length);
+    const grupos = conJug.map(i => conv.groups[i].slice());
+    const salidas = conJug.map(i => (conv.hoyos && Number(conv.hoyos[i])) || 0); // hoyo de salida de cada grupo (p. ej. el 10)
     if(!grupos.length){ alert('Todavía no se ha apuntado nadie.'); return; }
     const partido = conv, primeraHora = (conv.times.find((t, i) => (conv.groups[i] || []).length) || '08:40');
     closeConv();
@@ -40,6 +42,7 @@
     window.prAbrirDesdePartido({
       courseId: partido.courseId,
       grupos,
+      hoyos: salidas,
       alCrear: async code => {
         // la partida queda unida al partido (la tarjeta del Inicio pasa a «Partida creada»)
         if(!conv || conv.code !== partido.code){ conv = partido; }

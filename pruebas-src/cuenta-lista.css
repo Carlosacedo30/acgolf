@@ -1,0 +1,38 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Mi cuenta reorganizada en una sola lista (21-nov-2026): el grupo arriba, Mi golf, Mi grupo, Perfil y avisos, Ayuda, Redes, Sesión. */
+html.in-on #cnPant .cn-todo{ padding-bottom:24px; }
+html.in-on #cnPant .cn-sec{ font-size:14px; }
+/* Foto de la cabecera */
+html.in-on #cnPant .cn-foto{ position:relative; flex:0 0 auto; width:64px; height:64px; margin-right:4px; padding:0; border-radius:50%; border:1.5px solid #E9CF8C; background:linear-gradient(160deg,#17233D,#0F1626); color:#E9CF8C; font:800 24px Archivo,system-ui,Arial,sans-serif; display:flex; align-items:center; justify-content:center; }
+html.in-on #cnPant .cn-foto i{ position:absolute; right:-4px; bottom:-4px; width:28px; height:28px; border-radius:50%; background:linear-gradient(180deg,#EBD08A,#C9A54A); display:flex; align-items:center; justify-content:center; }
+html.in-on #cnPant .cn-foto i svg{ width:15px; height:15px; }
+html.in-on #cnPant .cn-foto:active{ transform:scale(.97); }
+/* Tarjeta grande del grupo */
+html.in-on #cnPant .cn-gran{ margin-top:16px; padding:16px; border-radius:22px; background:linear-gradient(160deg,#17233D,#0F1626); border:1.5px solid #E9CF8C; box-shadow:0 0 0 1px rgba(233,207,140,.25); }
+html.in-on #cnPant .cn-gran-top{ display:flex; align-items:center; gap:14px; }
+html.in-on #cnPant .cn-gran .cn-gesc{ flex:0 0 76px; width:76px; height:76px; }
+html.in-on #cnPant .cn-gran .cn-tx{ min-width:0; display:block; }
+html.in-on #cnPant .cn-gran .cn-tx em{ display:block; font:800 13px Archivo,system-ui,Arial,sans-serif; font-style:normal; letter-spacing:.22em; text-transform:uppercase; color:#B5BFD0; }
+html.in-on #cnPant .cn-gran .cn-tx b{ display:block; margin-top:4px; font:800 26px/1.1 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; overflow-wrap:anywhere; }
+html.in-on #cnPant .cn-oro{ width:100%; min-height:60px; margin-top:14px; border:0; border-radius:999px; background:linear-gradient(180deg,#EBD08A,#C9A54A); color:#16120A; font:800 19px Archivo,system-ui,Arial,sans-serif; letter-spacing:.02em; }
+html.in-on #cnPant .cn-oro:active{ transform:scale(.97); }
+html.in-on #cnPant .cn-gran + .cn-super{ margin-top:16px; }
+/* Dos botones grandes */
+html.in-on #cnPant .cn-raps{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+html.in-on #cnPant .cn-rap{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-height:132px; padding:14px; text-align:left; border-radius:20px; background:linear-gradient(160deg,#17233D,#0F1626); border:1px solid rgba(217,190,122,.45); color:#F4F1E8; }
+html.in-on #cnPant .cn-rap .cn-ic{ margin-bottom:6px; }
+html.in-on #cnPant .cn-rap b{ font:800 19px/1.15 Archivo,system-ui,Arial,sans-serif; }
+html.in-on #cnPant .cn-rap > span:last-child{ font:600 15px/1.25 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #cnPant .cn-rap:active{ transform:scale(.97); }
+html.in-on #cnPant .cn-card + .cn-card{ margin-top:10px; }
+html.in-on #cnPant .cn-card .cn-row + .cn-row{ border-top:1px solid rgba(217,190,122,.18); }
+/* Avisos plegable */
+html.in-on #cnPant .cn-pleg .cn-fl{ transition:transform .15s; }
+html.in-on #cnPant .cn-pleg.abierto .cn-fl{ transform:rotate(90deg); }
+html.in-on #cnPant .cn-pleg-c{ padding:4px 14px 14px; border-top:1px solid rgba(217,190,122,.18); }
+/* Sesión */
+html.in-on #cnPant .cn-sesion{ margin-top:30px; padding-top:20px; border-top:1px solid rgba(217,190,122,.25); }
+html.in-on body #cnPant .cn-borrar button{ flex-direction:column; align-items:center; justify-content:center; gap:2px; color:#FF8C99; }
+html.in-on body #cnPant .cn-borrar button small{ font:600 14px Barlow,system-ui,Arial,sans-serif; color:#9AA3B0; }
+@media (max-height:700px){ html.in-on #cnPant .cn-gran .cn-gesc{ flex-basis:60px; width:60px; height:60px; } html.in-on #cnPant .cn-rap{ min-height:112px; } }
+html.in-on #cnPant .cn-redes{ margin-bottom:14px; } html.in-on #cnPant .cn-redes + .cn-apoyo{ margin-top:8px !important; }

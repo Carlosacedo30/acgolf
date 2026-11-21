@@ -154,7 +154,7 @@
     const isAdmin = !!getAdminKey();
     convSyncActiva(conv);
     const lista = convActivas;
-    const nuevoBtn = isAdmin ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
+    const nuevoBtn = (isAdmin || window.miPerfilId) ? '<button type="button" class="conv-home-new" id="convHomeNew">' + icono('megafono') + ' Organizar partido con amigos</button>' : '';
     if(!lista.length){
       box.innerHTML = nuevoBtn;
       const b = document.getElementById('convHomeNew'); if(b) b.addEventListener('click', ()=> openConv(true));
@@ -255,8 +255,8 @@
     h += '<div class="conv-actions">';
     const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
     const yoMismo = (window.miPerfil && window.miPerfil.player_name) || '';
-    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquiera de los apuntados puede crear la partida
-    if((isAdmin || organizo || apuntado) && !conv.roundCode){
+    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquier jugador con cuenta puede crear la partida (norma de Carlos, 21-nov-2026)
+    if((isAdmin || organizo || apuntado || window.miPerfilId) && !conv.roundCode){
       if(!convEsJornada(conv)) h += '<button type="button" class="pr-marc' + (convMarc ? ' on' : '') + '" id="convMarc" role="switch" aria-checked="' + (convMarc ? 'true' : 'false') + '">'
         + '<span class="pr-marc-t"><b>' + (convMarc ? 'Con marcador' : 'Partida normal') + '</b><small>'
         + (convMarc ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga.' : 'Cada uno apunta sus golpes, sin marcador. Toca para jugar con marcador.')
@@ -356,7 +356,7 @@
       : '¿Crear la partida con ' + withPlayers.map(x => x.names.length + ' a las ' + convTime(x.t)).join(' y ') + '?\nCada hora será un grupo con su propia tarjeta.')) return;
     const course = (window.acgolfLigaCurso && window.acgolfLigaCurso(conv)) || convCourse(conv.courseId);
     const groups = normalizeMatchGroups(withPlayers.map(x => ({
-      hoyoSalida: x.hoyo || undefined,
+      hoyoSalida: x.hoyo ? ((/-9v$/.test(String(course.id)) && x.hoyo > 9) ? x.hoyo - 9 : x.hoyo) : undefined,   // vuelta (10-18): el hoyo 13 es el 4.º de la media vuelta
       hora: (!x.hoyo && /^\d{1,2}:\d{2}$/.test(String(x.t || ''))) ? String(x.t) : undefined,
       nueve: course.nueve ? true : undefined,
       players: x.names.slice(0, 4),

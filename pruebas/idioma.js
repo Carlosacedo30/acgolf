@@ -8,7 +8,7 @@
   const LLAVE = 'acgolfIdioma';
   let idioma = 'es';
   const movil = (navigator.language || '').toLowerCase();
-  try { idioma = localStorage.getItem(LLAVE) || (movil.startsWith('en') ? 'en' : movil.startsWith('fr') ? 'fr' : 'es'); } catch(e){}
+  idioma = 'es';   // idiomas apagados por ahora (orden de Carlos, 21-nov-2026)
   if(idioma !== 'en' && idioma !== 'fr') idioma = 'es';
   window.acgolfIdioma = idioma;
 

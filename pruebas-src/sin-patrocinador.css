@@ -1,0 +1,4 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Sin patrocinador por ahora (orden de Carlos, 21-nov-2026): «ya veremos más adelante dónde lo ponemos en la app». */
+.home-patro, .home-patro-fila, #sponsorHome, .sponsor-card, .pg-patro-fila, .pg-patro-propio, .pd-franja, #pdFranja, .pd-bienv, .pb-velo, #pbAnuncio, .vv-patro, .vv-promo{ display:none !important; }
+.id-caja, #idPie, #idCuenta, .id-l{ display:none !important; }   /* selector de idioma apagado por ahora (orden de Carlos, 21-nov-2026) */
