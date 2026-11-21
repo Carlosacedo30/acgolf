@@ -39,8 +39,8 @@ cambios = [
       h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
       h += '<button""", """    const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
     const yoMismo = (window.miPerfil && window.miPerfil.player_name) || '';
-    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquiera de los apuntados puede crear la partida
-    if((isAdmin || organizo || apuntado) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
+    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquier jugador con cuenta puede crear la partida (norma de Carlos, 21-nov-2026)
+    if((isAdmin || organizo || apuntado || window.miPerfilId) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';
     if(isAdmin || window.miPerfilId) h += '<button type="button" class="conv-link" id="convNewBtn">Organizar otro partido</button>';
     if(isAdmin){
       h += '<button"""),
@@ -505,8 +505,8 @@ f = 'pruebas/js/convocatoria.js'
 cambia(f, """  let convChannel = null;""", """  let convChannel = null;
   let convMarc = false;       // interruptor «Partida con marcador» al crear la partida de un partido organizado
   const convEsJornada = c => !!(c && /J\\d+$/.test(c.code || '') && String(c.code).length > 6);   // jornada de una liga: el marcador va solo""")
-cambia(f, """    if((isAdmin || organizo || apuntado) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';""",
-"""    if((isAdmin || organizo || apuntado) && !conv.roundCode){
+cambia(f, """    if((isAdmin || organizo || apuntado || window.miPerfilId) && !conv.roundCode) h += '<button type="button" class="conv-btn primary" id="convCreateRound">Crear la partida con los apuntados</button>';""",
+"""    if((isAdmin || organizo || apuntado || window.miPerfilId) && !conv.roundCode){
       if(!convEsJornada(conv)) h += '<button type="button" class="pr-marc' + (convMarc ? ' on' : '') + '" id="convMarc" role="switch" aria-checked="' + (convMarc ? 'true' : 'false') + '">'
         + '<span class="pr-marc-t"><b>' + (convMarc ? 'Con marcador' : 'Partida normal') + '</b><small>'
         + (convMarc ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga.' : 'Cada uno apunta sus golpes, sin marcador. Toca para jugar con marcador.')

@@ -255,8 +255,8 @@
     h += '<div class="conv-actions">';
     const organizo = !!(conv.organiza && conv.organiza === window.miPerfilId);
     const yoMismo = (window.miPerfil && window.miPerfil.player_name) || '';
-    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquiera de los apuntados puede crear la partida
-    if((isAdmin || organizo || apuntado) && !conv.roundCode){
+    const apuntado = !!yoMismo && (conv.groups || []).some(g => (g || []).includes(yoMismo));   // cualquier jugador con cuenta puede crear la partida (norma de Carlos, 21-nov-2026)
+    if((isAdmin || organizo || apuntado || window.miPerfilId) && !conv.roundCode){
       if(!convEsJornada(conv)) h += '<button type="button" class="pr-marc' + (convMarc ? ' on' : '') + '" id="convMarc" role="switch" aria-checked="' + (convMarc ? 'true' : 'false') + '">'
         + '<span class="pr-marc-t"><b>' + (convMarc ? 'Con marcador' : 'Partida normal') + '</b><small>'
         + (convMarc ? 'Cada uno apunta sus golpes y los del jugador al que marca, como en la liga.' : 'Cada uno apunta sus golpes, sin marcador. Toca para jugar con marcador.')
