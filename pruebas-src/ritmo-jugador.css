@@ -43,3 +43,29 @@
 .sg-chip.on{background:#C6F24E;border-color:#C6F24E}
 /* Carlos: el botón «Ritmo del campo» de «Más» pasa al botón SEGUIMIENTO */
 html.es-super #hmRitmo{display:none !important}
+
+/* Seguimiento en el diseño nuevo (21-nov-2026): recuadro «Solo super administrador» */
+#hmRitmo{display:none !important}
+html.in-on .sg-bloque{position:relative;z-index:1;margin:14px 16px 6px;padding:12px 0 4px;border:1px dashed rgba(217,190,122,.6);border-radius:20px;background:rgba(10,12,16,.72)}
+html.in-on .sg-bloque em{display:block;font:800 13px Archivo,system-ui,Arial,sans-serif;font-style:normal;letter-spacing:.22em;text-transform:uppercase;color:#E9CF8C;padding:0 18px 6px}
+html.in-on .sg-btn{width:100%;margin:0;padding:10px 18px 10px 14px;background:none;border:0;border-radius:0;color:#F4F1E8;font-family:Barlow,system-ui,Arial,sans-serif}
+html.in-on .sg-ic{width:48px;height:48px;background:linear-gradient(180deg,#EBD08A,#C9A54A);color:#16120A}
+html.in-on .sg-ic svg{width:24px;height:24px}
+html.in-on .sg-btn b{font:800 21px Archivo,system-ui,Arial,sans-serif;letter-spacing:0;color:#F4F1E8}
+html.in-on .sg-btn span span{color:#B5BFD0;font:600 16px Barlow,system-ui,Arial,sans-serif}
+html.in-on .sg-btn span{flex:1;min-width:0}
+html.in-on .sg-fl{flex:0 0 auto;width:10px;height:10px;box-sizing:border-box;border-right:2px solid #E9CF8C;border-top:2px solid #E9CF8C;transform:rotate(45deg)}
+/* Seguimiento (pantalla del ritmo del campo) con el diseño nuevo; los colores de estado (verde, ámbar, rojo) se quedan */
+html.in-on .rc{ background:#0A0C10 !important; }
+html.in-on .rc-top{ background:#0A0C10; padding-top:64px; }
+html.in-on .rc-volver{ min-height:52px; padding:0 6px; border:0; border-radius:0; background:none; color:#E9CF8C; font:800 18px Archivo,system-ui,Arial,sans-serif; }
+html.in-on .rc-etq{ background:rgba(233,207,140,.1); border:1px solid rgba(217,190,122,.7); color:#E9CF8C; }
+html.in-on .rc-camp{ font-size:30px; color:#F4F1E8; }
+html.in-on .rc-sub{ color:#B5BFD0; }
+html.in-on .rc-demo-btn, html.in-on .rc-ctl button{ border:1px solid rgba(217,190,122,.6); background:transparent; color:#E9CF8C; }
+html.in-on .rc-n, html.in-on .rc-fila, html.in-on .rc-nocir, html.in-on .rc-vacio{ background:linear-gradient(160deg,#17233D,#0F1626); border-color:rgba(217,190,122,.4); }
+html.in-on .rc-n.rc-v{ border-color:#C6F24E; } html.in-on .rc-n.rc-a{ border-color:#F5B83D; } html.in-on .rc-n.rc-r{ border-color:#E5484D; }
+html.in-on .rc-fila.rc-a{ border-color:#F5B83D; } html.in-on .rc-fila.rc-r{ border-color:#E5484D; }
+html.in-on .rc-banda{ background:rgba(233,207,140,.1); border-color:rgba(217,190,122,.7); }
+html.in-on .rc-banda b{ color:#E9CF8C; }
+html.in-on .rc-prog i{ background:linear-gradient(90deg,#EBD08A,#C9A54A); }

@@ -15,8 +15,10 @@
     const cab = document.querySelector('.in-hero') || document.querySelector('.home-cab');
     if(!cab || !cab.parentNode) return;
     btn = document.createElement('button'); btn.type = 'button'; btn.id = 'sgBtn'; btn.className = 'sg-btn';
-    btn.innerHTML = '<i class="sg-ic" aria-hidden="true">◎</i><span><b>SEGUIMIENTO</b><span>Dónde está cada grupo en el campo</span></span>';
-    cab.parentNode.insertBefore(btn, cab.nextSibling);
+    btn.innerHTML = '<i class="sg-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#16120A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg></i><span><b>Seguimiento</b><span>Dónde está cada grupo en el campo</span></span><i class="sg-fl" aria-hidden="true"></i>';
+    const bloque = document.createElement('div'); bloque.className = 'sg-bloque'; bloque.id = 'sgBloque';
+    bloque.innerHTML = '<em>Solo super administrador</em>'; bloque.appendChild(btn);
+    cab.parentNode.insertBefore(bloque, cab.nextSibling);
     btn.onclick = () => { if(R() && typeof R().abrir === 'function') R().abrir(); else abrir(); };   // abre «Ritmo del campo», el de siempre
   }
   async function cargar(){
