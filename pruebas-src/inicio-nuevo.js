@@ -129,7 +129,10 @@
       const horas = alTiro ? convTime(c.times[0]) : c.times.map((t, k) => convEtq(c, k)).join(' y ');
       const total = c.groups.reduce((a, g) => a + g.length, 0);
       const campo = convCourse(c.courseId).name.replace(/^Club\s+/i, '');
-      cuando.textContent = DIAS[d.getDay()] + ' ' + d.getDate() + ' · ' + horas;
+      // Varias salidas: el día arriba y cada salida en su línea (no se parte el título)
+      if(!alTiro && c.times.length > 1){
+        cuando.innerHTML = esc(DIAS[d.getDay()] + ' ' + d.getDate()) + '<span class="in-salidas">' + c.times.map((t, k) => '<span>' + esc(convEtq(c, k)) + '</span>').join('') + '</span>';
+      } else cuando.textContent = DIAS[d.getDay()] + ' ' + d.getDate() + ' · ' + horas;
       pie.innerHTML = '<i>' + esc(campo) + '</i> · ' + total + (total === 1 ? ' apuntado' : ' apuntados') + (alTiro ? ' · al tiro' : '');
     });
   }
