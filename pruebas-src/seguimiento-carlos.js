@@ -11,6 +11,7 @@
   let btn = null, ov = null, rondas = [], sel = 0, timer = null;
 
   function poner(){
+    return;   // 21-nov: el Seguimiento vive ahora en Mi cuenta → pestaña «Superadministrador» (cuenta-nueva.js)
     if(btn) return;
     const cab = document.querySelector('.in-hero') || document.querySelector('.home-cab');
     if(!cab || !cab.parentNode) return;

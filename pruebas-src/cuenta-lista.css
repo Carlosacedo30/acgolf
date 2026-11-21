@@ -36,3 +36,10 @@ html.in-on body #cnPant .cn-borrar button{ flex-direction:column; align-items:ce
 html.in-on body #cnPant .cn-borrar button small{ font:600 14px Barlow,system-ui,Arial,sans-serif; color:#9AA3B0; }
 @media (max-height:700px){ html.in-on #cnPant .cn-gran .cn-gesc{ flex-basis:60px; width:60px; height:60px; } html.in-on #cnPant .cn-rap{ min-height:112px; } }
 html.in-on #cnPant .cn-redes{ margin-bottom:14px; } html.in-on #cnPant .cn-redes + .cn-apoyo{ margin-top:8px !important; }
+/* Pestañas de Mi cuenta (solo super administrador): «Mi cuenta» | «Superadministrador» */
+html.in-on #cnPant .cn-tabs{ flex:0 0 auto; display:grid; grid-template-columns:1fr 1.4fr; gap:6px; margin:12px 0 4px; padding:5px; border-radius:999px; background:#121620; border:1px solid #242B38; }
+html.in-on #cnPant .cn-tab{ min-height:50px; border:0; border-radius:999px; background:transparent; color:#B5BFD0; font:800 16px Archivo,system-ui,Arial,sans-serif; letter-spacing:.02em; }
+html.in-on #cnPant .cn-tab.on{ background:linear-gradient(180deg,#EBD08A,#C9A54A); color:#16120A; }
+html.in-on #cnPant .cn-tab:active{ transform:scale(.97); }
+html.in-on #cnPant .cn-sup{ padding-bottom:24px; }
+html.in-on #cnPant .cn-sup .sp-dot{ margin-left:auto; margin-right:8px; background:#D8333D; color:#fff; border-radius:999px; min-width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; font:800 14px Archivo,system-ui,Arial,sans-serif; }

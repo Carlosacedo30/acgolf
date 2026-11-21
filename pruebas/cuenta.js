@@ -1012,6 +1012,8 @@
   // Pantalla aparte, sin barra de pestañas: «‹ Volver» arriba (a Mi cuenta) y «VOLVER A LA APP» fijo abajo (al Inicio).
   // Cada botón abre lo mismo de siempre.
   function pantallaPanel(perfil){
+    // 21-nov: el Panel general vive ahora en la pestaña «Superadministrador» de Mi cuenta; todo «Volver al panel» cae allí
+    if(window.acgolfCuentaNueva && window.acgolfCuentaNueva.irSuper){ ocultar(); window.acgolfCuentaNueva.irSuper(); return; }
     const sv = d => '<span class="cn-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#E9CF8C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg></span>';
     const B = (id, ico, tit, sub) => '<div class="cn-card"><button type="button" class="cn-row" id="' + id + '">' + sv(ico) + '<span class="cn-tx"><b>' + tit + '</b><span>' + sub + '</span></span><i class="cn-fl" aria-hidden="true"></i></button></div>';
     const de = document.getElementById('inEsc'); // el escudo del grupo que ya pinta el Inicio
@@ -1845,6 +1847,18 @@
     // Lo que usa la pantalla Mi cuenta nueva (cuenta-nueva.js): las mismas pantallas y funciones de siempre
     window.acgolfCuenta = {
       panel: () => pantallaSuper(perfil),
+      superIr: id => {
+        if(id === 'sop') pantallaBandeja(perfil);
+        else if(id === 'pro') pantallaMenuPromos(perfil);
+        else if(id === 'avi') pantallaSuper(perfil, 'avisos');
+        else if(id === 'est') pantallaSuper(perfil, 'seguimiento');
+        else if(id === 'res') pantallaResumenes(perfil);
+        else if(id === 'gru') pantallaSuper(perfil, 'grupos');
+        else if(id === 'usu') pantallaSuper(perfil, 'usuarios');
+        else if(id === 'cod') pantallaSuper(perfil, 'codigos');
+        else if(id === 'cam'){ ocultar(); if(typeof gmAbrir === 'function') gmAbrir(); }
+      },
+      puntoSoporte: () => ponPuntoSoporte().then(v => { const f = document.getElementById('pnSop'); if(!f) return; const a = f.querySelector('.sp-dot'); if(a) a.remove(); if(!v) return; const fl = f.querySelector('.cn-fl'); if(fl) fl.insertAdjacentHTML('beforebegin', '<span class="sp-dot" aria-label="' + v + ' sin contestar">' + v + '</span>'); }),
       misGrupos: () => pantallaMisGrupos(perfil),
       invitar: () => panelMiCuenta(perfil, 'invitar'),
       soporte: () => pantallaSoporte(() => { ocultar(); if(window.acgolfCuentaNueva) window.acgolfCuentaNueva.abrir(); }),
