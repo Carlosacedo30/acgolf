@@ -61,20 +61,24 @@
     return lista.filter(e => !e.fin);
   }
   window.acgolfRitmo = { _estadoGrupo: estadoGrupo, _repasar: repasar, _ordenDe: ordenDe };
+  window.acgolfRitmo._trazado = TRAZADO;
 
   // ---------- Pantalla ----------
   let ov = null, timer = null, ultimaLista = null;
   const nombres = g => (g.players || []).filter(Boolean);
   const horaTxt = ms => ms ? new Date(ms).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : '';
-  function circuito(lista, courseId){
-    const T = TRAZADO[courseId]; if(!T) return '<div class="rc-nocir">Este campo aún no tiene circuito dibujado. Abajo ves la lista de grupos.</div>';
+  function circuito(lista, courseId, opts){
+    opts = opts || {};   // opts.base: campo de 18 sobre el que se dibuja · opts.off: hoyos que se suman (vuelta 10-18 = 9) · opts.mio: el grupo del jugador
+    const base = opts.base || courseId, off = opts.off || 0;
+    const T = TRAZADO[base]; if(!T) return '<div class="rc-nocir">Este campo aún no tiene circuito dibujado. Abajo ves la lista de grupos.</div>';
     const cuenta = {};
     const pts = lista.filter(e => e.ronda.course_id === courseId && e.juegaEn).map(e => {
-      const h = T.holes[e.juegaEn - 1]; const k = cuenta[e.juegaEn] = (cuenta[e.juegaEn] || 0) + 1;
+      const h = T.holes[e.juegaEn - 1 + off]; const k = cuenta[e.juegaEn] = (cuenta[e.juegaEn] || 0) + 1;
       const dir = h.x > T.vb[0] - 220 ? -1 : 1, cx = h.x + dir * (44 + (k - 1) * 64), cy = h.y - 46 + (k - 1) * 18;
-      return '<g class="rc-pt"><circle cx="' + cx + '" cy="' + cy + '" r="34" fill="' + COLOR[e.color] + '" stroke="#111316" stroke-width="4"/><text x="' + cx + '" y="' + (cy + 11) + '" text-anchor="middle" font-size="31" font-weight="900" fill="#111316">' + e.num + '</text></g>';
+      const mio = opts.mio ? e.g === opts.mio : false, r = mio ? 46 : 34, col = opts.mio ? (mio ? COLOR.a : COLOR.s) : COLOR[e.color];
+      return '<g class="rc-pt"><circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + col + '" stroke="' + (mio ? '#fff' : '#111316') + '" stroke-width="' + (mio ? 7 : 4) + '"/><text x="' + cx + '" y="' + (cy + (mio ? 15 : 11)) + '" text-anchor="middle" font-size="' + (mio ? 44 : 31) + '" font-weight="900" fill="#111316">' + e.num + '</text></g>';
     }).join('');
-    const dibujos = T.holes.map(h => '<g transform="' + h.tr + '" style="mix-blend-mode:lighten"><image href="hoyos/' + courseId + '-' + h.n + '.svg" width="300" height="600"/></g>').join('');
+    const dibujos = T.holes.map(h => '<g transform="' + h.tr + '" style="mix-blend-mode:lighten"><image href="hoyos/' + base + '-' + h.n + '.svg" width="300" height="600"/></g>').join('');
     const ruta = T.holes.map(h => 'M' + h.tx + ',' + h.ty + ' L' + h.x + ',' + h.y).join(' ');
     const nums = T.holes.map(h => '<circle cx="' + h.x + '" cy="' + h.y + '" r="22" fill="#111316" stroke="#C6F24E" stroke-width="3"/><text x="' + h.x + '" y="' + (h.y + 9) + '" text-anchor="middle" font-size="25" font-weight="900" fill="#F2F4F5">' + h.n + '</text>').join('');
     return '<div class="rc-mapa"><svg viewBox="0 0 ' + T.vb[0] + ' ' + T.vb[1] + '" role="img" aria-label="Circuito del campo con los grupos"><rect width="100%" height="100%" fill="#0e1f16"/>' + dibujos
@@ -193,7 +197,7 @@
     ov.hidden = false; demo = null; ov.classList.remove('rc-es-demo'); ov.querySelector('.rc-demobar').innerHTML = ''; cargar(); clearInterval(timer); timer = setInterval(() => { if(!document.hidden && ov && !ov.hidden) cargar(); }, 15000);
   }
   function cerrar(){ if(ov){ ov.hidden = true; if(demo){ demo = null; ov.classList.remove('rc-es-demo'); ov.querySelector('.rc-demobar').innerHTML = ''; } } clearInterval(timer); }
-  window.acgolfRitmo.abrir = abrir; window.acgolfRitmo.cerrar = cerrar;
+  window.acgolfRitmo.abrir = abrir; window.acgolfRitmo.cerrar = cerrar; window.acgolfRitmo._circuito = circuito;
 
   // ---------- Botón (solo administrador) en el menú del Inicio ----------
   function ponerBoton(){
