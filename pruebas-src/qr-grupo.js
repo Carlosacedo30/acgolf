@@ -4,7 +4,7 @@
 // Usa qrcode.js (qrcode-generator, licencia MIT). Si cambia el enlace de invitación, el QR cambia con él.
 (function(){
   if(typeof qrcode !== 'function') return;
-  const OSCURO = '#111316', LIMA = '#C6F24E';
+  const OSCURO = '#111316', LIMA = '#C9A54A';   // borde dorado (diseño nuevo)
   let icono = null;
   try { icono = new Image(); icono.src = 'icon-512.png'; } catch(e){}
 
@@ -18,7 +18,7 @@
     x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
     x.strokeStyle = LIMA; x.lineWidth = 12;
     if(x.roundRect){ x.beginPath(); x.roundRect(14, 14, W - 28, H - 28, 30); x.stroke(); } else x.strokeRect(14, 14, W - 28, H - 28);
-    x.textAlign = 'center'; x.fillStyle = '#4A5A1A'; x.font = 'bold 34px Barlow, Arial, sans-serif';
+    x.textAlign = 'center'; x.fillStyle = '#8A6A1F'; x.font = 'bold 34px Barlow, Arial, sans-serif';
     x.fillText('Únete a', W / 2, 78);
     x.fillStyle = OSCURO; x.font = 'bold ' + (String(grupo).length > 16 ? 48 : 62) + 'px Barlow, Arial, sans-serif';
     x.fillText(String(grupo), W / 2, 146);

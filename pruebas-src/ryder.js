@@ -271,9 +271,9 @@
         const col = e.lider === 'A' ? m.colorA : e.lider === 'B' ? m.colorB : '#3A3F46';
         const nomes = (l, hs) => l.map((n, k) => esc(corto(n)) + '<small>HCP ' + coma(hs[k]) + '</small>').join('');
         return '<button type="button" class="ry-fila' + (i === mio ? ' mio' : '') + '" data-i="' + i + '">'
-          + '<span class="ry-j a" style="color:' + esc(m.colorA) + '">' + nomes(d.a, d.ha) + '</span>'
+          + '<span class="ry-j a" style="color:' + esc(m.colorA) + ';--c:' + esc(m.colorA) + '">' + nomes(d.a, d.ha) + '</span>'
           + '<span class="ry-est" style="background:' + esc(col) + '"><b>' + esc(e.grande) + '</b><small>' + esc(e.pequeno) + '</small></span>'
-          + '<span class="ry-j b" style="color:' + esc(m.colorB) + '">' + nomes(d.b, d.hb) + '</span>'
+          + '<span class="ry-j b" style="color:' + esc(m.colorB) + ';--c:' + esc(m.colorB) + '">' + nomes(d.b, d.hb) + '</span>'
           + '<span class="ry-rec">Golpes: ' + esc(recibeTxt(e.g)) + ' · toca para anotar</span></button>';
       }).join('') + '</div>';
     });
@@ -284,7 +284,7 @@
             const ptsTxt = !e.terminado ? esc(e.pequeno)
               : e.lider === 'A' ? pts(1) + ' – ' + pts(0) : e.lider === 'B' ? pts(0) + ' – ' + pts(1) : pts(.5) + ' – ' + pts(.5);
             const col = !e.terminado ? '#3A3F46' : e.lider === 'A' ? m.colorA : e.lider === 'B' ? m.colorB : '#6B7280';
-            return '<div class="ry-rp-fila"><span class="ry-rp-nom"><b style="color:' + esc(m.colorA) + '">' + esc(lado(d.a)) + '</b> – <b style="color:' + esc(m.colorB) + '">' + esc(lado(d.b)) + '</b></span>'
+            return '<div class="ry-rp-fila"><span class="ry-rp-nom"><b style="color:' + esc(m.colorA) + ';--c:' + esc(m.colorA) + '">' + esc(lado(d.a)) + '</b> – <b style="color:' + esc(m.colorB) + ';--c:' + esc(m.colorB) + '">' + esc(lado(d.b)) + '</b></span>'
               + '<span class="ry-rp-pts" style="background:' + esc(col) + '">' + ptsTxt + '</span></div>';
           }).join('') + '</div>';
     }
@@ -357,7 +357,7 @@
   // ---------- Aviso al crear la Ryder: al móvil y por correo a todos los jugadores apuntados ----------
   function avisoCreacion(texto){
     const d = document.createElement('div');
-    d.textContent = texto;
+    d.textContent = texto; d.className = 'ry-toast';
     d.style.cssText = 'position:fixed;left:16px;right:16px;bottom:24px;z-index:9999;background:#16191D;color:#F2F4F5;padding:14px 16px;border-radius:14px;font-size:16px;text-align:center;box-shadow:0 6px 20px rgba(0,0,0,.4);border:1px solid rgba(198,242,78,.4)';
     document.body.appendChild(d);
     setTimeout(() => d.remove(), 4500);
@@ -402,15 +402,15 @@
     const recTxt = recibenAqui.length ? recibenAqui.map(x => x[0] + ' recibe ' + (x[1] === 1 ? '1 golpe' : x[1] + ' golpes')).join(' · ') : 'Nadie recibe golpe en este hoyo';
     const puedo = juegaEn(d);   // quien no juega este partido solo mira: sin botones − y +, sin «Guardar hoyo»
     const contador = (k, j, b, color) => puedo
-      ? '<div class="ry-cont"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
+      ? '<div class="ry-cont" style="--c:' + esc(color) + '"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
         + '<div class="ry-cont-f"><button type="button" class="ry-mm" data-k="' + k + '" data-j="' + j + '" data-d="-1" aria-label="Un golpe menos">−</button><b>' + cuentas[k][j] + '</b>'
         + '<button type="button" class="ry-mm" data-k="' + k + '" data-j="' + j + '" data-d="1" aria-label="Un golpe más">+</button></div></div>'
-      : '<div class="ry-cont"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
+      : '<div class="ry-cont" style="--c:' + esc(color) + '"><div class="ry-cont-n" style="color:' + esc(color) + '">' + esc(b.nombre) + '</div>'
         + '<div class="ry-cont-f"><b>' + (((k === 'a' ? d.ga : d.gb)[j] || [])[hoyoSel] != null ? (k === 'a' ? d.ga : d.gb)[j][hoyoSel] : '–') + '</b></div></div>';
     const hayHoyo = (d.ga[0] || [])[hoyoSel] != null || (d.gb[0] || [])[hoyoSel] != null;
     let h = '<button type="button" class="ry-volver" id="ryVolver">‹ Marcador</button>'
       + '<div class="ry-sesion">' + MODOS[d.tipo].nombre + '<small>' + MODOS[d.tipo].explica + '</small></div>'
-      + '<div class="ry-duelo-t"><span style="color:' + esc(m.colorA) + '">' + esc(lado(d.a)) + '</span> contra <span style="color:' + esc(m.colorB) + '">' + esc(lado(d.b)) + '</span></div>'
+      + '<div class="ry-duelo-t"><span style="color:' + esc(m.colorA) + ';--c:' + esc(m.colorA) + '">' + esc(lado(d.a)) + '</span> contra <span style="color:' + esc(m.colorB) + ';--c:' + esc(m.colorB) + '">' + esc(lado(d.b)) + '</span></div>'
       + '<div class="ry-est grande" style="background:' + esc(col) + '"><b>' + esc(e.lider ? (e.lider === 'A' ? lado(d.a) : lado(d.b)) + ' · ' : '') + esc(e.grande) + '</b><small>' + esc(e.pequeno) + '</small></div>'
       + '<div class="ry-hoyos">' + g.campo.par.map((p, k) => {
           const w = e.hoyos[k];
@@ -509,7 +509,7 @@
       const media = k => { const hs = Object.keys(b.equipo).filter(x => b.equipo[x] === k).map(hcpFedDe).filter(v => v != null); return hs.length ? coma(Math.round(hs.reduce((s, v) => s + v, 0) / hs.length * 10) / 10) : '—'; };
       const asignados = Object.keys(b.equipo);
       const fedVal = x => { const v = b.hcpFed && b.hcpFed[x]; if(v != null && String(v).trim() !== '') return v; const h = hcpDe(x); return h == null ? '' : String(h); };
-      h += '<p class="ry-p">Toca cada nombre para pasarlo de equipo: <b style="color:' + esc(b.colorA) + '">' + esc(b.nombreA) + '</b> → <b style="color:' + esc(b.colorB) + '">' + esc(b.nombreB) + '</b> → no juega.</p>'
+      h += '<p class="ry-p">Toca cada nombre para pasarlo de equipo: <b style="color:' + esc(b.colorA) + ';--c:' + esc(b.colorA) + '">' + esc(b.nombreA) + '</b> → <b style="color:' + esc(b.colorB) + ';--c:' + esc(b.colorB) + '">' + esc(b.nombreB) + '</b> → no juega.</p>'
         + '<div class="ry-resumen"><span style="border-color:' + esc(b.colorA) + '">' + esc(b.nombreA) + ': <b>' + n('A') + '</b> · HCP medio ' + media('A') + '</span>'
         + '<span style="border-color:' + esc(b.colorB) + '">' + esc(b.nombreB) + ': <b>' + n('B') + '</b> · HCP medio ' + media('B') + '</span></div>'
         + '<div class="ry-jugs">' + nombresGrupo().map(x => {
@@ -530,7 +530,7 @@
         if(!idx.length) return;
         const deLado = k => { const s = new Set(); idx.forEach(i => b.duelos[i][k].forEach(n => s.add(n))); return ordenHcp([...s], hcpFedDe); };
         const LA = deLado('a'), LB = deLado('b');
-        const sel = (i, k, j, lista, color) => '<select class="ry-sel" data-i="' + i + '" data-k="' + k + '" data-j="' + j + '" style="color:' + esc(color) + '">'
+        const sel = (i, k, j, lista, color) => '<select class="ry-sel" data-i="' + i + '" data-k="' + k + '" data-j="' + j + '" style="color:' + esc(color) + ';--c:' + esc(color) + '">'
           + lista.map(n => '<option value="' + esc(n) + '"' + (n === b.duelos[i][k][j] ? ' selected' : '') + '>' + esc(corto(n)) + '</option>').join('') + '</select>';
         h += '<div class="ry-sesion">' + MODOS[t].nombre + '<small>' + MODOS[t].explica + '</small></div><div class="ry-lista">'
           + idx.map(i => '<div class="ry-par"><div class="ry-par-l">' + b.duelos[i].a.map((n, j) => sel(i, 'a', j, LA, b.colorA)).join('') + '</div>'

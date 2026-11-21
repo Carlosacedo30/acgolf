@@ -243,6 +243,10 @@
   // ---------- Imagen para WhatsApp (igual que la pantalla: capitanes, marcador y equipos) ----------
   function imagenPantalla(x){
     if(!CanvasRenderingContext2D.prototype.roundRect) CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, rad){ const q = Array.isArray(rad) ? rad : [rad, rad, rad, rad], a = q[0], b = q.length > 1 ? q[1] : a, c = q.length > 2 ? q[2] : a, d = q.length > 3 ? q[3] : b; this.moveTo(x + a, y); this.arcTo(x + w, y, x + w, y + h, b); this.arcTo(x + w, y + h, x, y + h, c); this.arcTo(x, y + h, x, y, d); this.arcTo(x, y, x + w, y, a); this.closePath(); };
+    // Colores de la imagen: los del diseño nuevo cuando está puesto (los de cada equipo no cambian)
+    const K = document.documentElement.classList.contains('in-on')
+      ? { bg: '#0A0C10', card: '#17233D', line: 'rgba(217,190,122,.45)', acc: '#E9CF8C', ink: '#F4F1E8', mut: '#B5BFD0', aro: '#0A0C10' }
+      : { bg: K.bg, card: K.card, line: K.line, acc: K.acc, ink: K.ink, mut: K.mut, aro: K.aro };
     const W = 1080, P = 48, F = 'Archivo, system-ui, sans-serif';
     const lista = x.equipos.map(e => e.players.filter(n => !(e.capitan && norm(n) === norm(e.capitan))));
     const filas = Math.max(1, ...lista.map(l => Math.min(l.length, 14)));
@@ -253,54 +257,54 @@
     const rr = (px, py, w, h, rad, fill, line, lw) => { g.beginPath(); g.roundRect(px, py, w, h, rad); if(fill){ g.fillStyle = fill; g.fill(); } if(line){ g.strokeStyle = line; g.lineWidth = lw || 2; g.stroke(); } };
     const tx = (t, px, py, font, col, al) => { g.font = font; g.fillStyle = col; g.textAlign = al || 'left'; g.fillText(t, px, py); };
     const corta = (t, max, font) => { g.font = font; while(g.measureText(t).width > max && t.length > 3) t = t.slice(0, -2); return t; };
-    g.fillStyle = '#111316'; g.fillRect(0, 0, W, H);
+    g.fillStyle = K.bg; g.fillRect(0, 0, W, H);
     let y = 90;
-    tx('RYDER CUP', P, y, '800 28px ' + F, '#C6F24E'); y += 66;
-    tx((x.equipos[0].nombre + ' – ' + x.equipos[1].nombre).toUpperCase(), P, y, '900 66px ' + F, '#F2F4F5'); y += 46;
-    tx(datosTxt(x), P, y, '500 30px Barlow, system-ui, sans-serif', '#9AA3AB'); y += 40;
+    tx('RYDER CUP', P, y, '800 28px ' + F, K.acc); y += 66;
+    tx((x.equipos[0].nombre + ' – ' + x.equipos[1].nombre).toUpperCase(), P, y, '900 66px ' + F, K.ink); y += 46;
+    tx(datosTxt(x), P, y, '500 30px Barlow, system-ui, sans-serif', K.mut); y += 40;
     if(tieneCap){
       const w = (W - 2 * P - 20) / 2;
       x.equipos.forEach((e, k) => {
         const px = P + k * (w + 20);
-        rr(px, y, w, 210, 26, '#1B1E22', '#33383E', 2);
+        rr(px, y, w, 210, 26, K.card, K.line, 2);
         g.fillStyle = e.color; g.beginPath(); g.roundRect(px, y, w, 10, [26, 26, 0, 0]); g.fill();
-        g.beginPath(); g.arc(px + w / 2, y + 66, 38, 0, 7); g.fillStyle = '#24282D'; g.fill(); g.lineWidth = 5; g.strokeStyle = e.color; g.stroke();
-        tx(iniciales(e.capitan), px + w / 2, y + 78, '900 30px ' + F, '#F2F4F5', 'center');
-        tx(('CAPITÁN DEL ' + e.nombre).toUpperCase(), px + w / 2, y + 140, '800 20px ' + F, '#C6F24E', 'center');
-        tx(corta(e.capitan || '', w - 30, '900 26px ' + F), px + w / 2, y + 180, '900 26px ' + F, '#F2F4F5', 'center');
+        g.beginPath(); g.arc(px + w / 2, y + 66, 38, 0, 7); g.fillStyle = K.aro; g.fill(); g.lineWidth = 5; g.strokeStyle = e.color; g.stroke();
+        tx(iniciales(e.capitan), px + w / 2, y + 78, '900 30px ' + F, K.ink, 'center');
+        tx(('CAPITÁN DEL ' + e.nombre).toUpperCase(), px + w / 2, y + 140, '800 20px ' + F, K.acc, 'center');
+        tx(corta(e.capitan || '', w - 30, '900 26px ' + F), px + w / 2, y + 180, '900 26px ' + F, K.ink, 'center');
       });
       y += 250;
     }
     // marcador
     const [A, B] = x.equipos, a = A.players.length, b = B.players.length, t = (a + b) || 1;
-    rr(P, y, W - 2 * P, 300, 26, '#1B1E22', '#33383E', 2);
-    tx('MARCADOR DE APUNTADOS', W / 2, y + 52, '800 22px ' + F, '#C6F24E', 'center');
-    tx(A.nombre.toUpperCase(), P + 34, y + 104, '800 22px ' + F, '#9AA3AB');
-    tx(B.nombre.toUpperCase(), W - P - 34, y + 104, '800 22px ' + F, '#9AA3AB', 'right');
-    tx(String(a), P + 34, y + 176, '900 84px ' + F, '#F2F4F5');
-    tx(String(b), W - P - 34, y + 176, '900 84px ' + F, '#F2F4F5', 'right');
+    rr(P, y, W - 2 * P, 300, 26, K.card, K.line, 2);
+    tx('MARCADOR DE APUNTADOS', W / 2, y + 52, '800 22px ' + F, K.acc, 'center');
+    tx(A.nombre.toUpperCase(), P + 34, y + 104, '800 22px ' + F, K.mut);
+    tx(B.nombre.toUpperCase(), W - P - 34, y + 104, '800 22px ' + F, K.mut, 'right');
+    tx(String(a), P + 34, y + 176, '900 84px ' + F, K.ink);
+    tx(String(b), W - P - 34, y + 176, '900 84px ' + F, K.ink, 'right');
     const bw = W - 2 * P - 68, bx = P + 34, by = y + 200;
     rr(bx, by, bw, 18, 9, B.color); g.save(); g.beginPath(); g.roundRect(bx, by, bw, 18, 9); g.clip(); g.fillStyle = A.color; g.fillRect(bx, by, a + b ? bw * a / t : bw / 2, 18); g.restore();
     const fr = frase(x).split(' '); let l1 = '', l2 = '';
     fr.forEach(w2 => { g.font = '700 26px Barlow, system-ui, sans-serif'; if(g.measureText(l1 + ' ' + w2).width < bw && !l2) l1 += (l1 ? ' ' : '') + w2; else l2 += (l2 ? ' ' : '') + w2; });
-    tx(l1, W / 2, y + 252, '700 26px Barlow, system-ui, sans-serif', '#F2F4F5', 'center');
-    if(l2) tx(l2, W / 2, y + 284, '700 26px Barlow, system-ui, sans-serif', '#F2F4F5', 'center');
+    tx(l1, W / 2, y + 252, '700 26px Barlow, system-ui, sans-serif', K.ink, 'center');
+    if(l2) tx(l2, W / 2, y + 284, '700 26px Barlow, system-ui, sans-serif', K.ink, 'center');
     y += 340;
     // equipos
     const w = (W - 2 * P - 20) / 2, alto = 110 + filas * 46;
     x.equipos.forEach((e, k) => {
       const px = P + k * (w + 20);
-      rr(px, y, w, alto, 26, '#1B1E22', '#33383E', 2);
+      rr(px, y, w, alto, 26, K.card, K.line, 2);
       g.beginPath(); g.arc(px + 36, y + 44, 10, 0, 7); g.fillStyle = e.color; g.fill();
-      tx(e.nombre.toUpperCase(), px + 58, y + 53, '900 28px ' + F, '#F2F4F5');
-      tx(String(e.players.length), px + w - 28, y + 56, '900 40px ' + F, '#C6F24E', 'right');
+      tx(e.nombre.toUpperCase(), px + 58, y + 53, '900 28px ' + F, K.ink);
+      tx(String(e.players.length), px + w - 28, y + 56, '900 40px ' + F, K.acc, 'right');
       const l = lista[k];
-      if(!l.length) tx('Nadie más todavía', px + 28, y + 112, '500 24px Barlow, system-ui, sans-serif', '#9AA3AB');
-      l.slice(0, 14).forEach((n, i) => tx(corta(n, w - 56, '600 25px Barlow, system-ui, sans-serif'), px + 28, y + 112 + i * 46, '600 25px Barlow, system-ui, sans-serif', '#F2F4F5'));
-      if(l.length > 14) tx('… y ' + (l.length - 14) + ' más', px + 28, y + 112 + 14 * 46, '500 22px Barlow, system-ui, sans-serif', '#9AA3AB');
+      if(!l.length) tx('Nadie más todavía', px + 28, y + 112, '500 24px Barlow, system-ui, sans-serif', K.mut);
+      l.slice(0, 14).forEach((n, i) => tx(corta(n, w - 56, '600 25px Barlow, system-ui, sans-serif'), px + 28, y + 112 + i * 46, '600 25px Barlow, system-ui, sans-serif', K.ink));
+      if(l.length > 14) tx('… y ' + (l.length - 14) + ' más', px + 28, y + 112 + 14 * 46, '500 22px Barlow, system-ui, sans-serif', K.mut);
     });
     y += alto + 56;
-    tx('Apúntate en acgolf.es · Solo Iscariotes, Cajapollos y Domingueros', W / 2, y, '700 24px Barlow, system-ui, sans-serif', '#9AA3AB', 'center');
+    tx('Apúntate en acgolf.es · Solo Iscariotes, Cajapollos y Domingueros', W / 2, y, '700 24px Barlow, system-ui, sans-serif', K.mut, 'center');
     return new Promise(ok => c.toBlob(ok, 'image/png'));
   }
   // La imagen se prepara de antemano (así, al pulsar el botón, el móvil deja compartirla sin bloquearse)
@@ -313,7 +317,7 @@
     Promise.resolve(document.fonts && document.fonts.ready).catch(() => {}).then(() => imagenPantalla(r)).then(b => { imgBlob = b; imgClave = clave; }).catch(() => { imgBlob = null; });
   }
   function aviso(t){
-    const d = document.createElement('div'); d.textContent = t;
+    const d = document.createElement('div'); d.textContent = t; d.className = 'ri-toast';
     d.style.cssText = 'position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:99999;background:#C6F24E;color:#111316;font:800 18px Archivo,system-ui,sans-serif;padding:16px 22px;border-radius:999px;max-width:90vw;text-align:center;box-shadow:0 6px 24px rgba(0,0,0,.5)';
     document.body.appendChild(d); setTimeout(() => d.remove(), 9000);
   }

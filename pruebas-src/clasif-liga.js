@@ -150,7 +150,7 @@
     let h = '';
     if(anios.length > 1) h += '<div class="cl-anio"><button type="button" data-a="-1"' + (vista.anio <= anios[0] ? ' disabled' : '') + '>‹</button><b>' + vista.anio + '</b><button type="button" data-a="1"' + (vista.anio >= anios[anios.length - 1] ? ' disabled' : '') + '>›</button></div>';
     if(vista.detalle){
-      h += '<h2 class="cl-h2">Puntos por liga</h2><p class="cl-sub">En verde cuenta · tachado no cuenta (regla del 80 %)</p>';
+      h += '<h2 class="cl-h2">Puntos por liga</h2><p class="cl-sub">Resaltado cuenta · tachado no cuenta (regla del 80 %)</p>';
       h += g.filas.map(f => '<div class="cl-fila cl-fila-d' + (soyYo(f.jugador) ? ' cl-soy' : '') + '"><div class="cl-fila-top"><span class="cl-pos">' + f.pos + '</span><b>' + esc(f.jugador) + '</b><span class="cl-pt">' + f.total + '</span></div><div class="cl-chips">'
         + f.ligas.map(x => '<span class="cl-chip' + (f.valen.has(x.code) ? ' ok' : ' no') + '">' + esc(x.nombre) + ' ' + x.pts + '</span>').join('') + '</div></div>').join('');
       h += '<button type="button" class="cl-btn" id="clVolverD">‹ VOLVER</button>';
