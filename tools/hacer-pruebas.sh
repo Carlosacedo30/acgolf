@@ -1071,10 +1071,24 @@ for pat in [r'<link rel="stylesheet" href="patro-destacado\.css[^>]*>\n?', r'<li
     s = re.sub(pat, '', s)
 s = re.sub(r'\s*<a class="home-patro".*?</a>', '', s, count=1, flags=re.S)
 assert s.count('</head>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="sin-patrocinador.css?v=1">\n</head>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="sin-patrocinador.css?v=2">\n</head>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
+# --- Idiomas APAGADOS por ahora (21-nov-2026, orden de Carlos): la app sale siempre en español y no se ve el selector de idioma.
+#     Al terminar el diseño hay que recordarle a Carlos: completar las traducciones y actualizar los comentarios de Curro y Lola. ---
+python3 - <<'EOF'
+p = 'pruebas/idioma.js'
+s = open(p, encoding='utf-8').read()
+a = "try { idioma = localStorage.getItem(LLAVE) || (movil.startsWith('en') ? 'en' : movil.startsWith('fr') ? 'fr' : 'es'); } catch(e){}"
+assert s.count(a) == 1
+s = s.replace(a, "idioma = 'es';   // idiomas apagados por ahora (orden de Carlos, 21-nov-2026)")
+open(p, 'w', encoding='utf-8').write(s)
+p = 'pruebas/index.html'
+h = open(p, encoding='utf-8').read()
+h = h.replace('<link rel="stylesheet" href="sin-patrocinador.css?v=2">', '<link rel="stylesheet" href="sin-patrocinador.css?v=2">', 1)
+open(p, 'w', encoding='utf-8').write(h)
+EOF
 # --- Ritmo en la pantalla de marcar (21-nov-2026): aviso verde/ámbar/rojo y mapa con los grupos; va DESPUÉS de marcar-nuevo y de ritmo-campo ---
 python3 - <<'EOF'
 p = 'pruebas/index.html'
