@@ -36,51 +36,48 @@
 
   const caja = document.createElement('div');
   caja.className = 'cn'; caja.id = 'cnPant'; caja.hidden = true;
-  caja.innerHTML = '<div class="cn-cab"><div><h1 class="cn-titulo">Mi cuenta</h1><p class="cn-sub" id="cnNombre"></p></div><div class="cn-esc" id="cnEsc"></div></div>'
-    + '<div class="cn-main" id="cnMain">'
-    // ----- Trozo 1: (solo super administrador) Panel general · Mi golf · Mi perfil -----
-    + '<div class="cn-parte" id="cnP1">'
+  const SOPORTE = '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>';
+  const rapida = (va, ico, titulo, sub) => '<button type="button" class="cn-rap" data-va="' + va + '"><span class="cn-ic">' + svg(ico) + '</span><b>' + titulo + '</b><span>' + sub + '</span></button>';
+  caja.innerHTML = '<div class="cn-cab"><div><h1 class="cn-titulo">Mi cuenta</h1><p class="cn-sub" id="cnNombre"></p></div>'
+    + '<button type="button" class="cn-foto" id="cnFoto" data-va="foto" aria-label="Cambiar mi foto o avatar"><b id="cnIni"></b><i><svg viewBox="0 0 24 24" fill="none" stroke="#16120A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z"/></svg></i></button></div>'
+    + '<div class="cn-main" id="cnMain"><div class="cn-todo">'
+    // ----- Lo primero: el grupo (cambiar de grupo o crear uno) -----
+    + '<div class="cn-gran"><div class="cn-gran-top"><span class="cn-gesc" id="cnGesc"></span><span class="cn-tx"><em>Tu grupo</em><b id="cnGnom"></b></span></div>'
+    +   '<button type="button" class="cn-oro" data-va="misGrupos">Cambiar de grupo o crear uno</button></div>'
     + '<div class="cn-adm cn-super" id="cnSuper" hidden><i>Solo super administrador</i>'
     +   fila('panel', '<path d="M5 7h7M16 7h3M5 12h2M11 12h8M5 17h8M17 17h2"/><circle cx="14" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/>', 'Panel general', 'Todo el control de la app') + '</div>'
-    + '<div class="cn-sec">Mis grupos</div>'
-    + '<div class="cn-card cn-grupo"><button type="button" class="cn-row" data-va="misGrupos"><span class="cn-gesc" id="cnGesc"></span>'
-    +   '<span class="cn-tx"><b id="cnGnom"></b><span>Cambiar de grupo o crear uno</span></span><i class="cn-fl" aria-hidden="true"></i></button></div>'
+    // ----- Mi golf -----
     + '<div class="cn-sec">Mi golf</div>'
     + '<div class="cn-card cn-hcp"><button type="button" class="cn-row" data-va="hcp"><span class="cn-tx"><b>Mi hándicap</b><span>Cómo se calcula</span></span><span class="cn-num" id="cnHcp"></span><i class="cn-fl" aria-hidden="true"></i></button></div>'
-    + tarjeta(fila('partidas', '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>', 'Mis últimas partidas', 'Tarjetas y resultados'))
-    + tarjeta(fila('como', '<path d="M5 19V5M5 19h14"/><path d="M8.5 15.5l3-4 2.5 2 4-5.5"/>', '¿Cómo jugué?', 'Resumen de mi última partida'))
-    + '<div class="cn-sec">Mi perfil</div>'
-    + tarjeta(fila('foto', '<circle cx="12" cy="9.2" r="3.4"/><path d="M5 19.5c.8-3.4 3.6-5 7-5s6.2 1.6 7 5"/>', 'Foto o avatar', 'Cambiar mi imagen'))
-    + tarjeta(fila('datos', '<circle cx="8.5" cy="12" r="3.5"/><path d="M12 12h8M17 12v3M20 12v2.2"/>', 'Contraseña y datos', 'Mi contraseña y mis datos'))
-    + mas('Mi grupo y Avisos') + '</div>'
-    // ----- Trozo 2: Mi grupo · Avisos -----
-    + '<div class="cn-parte" id="cnP2">'
-    + '<div class="cn-sec">Mi grupo</div>'
+    + '<div class="cn-raps">' + rapida('partidas', '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>', 'Mis últimas partidas', 'Tarjetas y resultados')
+    +   rapida('como', '<path d="M5 19V5M5 19h14"/><path d="M8.5 15.5l3-4 2.5 2 4-5.5"/>', '¿Cómo jugué?', 'Mi última partida') + '</div>'
+    // ----- Mi grupo -----
+    + '<div class="cn-sec" id="cnSecGrupo">Mi grupo</div>'
     + tarjeta(fila('invitar', '<circle cx="10" cy="9.5" r="3.2"/><path d="M4 19c.7-3 3-4.6 6-4.6 1.2 0 2.3.3 3.2.7"/><path d="M18 14v6M15 17h6"/>', 'Invitar amigos', 'Enlace y QR del grupo'))
     + '<div class="cn-adm" id="cnAdm" hidden><i>Solo administrador</i>'
     +   fila('miembros', '<path d="M5 7h9M5 12h9M5 17h6"/><path d="M16 16.5l2 2 3.5-4"/>', 'Miembros', 'Quién está en el grupo')
     +   fila('portada', '<rect x="4" y="5.5" width="16" height="13" rx="2"/><path d="M4 15.5l4.5-4 3.5 3 2.5-2 5.5 4.5"/><circle cx="15.5" cy="9.5" r="1.2"/>', 'Portada', 'Escudo, colores y campo')
-    +   fila('ayudajug', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Ayuda con un jugador', 'Hablar con soporte de acgolf') + '</div>'
-    + '<div class="cn-sec">Avisos</div>'
-    + '<div class="cn-avisos" id="cnAvisos"></div><div class="cn-msg" id="cnMsg" role="status"></div>'
-    + mas('Ayuda y Sesión') + '</div>'
-    // ----- Trozo 3: Ayuda y club · Síguenos -----
-    + '<div class="cn-parte" id="cnP3">'
+    +   fila('ayudajug', SOPORTE, 'Ayuda con un jugador', 'Hablar con soporte de acgolf') + '</div>'
+    // ----- Mi perfil y avisos -----
+    + '<div class="cn-sec">Mi perfil y avisos</div>'
+    + '<div class="cn-card">' + fila('foto', '<circle cx="12" cy="9.2" r="3.4"/><path d="M5 19.5c.8-3.4 3.6-5 7-5s6.2 1.6 7 5"/>', 'Foto o avatar', 'Cambiar mi imagen')
+    +   fila('datos', '<circle cx="8.5" cy="12" r="3.5"/><path d="M12 12h8M17 12v3M20 12v2.2"/>', 'Contraseña y datos', 'Mi contraseña y mis datos') + '</div>'
+    + '<div class="cn-card cn-pleg" id="cnPleg"><button type="button" class="cn-row" id="cnPlegBtn" aria-expanded="false"><span class="cn-ic">' + svg('<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"/><path d="M10 20.5h4"/>') + '</span><span class="cn-tx"><b>Avisos</b><span>Elige cómo te avisamos</span></span><i class="cn-fl cn-abre" aria-hidden="true"></i></button>'
+    +   '<div class="cn-pleg-c" id="cnPlegC" hidden><div class="cn-avisos" id="cnAvisos"></div><div class="cn-msg" id="cnMsg" role="status"></div></div></div>'
+    // ----- Ayuda y club -----
     + '<div class="cn-sec">Ayuda y club</div>'
-    + tarjeta(fila('reglas', '<path d="M12 6.5c-2-1.3-4.5-1.5-7-1v12.5c2.5-.5 5-.3 7 1 2-1.3 4.5-1.5 7-1V5.5c-2.5-.5-5-.3-7 1z"/><path d="M12 6.5V19"/>', 'Reglas de golf'))
-    + tarjeta(fila('manual', '<circle cx="12" cy="12" r="8"/><path d="M9.8 9.8a2.3 2.3 0 1 1 3.4 2c-.8.5-1.2 1-1.2 1.9"/><path d="M12 16.6v.1"/>', 'Manual de la app'))
-    + tarjeta(enlace('hato', '<path d="M9 19.5V4.5l8 3.2-8 3.2"/><path d="M5 19.5c1.5-1 6.5-1 8 0"/>', 'App Hato Verde'))
-    + tarjeta(fila('soporte', '<path d="M5 6.5h14v9.5h-7.5L8 19.5V16H5z"/><path d="M8.5 10h7M8.5 12.8h4.5"/>', 'Escribir a soporte', 'Te contestamos en la app'))
-    + '<div class="cn-sec" id="cnSecRedes">Síguenos</div>'
+    + '<div class="cn-card">' + fila('soporte', SOPORTE, 'Escribir a soporte', 'Te contestamos en la app')
+    +   fila('manual', '<circle cx="12" cy="12" r="8"/><path d="M9.8 9.8a2.3 2.3 0 1 1 3.4 2c-.8.5-1.2 1-1.2 1.9"/><path d="M12 16.6v.1"/>', 'Manual de la app', 'Cómo se usa cada pantalla')
+    +   fila('reglas', '<path d="M12 6.5c-2-1.3-4.5-1.5-7-1v12.5c2.5-.5 5-.3 7 1 2-1.3 4.5-1.5 7-1V5.5c-2.5-.5-5-.3-7 1z"/><path d="M12 6.5V19"/>', 'Reglas de golf', 'Las reglas explicadas')
+    +   enlace('hato', '<path d="M9 19.5V4.5l8 3.2-8 3.2"/><path d="M5 19.5c1.5-1 6.5-1 8 0"/>', 'App Hato Verde', 'La app del club') + '</div>'
+    // ----- Síguenos y valóranos (la reseña del patrocinador no sale mientras el patrocinador esté apagado) -----
+    + '<div class="cn-sec" id="cnSecRedes">Síguenos y valóranos</div>'
     + '<div class="cn-redes">' + R.REDES.map(r => '<a class="cn-red" href="' + esc(r.url) + '" target="_blank" rel="noopener"><em>' + svg(LOGOS[r.c] || '') + '</em><span>' + esc(r.n) + '</span></a>').join('') + '</div>'
-    + mas('Reseñas y Sesión') + '</div>'
-    // ----- Trozo 4: Reseñas en Google · Sesión -----
-    + '<div class="cn-parte" id="cnP4">'
-    + '<div class="cn-sec">Reseñas en Google</div><p class="cn-apoyo">Un minuto y nos ayudas muchísimo. Gracias</p>'
-    + R.RESENAS.map((r, i) => tarjeta('<a class="cn-row" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + dentro(ESTRELLA, esc(String(r.n).replace(/^\W+/, '')), QUIEN[i] || '') + '</a>')).join('')
-    + '<div class="cn-sec">Sesión</div>'
-    + '<button type="button" class="cn-salir" data-va="salir">Cerrar sesión</button>'
-    + '<div class="cn-borrar"><button type="button" data-va="borrar">Borrar mi cuenta</button></div>'
+    + '<p class="cn-apoyo">Una reseña en Google nos ayuda muchísimo. Gracias</p>'
+    + R.RESENAS.slice(0, 1).map((r, i) => tarjeta('<a class="cn-row" href="' + esc(r.url) + '" target="_blank" rel="noopener">' + dentro(ESTRELLA, esc(String(r.n).replace(/^\W+/, '')), QUIEN[i] || '') + '</a>')).join('')
+    // ----- Sesión -----
+    + '<div class="cn-sesion"><button type="button" class="cn-salir" data-va="salir">Cerrar sesión</button>'
+    + '<div class="cn-borrar"><button type="button" data-va="borrar">Borrar mi cuenta<small>Se borra para siempre</small></button></div></div>'
     + '</div></div>';
   pant.insertBefore(caja, nav);
   document.documentElement.classList.add('cn-hay');
@@ -123,6 +120,7 @@
     if($('cnNombre').textContent !== nombre) $('cnNombre').textContent = nombre;
     caja.querySelectorAll('[data-va]').forEach(f => { const falta = !existe(f.dataset.va); const quien = f.closest('.cn-card') || f; if(quien.hidden !== falta) quien.hidden = falta; });
     caja.querySelectorAll('.cn-adm').forEach(b => { const vacio = !b.querySelector('.cn-row:not([hidden])'); if(b.hidden !== vacio) b.hidden = vacio; });
+    const sg = $('cnSecGrupo'); if(sg){ const hay = !!(sg.nextElementSibling && !sg.nextElementSibling.hidden) || !$('cnAdm').hidden; if(sg.hidden !== !hay) sg.hidden = !hay; }
     caja.classList.toggle('cn-con-super', !$('cnSuper').hidden);
     // App Hato Verde y soporte: los mismos enlaces de siempre
     const hato = $('irHatoBtn'), fh = caja.querySelector('[data-va="hato"]');
@@ -132,9 +130,10 @@
     // El mismo escudo que el Inicio (inicio-nuevo.js lo copia de la portada del grupo), también en la tarjeta «Mis grupos»
     const gn = $('inNombre'), ge = $('cnGesc'), gt = $('cnGnom');
     if(gn && gt && gt.textContent !== gn.textContent) gt.textContent = gn.textContent;
-    const de = $('inEsc'), a = $('cnEsc');
+    const de = $('inEsc');
+    const ini = $('cnIni'), iniTxt = (nombre || '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+    if(ini && ini.textContent !== iniTxt) ini.textContent = iniTxt;
     if(de && ge && ge.dataset.clave !== de.dataset.clave){ ge.dataset.clave = de.dataset.clave || ''; ge.innerHTML = de.innerHTML; ge.classList.toggle('cn-redondo', de.classList.contains('in-redondo')); }
-    if(de && a.dataset.clave !== de.dataset.clave){ a.dataset.clave = de.dataset.clave || ''; a.innerHTML = de.innerHTML; a.classList.toggle('cn-redondo', de.classList.contains('in-redondo')); }
     bordes();
   }
   // Difuminado donde la lista queda cortada (arriba, y abajo si el corte no coincide con el final de un trozo)
@@ -149,11 +148,12 @@
   function abrir(donde){
     if(caja.hidden){ caja.hidden = false; main.scrollTop = 0; aviso(''); pintarHcp(); }
     repasar();
-    if(donde === 'redes') main.scrollTop = $('cnP3').offsetTop - main.offsetTop; // aviso «Síguenos en redes» del móvil
+    if(donde === 'redes') main.scrollTop = $('cnSecRedes').offsetTop - main.offsetTop; // aviso «Síguenos en redes» del móvil
   }
   function cerrar(){ if(!caja.hidden) caja.hidden = true; repasar(); }
   window.acgolfCuentaNueva = { abrir, cerrar };
 
+  $('cnPlegBtn').addEventListener('click', () => { const c = $('cnPlegC'), ab = c.hidden; c.hidden = !ab; $('cnPlegBtn').setAttribute('aria-expanded', String(ab)); $('cnPleg').classList.toggle('abierto', ab); });
   caja.addEventListener('click', ev => {
     const f = ev.target.closest('[data-va]'); if(!f) return;
     const va = f.dataset.va, C = window.acgolfCuenta;
