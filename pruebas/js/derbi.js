@@ -82,7 +82,7 @@
   async function derbiMover(nombre){ // solo administrador: pasar a un jugador al otro equipo
     const deSevilla = derbi && derbi.sevilla.includes(nombre);
     const destino = deSevilla ? 'betis' : 'sevilla';
-    if(!confirm('¿Pasar a ' + derbiCorto(nombre) + ' al ' + DERBI_EQ[destino].nombre + '?')) return;
+    if(!await acgolfConfirmar('¿Pasar a ' + derbiCorto(nombre) + ' al ' + DERBI_EQ[destino].nombre + '?')) return;
     await derbiMutate(d => {
       d.sevilla = d.sevilla.filter(n => n !== nombre); d.betis = d.betis.filter(n => n !== nombre);
       d[destino].push(nombre);
@@ -90,7 +90,7 @@
   }
 
   async function derbiBaja(nombre){ // solo administrador: quitar a un jugador de la lista
-    if(!confirm('¿Dar de baja a ' + derbiCorto(nombre) + ' del torneo?')) return;
+    if(!await acgolfConfirmar('¿Dar de baja a ' + derbiCorto(nombre) + ' del torneo?')) return;
     await derbiMutate(d => {
       d.sevilla = d.sevilla.filter(n => n !== nombre); d.betis = d.betis.filter(n => n !== nombre);
     });
@@ -125,7 +125,7 @@
     if(!grupos.length){ alert('Todavía no hay jugadores apuntados.'); return; }
     if(grupos.length > MAX_GROUPS){ alert('Sois más de ' + (MAX_GROUPS * 4) + ': una partida de la app admite ' + MAX_GROUPS + ' grupos de 4. Quita a alguien o lo hacemos en dos partidas.'); return; }
     const course = COURSES.find(c => c.id === derbiCampo) || COURSES[0];
-    if(!confirm('¿Crear la partida del derbi en ' + course.name + ' con ' + grupos.length + (grupos.length === 1 ? ' grupo' : ' grupos') + '?')) return;
+    if(!await acgolfConfirmar('¿Crear la partida del derbi en ' + course.name + ' con ' + grupos.length + (grupos.length === 1 ? ' grupo' : ' grupos') + '?')) return;
     const groups = normalizeMatchGroups(grupos.map(g => ({
       players: g, handicaps: g.map(n => derbiHcp(n) ?? 0), scores: {},
     })));
@@ -281,7 +281,7 @@
     body.querySelectorAll('.dbi-elige-btn').forEach(b => b.addEventListener('click', ()=>{ if(b.dataset.eq !== miEq) derbiApuntar(b.dataset.eq, b); }));
     const q = document.getElementById('dbiQuien'); if(q) q.addEventListener('click', async ()=>{ if(typeof elegirQuienEres === 'function'){ const n = await elegirQuienEres(); if(n) derbiPintar(); } });
     const ns2 = document.getElementById('dbiNoSoy'); if(ns2) ns2.addEventListener('click', async ()=>{ if(typeof elegirQuienEres === 'function'){ const n = await elegirQuienEres(); if(n) derbiPintar(); } });
-    const qt = document.getElementById('dbiQuitar'); if(qt) qt.addEventListener('click', ()=>{ if(confirm('¿Quitarte del torneo?')) derbiApuntar('', qt); });
+    const qt = document.getElementById('dbiQuitar'); if(qt) qt.addEventListener('click', async ()=>{ if(await acgolfConfirmar('¿Quitarte del torneo?')) derbiApuntar('', qt); });
     body.querySelectorAll('.dbi-mover').forEach(b => b.addEventListener('click', ()=> derbiMover(b.dataset.n)));
     body.querySelectorAll('.dbi-baja').forEach(b => b.addEventListener('click', ()=> derbiBaja(b.dataset.n)));
     body.querySelectorAll('.dbi-add').forEach(b => b.addEventListener('click', ()=> derbiAnadirOtro(b.dataset.eq)));

@@ -82,7 +82,7 @@
   async function saveGreenHere(){
     if(!selectedCourse) return;
     const hole = currentHole;
-    if(!confirm('¿Estás en el centro del green del hoyo ' + hole + '?\nSe guardará tu posición actual para todos los jugadores.')) return;
+    if(!await acgolfConfirmar('¿Estás en el centro del green del hoyo ' + hole + '?\nSe guardará tu posición actual para todos los jugadores.')) return;
     const btn = document.getElementById('holeSetGreenBtn');
     if(btn) btn.textContent = 'Guardando…';
     navigator.geolocation.getCurrentPosition(async p => {
