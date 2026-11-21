@@ -47,7 +47,7 @@
     if(!abierta) return;
     caja.querySelectorAll('[data-va]').forEach(f => {
       const sel = DE_SIEMPRE[f.dataset.va];
-      const falta = f.dataset.va === 'ritmo' ? !(window.miPerfil && window.miPerfil.es_admin) : (!!sel && !document.querySelector(sel));
+      const falta = f.dataset.va === 'ritmo' ? true : (!!sel && !document.querySelector(sel));
       if(f.hidden !== falta) f.hidden = falta;
     });
     const sub = caja.querySelector('[data-va="proximos"] .jg-tx span'), txt = hayProximos() ? 'Fechas, horas y apuntados' : 'Ahora no hay ninguno';
