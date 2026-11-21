@@ -457,7 +457,7 @@ function ligaPintarForm(){
     f.dia = Number(b.dataset.dia); leer(); f.inicio = ligaProximoDia(f.dia); f.fechas = {}; ligaPintarForm();
   }));
   body.querySelectorAll('[data-campo]').forEach(b => b.addEventListener('click', ()=>{ f.campo = b.dataset.campo; repintar(); }));
-  body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { f.campo = curso.id; ligaPintarForm(); }, 'buscar'); }));
+  body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { f.campo = curso.id; ligaPintarForm(); }, 'favoritos'); }));
   body.querySelectorAll('[data-cada]').forEach(b => b.addEventListener('click', ()=>{ f.cada = Number(b.dataset.cada); f.fechas = {}; repintar(); }));
   body.querySelectorAll('[data-salida]').forEach(b => b.addEventListener('click', ()=>{ f.salida = b.dataset.salida; repintar(); }));
   body.querySelectorAll('[data-formato]').forEach(b => b.addEventListener('click', ()=>{ f.formato = b.dataset.formato; repintar(); }));

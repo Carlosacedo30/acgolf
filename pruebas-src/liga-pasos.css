@@ -1,0 +1,53 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* «Crear liga» en 4 pasos — diseño nuevo */
+html.in-on .conv-card.lgp{ background:#0A0C10 !important; color:#F4F1E8; padding-bottom:0 !important; }
+html.in-on .conv-card.lgp .lg-titulo{ display:none; }
+html.in-on .lgp .lgp-oculto{ display:none !important; }
+html.in-on .lgp .lgp-prog{ margin:2px 2px 0; }
+html.in-on .lgp .lgp-t{ display:flex; justify-content:space-between; align-items:baseline; font:700 13px/1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#B5BFD0; }
+html.in-on .lgp .lgp-t b{ color:#E9CF8C; font-weight:800; }
+html.in-on .lgp .lgp-t span{ letter-spacing:.04em; text-transform:none; font:600 16px Barlow,system-ui,Arial,sans-serif; }
+html.in-on .lgp .lgp-barra{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:10px; }
+html.in-on .lgp .lgp-barra i{ height:7px; border-radius:999px; background:#242B38; }
+html.in-on .lgp .lgp-barra i.ok{ background:#C9A54A; }
+html.in-on .lgp .lgp-barra i.ya{ background:linear-gradient(90deg,#EBD08A,#C9A54A); box-shadow:0 0 0 2px rgba(233,207,140,.25); }
+html.in-on .lgp .lgp-preg{ margin:22px 2px 0; font:800 26px/1.15 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on .lgp .lgp-ayu{ margin:6px 2px 4px; font:600 16px/1.35 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on .lgp .conv-eyebrow{ margin:26px 2px 12px; font:800 15px Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; text-transform:uppercase; color:#E9CF8C; }
+html.in-on .lgp .lg-aviso{ margin-top:14px; border-radius:18px; background:rgba(233,207,140,.08); border:1px solid rgba(217,190,122,.3); padding:12px 16px; font:600 16px/1.4 Barlow,system-ui,Arial,sans-serif; color:#D9DEE8; }
+html.in-on .lgp .field label{ font:700 15px Archivo,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on .lgp .field input{ min-height:60px; border-radius:18px; background:#121620; border:2px solid #E9CF8C; color:#F4F1E8; font:700 20px Archivo,system-ui,Arial,sans-serif; padding:0 16px; box-sizing:border-box; width:100%; }
+html.in-on .lgp .lg-opc, html.in-on .lgp .lg-chip{ min-height:64px; border-radius:20px; background:#121620; border:1px solid #242B38; color:#F4F1E8; font:800 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on .lgp .lg-opc small{ display:block; font:600 15px Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; margin-top:3px; }
+html.in-on .lgp .lg-opc.on, html.in-on .lgp .lg-chip.on{ background:linear-gradient(160deg,#17233D,#0F1626); border:2px solid #E9CF8C; color:#E9CF8C; }
+html.in-on .lgp .lg-opc:active, html.in-on .lgp .lg-chip:active, html.in-on .lgp .lg-jug:active{ transform:scale(.97); }
+html.in-on .lgp .lg-jug{ min-height:62px; background:#121620; border:1px solid #242B38; color:#F4F1E8; font:700 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on .lgp .lg-jug.on{ border:1.5px solid #E9CF8C; background:rgba(233,207,140,.08); }
+html.in-on .lgp .lg-jug .lg-check{ background:transparent; border:1.5px solid #4A5568; }
+html.in-on .lgp .lg-jug.on .lg-check{ background:linear-gradient(180deg,#EBD08A,#C9A54A); border:0; color:#16120A; }
+html.in-on .lgp .lg-mas{ width:64px; height:64px; border-radius:50%; background:transparent; border:1px solid rgba(217,190,122,.6); color:#E9CF8C; font:600 36px Archivo,system-ui,Arial,sans-serif; }
+html.in-on .lgp .lg-num b{ font:800 52px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on .lgp .lg-num small{ font:600 16px Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on .lgp .lg-cuenta{ font:600 15px Barlow,system-ui,Arial,sans-serif; letter-spacing:0; text-transform:none; color:#B5BFD0; }
+html.in-on .lgp .lgp-rec{ font-style:normal; display:inline-flex; align-items:center; height:24px; padding:0 10px; margin-left:8px; border-radius:999px; border:1px solid rgba(217,190,122,.7); color:#E9CF8C; font:700 14px/1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.06em; text-transform:uppercase; vertical-align:3px; white-space:nowrap; }
+html.in-on .lgp .lgp-campo{ display:grid; gap:10px; }
+html.in-on .lgp .lgp-campo-on{ border-radius:20px; background:linear-gradient(160deg,#17233D,#0F1626); border:2px solid #E9CF8C; padding:14px 18px; }
+html.in-on .lgp .lgp-campo-on b{ display:block; font:800 22px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on .lgp .lgp-campo-on span{ font:600 16px Barlow,system-ui,Arial,sans-serif; color:#D9DEE8; }
+html.in-on .lgp .lgp-sub{ margin:26px 2px 10px; font:700 18px Archivo,system-ui,Arial,sans-serif; text-align:center; color:#F4F1E8; }
+html.in-on .lgp .lgp-res{ border-radius:20px; background:linear-gradient(160deg,#17233D,#0F1626); border:1.5px solid rgba(217,190,122,.75); overflow:hidden; }
+html.in-on .lgp .lgp-res-t{ padding:16px 18px; text-align:center; border-bottom:1px solid rgba(217,190,122,.25); }
+html.in-on .lgp .lgp-res-t b{ font:800 24px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on .lgp .lgp-res-f{ display:flex; justify-content:space-between; gap:12px; padding:12px 18px; border-top:1px solid rgba(217,190,122,.15); font:600 16px Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on .lgp .lgp-res-f b{ color:#F4F1E8; text-align:right; font:700 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on .lgp .lgp-pie{ position:sticky; bottom:0; display:grid; grid-template-columns:1fr 1.6fr; gap:10px; margin:22px -16px 0; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); background:#0A0C10; border-top:1px solid #242B38; z-index:3; }
+html.in-on .lgp .lgp-pie button{ min-height:58px; border-radius:999px; font:800 19px Archivo,system-ui,Arial,sans-serif; letter-spacing:.03em; }
+html.in-on .lgp .lgp-atras{ background:transparent; border:1px solid rgba(217,190,122,.6); color:#E9CF8C; }
+html.in-on .lgp .lgp-sig{ background:linear-gradient(180deg,#EBD08A,#C9A54A); border:0; color:#16120A; }
+html.in-on .lgp .lgp-crear{ background:#D7263D; border:0; color:#fff; text-transform:uppercase; }
+html.in-on .lgp .lgp-pie button:active{ transform:scale(.97); }
+html.in-on .lgp [hidden]{ display:none !important; }
+html.in-on .lgp .lg-opc .lgp-rec{ display:flex; width:max-content; margin:8px auto 0; }
+html.in-on .lgp .field-row{ display:grid !important; grid-template-columns:1fr 1fr; gap:10px; }
+html.in-on .lgp .field-row .field{ min-width:0; margin:0; }
+html.in-on .lgp .field-row input{ min-width:0; max-width:100%; font-size:18px; padding:0 10px; }
