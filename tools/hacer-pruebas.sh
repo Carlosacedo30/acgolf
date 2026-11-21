@@ -1096,6 +1096,9 @@ s = open(p, encoding='utf-8').read()
 a = "window.acgolfCampos.elegir(curso => { f.campo = curso.id; ligaPintarForm(); }, 'buscar'); }));"
 assert s.count(a) == 1
 s = s.replace(a, "window.acgolfCampos.elegir(curso => { f.campo = curso.id; ligaPintarForm(); }, 'favoritos'); }));", 1)
+a2 = "window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'buscar'); }));"
+assert s.count(a2) == 1
+s = s.replace(a2, "window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'favoritos'); }));", 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 # --- Ritmo en la pantalla de marcar (21-nov-2026): aviso verde/ámbar/rojo y mapa con los grupos; va DESPUÉS de marcar-nuevo y de ritmo-campo ---
@@ -1103,7 +1106,7 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=6">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=7">\n</head>', 1)
-s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=3"></script>\n<script src="liga-pasos.js?v=3"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=6">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=3"></script>\n<script src="liga-pasos.js?v=4"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF

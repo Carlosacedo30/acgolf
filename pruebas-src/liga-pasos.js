@@ -161,10 +161,12 @@
     var orig = window.ligaPintarForm;
     var nuevo = function(){ orig(); try { montar(); } catch(e){ console.error(e); } };
     nuevo.__pasos = true; window.ligaPintarForm = nuevo;
+    var cfgO = window.ligaConfigJornada;
+    if(typeof cfgO === 'function') window.ligaConfigJornada = function(){ var c = document.querySelector('#ligaCuerpo'); c = c && c.closest('.conv-card'); if(c && activo()){ c.classList.remove('lgv', 'lgl', 'lgp'); c.classList.add('lgj'); var t = document.getElementById('ligaTitulo'); if(t) t.style.display = ''; } return cfgO.apply(this, arguments); };
     var verO = window.ligaVer;
-    if(typeof verO === 'function') window.ligaVer = async function(){ var c = document.querySelector('.conv-card.lgv'); if(c) c.classList.remove('lgv'); var r = await verO.apply(this, arguments); try { ligaNueva(); } catch(e){ console.error(e); } return r; };
+    if(typeof verO === 'function') window.ligaVer = async function(){ var c = document.querySelector('.conv-card.lgv, .conv-card.lgj'); if(c) c.classList.remove('lgv', 'lgj'); var r = await verO.apply(this, arguments); try { ligaNueva(); } catch(e){ console.error(e); } return r; };
     var lista = window.ligaPintarLista;
-    if(typeof lista === 'function') window.ligaPintarLista = function(){ paso = 1; var c = document.querySelector('.conv-card.lgp, .conv-card.lgv'); if(c) c.classList.remove('lgp', 'lgv'); var r = lista.apply(this, arguments); try { listaNueva(); } catch(e){ console.error(e); } return r; };
+    if(typeof lista === 'function') window.ligaPintarLista = function(){ paso = 1; var c = document.querySelector('.conv-card.lgp, .conv-card.lgv, .conv-card.lgj'); if(c) c.classList.remove('lgp', 'lgv', 'lgj'); var r = lista.apply(this, arguments); try { listaNueva(); } catch(e){ console.error(e); } return r; };
   }
   envolver();
 })();

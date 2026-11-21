@@ -733,7 +733,7 @@ async function ligaConfigJornada(l, n, res){
       const h = document.getElementById('ljHora'); if(h && h.value) cfg.hora = h.value;
     };
     body.querySelectorAll('[data-c]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.courseId = b.dataset.c; pintar(); }));
-    body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'buscar'); }));
+    body.querySelectorAll('[data-buscarcampo]').forEach(b => b.addEventListener('click', ()=>{ leer(); window.acgolfCampos.elegir(curso => { cfg.courseId = curso.id; pintar(); }, 'favoritos'); }));
     body.querySelectorAll('[data-s]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.salida = b.dataset.s; pintar(); }));
     body.querySelectorAll('[data-nh]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.nh = Number(b.dataset.nh) === 9 ? 9 : 18; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; pintar(); }));
     body.querySelectorAll('[data-mi]').forEach(b => b.addEventListener('click', ()=>{ leer(); cfg.mitad = b.dataset.mi === 'vuelta' ? 'vuelta' : 'ida'; cfg.hoyos = ligaSalidas(l, Object.assign({}, j, { salida: 'tiro', hoyos: undefined, nh: cfg.nh, mitad: cfg.mitad }), cfg.grupos.length).hoyos; pintar(); }));
