@@ -66,6 +66,7 @@
   }
 
   function pintar(){
+    if(!(window.miPerfil && window.miPerfil.es_super)){ aviso.hidden = true; return; }   // exclusivo de Carlos
     if(!R() || !R()._estadoGrupo || !ronda || (typeof currentRoundCode !== 'undefined' && currentRoundCode !== codigoCargado)){ aviso.hidden = true; return; }
     const ahora = Date.now();
     const gi = typeof activeGroup !== 'undefined' ? +activeGroup : 0;

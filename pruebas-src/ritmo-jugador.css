@@ -31,3 +31,13 @@
 .rj-yo .rj-n{ background:#E0A100; color:#111316; }
 .rj-t b{ display:block; font:800 17px/1.2 Archivo,system-ui,sans-serif; }
 .rj-t small{ display:block; font-size:16px; line-height:1.3; color:#4a5058; margin-top:2px; }
+
+/* Botón «Seguimiento» del Inicio (solo super administrador) */
+.sg-btn{position:relative;z-index:1;display:flex;align-items:center;gap:14px;width:calc(100% - 28px);margin:12px 14px;padding:14px 16px;text-align:left;background:#2F3A1C;border:2px solid #C6F24E;border-radius:18px;color:#F2F4F5;font-family:Barlow,sans-serif;cursor:pointer}
+.sg-btn:active{transform:scale(.97)}
+.sg-ic{flex:none;width:48px;height:48px;border-radius:50%;background:#C6F24E;color:#111316;display:grid;place-items:center;font:900 24px Archivo,sans-serif;font-style:normal}
+.sg-btn b{display:block;font:900 22px Archivo,sans-serif;letter-spacing:.02em}
+.sg-btn span span{color:#C9D3B0;font-size:16px}
+.sg-chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.sg-chip{border:1.5px solid #8A939B;background:#fff;color:#111316;border-radius:999px;padding:8px 14px;font:800 15px Archivo,sans-serif}
+.sg-chip.on{background:#C6F24E;border-color:#C6F24E}
