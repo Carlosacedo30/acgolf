@@ -1,0 +1,11 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* Botón «Volver» del diseño nuevo (norma de Carlos, 21-nov-2026): el mismo en todas las pantallas, con la base de DESIGN.md.
+   Texto dorado, letra Archivo, fondo del color de la pantalla (#0A0C10) y sin recuadro verde. Solo con el diseño nuevo (html.in-on). */
+html.in-on .app-bar .back-btn, html.in-on .nv-volver, html.in-on .pantalla-volver{
+  display:flex !important; align-items:center; gap:6px; width:100% !important; box-sizing:border-box; min-height:52px; margin:0 0 6px !important; padding:0 6px !important;
+  border:0 !important; border-radius:0 !important; background:#0A0C10 !important; box-shadow:none !important; color:#E9CF8C !important;
+  font:800 18px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em; text-transform:none !important; text-align:left; }
+html.in-on .nv-volver{ position:sticky; top:0; z-index:5; }
+html.in-on .ry-ov > .pantalla-volver{ box-shadow:none !important; }
+html.in-on .nv-volver:active, html.in-on .app-bar .back-btn:active, html.in-on .pantalla-volver:active{ transform:scale(.97); }
+html.in-on #convOverlay, html.in-on #convOverlay .conv-card{ background:#0A0C10 !important; }
