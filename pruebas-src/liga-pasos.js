@@ -94,13 +94,40 @@
     var n = document.getElementById('lgNombre'); if(n && typeof ligaForm !== 'undefined' && ligaForm) ligaForm.nombre = n.value;
     window.ligaPintarForm(); var card = document.querySelector('#ligaCuerpo'); card = card && card.closest('.conv-card'); if(card) card.scrollTop = 0;
   }
+
+  // ---------- «Mis ligas» (lista) ----------
+  function listaNueva(){
+    var body = document.getElementById('ligaCuerpo'); if(!body || !activo() || typeof ligasTodas === 'undefined') return;
+    var card = body.closest('.conv-card'); if(card) card.classList.add('lgl');
+    var hoy = ligaHoy(), grupos = { juego: [], pronto: [], fin: [] };
+    ligasTodas.forEach(function(l){
+      var prox = ligaProxima(l), jug = l.jornadas.filter(function(j){ return j.date < hoy; }).length;
+      var k = !prox ? 'fin' : (jug ? 'juego' : 'pronto');
+      var nh = l.hoyos === 9 ? '9 hoyos' + (l.mitad === 'vuelta' ? ' (Vuelta)' : ' (Ida)') : '18 hoyos';
+      var cada = l.cada === 14 ? 'cada 15 días' : (l.cada === 28 ? '1 al mes' : (l.dia === 0 ? 'cada domingo' : 'cada sábado'));
+      var etq = { juego: '<i class="lgl-tag on">En juego</i><span class="lgl-jor">Jornada ' + (jug + 1 > l.jornadas.length ? l.jornadas.length : jug + 1) + ' de ' + l.jornadas.length + '</span>',
+                  pronto: '<i class="lgl-tag">Empieza pronto</i>', fin: '<i class="lgl-tag">Terminada</i>' }[k];
+      var pie = prox ? '<div class="lgl-pie"><span>' + (k === 'pronto' ? 'Empieza' : 'Próxima') + ': <em>' + ligaEsc(ligaFechaCortaJ(prox.date)) + '</em>' + (prox.hora || l.hora ? ' · ' + ligaEsc(String(prox.hora || l.hora).replace(/^0/, '')) : '') + '</span><b>›</b></div>' : '<div class="lgl-pie"><span>Ver la clasificación final</span><b>›</b></div>';
+      grupos[k].push('<button type="button" class="lgl-liga lg-liga ' + k + '" data-code="' + ligaEsc(l.code) + '"><div class="lgl-cab">' + etq + '</div>'
+        + '<h3>' + ligaEsc(l.nombre) + '</h3><p>' + l.jugadores.length + ' jugadores · ' + nh + ' · ' + cada + '</p>' + pie + '</button>');
+    });
+    var sec = function(t, a){ return a.length ? '<div class="lgl-sec"><span>' + t + '</span></div>' + a.join('') : ''; };
+    var nueva = body.querySelector('#ligaNueva'), bases = body.querySelector('#lgBasesLista');
+    body.innerHTML = '<h2 class="lgl-t">LIGAS</h2>' + (ligasTodas.length ? '' : '<div class="lg-aviso">Todavía no hay ninguna liga.</div>');
+    if(nueva){ nueva.className = 'lgl-crear'; nueva.textContent = '＋ CREAR LIGA'; body.appendChild(nueva); }
+    body.insertAdjacentHTML('beforeend', sec('Ligas del grupo', grupos.juego.concat(grupos.pronto)) + sec('Terminadas', grupos.fin));
+    if(bases) body.appendChild(bases);
+    body.querySelectorAll('.lgl-liga').forEach(function(b){ b.addEventListener('click', function(){ ligaVer(b.dataset.code); }); });
+    if(nueva) nueva.addEventListener('click', function(){ ligaForm = null; ligaPintarForm(); });
+    var tit = document.getElementById('ligaTitulo'); if(tit) tit.style.display = 'none';
+  }
   function envolver(){
     if(typeof window.ligaPintarForm !== 'function' || window.ligaPintarForm.__pasos) return;
     var orig = window.ligaPintarForm;
     var nuevo = function(){ orig(); try { montar(); } catch(e){ console.error(e); } };
     nuevo.__pasos = true; window.ligaPintarForm = nuevo;
     var lista = window.ligaPintarLista;
-    if(typeof lista === 'function') window.ligaPintarLista = function(){ paso = 1; var c = document.querySelector('.conv-card.lgp'); if(c) c.classList.remove('lgp'); return lista.apply(this, arguments); };
+    if(typeof lista === 'function') window.ligaPintarLista = function(){ paso = 1; var c = document.querySelector('.conv-card.lgp'); if(c) c.classList.remove('lgp'); var r = lista.apply(this, arguments); try { listaNueva(); } catch(e){ console.error(e); } return r; };
   }
   envolver();
 })();

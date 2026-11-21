@@ -51,3 +51,23 @@ html.in-on .lgp .lg-opc .lgp-rec{ display:flex; width:max-content; margin:8px au
 html.in-on .lgp .field-row{ display:grid !important; grid-template-columns:1fr 1fr; gap:10px; }
 html.in-on .lgp .field-row .field{ min-width:0; margin:0; }
 html.in-on .lgp .field-row input{ min-width:0; max-width:100%; font-size:18px; padding:0 10px; }
+/* ---- Mis ligas ---- */
+html.in-on .conv-card.lgl{ background:#0A0C10 !important; color:#F4F1E8; }
+html.in-on .lgl .lgl-t{ margin:10px 2px 14px; font:900 38px/1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.02em; color:#F4F1E8; }
+html.in-on .lgl .lgl-crear{ width:100%; min-height:62px; border:0; border-radius:999px; background:linear-gradient(180deg,#D7263D,#A8202F); color:#fff; font:800 20px Archivo,system-ui,Arial,sans-serif; letter-spacing:.06em; box-shadow:0 8px 24px rgba(215,38,61,.25); }
+html.in-on .lgl .lgl-sec{ display:flex; align-items:center; gap:12px; margin:28px 2px 12px; font:800 15px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#B5BFD0; }
+html.in-on .lgl .lgl-sec::after{ content:""; flex:1; height:1px; background:rgba(217,190,122,.35); }
+html.in-on .lgl .lgl-liga{ display:block; width:100%; text-align:left; margin:0 0 14px; padding:16px 18px 6px; border-radius:22px; background:linear-gradient(160deg,#17233D,#0F1626); border:1.5px solid rgba(217,190,122,.55); color:#F4F1E8; }
+html.in-on .lgl .lgl-liga.fin{ background:#121620; border-color:#242B38; opacity:.85; }
+html.in-on .lgl .lgl-liga:active{ transform:scale(.98); }
+html.in-on .lgl .lgl-cab{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+html.in-on .lgl .lgl-tag{ font-style:normal; display:inline-flex; align-items:center; height:32px; padding:0 14px; border-radius:999px; border:1px solid #4A5568; color:#B5BFD0; font:800 14px Archivo,system-ui,Arial,sans-serif; letter-spacing:.12em; text-transform:uppercase; }
+html.in-on .lgl .lgl-tag.on{ background:linear-gradient(180deg,#EBD08A,#C9A54A); border:0; color:#16120A; }
+html.in-on .lgl .lgl-jor{ font:700 17px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on .lgl .lgl-liga h3{ margin:12px 0 4px; font:800 26px/1.15 Archivo,system-ui,Arial,sans-serif; }
+html.in-on .lgl .lgl-liga p{ margin:0; font:600 17px/1.35 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on .lgl .lgl-pie{ display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding:12px 0; border-top:1px solid rgba(217,190,122,.3); font:700 18px Archivo,system-ui,Arial,sans-serif; }
+html.in-on .lgl .lgl-pie em{ font:italic 600 19px 'Playfair Display',Georgia,serif; color:#E9CF8C; }
+html.in-on .lgl .lgl-pie b{ font-size:26px; color:#E9CF8C; }
+html.in-on .lgl .lg-bases, html.in-on .lgl #lgBasesLista{ margin-top:10px; min-height:56px; border-radius:20px; background:#121620; border:1px solid #242B38; color:#F4F1E8; font:700 17px Archivo,system-ui,Arial,sans-serif; width:100%; }
+html.in-on .lgl .lgl-pie span{ font:700 18px Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
