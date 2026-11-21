@@ -1,0 +1,59 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* «Crear partida» (los 4 pasos: dónde, cómo jugáis, quién, resumen) con el diseño nuevo — norma del 21-nov-2026. Solo con html.in-on. */
+html.in-on #prOverlay{ background:#0A0C10 !important; align-items:stretch !important; padding:0 !important; }
+html.in-on #prOverlay .pr-card{ max-width:none !important; width:100%; max-height:none !important; height:100%; box-sizing:border-box; border:0 !important; border-radius:0 !important; background:#0A0C10 !important; box-shadow:none !important; padding:16px 16px 24px !important; color:#F4F1E8; font-family:Barlow,system-ui,Arial,sans-serif; overflow-y:auto; }
+html.in-on #prOverlay .pr-titulo{ font:900 32px/1.05 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em; text-align:left; color:#F4F1E8 !important; margin:50px 2px 6px; }
+/* pasos 1·2·3·4 */
+html.in-on #prOverlay .pr-pasos{ justify-content:flex-start; gap:8px; margin:8px 2px 4px; }
+html.in-on #prOverlay .pr-pasos span{ width:38px; height:38px; background:#121620 !important; border:1px solid #242B38; color:#B5BFD0 !important; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-pasos span.ok{ background:transparent !important; border-color:rgba(217,190,122,.7); color:#E9CF8C !important; }
+html.in-on #prOverlay .pr-pasos span.on{ background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; border:0; color:#16120A !important; }
+html.in-on #prOverlay .pr-q{ text-align:left; margin:18px 2px 14px; font:800 27px/1.15 Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #prOverlay .pr-ayuda{ text-align:left; margin:-6px 2px 12px; font:600 16px/1.35 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #prOverlay .pr-op-t{ color:#B5BFD0 !important; margin:22px 2px 10px; font:800 14px Archivo,system-ui,Arial,sans-serif; letter-spacing:.2em; text-transform:uppercase; color:#B5BFD0; }
+/* tarjetas y botones de elegir */
+html.in-on #prOverlay .pr-campo, html.in-on #prOverlay .bc-sel-b{ min-height:72px; border:1px solid #242B38 !important; border-radius:20px; background:#121620 !important; color:#F4F1E8 !important; font:800 21px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-campo:active, html.in-on #prOverlay .bc-sel-b:active{ transform:scale(.97); }
+html.in-on #prOverlay .bc-sel-b.on, html.in-on #prOverlay .pr-campo.on{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:2px solid #E9CF8C !important; color:#E9CF8C !important; }
+html.in-on #prOverlay .bc-sel-b .bc-ico{ color:#E9CF8C; }
+html.in-on #prOverlay .bc-sel-b.bus{ background:transparent !important; border:1.5px dashed rgba(217,190,122,.6) !important; color:#E9CF8C !important; }
+html.in-on #prOverlay .bc-sel-nota{ font:600 16px/1.35 Barlow,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #prOverlay .pr-tecla{ min-height:64px; border:1px solid #242B38 !important; border-radius:20px; background:#121620 !important; color:#F4F1E8 !important; font:800 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-tecla.on{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:2px solid #E9CF8C !important; color:#E9CF8C !important; }
+html.in-on #prOverlay .pr-tecla:active{ transform:scale(.97); }
+html.in-on #prOverlay .pr-npaso .pr-tecla, html.in-on #prOverlay .pr-gnav .pr-tecla{ border-radius:50%; color:#E9CF8C !important; background:transparent !important; border:1px solid rgba(217,190,122,.6) !important; font-size:30px; }
+html.in-on #prOverlay .pr-nnum b, html.in-on #prOverlay .pr-gnav-c b{ font-family:Archivo,system-ui,Arial,sans-serif; color:#F4F1E8; }
+html.in-on #prOverlay .pr-nnum small, html.in-on #prOverlay .pr-gnav-c span, html.in-on #prOverlay .pr-gnav-c b small{ font-size:15px; color:#B5BFD0; }
+/* jugadores */
+html.in-on #prOverlay .pr-jug{ min-height:64px; border:1px solid #242B38 !important; border-radius:20px; background:#121620 !important; color:#F4F1E8 !important; font:700 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-jug.on{ border:1.5px solid #E9CF8C !important; background:rgba(233,207,140,.08) !important; }
+html.in-on #prOverlay .pr-check{ border:1.5px solid #4A5568; border-radius:10px; background:transparent; color:#16120A; }
+html.in-on #prOverlay .pr-jug.on .pr-check{ background:linear-gradient(180deg,#EBD08A,#C9A54A); border:0; color:#16120A; }
+html.in-on #prOverlay .pr-mas{ min-height:60px; border:1.5px dashed rgba(217,190,122,.6); border-radius:20px; color:#E9CF8C; font:800 17px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-inv-form{ border:1.5px solid rgba(217,190,122,.6); border-radius:20px; background:#121620; }
+html.in-on #prOverlay .pr-inv-l{ font:700 16px Archivo,system-ui,Arial,sans-serif; color:#B5BFD0; }
+html.in-on #prOverlay .pr-inv-l input, html.in-on #prOverlay .pr-r-hcp-in, html.in-on #prOverlay .pr-barra-sel{ border:1px solid rgba(217,190,122,.55); border-radius:16px; background:#0F1626; color:#F4F1E8; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-inv-hcp, html.in-on #prOverlay .pr-r-hcp, html.in-on #prOverlay .pr-r-rec b, html.in-on #prOverlay .pr-r-jug b, html.in-on #prOverlay .pr-r-linea b{ color:#E9CF8C; }
+html.in-on #prOverlay .pr-pj-fila{ border-radius:20px; box-shadow:inset 0 0 0 1px rgba(217,190,122,.45); }
+html.in-on #prOverlay .pr-pj-t{ background:#17233D; color:#E9CF8C; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-pj-slot{ border:1.5px dashed rgba(217,190,122,.4); border-radius:16px; color:#F4F1E8; font-family:Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-pj-slot.on{ border:1.5px solid #E9CF8C; background:rgba(233,207,140,.08); }
+html.in-on #prOverlay .pr-aviso{ color:#FF8C99; }
+/* resumen */
+html.in-on #prOverlay .pr-resumen{ border-radius:22px; background:linear-gradient(160deg,#17233D,#0F1626); border:1.5px solid rgba(217,190,122,.65); }
+html.in-on #prOverlay .pr-r-campo{ font:800 24px Archivo,system-ui,Arial,sans-serif; color:#E9CF8C; }
+html.in-on #prOverlay .pr-r-sub, html.in-on #prOverlay .pr-r-nota, html.in-on #prOverlay .pr-r-inv{ color:#B5BFD0; font-size:16px; }
+html.in-on #prOverlay .pr-r-jug{ border-top:1px solid rgba(217,190,122,.25); color:#F4F1E8; font:700 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-r-grupo, html.in-on #prOverlay .pr-r-pareja{ color:#E9CF8C !important; font-family:Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; }
+/* botones de abajo */
+html.in-on #prOverlay .pr-pie{ background:#0A0C10; border-top:1px solid #242B38; margin:18px -16px -24px; padding:12px 16px calc(14px + env(safe-area-inset-bottom)); bottom:-24px; }
+html.in-on #prOverlay .pr-atras{ min-height:60px; border:1px solid rgba(217,190,122,.6); border-radius:999px; background:transparent; color:#E9CF8C; font:800 19px Archivo,system-ui,Arial,sans-serif; }
+html.in-on #prOverlay .pr-sig{ min-height:60px; border-radius:999px; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; color:#16120A !important; font:800 19px Archivo,system-ui,Arial,sans-serif; letter-spacing:.03em; }
+html.in-on #prOverlay .pr-empezar{ min-height:68px; border-radius:999px; background:#D7263D !important; color:#fff !important; font:800 22px Archivo,system-ui,Arial,sans-serif; letter-spacing:.06em; }
+html.in-on #prOverlay .pr-sig:active, html.in-on #prOverlay .pr-atras:active, html.in-on #prOverlay .pr-empezar:active{ transform:scale(.97); }
+html.in-on #prOverlay .conv-close{ display:none; }
+
+html.in-on #prOverlay .pr-sig, html.in-on #prOverlay .pr-empezar{ border-radius:999px !important; }
+html.in-on #prOverlay .pr-teclas:has(> .pr-tecla:nth-child(4)){ grid-auto-flow:row; grid-template-columns:1fr 1fr; }
+html.in-on #prOverlay .pr-teclas:has(> .pr-tecla:nth-child(4)) .pr-tecla{ font-size:18px; }
+html.in-on #prOverlay .pr-tecla{ overflow-wrap:anywhere; }
