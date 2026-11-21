@@ -157,23 +157,23 @@
     const W = 720, fila = 58, H = 250 + T.t.length * fila + 120, cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d');
     c.fillStyle = '#1a120c'; c.fillRect(0, 0, W, H);
     c.strokeStyle = '#6b4a2b'; c.lineWidth = 10; c.strokeRect(5, 5, W - 10, H - 10);
-    neon(c, 'EL HOYO 19', W / 2, 96, 64, '#F7FFD9', '#C6F24E', 12);
+    neon(c, 'EL HOYO 19', W / 2, 96, 64, '#F4F1E8', '#E9CF8C', 12);
     const r = T.ronda || {}, f = new Date(r.updated_at || Date.now()), fecha = f.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
     c.fillStyle = '#EDEBDD'; c.font = '600 26px Barlow, Arial, sans-serif'; c.textAlign = 'center';
     c.fillText([r.round_name, r.course_name, fecha].filter(Boolean).join(' · '), W / 2, 142, W - 60);
-    c.fillStyle = '#C6F24E'; c.font = '800 20px Archivo, Arial, sans-serif'; c.fillText('CLASIFICACIÓN (' + (T.pts ? 'PUNTOS' : 'NETO') + ')' + (T.acabados ? '' : ' · PROVISIONAL'), W / 2, 196);
+    c.fillStyle = '#E9CF8C'; c.font = '800 20px Archivo, Arial, sans-serif'; c.fillText('CLASIFICACIÓN (' + (T.pts ? 'PUNTOS' : 'NETO') + ')' + (T.acabados ? '' : ' · PROVISIONAL'), W / 2, 196);
     T.t.forEach((x, i) => {
       const y = 220 + i * fila;
       c.fillStyle = i === 0 ? 'rgba(198,242,78,.16)' : 'rgba(255,255,255,.06)'; c.beginPath(); c.roundRect ? c.roundRect(34, y, W - 68, fila - 8, 12) : c.rect(34, y, W - 68, fila - 8); c.fill();
-      if(i === 0){ c.strokeStyle = '#C6F24E'; c.lineWidth = 2; c.stroke(); }
-      c.textAlign = 'left'; c.fillStyle = '#C6F24E'; c.font = '900 26px Archivo, Arial, sans-serif'; c.fillText(String(i + 1), 54, y + 36);
+      if(i === 0){ c.strokeStyle = '#E9CF8C'; c.lineWidth = 2; c.stroke(); }
+      c.textAlign = 'left'; c.fillStyle = '#E9CF8C'; c.font = '900 26px Archivo, Arial, sans-serif'; c.fillText(String(i + 1), 54, y + 36);
       c.fillStyle = '#EDEBDD'; c.font = '700 26px Archivo, Arial, sans-serif';
       const nom = String(x.n || '') + (T.pagan > 0 && i >= T.t.length - T.pagan ? ' 🍺' : ''); c.fillText(nom, 100, y + 36, W - 260);
       c.textAlign = 'right'; c.font = '900 30px Archivo, Arial, sans-serif'; c.fillStyle = '#fff'; c.fillText(T.pts ? x.pts + ' pts' : signo(x.neto), W - 54, y + 37);
     });
-    c.textAlign = 'center'; c.fillStyle = '#C6F24E'; c.font = '800 24px Archivo, Arial, sans-serif';
+    c.textAlign = 'center'; c.fillStyle = '#E9CF8C'; c.font = '800 24px Archivo, Arial, sans-serif';
     if(T.pagan > 0) { c.fillStyle = '#EDEBDD'; c.font = '600 22px Barlow, Arial, sans-serif'; c.fillText('Hoy pagan la ronda los ' + T.pagan + ' últimos 🍺', W / 2, H - 70); }
-    c.fillStyle = '#C6F24E'; c.font = '800 26px Archivo, Arial, sans-serif'; c.fillText('acgolf.es', W / 2, H - 28);
+    c.fillStyle = '#E9CF8C'; c.font = '800 26px Archivo, Arial, sans-serif'; c.fillText('acgolf.es', W / 2, H - 28);
     return cv;
   }
   function compartir(){

@@ -30,12 +30,12 @@
     if(!marco){ recorte(c, src, 0, 0, W, H); return cv; }
     const x = R.x * W, y = R.y * H, w = R.w * W, h = R.h * H;
     recorte(c, src, x, y, w, h);
-    c.strokeStyle = '#C6F24E'; c.lineWidth = 1.5 * k; c.strokeRect(x, y, w, h);                      // línea lima, sin brillo
+    c.strokeStyle = '#E9CF8C'; c.lineWidth = 1.5 * k; c.strokeRect(x, y, w, h);                      // línea dorada, sin brillo
     c.strokeStyle = 'rgba(198,242,78,.35)'; c.lineWidth = 1; c.strokeRect(7 * k, 7 * k, W - 14 * k, H - 14 * k);
-    c.strokeStyle = '#C6F24E'; c.lineWidth = 2 * k; c.shadowColor = '#C6F24E'; c.shadowBlur = 4 * k; const e = 16 * k, m = 7 * k;
+    c.strokeStyle = '#E9CF8C'; c.lineWidth = 2 * k; c.shadowColor = '#E9CF8C'; c.shadowBlur = 4 * k; const e = 16 * k, m = 7 * k;
     [[m, m, 1, 1], [W - m, m, -1, 1], [m, H - m, 1, -1], [W - m, H - m, -1, -1]].forEach(a => { c.beginPath(); c.moveTo(a[0] + a[2] * e, a[1]); c.lineTo(a[0], a[1]); c.lineTo(a[0], a[1] + a[3] * e); c.stroke(); });
     c.shadowBlur = 0;
-    texto(c, 'EL HOYO 19', W / 2, 0.034 * H + 26 * k, 28 * k, 7 * k, '#F7FFD9', '#C6F24E');           // neón
+    texto(c, 'EL HOYO 19', W / 2, 0.034 * H + 26 * k, 28 * k, 7 * k, '#F4F1E8', '#E9CF8C');           // neón
     texto(c, 'AQUÍ, LOS', W / 2, 0.82 * H + 6 * k, 11 * k, 5 * k, '#F3E6CC', null, 700);               // sin neón
     texto(c, 'CAMPEONES', W / 2, 0.82 * H + 30 * k, 27 * k, 4 * k, '#FFD54F', null);
     texto(c, 'DEL HOYO 19', W / 2, 0.82 * H + 47 * k, 11 * k, 5 * k, '#F3E6CC', null, 700);
