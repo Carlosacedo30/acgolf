@@ -17,7 +17,7 @@
     btn = document.createElement('button'); btn.type = 'button'; btn.id = 'sgBtn'; btn.className = 'sg-btn';
     btn.innerHTML = '<i class="sg-ic" aria-hidden="true">◎</i><span><b>SEGUIMIENTO</b><span>Dónde está cada grupo en el campo</span></span>';
     cab.parentNode.insertBefore(btn, cab.nextSibling);
-    btn.onclick = abrir;
+    btn.onclick = () => { if(R() && typeof R().abrir === 'function') R().abrir(); else abrir(); };   // abre «Ritmo del campo», el de siempre
   }
   async function cargar(){
     const desde = new Date(Date.now() - 16 * 3600 * 1000).toISOString();
