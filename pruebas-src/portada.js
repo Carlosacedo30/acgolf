@@ -33,7 +33,7 @@
   // Estilo fino y elegante: línea de 1,6, doble filete, letra con serifa y fondo azul noche.
   function escudo(tipo, ini, color, tam){
     ini = esc(String(ini || 'G').slice(0, 3).toUpperCase());
-    color = /^#[0-9A-Fa-f]{6}$/.test(color || '') ? color : '#C6F24E';
+    color = /^#[0-9A-Fa-f]{6}$/.test(color || '') ? color : '#E9CF8C';
     tam = tam || 96;
     const fs = ini.length > 2 ? 26 : 34;
     const serif = "font-family=\"'Playfair Display', Georgia, 'Times New Roman', serif\"";
@@ -93,9 +93,9 @@
   async function tonos(color, fondo){
     const yo = ++turno;
     const f = FONDOS.find(x => x.id === fondo) || FONDOS[0];
-    color = /^#[0-9A-Fa-f]{6}$/.test(color || '') ? color.toUpperCase() : '#C6F24E';
+    color = /^#[0-9A-Fa-f]{6}$/.test(color || '') ? color.toUpperCase() : '#E9CF8C';
     let st = document.getElementById('pgTonos');
-    if(f.id === 'grafito' && color === '#C6F24E'){ if(st) st.textContent = ''; return; }
+    if(f.id === 'grafito' && (color === '#C6F24E' || color === '#E9CF8C')){ if(st) st.textContent = ''; return; }
     const css = (await leerHoja('tema-grafito.css')) + '\n' + (await leerHoja('cuenta.css'));
     if(yo !== turno) return;
     let out = css.replace(/#C6F24E/gi, color).replace(/rgba\(\s*198\s*,\s*242\s*,\s*78\s*,/g, 'rgba(' + rgb(color) + ',');
@@ -111,7 +111,7 @@
     const m = (perfil && perfil.grupo_marca) || {};
     return {
       escudo: m.escudo || 'sello',
-      color: m.color || '#C6F24E',
+      color: m.color || '#E9CF8C',
       fondo: m.fondo || 'grafito',
       iniciales: m.iniciales || iniciales(perfil && perfil.grupo),
       campo: m.campo || '',
