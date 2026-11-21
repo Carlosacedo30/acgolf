@@ -40,12 +40,26 @@
   const rapida = (va, ico, titulo, sub) => '<button type="button" class="cn-rap" data-va="' + va + '"><span class="cn-ic">' + svg(ico) + '</span><b>' + titulo + '</b><span>' + sub + '</span></button>';
   caja.innerHTML = '<div class="cn-cab"><div><h1 class="cn-titulo">Mi cuenta</h1><p class="cn-sub" id="cnNombre"></p></div>'
     + '<button type="button" class="cn-foto" id="cnFoto" data-va="foto" aria-label="Cambiar mi foto o avatar"><b id="cnIni"></b><i><svg viewBox="0 0 24 24" fill="none" stroke="#16120A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l4-1 11-11-3-3L5 16z"/></svg></i></button></div>'
-    + '<div class="cn-main" id="cnMain"><div class="cn-todo">'
+    + '<div class="cn-tabs" id="cnTabs" hidden><button type="button" class="cn-tab on" data-tab="cuenta">Mi cuenta</button><button type="button" class="cn-tab" data-tab="sup">Superadministrador</button></div>'
+    + '<div class="cn-main" id="cnMain"><div class="cn-sup" id="cnSup" hidden>'
+    + '<div class="cn-sec" style="margin-top:18px">En el campo</div>'
+    + tarjeta(fila('sup:seg', '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/>', 'Seguimiento', 'Dónde está cada grupo en el campo (ritmo de partido)'))
+    + '<div class="cn-sec">Jugadores</div>'
+    + '<div class="cn-card"><button type="button" class="cn-row" id="pnSop" data-va="sup:sop"><span class="cn-ic">' + svg(SOPORTE) + '</span><span class="cn-tx"><b>Mensajes de soporte</b><span>Lo que te escriben los jugadores</span></span><i class="cn-fl" aria-hidden="true"></i></button></div>'
+    + tarjeta(fila('sup:pro', '<path d="M5 10v4h3l6 4V6l-6 4H5z"/><path d="M17 9.5a3.5 3.5 0 0 1 0 5"/>', 'Promociones', 'Correos a los jugadores y avisos en redes'))
+    + tarjeta(fila('sup:avi', '<path d="M6.5 16.5V11a5.5 5.5 0 0 1 11 0v5.5l1.5 1.5H5l1.5-1.5z"/><path d="M10.3 20.2a1.9 1.9 0 0 0 3.4 0"/>', 'Avisos', 'Quién tiene los avisos del móvil'))
+    + '<div class="cn-sec">Datos de la app</div>'
+    + tarjeta(fila('sup:est', '<path d="M5 19V5M5 19h14"/><path d="M8.5 15.5l3-4 2.5 2 4-5.5"/>', 'Estadísticas', 'De dónde vienen y visitas'))
+    + tarjeta(fila('sup:res', '<rect x="4" y="6" width="16" height="11" rx="2"/><path d="M9 20h6M10.5 9.8v3.6l3.4-1.8z"/>', 'Resúmenes', 'El plató de cualquier partida'))
+    + '<div class="cn-sec">Gestión</div>'
+    + '<div class="cn-card">' + fila('sup:gru', '<circle cx="9" cy="9.5" r="3"/><path d="M3.5 18.5c.6-2.8 2.8-4.2 5.5-4.2s4.9 1.4 5.5 4.2"/><path d="M15.5 6.8a3 3 0 0 1 0 5.6M17.5 14.6c1.6.6 2.7 1.9 3.1 3.9"/>', 'Grupos', 'Crear, entrar y miembros')
+    +   fila('sup:usu', '<circle cx="12" cy="9.2" r="3.4"/><path d="M5 19.5c.8-3.4 3.6-5 7-5s6.2 1.6 7 5"/>', 'Usuarios', 'Roles y bajas')
+    +   fila('sup:cod', '<circle cx="8.5" cy="12" r="3.5"/><path d="M12 12h8M17 12v3M20 12v2.2"/>', 'Códigos', 'Códigos de administrador')
+    +   fila('sup:cam', '<path d="M12 20s-5.5-5.2-5.5-9.3a5.5 5.5 0 0 1 11 0C17.5 14.8 12 20 12 20z"/><circle cx="12" cy="10.5" r="1.9"/>', 'Campos', 'Mapa de los campos') + '</div>'
+    + '</div><div class="cn-todo" id="cnTodo">'
     // ----- Lo primero: el grupo (cambiar de grupo o crear uno) -----
     + '<div class="cn-gran"><div class="cn-gran-top"><span class="cn-gesc" id="cnGesc"></span><span class="cn-tx"><em>Tu grupo</em><b id="cnGnom"></b></span></div>'
     +   '<button type="button" class="cn-oro" data-va="misGrupos">Cambiar de grupo o crear uno</button></div>'
-    + '<div class="cn-adm cn-super" id="cnSuper" hidden><i>Solo super administrador</i>'
-    +   fila('panel', '<path d="M5 7h7M16 7h3M5 12h2M11 12h8M5 17h8M17 17h2"/><circle cx="14" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="17" r="2"/>', 'Panel general', 'Todo el control de la app') + '</div>'
     // ----- Mi golf -----
     + '<div class="cn-sec">Mi golf</div>'
     + '<div class="cn-card cn-hcp"><button type="button" class="cn-row" data-va="hcp"><span class="cn-tx"><b>Mi hándicap</b><span>Cómo se calcula</span></span><span class="cn-num" id="cnHcp"></span><i class="cn-fl" aria-hidden="true"></i></button></div>'
@@ -93,7 +107,7 @@
     if(va === 'foto') return !!(p && window.acgolfAvatares);
     if(va === 'hato') return !!$('irHatoBtn');             // solo los grupos que juegan en Hato Verde (ir-hato.js)
     if(!p || !C) return false;
-    if(va === 'panel') return !!p.es_super;
+    if(va.indexOf('sup:') === 0) return !!p.es_super;
     if(va === 'invitar') return !!(p.es_admin || p.grupo_tipo === 'liga');   // 17-nov: cualquier jugador del grupo puede mandar el enlace y el QR
     if(va === 'miembros' || va === 'portada' || va === 'ayudajug') return !!(p.es_admin && p.grupo_tipo === 'liga');
     return true;
@@ -121,7 +135,9 @@
     caja.querySelectorAll('[data-va]').forEach(f => { const falta = !existe(f.dataset.va); const quien = f.closest('.cn-card') || f; if(quien.hidden !== falta) quien.hidden = falta; });
     caja.querySelectorAll('.cn-adm').forEach(b => { const vacio = !b.querySelector('.cn-row:not([hidden])'); if(b.hidden !== vacio) b.hidden = vacio; });
     const sg = $('cnSecGrupo'); if(sg){ const hay = !!(sg.nextElementSibling && !sg.nextElementSibling.hidden) || !$('cnAdm').hidden; if(sg.hidden !== !hay) sg.hidden = !hay; }
-    caja.classList.toggle('cn-con-super', !$('cnSuper').hidden);
+    const esSup = !!(p && p.es_super); if($('cnTabs').hidden === esSup) $('cnTabs').hidden = !esSup;
+    if(!esSup && pestana === 'sup') ponPestana('cuenta');
+    caja.classList.toggle('cn-con-super', esSup);
     // App Hato Verde y soporte: los mismos enlaces de siempre
     const hato = $('irHatoBtn'), fh = caja.querySelector('[data-va="hato"]');
     if(hato && fh.getAttribute('href') !== hato.getAttribute('href')){ fh.setAttribute('href', hato.getAttribute('href')); if(hato.target) fh.target = hato.target; }
@@ -153,10 +169,22 @@
   function cerrar(){ if(!caja.hidden) caja.hidden = true; repasar(); }
   window.acgolfCuentaNueva = { abrir, cerrar };
 
+  let pestana = 'cuenta';
+  function ponPestana(t){
+    pestana = t === 'sup' ? 'sup' : 'cuenta';
+    $('cnSup').hidden = pestana !== 'sup'; $('cnTodo').hidden = pestana === 'sup';
+    caja.querySelectorAll('.cn-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === pestana));
+    main.scrollTop = 0;
+    if(pestana === 'sup' && window.acgolfCuenta && window.acgolfCuenta.puntoSoporte) window.acgolfCuenta.puntoSoporte();
+    bordes();
+  }
+  caja.querySelectorAll('.cn-tab').forEach(b => b.addEventListener('click', () => ponPestana(b.dataset.tab)));
+  window.acgolfCuentaNueva.irSuper = () => { abrir(); ponPestana('sup'); };
   $('cnPlegBtn').addEventListener('click', () => { const c = $('cnPlegC'), ab = c.hidden; c.hidden = !ab; $('cnPlegBtn').setAttribute('aria-expanded', String(ab)); $('cnPleg').classList.toggle('abierto', ab); });
   caja.addEventListener('click', ev => {
     const f = ev.target.closest('[data-va]'); if(!f) return;
     const va = f.dataset.va, C = window.acgolfCuenta;
+    if(va.indexOf('sup:') === 0){ const id = va.slice(4); if(id === 'seg'){ if(window.acgolfRitmo && window.acgolfRitmo.abrir) window.acgolfRitmo.abrir(); } else if(C && C.superIr) C.superIr(id); return; }
     if(DE_SIEMPRE[va]){ const b = document.querySelector(DE_SIEMPRE[va]); if(b) b.click(); return; }
     if(va === 'foto'){ window.acgolfAvatares.editar(window.miPerfil); return; }
     if(va === 'hato') return; // es un enlace
