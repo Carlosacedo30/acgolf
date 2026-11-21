@@ -38,3 +38,15 @@ html.in-on #convBody .conv-link{ font:700 16px Barlow,system-ui,Arial,sans-serif
 html.in-on #convOverlay .field label{ color:#9AA3B0; font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.12em; text-transform:uppercase; }
 html.in-on #convOverlay .field input, html.in-on #convOverlay .field select{ background:#121620; border:1px solid #242B38; border-radius:14px; color:#F4F1E8; font:600 17px Barlow,system-ui,Arial,sans-serif; padding:12px 14px; }
 @media (max-height:700px){ html.in-on #convBody .conv-tee{ padding:12px; } html.in-on #convBody .conv-seat{ padding:9px 12px; } }
+
+/* Formulario «Organizar partido»: sin lima, todo en dorado y azul del diseño nuevo */
+html.in-on #convOverlay .bc-sel-b{ background:#121620; border:1px solid #242B38; color:#F4F1E8; font:600 18px Barlow,system-ui,Arial,sans-serif; }
+html.in-on #convOverlay .bc-sel-b .bc-ico{ color:#E9CF8C; }
+html.in-on #convOverlay .bc-sel-b.on, html.in-on #convOverlay .bc-btn.fav.on, html.in-on #convOverlay .bc-chip.on, html.in-on #convOverlay .bc-btn.lima{ background:linear-gradient(#EBD08A,#C9A54A); border-color:transparent; color:#16120A; font-weight:800; }
+html.in-on #convOverlay .bc-sel-b.on .bc-ico{ color:#16120A; }
+html.in-on #convOverlay .bc-btn:not(.lima):not(.on){ border-color:rgba(217,190,122,.55); color:#E9CF8C; }
+html.in-on #convOverlay .bc-ico{ color:#E9CF8C; }
+html.in-on #convOverlay .field input:focus, html.in-on #convOverlay .field select:focus, html.in-on #convOverlay .search-box:focus-within{ border-color:#E9CF8C; background-color:#17233D; box-shadow:0 0 0 3px rgba(233,207,140,.2); outline:none; }
+html.in-on #convOverlay input[type="date"]::-webkit-calendar-picker-indicator, html.in-on #convOverlay input[type="time"]::-webkit-calendar-picker-indicator{ background:#E9CF8C; }
+html.in-on #convOverlay .conv-eyebrow{ color:#9AA3B0; }
+html.in-on #convOverlay small, html.in-on #convOverlay .field small{ color:#9AA3B0; font-size:15px; }
