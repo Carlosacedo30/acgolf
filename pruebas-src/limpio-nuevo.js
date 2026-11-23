@@ -176,13 +176,16 @@
     if(premios) premios.insertBefore(gan, premios.firstChild);
     gan.addEventListener('click', () => { const b = document.querySelector('.home-menu-btn[data-foco="premios"]'); if(b) b.click(); });
     // Línea discreta de abajo: Normas de la liga · Ligas (solo administrador)
-    const pie = crear('p', 'lm-pie', '<button type="button" data-lm="normas">Normas de la liga</button><button type="button" data-lm="ligas">Ligas (solo administrador)</button>');
+    const adm = crear('div', 'lm-adm', '<p class="lm-adm-t">SOLO ADMINISTRADOR</p><button type="button" data-lm="ligas"><span><b>Ligas</b><small>Crear y gestionar ligas</small></span><i aria-hidden="true">›</i></button>');
+    const pie = crear('p', 'lm-pie', '<button type="button" data-lm="normas">Normas de la liga</button>');
+    lg.insertBefore(adm, lg.querySelector('.lg-fin'));
     lg.insertBefore(pie, lg.querySelector('.lg-fin'));
-    pie.addEventListener('click', ev => {
+    const alClic = ev => {
       const b = ev.target.closest('[data-lm]'); if(!b) return;
       if(b.dataset.lm === 'normas'){ const n = $('homeNormasBtn'); if(n) n.click(); }
       else { const l = lg.querySelector('.lg-row[data-va="ligas"]'); if(l) l.click(); }
-    });
+    };
+    pie.addEventListener('click', alClic); adm.addEventListener('click', alClic);
     function repasar(){
       if(lg.hidden) return;
       const t = $('lgTitulo'), s = $('lgSub');
@@ -192,10 +195,10 @@
       pon(gan, 'hidden', !document.querySelector('.home-menu-btn[data-foco="premios"]'));
       if(premios){ const vacio = !premios.querySelector('.lg-row:not([hidden])'); pon(premios, 'hidden', vacio); const sec = lg.querySelector('.lg-sec'); if(sec) pon(sec, 'hidden', vacio); }
       const lr = lg.querySelector('.lg-row[data-va="ligas"]');
-      const bl = pie.querySelector('[data-lm="ligas"]'), bn = pie.querySelector('[data-lm="normas"]');
-      pon(bl, 'hidden', !lr || lr.hidden);
+      const bn = pie.querySelector('[data-lm="normas"]');
+      pon(adm, 'hidden', !lr || lr.hidden);
       pon(bn, 'hidden', !($('homeNormasBtn') && typeof abrirNormas === 'function'));
-      pon(pie, 'hidden', bl.hidden && bn.hidden);
+      pon(pie, 'hidden', bn.hidden);
     }
     setInterval(repasar, 1000);
     new MutationObserver(() => setTimeout(repasar, 0)).observe(lg, { attributes: true, attributeFilter: ['hidden'] });
