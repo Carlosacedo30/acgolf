@@ -148,10 +148,10 @@
 
   // ---------- Barra de abajo: 4 pestañas ----------
   const nav = crear('nav', 'in-nav',
-      '<button type="button" class="in-tab on" data-tab="inicio" aria-current="page">Inicio<i class="in-punto" id="inPunto" hidden></i></button>'
-    + '<button type="button" class="in-tab" data-tab="jugar">Jugar</button>'
-    + '<button type="button" class="in-tab" data-tab="liga">Liga</button>'
-    + '<button type="button" class="in-tab" data-tab="cuenta">Mi cuenta</button>');
+      '<button type="button" class="in-tab on" data-tab="inicio" aria-current="page"><svg class="in-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/></svg><span>Inicio</span><i class="in-punto" id="inPunto" hidden></i></button>'
+    + '<button type="button" class="in-tab" data-tab="jugar"><svg class="in-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8l6 4-6 4z"/></svg><span>Jugar</span></button>'
+    + '<button type="button" class="in-tab" data-tab="liga"><svg class="in-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M12 14v4M8 20h8"/></svg><span>Liga</span></button>'
+    + '<button type="button" class="in-tab" data-tab="cuenta"><svg class="in-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg><span>Cuenta</span></button>');
   nav.id = 'inNav'; nav.setAttribute('aria-label', 'Pestañas');
   pant.appendChild(nav);
   const pulsa = sel => { const b = document.querySelector(sel); if(b) b.click(); };
