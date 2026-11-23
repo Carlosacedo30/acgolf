@@ -41,10 +41,10 @@
   // Tabla de 9 hoyos (ida o vuelta)
   function tabla9(D, h, titulo, etqTot){
     const sum = f => h.reduce((a, x) => a + (f(x) || 0), 0);
-    const filaH = '<tr><th class="l">HOYO</th>' + h.map(x => '<th>' + x.h + '</th>').join('') + '<th class="t">' + etqTot + '</th></tr>';
+    const filaH = '<tr><th class="l">HOYO</th>' + h.map(x => '<th' + (x.h > 9 ? ' class="dd"' : '') + '>' + x.h + '</th>').join('') + '<th class="t">' + etqTot + '</th></tr>';
     const filaP = '<tr class="par"><td class="l">PAR</td>' + h.map(x => '<td>' + x.par + '</td>').join('') + '<td class="t">' + sum(x => x.par) + '</td></tr>';
     const filaR = '<tr><td class="l">HCP</td>' + h.map(x => '<td>' + (x.r > 0 ? '<i class="dot"></i>'.repeat(Math.min(x.r, 3)) : '') + '</td>').join('') + '<td class="t"></td></tr>';
-    const filaG = '<tr class="gol"><td class="l">GOLPES</td>' + h.map(x => '<td><div class="up-s ' + (x.v ? clase(x.d) : 'vac') + '">' + (x.v || '–') + '</div></td>').join('') + '<td class="t">' + sum(x => x.v) + '</td></tr>';
+    const filaG = '<tr class="gol"><td class="l">GOLPES</td>' + h.map(x => '<td><div class="up-s ' + (x.v ? clase(x.d) : 'vac') + (x.v > 9 ? ' dd' : '') + '">' + (x.v || '–') + '</div></td>').join('') + '<td class="t">' + sum(x => x.v) + '</td></tr>';
     const filaS = '<tr class="pts"><td class="l">PUNTOS</td>' + h.map(x => '<td>' + (x.v ? x.pts : '–') + '</td>').join('') + '<td class="t">' + sum(x => x.pts) + '</td></tr>';
     return '<div class="up-c"><div class="up-e">' + titulo + '</div><table class="up-t' + (D.esPtos ? ' up-ptos' : '') + '">' + filaH + filaP + filaR + filaG + (D.esPtos ? filaS : '') + '</table></div>';
   }

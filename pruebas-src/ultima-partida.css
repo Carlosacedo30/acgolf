@@ -62,3 +62,8 @@ html.in-on #homeAhora > #lmHoy{ order:27; }
 .up-t .gol .l{ padding-right:6px; }
 .up-t .t{ width:36px; }
 @media (max-width:370px){ .up-t .up-s{ width:20px; height:20px; font-size:13px; } .up-t .l{ width:50px; letter-spacing:0; } .up-t .t{ width:34px; } .up-t th, .up-t td{ font-size:13px; } }
+/* 23-nov (captura de Carlos): «PUNTOS» no se pisa con los números; los números de 2 cifras caben */
+.up-ptos .pts td.l{ font:700 11px Archivo, Arial, sans-serif; letter-spacing:.04em; }
+.up-t .up-s.dd{ font-size:12px; letter-spacing:-.06em; }
+.up-t th.dd{ font-size:11px; letter-spacing:-.04em; }
+.up-h1{ font-size:28px; }
