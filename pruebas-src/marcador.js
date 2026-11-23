@@ -262,7 +262,7 @@
   function quizaAvanzar(h){
     clearTimeout(avanceTimer);
     const g = grupoEst();
-    if(!g || llegada.completo || h >= nHoyos() || !hoyoMioCompleto(g, h) || malEn(g, h)) return;
+    if(!g || llegada.completo || h >= nHoyos() || !hoyoMioCompleto(g, h) || malEn(g, h) || todoApuntado(g) || cerrada(g)) return;
     avanceTimer = setTimeout(() => {
       if(currentHole !== h || !hoyoMioCompleto(grupoEst(), h) || malEn(grupoEst(), h)) return;
       currentHole = h + 1; window.renderHoleView();
@@ -378,7 +378,7 @@
     if(nx){ nx.classList.toggle('mk-off', !ok && !ultimo); nx.classList.toggle('mk-go', ok && !ultimo); }
     const w = document.getElementById('hvPlayers'); if(!w) return;
     let a = document.getElementById('mkAvisoHoyo'); if(a) a.remove();
-    if(cerrada(g)) return;   // tarjeta entregada: ningún cartel de «pasando al hoyo»
+    if(cerrada(g) || todoApuntado(g)) return;   // partida terminada o tarjeta entregada: ningún cartel de «pasando al hoyo» (solo sale mientras se juega)
     a = document.createElement('div'); a.id = 'mkAvisoHoyo';
     if(ok && !ultimo){
       a.className = 'mk-aviso ok';
