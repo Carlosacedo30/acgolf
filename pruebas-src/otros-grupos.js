@@ -18,7 +18,8 @@
   const metaDe = mg => ((Array.isArray(mg) ? mg : []).find(g => g && g.meta) || {}).meta || {};
 
   // Las tarjetas ajenas viven DENTRO de #convHome, mezcladas con las del grupo activo y ordenadas por fecha y hora
-  const nodos = { otros: [], ryder: [] };
+  const nodos = { otros: [], ryder: [], partido: [] };
+  let codigosConPartido = new Set();   // Ryders donde ya tengo mi partido: no se repite «Juegas la Ryder»
   const nodo = (html, fecha, hora) => { const t = document.createElement('template'); t.innerHTML = html.trim(); const n = t.content.firstChild; if(fecha) n.dataset.fecha = fecha; if(hora) n.dataset.hora = hora; return n; };
   const esFecha = v => /^\d{4}-\d{2}-\d{2}$/.test(v || '');
   // Si una tarjeta propia viene sin fecha (versión guardada antigua), se saca del texto «Domingo 22»: el próximo día con ese nombre y número
@@ -32,7 +33,7 @@
   let obs = null;
   function colocar(){
     const box = document.getElementById('convHome'); if(!box) return;
-    const todos = Array.from(box.querySelectorAll(':scope > .ip-card')).concat(nodos.otros, nodos.ryder);
+    const todos = Array.from(box.querySelectorAll(':scope > .ip-card')).concat(nodos.otros, nodos.ryder, nodos.partido);
     todos.sort((a, b) => clave(a) < clave(b) ? -1 : clave(a) > clave(b) ? 1 : 0);
     const ya = Array.from(box.children).filter(n => todos.indexOf(n) >= 0);
     if(ya.length === todos.length && ya.every((n, i) => n === todos[i]) && todos.length && box.lastElementChild === todos[todos.length - 1]) return;
@@ -108,6 +109,7 @@
     const yo = norm(window.miPerfil && window.miPerfil.player_name);
     const items = lista.map(f => {
       const meta = metaDe(f.match_groups); if(meta.fecha && meta.fecha < hoy()) return null;
+      if(codigosConPartido.has(f.code)) return null;
       const eq = (f.match_groups || []).filter(g => g && g.equipo);
       const mio = eq.find(g => (g.players || []).some(n => norm(n) === yo)); if(!mio) return null;
       const cuando = meta.fecha ? fecha(meta.fecha) + ' ' + new Date(meta.fecha + 'T12:00:00').toLocaleDateString('es-ES', { month: 'long' }) : 'Fecha por confirmar';
@@ -125,6 +127,7 @@
     const box = document.getElementById('convHome') || ahora;
     box.addEventListener('click', async ev => {
       const b = ev.target.closest('.og-card'); if(!b) return;
+      if(b._partido){ if(window.acgolfRyder && window.acgolfRyder.abrirPartido) window.acgolfRyder.abrirPartido(b._partido.code, b._partido.i); return; }
       if(b._ryder){ if(window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo) window.acgolfRyderIns.abrirCodigo(b._ryder.code); return; }
       const a = b._aviso; if(!a) return;
       if(a.f.tipo === 'ryder' && window.acgolfRyderIns && window.acgolfRyderIns.abrirCodigo){ window.acgolfRyderIns.abrirCodigo(a.f.code); return; }
@@ -135,10 +138,39 @@
     });
   })();
 
+  // ---- «Tu partido de la Ryder»: si la Ryder ya tiene partidos y juego en alguno, sale mi partido con un toque para abrirlo ----
+  const MODO = { foursome: 'Foursome', fourball: 'Fourball', individual: 'Individual' };
+  function pintarPartidos(filas){
+    const yo = norm(window.miPerfil && window.miPerfil.player_name);
+    const items = []; codigosConPartido = new Set();
+    (filas || []).forEach(f => {
+      const mg = Array.isArray(f.match_groups) ? f.match_groups : [], meta = metaDe(mg);
+      const dia = meta.date || meta.fecha || ''; if(dia && dia < hoy()) return;
+      mg.filter(g => g && g.duelo).forEach((d, i) => {
+        const a = d.a || [], b = d.b || [];
+        const conmigo = a.some(n => norm(n) === yo) ? a : b.some(n => norm(n) === yo) ? b : null; if(!conmigo) return;
+        const rival = conmigo === a ? b : a;
+        const con = conmigo.filter(n => norm(n) !== yo);
+        const campo = (typeof COURSES !== 'undefined' ? COURSES : []).find(c => c.id === meta.courseId);
+        codigosConPartido.add(f.code);
+        items.push({ code: f.code, i, fecha: dia, titulo: (meta.titulo || 'Ryder Cup') + ' · ' + (MODO[d.tipo] || 'Partido'),
+          lineas: '<b>Tú' + (con.length ? ' y ' + con.map(esc).join(' y ') : '') + '</b> contra <b>' + rival.map(esc).join(' y ') + '</b>',
+          sub: (dia ? fecha(dia) + ' ' + new Date(dia + 'T12:00:00').toLocaleDateString('es-ES', { month: 'long' }) : 'Fecha por confirmar') + (campo ? ' · ' + campo.name : '') });
+      });
+    });
+    nodos.partido.forEach(n => n.remove());
+    nodos.partido = items.map(a => {
+      const n = nodo('<button type="button" class="og-card og-juego og-partido"><span class="og-etq">Tu partido de la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-vs">' + a.lineas + '</span><span class="og-sub">' + esc(a.sub) + '</span><span class="og-ir">ANOTAR MI PARTIDO</span></button>', a.fecha);
+      n._partido = a; return n;
+    });
+    colocar();
+  }
+
   async function cargar(){
     if(document.documentElement.classList.contains('es-invitado')) return;
     const client = initSupabase();
     try { const r = await client.rpc('avisos_otros_grupos'); if(!r.error) pintar(Array.isArray(r.data) ? r.data : []); } catch(e){}
+    try { const r = await client.from('rounds').select('code, match_groups').eq('round_name', 'Ryder Cup').order('created_at', { ascending: false }).limit(5); if(!r.error) pintarPartidos(r.data || []); } catch(e){}
     try { const r = await client.rpc('ryder_mia'); if(!r.error) pintarRyder(Array.isArray(r.data) ? r.data : []); } catch(e){}
   }
   (function esperar(n){
