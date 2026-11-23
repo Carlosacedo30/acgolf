@@ -519,7 +519,7 @@
     c.querySelectorAll('button[data-code]').forEach(b => b.onclick = () => { location.href = location.pathname + '?partida=' + encodeURIComponent(b.dataset.code); });
   }
   // ---------- Lista del administrador: tarjetas sin cerrar (solo la ve el administrador) ----------
-  let adminLista = [];
+  let adminLista = [], adminAbierto = false;
   const MOTIVO = { faltan_hoyos: 'Le faltan hoyos por apuntar', no_coincide: 'No coincide algún hoyo con su marcador', sin_marcador: 'Jugó sin marcador', sin_firmar: 'Coincide, pero no la ha entregado (se entregará sola a la hora)' };
   async function cargarAdmin(){
     try {
@@ -535,11 +535,12 @@
     let c = document.getElementById('tfAdmin');
     if(!home || !adminLista.length){ if(c) c.remove(); return; }
     if(!c){ c = document.createElement('div'); c.id = 'tfAdmin'; const ref = document.getElementById('tfInicio'); home.insertBefore(c, ref ? ref.nextSibling : home.firstChild); }
-    c.innerHTML = '<div class="tf-banda"><b>TARJETAS SIN CERRAR · ' + adminLista.length + '</b><span>Solo la ves tú, el administrador.</span></div>'
-      + adminLista.map((p, i) => '<div class="tf-item"><b>' + esc(p.jugador) + '</b><small>' + esc(p.nombre || 'Liga') + '</small>'
+    c.innerHTML = '<button type="button" class="tf-resumen" id="tfAbrir" aria-expanded="' + (adminAbierto ? 'true' : 'false') + '">Tarjetas por cerrar · <b>' + adminLista.length + '</b> <i>' + (adminAbierto ? '▴' : '›') + '</i></button>'
+      + '<div class="tf-lista"' + (adminAbierto ? '' : ' hidden') + '><p class="tf-solo">Solo la ves tú, el administrador.</p>' + adminLista.map((p, i) => '<div class="tf-item"><b>' + esc(p.jugador) + '</b><small>' + esc(p.nombre || 'Liga') + '</small>'
         + '<span class="tf-motivo">' + esc(MOTIVO[p.motivo] || 'Sin cerrar') + '</span>'
         + '<div class="tf-dos"><a class="tf-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(corto(p.jugador) + ', te falta cerrar la tarjeta de la liga en acgolf. ' + (MOTIVO[p.motivo] || '') + '.') + '">AVISAR</a>'
-        + '<button type="button" class="tf-btn" data-i="' + i + '">CERRAR YO</button></div></div>').join('');
+        + '<button type="button" class="tf-btn" data-i="' + i + '">CERRAR YO</button></div></div>').join('') + '</div>';
+    const ab = c.querySelector('#tfAbrir'); if(ab) ab.onclick = () => { adminAbierto = !adminAbierto; pintarAdmin(); };
     c.querySelectorAll('button[data-i]').forEach(b => b.onclick = async () => {
       const p = adminLista[+b.dataset.i]; if(!p) return;
       if(!await acgolfConfirmar('¿Cerrar la tarjeta de ' + p.jugador + '?\n\nQueda dada por válida y anotado que la cerraste tú. Ya no se podrá cambiar.')) return;
