@@ -622,5 +622,9 @@
     ref.parentNode.insertBefore(b, ref.nextSibling);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ponerBoton); else ponerBoton();
-  window.acgolfRyder = { abrir, abrirPartido, desdeLista, _estado: estado, _puntos: puntos };
+  // Para el Inicio: puntos de cada equipo y cómo va cada partido (solo lectura)
+  function resumenFila(row){
+    try { const r = deFila(row); const p = puntos(r); return { meta: r.meta, p, estado: i => estado(r, r.duelos[i]) }; } catch(e){ return null; }
+  }
+  window.acgolfRyder = { abrir, abrirPartido, resumenFila, desdeLista, _estado: estado, _puntos: puntos };
 })();

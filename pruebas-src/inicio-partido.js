@@ -44,6 +44,18 @@
     if(!d || !d.liga) return null;
     return { nombre: d.liga.nombre || 'Liga', n: d.n || 0, total: d.total || 0 };
   }
+  // «Tu puesto · 2.º · 18 pts» y cuánto falta para el líder (datos de Clasificación liga, solo lectura)
+  function puestoLiga(c){
+    try {
+      const li = ligaInfo(c); const C = window.acgolfClasifLiga; if(!li || !C) return '';
+      const d = ligaDeConv(c.code); const r = (C.datos() || {})[d.liga.code]; if(!r || !r.tabla || !r.tabla.length) return '';
+      const yo = String((window.miPerfil && window.miPerfil.player_name) || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase(); if(!yo) return '';
+      const i = r.tabla.findIndex(f => String(f.jugador || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase() === yo); if(i < 0) return '';
+      const dif = r.tabla[0].puntos - r.tabla[i].puntos;
+      const falta = i === 0 ? 'Vas líder' : dif === 0 ? 'Empatado con el líder' : 'A ' + dif + (dif === 1 ? ' punto' : ' puntos') + ' del líder';
+      return '<div class="ip-puesto"><span>Tu puesto</span><b>' + (i + 1) + '.º · ' + r.tabla[i].puntos + ' pts</b></div><div class="ip-falta">' + falta + '</div>';
+    } catch(e){ return ''; }
+  }
   function jornada(c){
     if(c.ryder) return '<div class="ip-jornada">Jornada de Ryder</div>';
     const li = ligaInfo(c);
@@ -91,7 +103,7 @@
       const cambiar = mi >= 0 && !c.roundCode && abierta !== c.code ? '<button type="button" class="ip-cambiar" data-apuntar="' + esc(c.code) + '">Cambiar hora o decir que no voy</button>' : '';
       return '<div class="ip-card' + (esHoy ? ' hoy' : '') + (ligaInfo(c) ? ' ip-card-liga' : '') + '" data-fecha="' + esc(c.date) + '" data-hora="' + esc(String((c.times && c.times[0]) || '')) + '">'
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
-        + '<div class="ip-eti">' + etiqueta + '</div>' + jornada(c) + '<div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>'
+        + '<div class="ip-eti">' + etiqueta + '</div>' + jornada(c) + '<div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>' + puestoLiga(c) + '</div>'
         + derecha + '</div>' + elegir + cambiar
         // Partida ya creada: el administrador o quien lo organizó puede abrir el partido para borrarlo
         + (c.roundCode && (isAdmin || (c.organiza && c.organiza === window.miPerfilId)) ? '<button type="button" class="ip-cambiar" data-gestionar="' + esc(c.code) + '">Ver o borrar el partido</button>' : '')
