@@ -297,3 +297,12 @@ body:has(.pr-banda) .tf-fondo{ padding-top:calc(env(safe-area-inset-top, 0px) + 
   html.mn-on .tf-fondo .tf-bien{ padding:9px 14px; font-size:15px !important; }
   html.mn-on .tf-fondo .tf-btn{ min-height:56px; }
 }
+
+/* ---------- iPhone: la cabecera de marcar no queda debajo de la hora/batería (antes lo daba el cartel «Pruebas») ---------- */
+html.mn-on .screen[data-screen="3"] .screen-content{ padding-top:calc(env(safe-area-inset-top, 0px) + 12px) !important; }
+/* Teclado de golpes: cuatro columnas IGUALES y teclas cuadradas, sin salirse de la pantalla (iPhone 15: 393 px) */
+html.mn-on #numPadOverlay .np-sheet{ box-sizing:border-box; width:100%; max-width:100%; overflow-x:hidden; }
+html.mn-on #numPadOverlay #npGrid{ grid-template-columns:repeat(4, minmax(0, 1fr)) !important; gap:8px !important; width:100%; }
+html.mn-on #numPadOverlay #npGrid .np-key{ min-width:0; width:100%; height:auto !important; aspect-ratio:1 / 1; padding:0; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:clamp(34px, 11.5vw, 52px) !important; }
+html.mn-on #numPadOverlay #npGrid .np-key small{ font-size:11px !important; letter-spacing:.06em !important; margin-top:3px; white-space:nowrap; }
+@media (max-height:700px){ html.mn-on #numPadOverlay #npGrid .np-key{ aspect-ratio:auto; height:clamp(52px, calc((100dvh - 330px) / 4), 76px) !important; } }
