@@ -61,6 +61,36 @@
   hoyCard.addEventListener('click', ev => { if(ev.target.closest('[data-up="abrir"]') && window.acgolfUltima) window.acgolfUltima.abrir(); });
   const resumenDe = code => document.querySelector('#vvExtras [data-vv-res="' + (window.CSS && CSS.escape ? CSS.escape(code) : code) + '"]');
 
+  // ---- Al terminar la partida se va directo al Inicio (Carlos, 23-nov-2026) ----
+  const finCard = crear('div', 'lm-card lm-fin', '<b class="lm-t">✓ Partida terminada</b><span class="lm-s">Aquí tienes cómo has jugado</span>'
+    + '<button type="button" class="lm-oro" data-lm="verpartida">Ver la partida completa</button>');
+  finCard.hidden = true; ahora.insertBefore(finCard, ahora.firstChild);
+  finCard.addEventListener('click', async ev => {
+    if(!ev.target.closest('[data-lm="verpartida"]')) return;
+    const code = window.__finCode; if(!code || typeof joinSharedRound !== 'function') return;
+    try { const r = await joinSharedRound(code); if(r && r.ok) goTo(3); } catch(e){}
+  });
+  let terminando = 0;
+  ['finalizarRondaBtn', 'incompleteRoundContinue'].forEach(id => { const b = $(id); if(b) b.addEventListener('click', () => { terminando = Date.now(); }, true); });
+  const goOrigFin = window.goTo;
+  window.goTo = function(n){
+    const vengo = terminando && Date.now() - terminando < 2500; terminando = 0;
+    if(+n === 4 && vengo){
+      const falta = typeof window.acgolfEntregaPendiente === 'function' && window.acgolfEntregaPendiente();
+      if(!falta){   // sin nada que entregar: directo al Inicio
+        window.__finCode = typeof currentRoundCode !== 'undefined' ? currentRoundCode : null;
+        const r = goOrigFin.call(this, 0);
+        pon(finCard, 'hidden', false);
+        [2500, 6000].forEach(t => setTimeout(() => { try { if(typeof renderRecentRounds === 'function') renderRecentRounds(); } catch(e){} }, t));
+        return r;
+      }
+    }
+    if(+n !== 0 && !finCard.hidden){ pon(finCard, 'hidden', true); }
+    const r = goOrigFin.apply(this, arguments);
+    return r;
+  };
+  window.addEventListener('acgolf-fin-inicio', () => pon(finCard, 'hidden', false));
+
   // Se engancha a lo que ya pinta el Inicio con las últimas partidas (rondas-compartidas.js → renderHomeEnMarcha)
   function enganchar(){
     const f = window.renderHomeEnMarcha;

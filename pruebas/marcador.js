@@ -456,13 +456,13 @@
           + (faltan.length ? '<div class="tf-lista"><div class="tf-sub">Falta que entreguen:</div>' + faltan.map(x => '<div class="tf-fila"><span>' + esc(x) + '</span><b class="mal">falta</b></div>').join('') + '</div>'
               + '<a class="tf-btn wa" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(txt) + '">AVISAR A LOS QUE FALTAN</a>'
             : '<div class="tf-bien">¡Todas las tarjetas entregadas!</div>')
-          + '<button type="button" class="tf-btn gris" id="tfResumen">VER EL RESUMEN</button></div>';
+          + '<button type="button" class="tf-btn gris" id="tfResumen">IR AL INICIO</button></div>';
       }
       f.innerHTML = h;
       const q = id => f.querySelector('#' + id);
       if(q('tfMirar')) q('tfMirar').onclick = () => { firmaOculta = currentRoundCode; cerrarFirma(); };
       if(q('tfVolver')) q('tfVolver').onclick = () => { cerrarFirma(); const b = document.getElementById('s4Back'); if(b) b.click(); };
-      if(q('tfResumen')) q('tfResumen').onclick = () => { mostrarEntregada = false; cerrarFirma(); };
+      if(q('tfResumen')) q('tfResumen').onclick = () => { mostrarEntregada = false; cerrarFirma(); window.__finCode = currentRoundCode; if(typeof goTo === 'function'){ goTo(0); window.dispatchEvent(new Event('acgolf-fin-inicio')); } };
       if(q('tfFirmar')) q('tfFirmar').onclick = async () => {
         if(firmando) return;
         firmando = true; aviso = ''; pintarFirma();
@@ -476,6 +476,8 @@
   }
   setInterval(() => { if(document.visibilityState === 'visible') pintarFirma(); }, 2000);
   // el Hoyo 19 y el resumen no se abren con una tarjeta sin firmar
+  // ¿me falta entregar MI tarjeta? (lo usa «terminar partida → Inicio»)
+  window.acgolfEntregaPendiente = () => { try { const g = grupoEst(); return !!(currentRoundCode && conMarcadorEn(currentRoundCode) && soyJugador(g) && !entregadaYa(g)); } catch(e){ return false; } };
   window.acgolfTarjetaPendiente = () => pendientesInicio.find(p => p.mia_pendiente) || null;
 
   // ---------- Cartel rojo en el Inicio ----------

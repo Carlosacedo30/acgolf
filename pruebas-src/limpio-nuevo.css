@@ -58,6 +58,7 @@ html.in-on.lm-on body .screen[data-screen="0"]:not([data-foco]) #prAbrirBtn{ bac
 /* Separación entre tarjetas */
 html.in-on.lm-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora{ gap:12px; }
 html.in-on.lm-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora #prAbrirBtn{ margin-bottom:2px !important; }
+html.in-on.lm-on #homeAhora > #lmFin, html.in-on.lm-on #homeAhora > .lm-fin{ order:-1; }
 html.in-on.lm-on #homeAhora > #lmHoy{ order:5; }
 html.in-on.lm-on #homeAhora > #lmNada{ order:6; }
 html.in-on.lm-on #homeAhora > #lmMas{ order:7; }

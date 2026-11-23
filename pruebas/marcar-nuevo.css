@@ -306,3 +306,15 @@ html.mn-on #numPadOverlay #npGrid{ grid-template-columns:repeat(4, minmax(0, 1fr
 html.mn-on #numPadOverlay #npGrid .np-key{ min-width:0; width:100%; height:auto !important; aspect-ratio:1 / 1; padding:0; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:clamp(34px, 11.5vw, 52px) !important; }
 html.mn-on #numPadOverlay #npGrid .np-key small{ font-size:11px !important; letter-spacing:.06em !important; margin-top:3px; white-space:nowrap; }
 @media (max-height:700px){ html.mn-on #numPadOverlay #npGrid .np-key{ aspect-ratio:auto; height:clamp(52px, calc((100dvh - 330px) / 4), 76px) !important; } }
+
+/* Clasificación de la partida: las letras de arriba no se pisan (Carlos, 23-nov-2026) y sin cerveza */
+html.mn-on .tb-cl-cab, html.mn-on .tb-cl-fila{ grid-template-columns:22px minmax(0,1fr) 56px 62px 48px !important; gap:2px !important; }
+html.mn-on .tb-cl-cab{ font-size:10.5px !important; letter-spacing:.02em !important; white-space:nowrap; }
+html.mn-on .tb-cl-cab span, html.mn-on .tb-cl-fila span{ min-width:0; }
+html.mn-on .tb-birra{ display:none !important; }
+html.mn-on .tb-cl-fila.paga{ background:transparent !important; }
+html.mn-on .tb-cl-fila.paga.on{ background:#fff !important; }
+/* Cuadro «Ronda completa»: tarjeta azul con letra clara que se lee bien */
+html.mn-on #roundWinner{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1.5px solid rgba(217,190,122,.55) !important; border-radius:20px !important; color:#fff !important; }
+html.mn-on #roundWinner p, html.mn-on #roundWinner span{ color:#F2F4F5 !important; }
+html.mn-on #roundWinner p strong{ color:#E9CF8C !important; }
