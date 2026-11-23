@@ -1149,3 +1149,13 @@ s = re.sub(r'<link rel="stylesheet" href="hoyo19[a-z-]*\.css\?v=\d+">\n?', '', s
 assert 'hoyo19' not in s, 'quedan restos del hoyo 19'
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
+
+# --- Pantalla de marcar tranquila (23-nov-2026): sin avisos que tapen los números ---
+python3 - <<'PYEOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert 'marcar-tranquilo' not in s
+s = s.replace('</head>', '<link rel="stylesheet" href="marcar-tranquilo.css?v=1">\n</head>', 1)
+s = s.replace('</body>', '<script src="marcar-tranquilo.js?v=1"></script>\n</body>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
