@@ -34,7 +34,8 @@
     ov = document.createElement('div'); ov.id = 'mhOv'; ov.className = 'mh-ov'; ov.hidden = true;
     ov.innerHTML = '<div id="mhMapa" class="mh-mapa"></div>'
       + '<button type="button" class="mh-atras" id="mhAtras" aria-label="Volver">‹</button>'
-      + '<button type="button" class="mh-adm" id="mhSalida" hidden>Colocar la salida</button>'
+      + '<div class="mh-adms"><button type="button" class="mh-adm" id="mhSalida" hidden>Colocar la salida</button>'
+      + '<button type="button" class="mh-adm" id="mhGreen" hidden>Colocar el green</button></div>'
       + '<div class="mh-aviso" id="mhAviso" hidden></div>'
       + '<div class="mh-hoja"><button type="button" class="mh-flecha" id="mhAnt" aria-label="Hoyo anterior">‹</button>'
       + '<div class="mh-tit"><h1 id="mhH">Hoyo 1</h1><p id="mhP"></p></div>'
@@ -42,7 +43,8 @@
     document.body.appendChild(ov);
     $('mhAtras').onclick = cerrar;
     $('mhAnt').onclick = () => ir(hoyo - 1); $('mhSig').onclick = () => ir(hoyo + 1);
-    $('mhSalida').onclick = () => { colocando = !colocando; aviso(colocando ? 'Toca en el mapa donde está la salida' : ''); };
+    $('mhSalida').onclick = () => { colocando = colocando === 'tee' ? false : 'tee'; aviso(colocando ? 'Toca en el mapa donde está la salida' : ''); };
+    $('mhGreen').onclick = () => { colocando = colocando === 'green' ? false : 'green'; aviso(colocando ? 'Toca en el mapa donde está el centro del green' : ''); };
   }
   function aviso(t){ const a = $('mhAviso'); if(!a) return; a.textContent = t || ''; a.hidden = !t; }
   const par = h => (campo && campo.par && campo.par[h - 1]) || '';
@@ -58,8 +60,8 @@
     $('mhH').textContent = 'Hoyo ' + hoyo;
     $('mhP').textContent = 'Par ' + par(hoyo) + (g && t ? ' · ' + Math.round(dist(t, g)) + ' m' : '');
     $('mhAnt').disabled = hoyo <= 1; $('mhSig').disabled = hoyo >= hayHoyos();
-    const adm = !!(window.miPerfil && window.miPerfil.es_admin); $('mhSalida').hidden = !adm;
-    if(!g){ aviso('Este hoyo todavía no tiene el green colocado'); return; }
+    const adm = !!(window.miPerfil && window.miPerfil.es_admin); $('mhSalida').hidden = !adm; $('mhGreen').hidden = !(window.miPerfil && window.miPerfil.es_super);
+    if(!g){ aviso(colocando ? 'Toca en el mapa donde está el centro del green' : 'Este hoyo todavía no tiene el green colocado'); return; }
     if(!colocando) aviso(t || adm ? '' : 'Este hoyo todavía no tiene la salida colocada');
     const verde = L.divIcon({ className: 'mh-pin mh-green', html: '⚑', iconSize: [34, 34], iconAnchor: [17, 17] });
     L.marker([g.lat, g.lng], { icon: verde, interactive: false }).addTo(capa);
@@ -87,6 +89,16 @@
     (pts[hoyo] = pts[hoyo] || {}).tee = { lat: ll.lat, lng: ll.lng }; aviso('Salida guardada'); setTimeout(() => aviso(''), 1800); pintar();
   }
 
+  async function guardarGreen(ll){
+    const c = cliente(); if(!c) return;
+    aviso('Guardando el green…');
+    const clave = (typeof getAdminKey === 'function') ? getAdminKey() : null;
+    const r = await c.rpc('set_green', { p_key: clave, p_course: campo.id, p_hole: hoyo, p_lat: ll.lat, p_lng: ll.lng });
+    colocando = false;
+    if(r.error || r.data !== true){ aviso('No se pudo guardar: solo lo puede hacer el super administrador'); return; }
+    (pts[hoyo] = pts[hoyo] || {}).green = { lat: ll.lat, lng: ll.lng }; aviso('Green guardado'); setTimeout(() => aviso(''), 1800); pintar();
+  }
+
   function ir(h){ if(h < 1 || h > hayHoyos()) return; hoyo = h; colocando = false; pintar(); }
 
   // El campo de la partida: «Hato Verde» aunque la partida lo guarde con otro código o con el nombre escrito distinto
@@ -107,7 +119,7 @@
     if(!mapa){
       mapa = L.map('mhMapa', { zoomControl: false, attributionControl: true, maxZoom: 20 }).setView([37.565, -6.095], 17);
       L.tileLayer(IGN, { maxNativeZoom: 19, maxZoom: 20, attribution: CRED }).addTo(mapa);
-      mapa.on('click', e => { if(colocando) guardarSalida(e.latlng); });
+      mapa.on('click', e => { if(colocando === 'tee') guardarSalida(e.latlng); else if(colocando === 'green') guardarGreen(e.latlng); });
     }
     setTimeout(() => { mapa.invalidateSize(); pintar(); }, 60);
   }
