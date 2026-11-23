@@ -1,0 +1,28 @@
+/* Mi cuenta ordenada (norma de Carlos, 23-nov-2026). Solo con el diseño limpio. */
+html.mo-on .lm-cn .lm-pie{ display:none !important; }
+html.mo-on .lm-cn .lm-fila[hidden], html.mo-on .lm-cn .lm-card[hidden]{ display:none !important; }
+/* Tarjeta de administrador: borde dorado grueso y cabecera dorada */
+html.mo-on .lm-card.mo-admin{ border:2px solid #D9BE7A !important; padding:0 !important; overflow:hidden; }
+html.mo-on .mo-adm-cab{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:linear-gradient(180deg,#E9CF8C,#C9A54A); color:#111316; }
+html.mo-on .mo-adm-cab b{ display:block; font:900 14px Archivo, system-ui, sans-serif; letter-spacing:.1em; }
+html.mo-on .mo-adm-cab span:not(.mo-adm-esc){ display:block; margin-top:1px; font:600 12.5px/1.25 Barlow, system-ui, sans-serif; }
+html.mo-on .mo-adm-esc{ font-size:22px; line-height:1; }
+html.mo-on .lm-card.mo-admin .lm-fila{ margin:0 !important; }
+/* Cerrar sesión: línea discreta */
+html.mo-on .mo-sal{ margin:16px 0 8px; text-align:center; }
+html.mo-on .mo-sal button{ min-height:44px; padding:0 12px; border:0; background:none; color:#4A5568; font:800 15px Archivo, system-ui, sans-serif; }
+/* Pantallas de ajustes: solo se ve lo suyo (lo de siempre se muestra con las clases lm-ajustes / lm-ayuda que pone el JS) */
+html.mo-on #cnPant.mo-sub .lm-cn{ display:none !important; }
+html.mo-on #cnPant.mo-sub[data-mo="perfil"] #cnTodo > :not([data-mo="perfil"]):not(.mo-cab),
+html.mo-on #cnPant.mo-sub[data-mo="avisos"] #cnTodo > :not([data-mo="avisos"]):not(.mo-cab),
+html.mo-on #cnPant.mo-sub[data-mo="ayuda"] #cnTodo > :not([data-mo="ayuda"]):not(.mo-cab),
+html.mo-on #cnPant.mo-sub[data-mo="redes"] #cnTodo > :not([data-mo="redes"]):not(.mo-cab){ display:none !important; }
+html.mo-on #cnPant.mo-sub #cnTodo .cn-sec{ display:none !important; }
+html.mo-on #cnPant.mo-sub[data-mo="perfil"] .cn-sesion .cn-salir{ display:none !important; }
+/* Cabecera «‹ Volver» + título */
+html.mo-on .mo-cab{ padding:4px 0 8px; }
+html.mo-on .mo-cab[hidden]{ display:none !important; }
+html.mo-on .mo-volver{ min-height:44px; padding:0 4px; border:0; background:none; color:#8A6A12; font:800 17px Archivo, system-ui, sans-serif; }
+html.mo-on .mo-tit{ margin:4px 0 6px; font:900 26px Archivo, system-ui, sans-serif; color:#111316; }
+html.mo-on .lm-card.mo-admin .lm-fila{ padding-left:18px !important; padding-right:18px !important; }
+html.mo-on .cn-row[hidden]{ display:none !important; }

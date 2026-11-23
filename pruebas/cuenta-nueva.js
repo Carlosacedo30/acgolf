@@ -132,7 +132,9 @@
     const p = window.miPerfil;
     const nombre = p ? p.player_name : '';
     if($('cnNombre').textContent !== nombre) $('cnNombre').textContent = nombre;
-    caja.querySelectorAll('[data-va]').forEach(f => { const falta = !existe(f.dataset.va); const quien = f.closest('.cn-card') || f; if(quien.hidden !== falta) quien.hidden = falta; });
+    // Cada fila se esconde por sí sola; la tarjeta solo se esconde si TODAS sus filas faltan (antes mandaba la última: sin «App Hato Verde» desaparecía toda la tarjeta de Ayuda)
+    caja.querySelectorAll('[data-va]').forEach(f => { const falta = !existe(f.dataset.va); const tj = f.closest('.cn-card'); if(tj && tj.querySelectorAll('[data-va]').length > 1){ if(f.hidden !== falta) f.hidden = falta; } else { const quien = tj || f; if(quien.hidden !== falta) quien.hidden = falta; } });
+    caja.querySelectorAll('.cn-card').forEach(tj => { const fs = tj.querySelectorAll('[data-va]'); if(fs.length > 1){ const todas = Array.prototype.every.call(fs, x => x.hidden); if(tj.hidden !== todas) tj.hidden = todas; } });
     caja.querySelectorAll('.cn-adm').forEach(b => { const vacio = !b.querySelector('.cn-row:not([hidden])'); if(b.hidden !== vacio) b.hidden = vacio; });
     const sg = $('cnSecGrupo'); if(sg){ const hay = !!(sg.nextElementSibling && !sg.nextElementSibling.hidden) || !$('cnAdm').hidden; if(sg.hidden !== !hay) sg.hidden = !hay; }
     const esSup = !!(p && p.es_super); if($('cnTabs').hidden === esSup) $('cnTabs').hidden = !esSup;
