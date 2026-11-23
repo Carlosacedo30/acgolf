@@ -124,7 +124,13 @@
   function convSlotOf(c, name){ return c.groups.findIndex(g => g.includes(name)); }
   // Nombre de cada partida: la hora, o «Hoyo 7» si se sale al tiro
   const convAlTiro = c => !!(c && c.hoyos && c.hoyos.some(Boolean) && (new Set(c.times).size === 1 || new Set(c.hoyos).size > 1));
-  function convEtq(c, i){ const h = c.hoyos && c.hoyos[i]; return h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i]); }
+  // Hoyo por el que sale cada grupo: el suyo si lo tiene; si es una jornada de liga sin hoyo guardado, el de la ida (1) o la vuelta (10)
+  function convHoyoSalida(c, i){
+    const h = c.hoyos && c.hoyos[i]; if(h) return h;
+    const l = typeof window.acgolfLigaHoyos === 'function' ? window.acgolfLigaHoyos(c) : null;
+    return l ? (l.mitad === 'vuelta' && l.hoyos === 9 ? 10 : 1) : null;
+  }
+  function convEtq(c, i){ const h = convHoyoSalida(c, i); return h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i]); }
 
   async function convSignUp(name, slot){ // slot = -1 -> no juega
     convSetMe(name);
