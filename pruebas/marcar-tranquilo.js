@@ -38,11 +38,11 @@
   function cartel(){
     const sc = document.querySelector('.screen.active[data-screen="3"] .screen-content');
     let c = document.getElementById('mtTerminada');
-    const quiere = !!sc && terminada() && !document.querySelector('.mk-cerrada');
+    const quiere = !!sc && terminada();
     if(!quiere){ if(c) c.remove(); return; }
     if(c) return;
     c = document.createElement('div'); c.id = 'mtTerminada'; c.className = 'mk-cerrada';
-    c.innerHTML = '✓ Partida terminada. Estás viendo cómo quedó.';
+    c.innerHTML = '✓ Tarjeta entregada. Así quedó la partida.';
     const ref = document.getElementById('marcadorVivo');
     if(ref && ref.parentNode) ref.parentNode.insertBefore(c, ref); else sc.insertBefore(c, sc.firstChild);
   }
@@ -53,6 +53,20 @@
     ev.stopImmediatePropagation(); ev.preventDefault();
     if(typeof leaveCurrentRound === 'function') leaveCurrentRound(); else if(typeof goTo === 'function') goTo(0);
   }, true);
+  // Partida terminada: se quita lo que ya no sirve y el botón rojo pasa a ser «IR AL INICIO»
+  function limpiar(){
+    const on = enMarcar() && terminada();
+    raiz.classList.toggle('mt-fin', on);
+    const sig = document.getElementById('holeNextBtn');
+    if(on && sig && sig.textContent !== 'IR AL INICIO'){ sig.textContent = 'IR AL INICIO'; sig.classList.remove('disabled'); }
+  }
+  document.addEventListener('click', ev => {
+    if(!raiz.classList.contains('mt-fin')) return;
+    if(!ev.target || !ev.target.closest || !ev.target.closest('#holeNextBtn')) return;
+    ev.stopImmediatePropagation(); ev.preventDefault();
+    if(typeof leaveCurrentRound === 'function') leaveCurrentRound(); else if(typeof goTo === 'function') goTo(0);
+  }, true);
+  setInterval(limpiar, 300);
   setInterval(cartel, 600);
   setInterval(revisar, 500);
   revisar();

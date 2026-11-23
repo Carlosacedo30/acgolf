@@ -1155,8 +1155,8 @@ python3 - <<'PYEOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert 'marcar-tranquilo' not in s
-s = s.replace('</head>', '<link rel="stylesheet" href="marcar-tranquilo.css?v=4">\n</head>', 1)
-s = s.replace('</body>', '<script src="marcar-tranquilo.js?v=4"></script>\n</body>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="marcar-tranquilo.css?v=5">\n</head>', 1)
+s = s.replace('</body>', '<script src="marcar-tranquilo.js?v=5"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
 

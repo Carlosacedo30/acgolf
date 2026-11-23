@@ -20,3 +20,16 @@ html.mt-calla .cu-flash, html.mt-calla #rjAviso{ display:none !important; }
 #mtQuitar:active{ transform:scale(.97); }
 html.mt-on.mt-hay #mtQuitar{ display:inline-flex; }
 #mtTerminada{ box-sizing:border-box; margin:12px 0 !important; }
+
+/* Partida terminada: solo se ve lo que sirve (norma de limpieza) */
+html.mt-fin .screen[data-screen="3"] .mk-cerrada:not(#mtTerminada),
+html.mt-fin .screen[data-screen="3"] .mn-sel,
+html.mt-fin .screen[data-screen="3"] .mn-lbl,
+html.mt-fin .screen[data-screen="3"] .mn-keys,
+html.mt-fin .screen[data-screen="3"] #hvCompleto,
+html.mt-fin .screen[data-screen="3"] #mkAvisoHoyo,
+html.mt-fin .screen[data-screen="3"] #ftAviso,
+html.mt-fin .screen[data-screen="3"] #holePrevBtn,
+html.mt-fin .screen[data-screen="3"] .mr-bloque,
+html.mt-fin .screen[data-screen="3"] .mr-aviso{display:none !important}
+html.mt-fin .screen[data-screen="3"] .mn-bot #holeNextBtn{flex:1 1 100%}
