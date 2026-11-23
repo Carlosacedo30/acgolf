@@ -232,12 +232,16 @@
     const mas = wrap.querySelector('#mnMas'); if(mas) mas.onclick = () => abrirTeclado(g, selI, h, par, si);
     wrap.querySelectorAll('.mn-pl[data-i]').forEach(b => b.onclick = () => { selI = +b.dataset.i; window.renderHoleView(); });
   }
+  // Tarjeta entregada = cerrada: ya no se puede cambiar ningún golpe (Carlos, 23-nov-2026)
+  const cerrada = g => { try { return !!g && conMarcadorEn(currentRoundCode) && (entregadaYa(g) || (g.jugadores.length > 0 && g.jugadores.every(j => j.validada))); } catch(e){ return false; } };
   function apuntarPropio(i, h, v){
+    if(cerrada(grupoEst())) return;
     const real = document.querySelector('.golpes-input[data-hole="' + h + '"][data-player-index="' + i + '"]');
     if(real){ real.value = v; real.dispatchEvent(new Event('input', { bubbles: true })); }
     window.renderHoleView(); quizaAvanzar(h);
   }
   async function apuntarMarca(g, i, h, v){
+    if(cerrada(g)) return;
     const j = g.jugadores.find(x => +x.idx === i);
     if(j){ j.marcas = j.marcas || {}; if(v === '') delete j.marcas[String(h)]; else j.marcas[String(h)] = +v; }
     window.renderHoleView(); quizaAvanzar(h);
@@ -321,6 +325,18 @@
     div.innerHTML = htmlColumnas(g, h, par, isNaN(si) ? null : si);
     scores.replaceWith(div.firstElementChild);
     enlazarColumnas(wrap, g, h, par, isNaN(si) ? null : si); marcarFichasHoyos(g);
+    if(cerrada(g)){
+      const caja = wrap.querySelector('.mk-cols');
+      if(caja){
+        const l1 = caja.querySelector('.mn-lbl'); if(l1) l1.style.display = 'none';
+        caja.querySelectorAll('.mn-keys, #mnMas').forEach(e => { e.style.display = 'none'; });
+        caja.querySelectorAll('.mn-put button').forEach(e => { e.disabled = true; e.onclick = null; });
+        caja.querySelectorAll('.mn-pl[data-i]').forEach(e => { e.onclick = null; });
+        const nota = document.createElement('div'); nota.className = 'tf-bien mk-cerrada';
+        nota.innerHTML = '🔒 Tarjeta entregada: los golpes ya no se pueden cambiar.';
+        caja.parentNode.insertBefore(nota, caja);
+      }
+    }
     const cols = wrap.querySelector('.mk-cols');
     if(cols && malEn(g, h)){
       // «No coincide»: se ven los dos números y cada uno puede cambiar el suyo o dejar el del otro con un toque (no hace falta administrador)

@@ -1053,7 +1053,7 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-for a, b in [('marcador.js?v=18', 'marcador.js?v=20'), ('marcador-mesa.js?v=1', 'marcador-mesa.js?v=2'), ('marcador-mesa.css?v=1', 'marcador-mesa.css?v=2')]:
+for a, b in [('marcador.js?v=18', 'marcador.js?v=21'), ('marcador-mesa.js?v=1', 'marcador-mesa.js?v=2'), ('marcador-mesa.css?v=1', 'marcador-mesa.css?v=2')]:
     assert s.count(a) == 1, a
     s = s.replace(a, b)
 s = s.replace('</head>', '<link rel="stylesheet" href="marcar-nuevo.css?v=3">\n</head>', 1)
