@@ -1,0 +1,350 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* DISEÑO LIMPIO (norma de Carlos, 23-nov-2026) en el resto de pantallas · parte C:
+   En vivo y tele, Hoyo 19, Cartas, Scramble, Seguimiento y Ritmo, Tarjetas (entregar / sin cerrar), Normas y Jugadores de la liga,
+   Greens en el mapa, foto del hoyo, Reglas, Sevilla–Betis, Consejos e Historia.
+   Fondo BLANCO; el contenido en TARJETAS AZULES con borde dorado; un solo botón rojo por pantalla; secundarios dorados; pastillas.
+   Solo aspecto: no cambia nada de cómo funciona. Las pantallas de MARCAR golpes y los colores de cada hoyo no se tocan. */
+html.in-on.lm-on{ --c2-tx:#111316; --c2-suave:#4A5058; --c2-linea:#DADFE3; --c2-oro-osc:#8A6A1F; --c2-verde:#2E7D32;
+  --c2-azul:linear-gradient(160deg,#17233D,#0F1626); --c2-borde:rgba(217,190,122,.55); --c2-txc:#F4F1E8; --c2-suavec:#B5BFD0; --c2-oro:#E9CF8C;
+  --c2-fila:#26324F; --c2-boton:linear-gradient(180deg,#EBD08A,#C9A54A); --c2-rojo:#D7263D; --c2-campo:#F2F4F6; }
+
+/* ===================== 1. EN VIVO (en-vivo.js): marcador en directo y resumen final ===================== */
+html.in-on.lm-on .vv{ background:#fff !important; color:var(--c2-tx); }
+html.in-on.lm-on .vv-tit{ color:var(--c2-suave); font-size:15px; }
+html.in-on.lm-on .vv-tit b{ color:var(--c2-tx); font:900 20px/1.15 Archivo,system-ui,Arial,sans-serif; }
+html.in-on.lm-on .vv-x{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); font-weight:800; }
+/* «Así va» (fija arriba): fichas claras, la del líder dorada */
+html.in-on.lm-on .vv-asi{ background:#fff; border-bottom:1px solid var(--c2-linea); }
+html.in-on.lm-on .vv-asi-t{ color:var(--c2-suave); font-size:13px; }
+html.in-on.lm-on .vv-asi-v{ color:var(--c2-suave); font-size:16px; }
+html.in-on.lm-on .vv-asi-l li{ background:var(--c2-campo); border:1px solid var(--c2-linea); color:var(--c2-tx); font-size:16px; }
+html.in-on.lm-on .vv-asi-l li i{ color:var(--c2-suave); }
+html.in-on.lm-on .vv-asi-l li span{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .vv-asi-l li small{ color:var(--c2-suave); font-size:13px; }
+html.in-on.lm-on .vv-asi-l li.lider{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+html.in-on.lm-on .vv-asi-l li.lider :is(i,span,small){ color:#16120A; }
+/* Tableros de hoyos: tarjetas azules (los colores de cada hoyo no cambian) */
+html.in-on.lm-on .vv .vv-tab{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .vv-par, html.in-on.lm-on .vv-par.lider{ background:none; border:0; border-radius:0; border-bottom:1px solid var(--c2-fila); }
+html.in-on.lm-on .vv-par:last-child{ border-bottom:0; }
+html.in-on.lm-on .vv-par.lider .n b{ color:var(--c2-oro); }
+/* Curro y Lola: bocadillo en tarjeta azul */
+html.in-on.lm-on .vv-bur{ background:var(--c2-azul); border:1.5px solid var(--c2-borde); color:var(--c2-txc); }
+html.in-on.lm-on .vv-com.lola .vv-bur{ border-color:rgba(214,69,122,.8); }
+html.in-on.lm-on .vv-entra .vv-bur{ background:rgba(255,255,255,.04); }
+html.in-on.lm-on .vv-entra{ border:1.5px solid var(--c2-borde); }
+/* Rótulos sobre blanco */
+html.in-on.lm-on :is(.vv-dest, .vv-final) h5{ color:var(--c2-suave); font-size:14px; }
+html.in-on.lm-on .vv-pie{ color:var(--c2-suave); font-size:15px; }
+/* Lo último y el carrusel: azules */
+html.in-on.lm-on .vv-dst, html.in-on.lm-on .vv-dst.viej, html.in-on.lm-on .vv-card{ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .vv-dst.viej{ border-color:rgba(217,190,122,.3); }
+html.in-on.lm-on .vv-dst.viej b{ color:var(--c2-suavec); }
+html.in-on.lm-on .vv-card :is(p, .vv-clas, .vv-clas *){ color:var(--c2-txc); }
+html.in-on.lm-on .vv-card .vv-clas :is(b, strong){ color:var(--c2-oro); }
+/* Resumen final: ganador, clasificación en UNA tarjeta con filas, mejor/peor hoyo, grupos y cervezas */
+html.in-on.lm-on .vv-gan{ border:1.5px solid var(--c2-borde); }
+html.in-on.lm-on .vv-gan p{ color:var(--c2-oro); }
+html.in-on.lm-on .vv-fcl{ display:block; gap:0; padding:2px 16px; background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; overflow:hidden; }
+html.in-on.lm-on .vv-fcl > div, html.in-on.lm-on .vv-fcl > div:first-child, html.in-on.lm-on .vv-fcl > div:last-child{ background:none; border:0; border-radius:0; border-bottom:1px solid var(--c2-fila); padding:12px 0; color:var(--c2-txc); font-size:18px; }
+html.in-on.lm-on .vv-fcl > div:last-child{ border-bottom:0; }
+html.in-on.lm-on .vv-fcl small{ color:var(--c2-suavec); font-size:14px; }
+html.in-on.lm-on .vv-fcl i, html.in-on.lm-on .vv-fcl b{ color:var(--c2-oro); }
+html.in-on.lm-on .vv-fm, html.in-on.lm-on .vv-fg, html.in-on.lm-on .vv-fbir{ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; color:var(--c2-txc); }
+html.in-on.lm-on .vv-fm.o b{ color:var(--c2-suavec); }
+html.in-on.lm-on .vv-fm span{ color:var(--c2-suavec); }
+html.in-on.lm-on .vv-fg b, html.in-on.lm-on .vv-fbir b{ color:var(--c2-oro); }
+/* Flecha «Ver resultados»: dorada */
+html.in-on.lm-on .vv-mas{ background:var(--c2-boton); border:0; color:#16120A; box-shadow:0 4px 14px rgba(17,19,22,.25); }
+html.in-on.lm-on .vv-mas span, html.in-on.lm-on .vv-mas i{ color:#16120A; }
+/* El plató (vídeo de Curro y Lola) conserva su ambiente de tele; solo el marco */
+html.in-on.lm-on .vv-plato{ border:1.5px solid var(--c2-borde); }
+/* Botón «Ir al hoyo 19» del resumen */
+html.in-on.lm-on .h19-ir{ border:1.5px solid var(--c2-borde); }
+/* Inicio: avisos «Partida en directo» / «El plató» (si salen fuera de las tarjetas del Inicio limpio) */
+html.in-on.lm-on #vvExtras .home-marcha{ background:var(--c2-azul) !important; border:1.5px solid var(--c2-borde) !important; border-radius:22px !important; color:var(--c2-txc) !important; }
+html.in-on.lm-on #vvExtras .home-marcha-sub{ color:var(--c2-suavec) !important; }
+html.in-on.lm-on #vvExtras .home-marcha-chips span{ background:rgba(233,207,140,.12) !important; border:1px solid var(--c2-borde) !important; color:var(--c2-oro) !important; }
+
+/* ===================== 1b. La tele (tele-directo.js): la tele conserva su ambiente; alrededor, limpio ===================== */
+html.in-on.lm-on .vt{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .vt-admin-btn{ background:var(--c2-boton) !important; color:#16120A !important; border:0 !important; }
+
+/* ===================== 2. HOYO 19 (hoyo19.js, hoyo19-hilo.js, hoyo19-foto.js) ===================== */
+/* Inicio: franja «Hoyo 19 · Se abre cuando termina una partida» en azul */
+html.in-on.lm-on body .hm-hoyo19.h19-dormido{ background:var(--c2-azul) !important; border:1.5px solid var(--c2-borde) !important; border-radius:22px !important; }
+html.in-on.lm-on .hm-hoyo19.h19-dormido .h19-txt small{ color:var(--c2-suavec); }
+html.in-on.lm-on body .hm-hoyo19.h19-despierto{ border:1.5px solid var(--c2-borde) !important; border-radius:22px !important; }
+/* El hilo: fondo blanco, mensajes en tarjetas azules, barra de abajo clara */
+html.in-on.lm-on .h19h{ background:#fff; color:var(--c2-tx); }
+html.in-on.lm-on .h19h-cab, html.in-on.lm-on .h19h-barra{ background:#fff; border-color:var(--c2-linea); }
+html.in-on.lm-on .h19h-volver{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19h-titulo{ color:var(--c2-tx); text-shadow:none; font-size:30px; }
+html.in-on.lm-on .h19h-sub{ color:var(--c2-suave); font-size:16px; }
+html.in-on.lm-on .h19h-comp{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19h-borra{ background:none; border:0; color:var(--c2-suave); font-size:15px; }
+html.in-on.lm-on .h19h-hilo{ background:#fff; }
+html.in-on.lm-on .h19h-sep, html.in-on.lm-on .h19h-sis{ background:var(--c2-campo); border:1px solid var(--c2-linea); color:var(--c2-suave); }
+html.in-on.lm-on .h19h-sep{ color:var(--c2-tx); }
+html.in-on.lm-on .h19h-av{ border-color:#fff; box-shadow:0 0 0 1px var(--c2-linea); }
+html.in-on.lm-on .h19h-cuerpo{ background:var(--c2-azul); border:1.5px solid rgba(217,190,122,.3); color:var(--c2-txc); }
+html.in-on.lm-on :is(.h19h-b.yo, .h19h-peg.yo) .h19h-cuerpo{ background:var(--c2-azul); border-color:var(--c2-borde); }
+html.in-on.lm-on .h19h-quien{ color:var(--c2-suavec); }
+html.in-on.lm-on :is(.h19h-b.yo, .h19h-peg.yo) .h19h-quien{ color:var(--c2-oro); }
+html.in-on.lm-on .h19h-reac button{ background:rgba(255,255,255,.06); border-color:var(--c2-fila); color:var(--c2-txc); }
+html.in-on.lm-on .h19h-reac button.mia{ background:rgba(233,207,140,.16); border-color:var(--c2-oro); }
+html.in-on.lm-on .h19h-reac .mas{ color:var(--c2-suavec); }
+html.in-on.lm-on .h19h-nota{ color:var(--c2-suavec); }
+html.in-on.lm-on .h19h-zoom{ background:rgba(5,7,10,.92); }
+/* Pizarra de la clasificación: tarjeta azul */
+html.in-on.lm-on .h19h-clasif{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .h19h-clasif .pl, html.in-on.lm-on .h19h-clasif.min .pl{ background:rgba(255,255,255,.05); border-color:var(--c2-fila); }
+/* Voto del día */
+html.in-on.lm-on .h19h-tarj{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .h19h-voto{ background:rgba(255,255,255,.05); border-color:var(--c2-fila); color:var(--c2-txc); }
+html.in-on.lm-on .h19h-voto.mio{ border-color:var(--c2-oro); }
+/* Barra de abajo: campo claro, botones con borde dorado oscuro, el activo dorado */
+html.in-on.lm-on .h19h-esc input{ background:var(--c2-campo); border:1.5px solid var(--c2-linea); color:var(--c2-tx); font-size:18px; }
+html.in-on.lm-on .h19h-esc input::placeholder{ color:#6B7380; }
+html.in-on.lm-on .h19h-esc input:focus{ border-color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19h-mas{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19h-esc button:not(.h19h-mas){ background:var(--c2-boton); color:#16120A; }
+html.in-on.lm-on .h19h-tabs button, html.in-on.lm-on .h19h-acc button{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19h-tabs button.on{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+html.in-on.lm-on .h19h-frase{ background:var(--c2-campo); border:1px solid var(--c2-linea); color:var(--c2-tx); }
+html.in-on.lm-on .h19h-cont{ color:var(--c2-suave); }
+html.in-on.lm-on .h19h-cont.max{ color:#B3262E; }
+/* Hacer la foto: fondo blanco; el marco de la foto (dentro del lienzo) no se cambia */
+html.in-on.lm-on .h19f{ background:#fff; color:var(--c2-tx); }
+html.in-on.lm-on .h19f-top button{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f-top h2{ color:var(--c2-tx); font-size:26px; }
+html.in-on.lm-on .h19f-top span{ color:var(--c2-suave); font-size:16px; }
+html.in-on.lm-on .h19f-lienzo{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .h19f-err{ background:var(--c2-azul); border:1.5px solid rgba(215,38,61,.8); border-radius:22px; color:var(--c2-txc); }
+html.in-on.lm-on .h19f .chip{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f .chip.on{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+html.in-on.lm-on .h19f-cam .disp{ border-color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f-cam .giro{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f-cam .plan-b{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f-acc button{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f-acc button.pri{ background:var(--c2-rojo); border-color:transparent; color:#fff; }
+html.in-on.lm-on .h19f-gua{ border-color:var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .h19f-nota{ color:var(--c2-suave); }
+html.in-on.lm-on .h19h-clasif .pl.g, html.in-on.lm-on .h19h-clasif.min .pl.g{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+
+/* ===================== 3. CARTAS (cartas.js): todo lo que NO es anotar el hoyo (.ca-claro ya es blanca) =====================
+   Las cartas (colores de cada familia) no cambian: son las piezas del juego. */
+html.in-on.lm-on .ca-ov:not(.ca-claro){ background:#fff; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) > .pantalla-volver{ background:#fff !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-caja{ color:var(--c2-tx); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-cargando{ color:var(--c2-suave); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-tit{ color:var(--c2-tx); text-transform:none; letter-spacing:.02em; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-sub{ color:var(--c2-suave); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-p{ color:var(--c2-suave); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-p b{ color:var(--c2-tx); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-nota{ color:var(--c2-suave); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-msg{ color:#B3262E; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-volver{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-aviso{ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; color:var(--c2-txc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-aviso b{ color:var(--c2-oro); }
+/* Botones: el rojo (Crear) es el único; los demás dorados o con borde dorado */
+html.in-on.lm-on .ca-ov:not(.ca-claro) :is(#caNueva, #caCrear){ background:var(--c2-rojo); box-shadow:0 6px 16px rgba(215,38,61,.22); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-btn.ghost{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-info-btn{ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; color:var(--c2-txc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-borrar{ background:#fff; border:1.5px solid #B3262E; color:#B3262E; }
+/* Listas: UNA tarjeta azul con filas separadas por una línea */
+html.in-on.lm-on .ca-ov:not(.ca-claro) :is(.ca-lista, .ca-jugs, .ca-copa, .ca-estado, .ca-mqs){ gap:0; padding:2px 16px; background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) :is(.ca-lista > .ca-fila, .ca-jugs > .ca-jug, .ca-copa > .ca-copa-f, .ca-estado > .ca-est-f, .ca-mqs > .ca-mq),
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-copa > .ca-copa-f.primero, html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-copa > .ca-copa-f.yo{
+  background:none; border:0; border-radius:0; box-shadow:none; border-bottom:1px solid var(--c2-fila); padding-left:0; padding-right:0; margin:0; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) :is(.ca-lista > .ca-fila, .ca-jugs > .ca-jug, .ca-copa > .ca-copa-f, .ca-estado > .ca-est-f, .ca-mqs > .ca-mq):last-child{ border-bottom:0; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-copa > .ca-copa-f.primero .ca-nom{ color:var(--c2-oro); }
+/* Tarjetas sueltas: cabecera, ganador, premio, hoyos jugados, resultados, liga, revelado */
+html.in-on.lm-on .ca-ov:not(.ca-claro) :is(.ca-cab, .ca-final, .ca-premio, .ca-det, .ca-res, .ca-liga-f, .ca-rev-f, .ca-top){ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; color:var(--c2-txc); box-shadow:none; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-premio span{ color:var(--c2-txc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-det .ca-rev-f{ background:rgba(255,255,255,.05); border-color:var(--c2-fila); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-mq span{ color:var(--c2-txc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-mq b{ color:var(--c2-oro); }
+/* Crear: campos claros, opciones con borde dorado oscuro */
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-lbl{ color:var(--c2-suave); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-lbl :is(input, select){ background:var(--c2-campo); border:1.5px solid var(--c2-linea); color:var(--c2-tx); font-size:18px; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-lbl :is(input, select):focus{ border-color:var(--c2-oro-osc); box-shadow:0 0 0 3px rgba(138,106,31,.15); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-lbl select option{ background:#fff; color:var(--c2-tx); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-op, html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-obj{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .ca-ov:not(.ca-claro) :is(.ca-op, .ca-obj).on{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+html.in-on.lm-on .ca-ov:not(.ca-claro) .ca-jug{ color:var(--c2-txc); }
+/* Botones del Inicio (si se ven): azul como todo */
+html.in-on.lm-on body .hm-cartas{ background:var(--c2-azul) !important; border:1.5px solid var(--c2-borde) !important; border-radius:22px !important; color:var(--c2-txc) !important; }
+html.in-on.lm-on .hm-cartas .ca-ico, html.in-on.lm-on .hm-cartas span small{ color:var(--c2-oro); }
+
+/* ===================== 3b. SCRAMBLE (scramble.js): parejas en el resumen (va dentro de una tarjeta azul) ===================== */
+html.in-on.lm-on .sc-pareja{ border-top:1px solid var(--c2-fila) !important; }
+html.in-on.lm-on .sc-titulo{ color:var(--c2-oro) !important; }
+
+/* ===================== 4. SEGUIMIENTO · Estadísticas del super administrador (seguimiento.js) ===================== */
+html.in-on.lm-on #cuentaGate:has(#sgPanel){ background:#fff !important; }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .pn-atras{ color:var(--c2-oro-osc); }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .cg-card{ color:var(--c2-tx); }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .cg-eyebrow{ color:var(--c2-suave); }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .cg-title{ color:var(--c2-tx); text-transform:none; }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .cg-sub{ color:var(--c2-suave); }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .cg-btn.ghost{ background:#fff !important; border:1.5px solid var(--c2-oro-osc) !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on #sgPanel > :is(.sg-carga, .sg-vacio, .sg-nota){ color:var(--c2-suave); }
+html.in-on.lm-on #sgPanel > .sg-nota b{ color:var(--c2-tx); }
+html.in-on.lm-on #sgPanel > .sg-h{ color:var(--c2-tx); }
+html.in-on.lm-on #sgPanel > .sg-h small{ color:var(--c2-suave); }
+html.in-on.lm-on .sg-per{ background:var(--c2-campo); border:1px solid var(--c2-linea); }
+html.in-on.lm-on .sg-per button{ color:var(--c2-suave); }
+html.in-on.lm-on .sg-per button.on{ background:var(--c2-boton); color:#16120A; }
+/* Todo bloque con contenido: tarjeta azul */
+html.in-on.lm-on :is(.sg-tot, .sg-ficha, .sg-patro), html.in-on.lm-on #sgPanel > :is(.sg-emb, .sg-orig, .sg-dias, .pa-lista){ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #sgPanel > :is(.sg-emb, .sg-orig, .sg-dias, .pa-lista){ box-sizing:border-box; padding:14px 16px; }
+html.in-on.lm-on .sg-patro .sg-ficha{ background:rgba(255,255,255,.04); border-color:var(--c2-fila); }
+html.in-on.lm-on button.sg-ficha.on{ background:var(--c2-azul); border-color:var(--c2-oro); box-shadow:0 0 0 2px rgba(138,106,31,.35); }
+html.in-on.lm-on .sg-explica, html.in-on.lm-on .sg-enviar{ background:rgba(255,255,255,.04); border:1px solid var(--c2-fila); }
+html.in-on.lm-on .sg-barra{ background:rgba(255,255,255,.08); border-color:var(--c2-fila); }
+html.in-on.lm-on #sgPanel .pa-b{ border-color:var(--c2-borde); color:var(--c2-oro); }
+html.in-on.lm-on #sgPanel .pa-lista .pa-fila{ background:none; border:0; border-radius:0; border-bottom:1px solid var(--c2-fila); }
+html.in-on.lm-on #sgPanel .pa-lista .pa-fila:last-child{ border-bottom:0; }
+
+/* ===================== 4b. RITMO DEL CAMPO (ritmo-campo.js) ===================== */
+html.in-on.lm-on .rc{ background:#fff !important; color:var(--c2-tx); }
+html.in-on.lm-on .rc-top, html.in-on.lm-on .rc-demobar{ background:#fff; }
+html.in-on.lm-on .rc-volver{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .rc-etq{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .rc-camp{ color:var(--c2-tx); }
+html.in-on.lm-on .rc-sub{ color:var(--c2-suave); }
+html.in-on.lm-on .rc-demo-btn{ background:var(--c2-boton); border:0; color:#16120A; }
+html.in-on.lm-on .rc-ctl button{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .rc-ctl button.on{ background:rgba(233,207,140,.25); border-color:var(--c2-oro-osc); color:#16120A; }
+html.in-on.lm-on .rc-ctl button#rcPausa{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+html.in-on.lm-on .rc-banda{ background:var(--c2-campo); border:1px solid var(--c2-linea); color:var(--c2-tx); }
+html.in-on.lm-on .rc-banda b{ color:var(--c2-oro-osc); }
+html.in-on.lm-on .rc-salir{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on .rc-prog{ background:var(--c2-linea); }
+html.in-on.lm-on :is(.rc-n, .rc-fila, .rc-nocir, .rc-vacio){ border-width:1.5px; border-radius:22px; color:var(--c2-txc); }
+html.in-on.lm-on .rc-vacio b{ color:var(--c2-txc); }
+html.in-on.lm-on .rc-aviso{ background:var(--c2-azul); border:1.5px solid rgba(215,38,61,.85); border-radius:22px; }
+html.in-on.lm-on .rc-aviso span{ color:var(--c2-suavec); }
+html.in-on.lm-on .rc-mapa{ border-color:var(--c2-linea); }
+html.in-on.lm-on #cuentaGate:has(#sgPanel) .cg-title{ text-shadow:none !important; }
+
+/* ===================== 5. TARJETAS: sin cerrar (administrador), avisos ===================== */
+/* «Verificada / Entregada» (#tfFirma) y el aviso de quién falta dentro de la partida (.ft-aviso) son de MARCAR: ya son blancos, no se tocan. */
+html.in-on.lm-on #tfAdmin .tf-banda{ background:#fff; border:1.5px solid var(--c2-rojo); border-radius:22px; }
+html.in-on.lm-on #tfAdmin .tf-banda b{ color:#B3262E; }
+html.in-on.lm-on #tfAdmin .tf-banda span{ color:var(--c2-suave); }
+html.in-on.lm-on #tfAdmin .tf-item{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #tfAdmin .tf-item small{ color:var(--c2-suavec); }
+/* Aviso corto de abajo («Partida creada…», aviso-partida.js lleva el estilo escrito dentro) */
+html.in-on.lm-on body > div[style*="background:#0f1d3a"]{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1.5px solid rgba(217,190,122,.55); border-radius:22px !important; color:#F4F1E8 !important; font:600 17px/1.35 Barlow,system-ui,Arial,sans-serif !important; }
+
+/* ===================== 6. VENTANAS A PANTALLA COMPLETA: Reglas, Historia, Sevilla–Betis, Greens en el mapa ===================== */
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay, #derbiOverlay, #greensMapaOverlay){ background:#fff !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay, #derbiOverlay, #greensMapaOverlay) :is(.derbi-card, .gm-card){ background:#fff !important; color:var(--c2-tx); }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay, #derbiOverlay, #greensMapaOverlay) .pantalla-volver{ background:#fff !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay, #derbiOverlay, #greensMapaOverlay) .conv-close{ background:#fff !important; border:1.5px solid var(--c2-oro-osc) !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay) .reglas-cab{ background:#fff !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay) .reglas-cab .derbi-cab-k{ color:var(--c2-suave) !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay) .reglas-cab h2, html.in-on.lm-on #greensMapaOverlay .gm-cab h2{ color:var(--c2-tx) !important; text-transform:none !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay) .reglas-cab p, html.in-on.lm-on #greensMapaOverlay .gm-cab p{ color:var(--c2-oro-osc) !important; }
+
+/* --- Reglas de golf --- */
+html.in-on.lm-on #reglasOverlay .rg-sec-t{ color:var(--c2-suave) !important; font-size:14px; }
+html.in-on.lm-on #reglasOverlay details.rg-item{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #reglasOverlay details.rg-item[open], html.in-on.lm-on #reglasOverlay details.rg-item.rg-local{ border-color:#C9A54A; }
+html.in-on.lm-on #reglasOverlay .rg-ficha{ background:rgba(255,255,255,.05) !important; border-color:var(--c2-fila); }
+html.in-on.lm-on #reglasOverlay .rg-pie{ color:var(--c2-suave); }
+html.in-on.lm-on #reglasOverlay .rg-pie :is(a, b){ color:var(--c2-tx); }
+
+/* --- Historia del golf: los textos de la línea del tiempo van en tarjetas azules --- */
+html.in-on.lm-on #historiaOverlay #hgBody{ color:var(--c2-tx); }
+html.in-on.lm-on #historiaOverlay .hg-saltos a{ background:#fff; border:1.5px solid var(--c2-oro-osc); color:var(--c2-oro-osc); }
+html.in-on.lm-on #historiaOverlay .hg-foto img{ background:var(--c2-campo); }
+html.in-on.lm-on #historiaOverlay figcaption, html.in-on.lm-on #historiaOverlay figcaption a{ color:var(--c2-suave); }
+html.in-on.lm-on #historiaOverlay :is(.hg-hito, .hg-seve-caja, .hg-cap, details.hg-rep) figcaption,
+html.in-on.lm-on #historiaOverlay :is(.hg-hito, .hg-seve-caja, .hg-cap, details.hg-rep) figcaption a{ color:var(--c2-suavec); }
+html.in-on.lm-on #historiaOverlay .hg-sec-t{ color:var(--c2-suave); }
+html.in-on.lm-on #historiaOverlay #hgBody > .hg-intro, html.in-on.lm-on #historiaOverlay :is(.hg-seve, .hg-hist) > .hg-intro{ color:var(--c2-tx); }
+html.in-on.lm-on #historiaOverlay .hg-linea{ border-left-color:var(--c2-linea); }
+html.in-on.lm-on #historiaOverlay .hg-hito{ margin:0 0 14px; padding:14px 16px 16px; border-radius:22px; background:var(--c2-azul); border:1.5px solid var(--c2-borde); }
+html.in-on.lm-on #historiaOverlay .hg-hito::before{ left:-29px; top:18px; background:#C9A54A; box-shadow:0 0 0 4px #fff; }
+html.in-on.lm-on #historiaOverlay .hg-hito-seve::before{ left:-32px; }
+html.in-on.lm-on #historiaOverlay .hg-hito :is(h4, h5){ color:var(--c2-txc); }
+html.in-on.lm-on #historiaOverlay .hg-hito p{ color:#D9DEE8; }
+html.in-on.lm-on #historiaOverlay .hg-hito .hg-seve-caja{ padding:0; background:none; border:0; box-shadow:none; }
+html.in-on.lm-on #historiaOverlay .hg-hito .hg-seve-caja .hg-intro{ color:var(--c2-txc); }
+html.in-on.lm-on #historiaOverlay .hg-cap{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #historiaOverlay .hg-cifra{ background:var(--c2-azul); box-shadow:none; border:1.5px solid var(--c2-borde); border-radius:18px; }
+html.in-on.lm-on #historiaOverlay .hg-hito .hg-cifra{ background:rgba(255,255,255,.05); border-color:var(--c2-fila); }
+html.in-on.lm-on #historiaOverlay :is(.hg-art, .hg-web, details.hg-rep){ background:var(--c2-azul); box-shadow:none; border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #historiaOverlay details.hg-rep[open]{ border-color:#C9A54A; }
+html.in-on.lm-on #historiaOverlay .hg-art b{ color:var(--c2-txc); }
+html.in-on.lm-on #historiaOverlay .hg-webs-g{ color:var(--c2-tx); }
+html.in-on.lm-on #historiaOverlay .hg-pie{ color:var(--c2-suave); }
+
+/* --- Especial Sevilla–Betis: la cabecera y los colores de los equipos se conservan --- */
+html.in-on.lm-on #derbiOverlay :is(.dbi-intro, .dbi-sec, .dbi-paso){ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #derbiOverlay .dbi-sec-t{ color:var(--c2-suave) !important; }
+html.in-on.lm-on #derbiOverlay :is(.dbi-intro, .dbi-sec, .dbi-paso) .dbi-sec-t{ color:var(--c2-suavec) !important; }
+html.in-on.lm-on #derbiOverlay .dbi-col{ background:rgba(255,255,255,.05) !important; border-color:var(--c2-fila); }
+html.in-on.lm-on #derbiOverlay #derbiBody > .dbi-nota, html.in-on.lm-on #derbiOverlay #derbiBody > .dbi-vacio{ color:var(--c2-suave); }
+html.in-on.lm-on #derbiOverlay #derbiBody > .dbi-btn:not(.dbi-btn-oro), html.in-on.lm-on #derbiOverlay #derbiBody > .dbi-link{ background:#fff !important; border:1.5px solid var(--c2-oro-osc) !important; color:var(--c2-oro-osc) !important; box-shadow:none !important; }
+
+/* --- Greens en el mapa (super administrador) --- */
+html.in-on.lm-on #greensMapaOverlay .gm-campo, html.in-on.lm-on #greensMapaOverlay .gm-traer{ background:#fff !important; border:1.5px solid var(--c2-oro-osc) !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on #greensMapaOverlay .gm-campo.on{ background:var(--c2-boton) !important; border-color:transparent !important; color:#16120A !important; }
+html.in-on.lm-on #greensMapaOverlay .gm-estado{ background:var(--c2-azul); border:1.5px solid var(--c2-borde); border-radius:22px; color:var(--c2-txc); }
+html.in-on.lm-on #greensMapaOverlay .gm-mapa{ background:var(--c2-campo); border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #greensMapaOverlay .gm-resumen{ color:var(--c2-suave); }
+html.in-on.lm-on #greensMapaOverlay .gm-resumen b{ color:var(--c2-tx); }
+html.in-on.lm-on #greensMapaOverlay .gm-hoyo{ background:var(--c2-campo); border:1.5px solid var(--c2-linea); color:var(--c2-suave); }
+html.in-on.lm-on #greensMapaOverlay .gm-hoyo.ok{ background:var(--c2-azul); border-color:var(--c2-borde); color:var(--c2-oro); }
+html.in-on.lm-on #greensMapaOverlay .gm-hoyo.nuevo{ background:var(--c2-boton); border-color:transparent; color:#16120A; }
+html.in-on.lm-on #greensMapaOverlay .gm-hoyo.sel{ box-shadow:0 0 0 3px var(--c2-rojo); }
+html.in-on.lm-on #greensMapaOverlay #gmGuardar{ background:var(--c2-rojo) !important; color:#fff !important; }
+html.in-on.lm-on #greensMapaOverlay #gmGuardar:disabled{ background:var(--c2-linea) !important; color:var(--c2-suave) !important; }
+
+/* --- Foto del hoyo en grande (#holeMapOverlay): fondo oscuro translúcido, como los avisos; botón dorado --- */
+html.in-on.lm-on #holeMapOverlay{ background:rgba(5,7,10,.88); }
+html.in-on.lm-on #holeMapOverlay img{ border:1.5px solid var(--c2-borde); border-radius:22px; }
+html.in-on.lm-on #holeMapOverlay .hole-map-close{ background:var(--c2-boton); border:0; color:#16120A; border-radius:999px; }
+
+/* ===================== 7. VENTANAS PEQUEÑAS: Normas de la liga y Jugadores de la liga (tarjeta azul sobre fondo translúcido) ===================== */
+html.in-on.lm-on :is(#normasOverlay, #leaguePlayersOverlay) .modal-card{ border:1.5px solid var(--c2-borde) !important; }
+html.in-on.lm-on :is(#normasOverlay, #leaguePlayersOverlay) h2{ text-transform:none !important; }
+html.in-on.lm-on #normasOverlay select, html.in-on.lm-on #leaguePlayersOverlay input{ background:var(--c2-campo) !important; border:1.5px solid var(--c2-linea) !important; color:var(--c2-tx) !important; font-size:18px !important; }
+html.in-on.lm-on #normasOverlay select option{ background:#fff; color:var(--c2-tx); }
+html.in-on.lm-on #leaguePlayersOverlay input::placeholder{ color:#6B7380; }
+html.in-on.lm-on #normasOverlay select:focus, html.in-on.lm-on #leaguePlayersOverlay input:focus{ border-color:var(--c2-oro) !important; }
+html.in-on.lm-on :is(#normasOverlay, #leaguePlayersOverlay) .lp-lbl{ color:var(--c2-suavec) !important; }
+html.in-on.lm-on :is(#normasOverlay, #leaguePlayersOverlay) :is(.nv-volver, .pantalla-volver){ color:var(--c2-oro) !important; }
+html.in-on.lm-on #leaguePlayersOverlay .lp-row{ border-top-color:var(--c2-fila); }
+html.in-on.lm-on #normasOverlay .normas-firma{ border-top-color:var(--c2-fila); }
+
+/* ===================== 8. CONSEJOS DE GOLF (pantalla 5) ===================== */
+html.in-on.lm-on .screen[data-screen="5"], html.in-on.lm-on .screen[data-screen="5"] .screen-content{ background:#fff !important; color:var(--c2-tx); }
+html.in-on.lm-on .screen[data-screen="5"] .app-bar{ background:#fff !important; color:var(--c2-tx); }
+html.in-on.lm-on .screen[data-screen="5"] .app-bar h1{ color:var(--c2-tx) !important; text-transform:none !important; }
+html.in-on.lm-on .screen[data-screen="5"] .app-bar .meta{ color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on .screen[data-screen="5"] :is(.pantalla-volver, .nv-volver, .app-bar .back-btn){ background:#fff !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on .screen[data-screen="5"] .actions .btn{ background:#fff !important; border:1.5px solid var(--c2-oro-osc) !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on #consejosContent :is(section.cj-dia, details.cj-ap){ border-width:1.5px !important; border-color:var(--c2-borde) !important; border-radius:22px; }
+html.in-on.lm-on #consejosContent details.cj-ap[open]{ border-color:#C9A54A !important; }
+html.in-on.lm-on #consejosContent :is(.cj-lista li, .cj-pasos li, .cj-ficha){ background:rgba(255,255,255,.05) !important; border-color:var(--c2-fila); }
+html.in-on.lm-on #consejosContent .cj-h{ color:var(--c2-suavec) !important; }
+html.in-on.lm-on :is(#reglasOverlay, #historiaOverlay, #derbiOverlay, #greensMapaOverlay, .ca-ov:not(.ca-claro), .screen[data-screen="5"]) .nv-volver{ background:#fff !important; color:var(--c2-oro-osc) !important; }
+html.in-on.lm-on #historiaOverlay .hg-seve-caja .hg-cap{ border:0; border-radius:0; padding:0; background:none; }
+html.in-on.lm-on #historiaOverlay .hg-seve-caja .hg-cap + .hg-cap{ padding-top:14px; border-top:1px solid var(--c2-fila); }
+html.in-on.lm-on body:has(.screen[data-screen="5"].active), html.in-on.lm-on body:has(.screen[data-screen="5"].active) .frame{ background:#fff !important; }
+/* Móvil pequeño */
+@media (max-width:370px){
+  html.in-on.lm-on .h19h-titulo{ font-size:24px; letter-spacing:.04em; }
+  html.in-on.lm-on .vv-tit b{ font-size:18px; }
+  html.in-on.lm-on .vv .vv-tab{ margin:10px 8px; padding:10px 4px; }
+  html.in-on.lm-on .vv td.tot{ width:40px; font-size:17px; }
+  html.in-on.lm-on .vv td.nom{ width:58px; font-size:14px; }
+}
+html.in-on.lm-on #derbiOverlay .dbi-col{ background:var(--c2-azul) !important; border:1.5px solid var(--c2-borde); }
+html.in-on.lm-on #derbiOverlay .dbi-balanza :is(.dbi-bal-num, .dbi-bal-num b){ color:var(--c2-tx); }
+html.in-on.lm-on #derbiOverlay .dbi-bal-num span{ color:var(--c2-suave); }

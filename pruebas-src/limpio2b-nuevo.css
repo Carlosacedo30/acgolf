@@ -1,0 +1,408 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* DISEÑO LIMPIO (norma de Carlos, 23-nov-2026) llevado a: Ganadores de la semana, Medallas (y vitrinas), Salón de campeones,
+   Ryder Cup y «Apuntarme a la Ryder», Mi hándicap, Resumen de la partida (pantalla 2), resumen al terminar y «¿Cómo jugué?»
+   (pantalla 4), Clasificación de la liga (pantalla 6) y el botón «Ver completa».
+   Fondo BLANCO; todo lo que tiene contenido en TARJETAS AZULES con borde dorado; un solo botón rojo por pantalla;
+   secundarios dorados en pastilla; «‹ Volver» en dorado oscuro. Solo cambia el aspecto (html.in-on).
+   NO cambian: los colores de resultado de cada hoyo (águila, birdie, par, bogey, doble), los colores de equipo de la Ryder
+   ni los colores de cada medalla. Va DESPUÉS de los demás CSS del diseño nuevo para ganarles. */
+
+html.in-on{ --lb-tx:#111316; --lb-suave:#4A5058; --lb-linea:#DADFE3; --lb-oro-osc:#8A6A1F; --lb-verde:#2E7D32; --lb-campo:#F2F4F6;
+  --lb-azul:linear-gradient(160deg,#17233D,#0F1626); --lb-borde:rgba(217,190,122,.55); --lb-txc:#F4F1E8; --lb-suavec:#B5BFD0; --lb-oro:#E9CF8C;
+  --lb-fila:#26324F; --lb-dentro:rgba(255,255,255,.05); --lb-boton:linear-gradient(180deg,#EBD08A,#C9A54A); --lb-rojo:#D7263D; }
+
+/* =====================================================================================
+   1) GANADORES DE LA SEMANA y MEDALLAS (abiertos desde Inicio / Liga: pantalla 0 con data-foco)
+   ===================================================================================== */
+html.in-on body:has(.screen[data-screen="0"].active:is([data-foco="premios"],[data-foco="medallas"])),
+html.in-on body:has(.screen[data-screen="0"].active:is([data-foco="premios"],[data-foco="medallas"])) .frame,
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]),
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) .screen-content{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVolver{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVacio{ border:1.5px solid var(--lb-borde) !important; color:var(--lb-suavec) !important; }
+
+/* Cabecera sobre blanco */
+html.in-on body #premiosHome .nv-tit{ color:var(--lb-tx) !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .eyebrow{ color:var(--lb-suave) !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .eyebrow svg{ color:var(--lb-oro-osc) !important; stroke:var(--lb-oro-osc) !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-head .premios-grupo{ color:var(--lb-tx) !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-head .premios-fechas{ color:var(--lb-oro-osc) !important; }
+html.in-on body #medallasHome .premios-head .eyebrow{ color:var(--lb-tx) !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body #medallasHome > .premios-fechas{ border:1.5px solid var(--lb-borde) !important; color:var(--lb-suavec) !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .empty-hint{ border:1.5px solid var(--lb-borde) !important; color:var(--lb-suavec) !important; }
+
+/* Pasador de semanas: tarjeta azul; flechas doradas */
+html.in-on body #premiosHome .liga-month.gn-pasador{ border:1.5px solid var(--lb-borde) !important; }
+html.in-on body #premiosHome .gn-pasador .hole-nav-btn:disabled{ background:transparent !important; border:1px solid var(--lb-fila) !important; color:#4A5774 !important; }
+html.in-on body #premiosHome .nv-hoy{ color:var(--lb-oro-osc) !important; border:1.5px solid #C9A54A !important; background:#FFFFFF !important; }
+
+/* Cada premio: tarjeta azul */
+html.in-on body :is(#premiosHome,#medallasHome) .premio{ border:1.5px solid var(--lb-borde) !important; border-radius:22px !important; }
+html.in-on body #premiosHome .premio.top{ border:1.5px solid #E9CF8C !important; }
+
+/* Clasificación de la semana («Ver completa»): UNA tarjeta azul con filas separadas por línea */
+html.in-on body #premiosHome .gn-lista{ gap:0 !important; padding:6px 16px !important; border-radius:22px !important; background:var(--lb-azul) !important; border:1.5px solid var(--lb-borde) !important; }
+html.in-on body #premiosHome .gn-fila{ min-height:54px; padding:8px 2px !important; border-radius:0 !important; background:none !important; border:0 !important; }
+html.in-on body #premiosHome .gn-fila + .gn-fila{ border-top:1px solid var(--lb-fila) !important; }
+html.in-on body #premiosHome .gn-nom{ font-size:18px !important; }
+html.in-on body #premiosHome .gn-neto{ color:var(--lb-oro) !important; font:800 17px Archivo,system-ui,Arial,sans-serif !important; }
+
+/* Botones: «Enviar al grupo» = el botón rojo de la pantalla; «Ver completa» dorado; «Ver las vitrinas» con borde dorado */
+html.in-on body :is(#premiosHome,#medallasHome) .premios-wa{ background:var(--lb-rojo) !important; color:#FFFFFF !important; box-shadow:0 6px 16px rgba(215,38,61,.22) !important; min-height:60px !important; }
+html.in-on body :is(#premiosHome,#medallasHome) .premios-wa svg{ color:#FFFFFF !important; }
+html.in-on body #medallasHome .home-link{ background:#FFFFFF !important; border:1.5px solid #C9A54A !important; color:var(--lb-oro-osc) !important; }
+
+/* «Ver completa» (Ganadores de la semana y clasificación): botón dorado en pastilla */
+html.in-on body .vc-btn, html.in-on[data-tema="grafito"] body .vc-btn, html.in-on body :is(#premiosHome,#medallasHome) .vc-btn{
+  display:flex !important; align-items:center; justify-content:center; width:100% !important; box-sizing:border-box; min-height:54px !important; margin:12px 0 0 !important; padding:8px 18px !important;
+  border:0 !important; border-radius:999px !important; background:var(--lb-boton) !important; color:#16120A !important; box-shadow:none !important;
+  font:800 18px/1.2 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.01em !important; text-transform:none !important; }
+html.in-on body .vc-btn:active{ transform:scale(.97); }
+
+/* Medallas: lista de jugadores (también en Liga) */
+html.in-on body .med-jug{ border:1.5px solid var(--lb-borde) !important; border-radius:22px !important; }
+
+/* =====================================================================================
+   2) VITRINAS DE MEDALLAS (#medallasOverlay): pantalla blanca, cada medalla en su tarjeta azul
+   ===================================================================================== */
+html.in-on body #medallasOverlay, html.in-on body #medallasOverlay .modal-card.med-card{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
+html.in-on body #medallasOverlay .med-volver{ border:0 !important; padding:0 6px !important; min-height:52px; background:none !important; color:var(--lb-oro-osc) !important; font:800 18px Archivo,system-ui,Arial,sans-serif !important; }
+html.in-on body #medallasOverlay .med-titulo{ color:var(--lb-tx) !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body #medallasOverlay .med-titulo svg{ color:var(--lb-oro-osc) !important; }
+html.in-on body #medallasOverlay .section-sub{ color:var(--lb-oro-osc) !important; }
+html.in-on body #medallasOverlay .med-stat{ background:var(--lb-azul) !important; border:1.5px solid var(--lb-borde) !important; border-radius:18px !important; }
+html.in-on body #medallasOverlay .med-stat-t{ color:var(--lb-suavec) !important; }
+html.in-on body #medallasOverlay .med.ok{ border:1.5px solid var(--lb-borde) !important; border-radius:22px !important; }
+/* Las que faltan: tarjeta azul apagada, con borde a rayas */
+html.in-on body #medallasOverlay .med:not(.ok){ background:var(--lb-azul) !important; border:1.5px dashed rgba(217,190,122,.35) !important; border-radius:22px !important; color:var(--lb-suavec) !important; }
+html.in-on body #medallasOverlay .med:not(.ok) .med-nom{ color:#C9D1DE !important; }
+html.in-on body #medallasOverlay .med:not(.ok) .med-txt{ color:var(--lb-suavec) !important; }
+html.in-on body #medallasOverlay .med:not(.ok){ opacity:1 !important; }
+html.in-on body #medallasOverlay .med:not(.ok) .med-ico{ opacity:.45; }
+
+/* «‹ Volver» que la app pone arriba de las ventanas: sobre blanco */
+html.in-on body :is(#medallasOverlay, #hcpOverlay, #ryOverlay, #riOverlay) .nv-volver{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; }
+html.in-on body:has(#medallasOverlay:not([hidden])) .frame{ background:#FFFFFF !important; }
+
+/* Aviso «¡Medallas nuevas!» al terminar la partida (sale en la pantalla blanca): tarjeta azul */
+html.in-on .med-aviso{ border:1.5px solid var(--lb-borde) !important; border-radius:22px !important; padding:14px 18px !important; }
+html.in-on .med-aviso p{ margin:4px 0 !important; font:600 17px/1.4 Barlow,system-ui,Arial,sans-serif !important; color:var(--lb-txc) !important; }
+html.in-on .med-aviso p strong{ color:var(--lb-oro) !important; }
+html.in-on .med-aviso .med-aviso-fila{ display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; min-height:44px; padding:6px 0 !important; border-top:1px solid var(--lb-fila); cursor:pointer; }
+html.in-on .med-aviso .med-aviso-fila strong{ color:var(--lb-txc) !important; }
+html.in-on .med-aviso .med-aviso-fila span{ color:var(--lb-suavec) !important; }
+
+/* =====================================================================================
+   3) SALÓN DE CAMPEONES: la pared es una tarjeta azul sobre blanco; los marcos conservan su aire de trofeo
+   ===================================================================================== */
+html.in-on body #salonSection .sl-pared{ border:1.5px solid var(--lb-borde) !important; }
+html.in-on body #salonSection .sl-cab h2{ font-size:26px !important; color:var(--lb-txc) !important; }
+html.in-on body #salonSection .sl-anio{ background:var(--lb-dentro) !important; border:1px solid var(--lb-fila) !important; }
+html.in-on body #salonSection .sl-anio button:disabled{ border:1px solid var(--lb-fila) !important; color:#4A5774 !important; }
+html.in-on body #salonSection .sl-vacio, html.in-on body .sl-hoja .sl-vacio{ background:rgba(255,255,255,.04) !important; border-color:#3B4A6B !important; color:var(--lb-suavec) !important; }
+/* Ventana del cuadro: hoja azul con borde dorado sobre fondo oscuro translúcido */
+html.in-on body .sl-hoja{ background:var(--lb-azul) !important; border:1.5px solid var(--lb-borde) !important; border-bottom:0 !important; }
+html.in-on body .sl-hoja .sl-grande{ background:rgba(255,255,255,.04) !important; border:1px solid var(--lb-fila) !important; }
+html.in-on body .sl-hoja .sl-lab{ color:var(--lb-oro) !important; }
+html.in-on body .sl-hoja .sl-sel{ background:var(--lb-campo) !important; border:1.5px solid var(--lb-linea) !important; color:var(--lb-tx) !important; font-size:18px !important; color-scheme:light; }
+html.in-on body .sl-hoja .sl-nota{ color:var(--lb-suavec) !important; }
+html.in-on body .sl-hoja .sl-error{ color:#FF9AA2 !important; }
+
+/* =====================================================================================
+   4) CLASIFICACIÓN DE LA LIGA (pantalla 6) — y comunes de las pantallas sueltas 2, 4 y 6
+   ===================================================================================== */
+html.in-on body:has(.screen.active:is([data-screen="2"],[data-screen="4"],[data-screen="6"])),
+html.in-on body:has(.screen.active:is([data-screen="2"],[data-screen="4"],[data-screen="6"])) .frame{ background:#FFFFFF !important; }
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]),
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) .screen-content,
+html.in-on.rj-on body .screen[data-screen="4"], html.in-on.rj-on body .screen[data-screen="4"] .screen-content{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) .app-bar,
+html.in-on.rj-on body .screen[data-screen="4"] .app-bar{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) .app-bar h1,
+html.in-on.rj-on body .screen[data-screen="4"] .app-bar h1{ font:900 30px/1.08 Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.01em !important; text-transform:none !important; color:var(--lb-tx) !important; }
+html.in-on.cmj-on body .screen[data-screen="4"] .app-bar h1{ font-size:0 !important; }
+html.in-on.cmj-on body .screen[data-screen="4"] .app-bar h1::after{ font:900 30px/1.08 Archivo,system-ui,Arial,sans-serif; color:var(--lb-tx); }
+html.in-on.rj-on body .screen[data-screen="4"] .app-bar .meta, html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) .app-bar .meta{ color:var(--lb-oro-osc) !important; }
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) .eyebrow{ color:var(--lb-suave) !important; }
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) section{ color:var(--lb-tx) !important; }
+/* «‹ Volver» de estas pantallas: dorado oscuro sobre blanco */
+html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) :is(.app-bar .back, .app-bar .back-btn, .home-volver, .pantalla-volver, #resumenBack){ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; }
+html.in-on body .screen[data-screen="6"] .actions{ background:#FFFFFF !important; }
+html.in-on body .screen[data-screen="6"] .actions .btn{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; border:1.5px solid #C9A54A !important; }
+
+html.in-on body #clNuevo{ color:var(--lb-tx); }
+/* Pestañas «Esta liga / General»: pastillas; la elegida dorada */
+html.in-on body #clNuevo .cl-tab{ background:#FFFFFF; border:1.5px solid #C9A54A; color:var(--lb-oro-osc); font-size:17px; }
+html.in-on body #clNuevo .cl-tab.on{ background:var(--lb-boton); border-color:transparent; color:#16120A; }
+/* Elegir liga: campo de formulario claro */
+html.in-on body #clNuevo .cl-sel{ background:var(--lb-campo); border:1.5px solid var(--lb-linea); border-radius:18px; }
+html.in-on body #clNuevo .cl-sel small{ color:var(--lb-suave); }
+html.in-on body #clNuevo .cl-sel select{ color:var(--lb-tx); font-size:20px; color-scheme:light; }
+html.in-on body #clNuevo .cl-sel select option{ background:#FFFFFF; color:var(--lb-tx); }
+html.in-on body #clNuevo .cl-sel:focus-within{ border-color:#C9A54A; }
+html.in-on body #clNuevo .cl-sub{ color:var(--lb-suave); font-size:16px; }
+html.in-on body #clNuevo .cl-h2{ color:var(--lb-tx); text-transform:none; font-size:22px; }
+/* Tu posición: tarjeta azul */
+html.in-on body #clNuevo .cl-yo, html.in-on body #clNuevo .cl-yo-no{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:22px; }
+html.in-on body #clNuevo .cl-yo-no small{ color:var(--lb-oro); }
+html.in-on body #clNuevo .cl-yo-no p{ color:var(--lb-suavec); }
+/* Podio: tres tarjetas azules; el primero con borde de oro */
+html.in-on body #clNuevo .cl-podio > div:not(.cl-vacio){ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:20px; }
+html.in-on body #clNuevo .cl-podio .cl-p1{ border-color:#E9CF8C; box-shadow:0 0 0 1px rgba(233,207,140,.35); }
+html.in-on body #clNuevo .cl-soy{ box-shadow:0 0 0 2px #E9CF8C inset !important; }
+/* Resto de la clasificación: UNA tarjeta azul con filas separadas por línea (las filas seguidas se unen) */
+html.in-on body #clNuevo .cl-fila{ margin:0; border-radius:0; background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-top:0; border-bottom:0; min-height:58px; box-sizing:border-box; padding:10px 16px; }
+html.in-on body #clNuevo .cl-fila + .cl-fila{ box-shadow:inset 0 1px 0 var(--lb-fila); }
+html.in-on body #clNuevo :not(.cl-fila) + .cl-fila{ margin-top:12px; border-top:1.5px solid var(--lb-borde); border-radius:22px 22px 0 0; }
+html.in-on body #clNuevo .cl-fila:not(:has(+ .cl-fila)){ border-bottom:1.5px solid var(--lb-borde); border-radius:0 0 22px 22px; }
+html.in-on body #clNuevo :not(.cl-fila) + .cl-fila:not(:has(+ .cl-fila)){ border-radius:22px; }
+html.in-on body #clNuevo .cl-fila.cl-soy{ box-shadow:inset 4px 0 0 #E9CF8C !important; }
+html.in-on body #clNuevo .cl-fila + .cl-fila.cl-soy{ box-shadow:inset 0 1px 0 var(--lb-fila), inset 4px 0 0 #E9CF8C !important; }
+html.in-on body #clNuevo .cl-chip{ background:rgba(255,255,255,.05); border-color:var(--lb-fila); color:var(--lb-suavec); }
+html.in-on body #clNuevo .cl-chip.no{ color:#7F8AA0; }
+/* Botón «Ver puntos por jornada» / «Volver»: dorado */
+html.in-on body #clNuevo .cl-btn{ background:var(--lb-boton); border:0; color:#16120A; font-size:18px; letter-spacing:.02em; min-height:56px; margin:14px 0; }
+html.in-on body #clNuevo .cl-card{ border:1.5px solid var(--lb-borde); border-radius:22px; color:var(--lb-txc); }
+html.in-on body #clNuevo .cl-anio b{ color:var(--lb-tx); }
+html.in-on body #clNuevo .cl-anio button{ background:var(--lb-boton); border:0; color:#16120A; }
+html.in-on body #clNuevo .cl-anio button:disabled{ background:#FFFFFF; border:1.5px solid var(--lb-linea); color:#AEB5BC; opacity:1; }
+html.in-on body #clNuevo .cl-vacio-msg{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:22px; color:var(--lb-suavec); padding:18px; }
+
+/* =====================================================================================
+   5) RESUMEN DE LA PARTIDA (pantalla 2, antes de empezar)
+   ===================================================================================== */
+html.in-on body .screen[data-screen="2"] section.resumen-campo{ border:1.5px solid var(--lb-borde) !important; }
+html.in-on body .screen[data-screen="2"] section.resumen-campo .eyebrow{ color:var(--lb-oro) !important; }
+/* Nombre, puntuación y modalidad: una tarjeta azul con tres datos */
+html.in-on body .screen[data-screen="2"] .resumen-grid{ padding:14px 16px !important; border-radius:22px; background:var(--lb-azul); border:1.5px solid var(--lb-borde); gap:12px 10px; }
+html.in-on body .screen[data-screen="2"] .resumen-tile{ padding:0 !important; border:0 !important; border-radius:0 !important; background:none !important; }
+html.in-on body .screen[data-screen="2"] .resumen-tile .k{ color:var(--lb-oro) !important; }
+html.in-on body .screen[data-screen="2"] .resumen-tile .v{ color:var(--lb-txc) !important; }
+/* Participantes: el rótulo del grupo sobre blanco y cada grupo en una tarjeta */
+html.in-on body .screen[data-screen="2"] .resumen-group-lbl{ color:var(--lb-oro-osc) !important; }
+html.in-on body .screen[data-screen="2"] .resumen-pareja-lbl{ color:var(--lb-suave) !important; }
+html.in-on body .screen[data-screen="2"] .resumen-player{ margin-top:0 !important; border-radius:0 !important; border:1.5px solid var(--lb-borde) !important; border-top:0 !important; border-bottom:0 !important; background:var(--lb-azul) !important; }
+html.in-on body .screen[data-screen="2"] .resumen-player + .resumen-player{ box-shadow:inset 0 1px 0 var(--lb-fila); }
+html.in-on body .screen[data-screen="2"] :not(.resumen-player) + .resumen-player, html.in-on body .screen[data-screen="2"] .resumen-player:first-child{ border-top:1.5px solid var(--lb-borde) !important; border-radius:22px 22px 0 0 !important; }
+html.in-on body .screen[data-screen="2"] .resumen-player:not(:has(+ .resumen-player)){ border-bottom:1.5px solid var(--lb-borde) !important; border-radius:0 0 22px 22px !important; }
+html.in-on body .screen[data-screen="2"] :is(:not(.resumen-player) + .resumen-player, .resumen-player:first-child):not(:has(+ .resumen-player)){ border-radius:22px !important; }
+html.in-on body .screen[data-screen="2"] .resumen-player .nm{ font-size:18px !important; }
+html.in-on body .screen[data-screen="2"] .empty-hint{ background:var(--lb-azul) !important; border:1.5px solid var(--lb-borde) !important; border-radius:22px !important; color:var(--lb-suavec) !important; }
+html.in-on body .screen[data-screen="2"] .actions{ background:#FFFFFF !important; border-top:1px solid var(--lb-linea) !important; }
+
+/* =====================================================================================
+   6) PANTALLA 4: resumen al terminar (rj-on) y «¿Cómo jugué?»
+   ===================================================================================== */
+html.in-on body .screen[data-screen="4"] .score-line{ color:var(--lb-tx); }
+html.in-on body .screen[data-screen="4"] .score-line .vs, html.in-on body .screen[data-screen="4"] .score-line .diff{ color:var(--lb-suave); }
+/* «Compartir resultado»: el botón rojo de la pantalla */
+html.in-on body .screen[data-screen="4"] .share-wa, html.in-on.rj-on body .screen[data-screen="4"] .share-wa{ background:var(--lb-rojo) !important; color:#FFFFFF !important; box-shadow:0 6px 16px rgba(215,38,61,.22) !important; min-height:60px; }
+html.in-on body #rjBox .rj-t{ color:var(--lb-suave); }
+html.in-on body #rjBox .rj-jug{ border:1.5px solid var(--lb-borde); border-radius:22px; }
+html.in-on body #rjBox .rj-jug span{ color:var(--lb-suavec); font-size:16px; }
+/* Detalle de un jugador: cabecera sobre blanco */
+html.in-on body #rjBox .rj-volver{ background:#FFFFFF; border:1.5px solid #C9A54A; color:var(--lb-oro-osc); }
+html.in-on body #rjBox .rj-otra{ background:var(--lb-boton); border:0; color:#16120A; }
+html.in-on body #rjBox .rj-nom{ color:var(--lb-tx); }
+html.in-on body #rjBox .rj-sub{ color:var(--lb-oro-osc); }
+html.in-on body #rjBox .rj-cifras{ padding:12px 10px; border-radius:22px; background:var(--lb-azul); border:1.5px solid var(--lb-borde); gap:4px; }
+html.in-on body #rjBox .rj-cifras div{ background:none; border:0; padding:4px 2px; }
+html.in-on body #rjBox .rj-cifras div + div{ border-left:1px solid var(--lb-fila); border-radius:0; }
+html.in-on body #rjBox .rj-cifras b{ color:var(--lb-txc); }
+html.in-on body #rjBox .rj-cifras b.bajo{ color:#FF8C99; }
+html.in-on body #rjBox .rj-cifras span{ color:var(--lb-suavec); }
+/* Cada apartado (Su tarjeta, Hándicap, Medallas, Clasificación…) en su tarjeta azul */
+html.in-on body #rjBox .rj-sec{ padding:14px 16px 16px; border-radius:22px; background:var(--lb-azul); border:1.5px solid var(--lb-borde); color:var(--lb-txc); }
+html.in-on body #rjBox .rj-sec-t{ padding-top:0; border-top:0; color:var(--lb-oro); font-size:13px; }
+html.in-on body #rjBox .rj-p{ color:#D9DEE8; font-size:17px; }
+html.in-on body #rjBox .rj-nota{ color:var(--lb-suavec); }
+html.in-on body #rjBox > .rj-p{ color:var(--lb-suave); }
+html.in-on body #rjBox .rj-med{ background:var(--lb-dentro); border:1px solid var(--lb-fila); }
+html.in-on body #rjBox .rj-tabla{ padding:0; background:none; border:0; }
+html.in-on body #rjBox .rj-fila{ border-radius:0; }
+html.in-on body #rjBox .rj-fila + .rj-fila{ border-top:1px solid var(--lb-fila); }
+html.in-on body #rjBox .rj-fila.yo{ border-radius:12px; }
+html.in-on body #rjBox .rj-fila.aparte{ border-top:1px dashed #3B4A6B; }
+/* La tarjeta de golpes: marco azul; casillas de resultado con sus colores de siempre */
+html.in-on body #rjBox .tb-bloque{ background:var(--lb-dentro); border:1px solid var(--lb-fila); }
+html.in-on body #rjBox .tb-r-g{ border-top:1px solid var(--lb-fila); }
+html.in-on body #rjBox .rj-birra{ border:1.5px solid var(--lb-borde); }
+html.in-on body #rjBox .rj-birra-wa{ background:var(--lb-boton); color:#16120A !important; }
+
+/* «¿Cómo jugué?»: pestañas en pastilla sobre blanco */
+html.in-on body .cmj-tabs{ background:#FFFFFF; }
+html.in-on body .cmj-tabs::before{ background:var(--lb-campo); border:1.5px solid var(--lb-linea); }
+html.in-on body .cmj-tabs button{ color:var(--lb-suave); font-size:16px; }
+html.in-on body .cmj-tabs button.on{ background:var(--lb-boton); color:#16120A; }
+html.in-on body .cmj-box{ color:var(--lb-tx); }
+html.in-on body .cmj-card{ border:1.5px solid var(--lb-borde); border-radius:22px; color:var(--lb-txc); }
+html.in-on body .cmj-kpi, html.in-on body .cmj-pars, html.in-on body .cmj-h2h div{ background:var(--lb-dentro); border:1px solid var(--lb-fila); }
+html.in-on body .cmj-pars div{ border-right-color:var(--lb-fila); }
+html.in-on body .cmj-it{ border-bottom-color:var(--lb-fila); }
+html.in-on body .cmj-duo{ border-bottom-color:var(--lb-fila); }
+html.in-on body .cmj-hh div{ background:var(--lb-dentro); border-color:var(--lb-fila); color:var(--lb-suavec); }
+html.in-on body .cmj-hh .yo{ background:#E9CF8C; border-color:#E9CF8C; color:#16120A; }
+html.in-on body .cmj-hh .el{ background:#2F5BD3; border-color:#2F5BD3; color:#FFFFFF; }
+html.in-on body .cmj-av[style*="#C9CFD4"]{ background:var(--lb-dentro) !important; }
+html.in-on body .cmj-sel select{ background:var(--lb-campo); border:1.5px solid var(--lb-linea); color:var(--lb-tx); color-scheme:light; font-size:18px; }
+html.in-on body .cmj-svg rect[fill="#C9CFD4"]{ fill:#33415F; }
+
+/* =====================================================================================
+   7) MI HÁNDICAP (#hcpOverlay)
+   ===================================================================================== */
+html.in-on body #hcpOverlay, html.in-on body #hcpOverlay .hcp-card, html.in-on body #hcpOverlay .reglas-cab{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
+html.in-on body #hcpOverlay .reglas-cab .derbi-cab-k{ color:var(--lb-suave) !important; }
+html.in-on body #hcpOverlay .reglas-cab h2{ color:var(--lb-tx) !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body #hcpOverlay .reglas-cab p{ color:var(--lb-oro-osc) !important; }
+html.in-on body #hcpOverlay .conv-close{ background:#FFFFFF !important; border:1.5px solid #C9A54A !important; color:var(--lb-oro-osc) !important; }
+html.in-on body #hcpOverlay .pantalla-volver{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; }
+html.in-on body #hcpBody{ color:var(--lb-tx); }
+html.in-on body #hcpBody .hp-vacio{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:22px; color:var(--lb-suavec); }
+html.in-on body #hcpBody .hp-quien small{ color:var(--lb-suave); }
+html.in-on body #hcpBody .hp-quien b{ color:var(--lb-tx); }
+html.in-on body #hcpBody .hp-otro{ background:#FFFFFF; border:1.5px solid #C9A54A; color:var(--lb-oro-osc); }
+html.in-on body #hcpBody .hp-hero{ border:1.5px solid var(--lb-borde); }
+html.in-on body #hcpBody .hp-col small{ color:var(--lb-suavec); }
+html.in-on body #hcpBody .hp-antes{ color:#C9D1DE; }
+html.in-on body #hcpBody .hp-cambio em{ color:var(--lb-suavec); }
+/* Textos sueltos sobre blanco */
+html.in-on body #hcpBody > .hp-cambio .hp-baja, html.in-on body #hcpBody > .hp-cambio.hp-baja{ color:var(--lb-verde); }
+html.in-on body #hcpBody > .hp-cambio .hp-sube, html.in-on body #hcpBody > .hp-cambio.hp-sube{ color:#B3262E; }
+html.in-on body #hcpBody > .hp-cambio em{ color:var(--lb-suave); }
+html.in-on body #hcpBody .hp-sec-t{ color:var(--lb-oro-osc); }
+html.in-on body #hcpBody .hp-graf{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:22px; }
+html.in-on body #hcpBody .hp-graf .hp-pt{ fill:#17233D; }
+html.in-on body #hcpBody .hp-graf .hp-eje{ fill:var(--lb-suavec); }
+html.in-on body #hcpBody .hp-leyenda, html.in-on body #hcpBody .hp-nota{ color:var(--lb-suave); }
+html.in-on body #hcpBody .hp-expl{ color:var(--lb-tx); }
+html.in-on body #hcpBody .hp-expl b{ color:var(--lb-tx); }
+/* Rejilla de las 20 tarjetas: dentro de su tarjeta azul las que no cuentan; las que cuentan, en verde */
+html.in-on body #hcpBody .hp-rejilla, html.in-on body #hcpBody .hp-cuadro{ padding:12px; border-radius:22px; background:var(--lb-azul); border:1.5px solid var(--lb-borde); }
+html.in-on body #hcpBody .hp-cas{ border-color:#C3CAD1; color:#8A939B; }
+html.in-on body #hcpBody .hp-cas.tarjeta{ background:var(--lb-azul); border:1px solid var(--lb-borde); color:var(--lb-txc); }
+html.in-on body #hcpBody .hp-cas.tarjeta small{ color:var(--lb-suavec); }
+html.in-on body #hcpBody .hp-cas.cuenta, html.in-on body #hcpBody .hp-cas.salida.cuenta{ background:var(--lb-verde); border:1px solid var(--lb-verde); color:#FFFFFF; }
+html.in-on body #hcpBody .hp-cas.cuenta small{ color:#E3F3E4; }
+html.in-on body #hcpBody .hp-suma{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:22px; color:#D9DEE8; }
+html.in-on body #hcpBody > div[style*="#1B1E22"]{ background:var(--lb-azul) !important; border:1.5px solid var(--lb-borde) !important; border-radius:22px !important; }
+html.in-on body #hcpBody > div[style*="#1B1E22"] div[style*="#2a2e33"]{ border-bottom-color:var(--lb-fila) !important; }
+html.in-on body #hcpBody .hp-obj{ border:1.5px solid var(--lb-borde); border-radius:20px; }
+/* Últimas tarjetas y toda la liga: UNA tarjeta azul con filas */
+html.in-on body #hcpBody .hp-tarjetas, html.in-on body #hcpBody .hp-liga{ gap:0; padding:4px 16px; border-radius:22px; background:var(--lb-azul); border:1.5px solid var(--lb-borde); }
+html.in-on body #hcpBody .hp-tj, html.in-on body #hcpBody .hp-lf{ padding-left:2px; padding-right:2px; border:0; border-radius:0; background:none; }
+html.in-on body #hcpBody :is(.hp-tj, .hp-lf) + :is(.hp-tj, .hp-lf){ border-top:1px solid var(--lb-fila); }
+html.in-on body #hcpBody .hp-tj span:nth-child(2), html.in-on body #hcpBody .hp-lf span:nth-child(2){ color:var(--lb-suavec); }
+html.in-on body #hcpBody .hp-lcab{ color:var(--lb-oro); background:none; }
+html.in-on body #hcpBody details.rg-item.hp-como{ background:var(--lb-azul) !important; border:1.5px solid var(--lb-borde); border-radius:22px; }
+
+/* =====================================================================================
+   8) RYDER CUP (#ryOverlay)
+   ===================================================================================== */
+html.in-on body #ryOverlay{ background:#FFFFFF !important; }
+html.in-on body #ryOverlay .ry-caja{ color:var(--lb-tx); }
+html.in-on body #ryOverlay > .pantalla-volver{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; box-shadow:0 -48px 0 16px #FFFFFF !important; }
+html.in-on body #ryOverlay .ry-x{ background:#FFFFFF; border:1.5px solid #C9A54A; color:var(--lb-oro-osc); }
+html.in-on body #ryOverlay .ry-cargando{ color:var(--lb-suave); }
+html.in-on body #ryOverlay .ry-tit{ color:var(--lb-tx); text-transform:none; letter-spacing:.01em; }
+html.in-on body #ryOverlay .ry-p{ color:var(--lb-suave); }
+html.in-on body #ryOverlay .ry-p b, html.in-on body #ryOverlay .ry-p b[style]{ color:var(--lb-tx) !important; }
+html.in-on body #ryOverlay .ry-nota{ color:var(--lb-suave); }
+html.in-on body #ryOverlay .ry-msg{ color:#B3262E; }
+html.in-on body #ryOverlay .ry-volver{ color:var(--lb-oro-osc); }
+/* Botones: dorados; el principal de cada paso en rojo */
+html.in-on body #ryOverlay .ry-btn.ghost, html.in-on body #ryOverlay .ry-btn.ry-sec{ background:#FFFFFF; color:var(--lb-oro-osc); border:1.5px solid #C9A54A; }
+html.in-on body #ryOverlay .ry-btn.borrar{ background:#FFFFFF; color:#B3262E; border:1.5px solid #D98A90; }
+html.in-on body #ryOverlay :is(#ryMio, #ryGuardar, #ryCrear, #rySig, #ryPublica){ background:var(--lb-rojo); color:#FFFFFF; box-shadow:0 6px 16px rgba(215,38,61,.22); }
+/* Tarjetas azules con borde dorado */
+html.in-on body #ryOverlay :is(.ry-info-btn, .ry-publica, .ry-cab, .ry-det, .ry-cont){ border:1.5px solid var(--lb-borde); border-radius:22px; }
+html.in-on body #ryOverlay .ry-cont{ border-top:5px solid var(--c, rgba(217,190,122,.55)); }
+html.in-on body #ryOverlay .ry-sesion{ color:var(--lb-tx); text-transform:none; letter-spacing:.01em; }
+html.in-on body #ryOverlay .ry-sesion small{ color:var(--lb-oro-osc); }
+/* Cada partido: tarjeta azul (la raya del color de su equipo se queda) */
+html.in-on body #ryOverlay .ry-fila{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:20px; }
+html.in-on body #ryOverlay .ry-fila.mio{ border-color:#E9CF8C; box-shadow:0 0 0 2px #E9CF8C; }
+html.in-on body #ryOverlay .ry-j small, html.in-on body #ryOverlay .ry-rec{ color:var(--lb-suavec); }
+html.in-on body #ryOverlay .ry-resumen-puntos{ gap:0; padding:4px 16px; border-radius:22px; background:var(--lb-azul); border:1.5px solid var(--lb-borde); }
+html.in-on body #ryOverlay .ry-rp-fila{ padding:10px 0; border:0; border-radius:0; background:none; }
+html.in-on body #ryOverlay .ry-rp-fila + .ry-rp-fila{ border-top:1px solid var(--lb-fila); }
+/* Anotar mi partido: título y hoyos sobre blanco */
+html.in-on body #ryOverlay .ry-duelo-t{ color:var(--lb-suave); }
+html.in-on body #ryOverlay .ry-duelo-t span{ color:var(--lb-tx) !important; }
+html.in-on body #ryOverlay .ry-h{ background:var(--lb-campo); border:1.5px solid var(--lb-linea); color:var(--lb-tx); }
+html.in-on body #ryOverlay .ry-h.hecho{ background:var(--c); border-color:var(--c); color:#FFFFFF; }
+html.in-on body #ryOverlay .ry-h.sel{ border-color:#C9A54A; box-shadow:0 0 0 3px #C9A54A; }
+html.in-on body #ryOverlay .ry-hoyo-info{ color:var(--lb-tx); }
+html.in-on body #ryOverlay .ry-hoyo-info span{ color:var(--lb-oro-osc); }
+/* Crear una Ryder: formularios claros */
+html.in-on body #ryOverlay .ry-lbl{ color:var(--lb-suave); }
+html.in-on body #ryOverlay .ry-lbl input, html.in-on body #ryOverlay .ry-lbl select{ background:var(--lb-campo); border:1.5px solid var(--lb-linea); color:var(--lb-tx); font-size:18px; color-scheme:light; }
+html.in-on body #ryOverlay input[type="date"]{ color-scheme:light; }
+html.in-on body #ryOverlay input[type="date"]::-webkit-calendar-picker-indicator{ background:none !important; }
+html.in-on body #ryOverlay .ry-lbl input:focus, html.in-on body #ryOverlay .ry-lbl select:focus{ border-color:#C9A54A; box-shadow:0 0 0 3px rgba(201,165,74,.25); }
+html.in-on body #ryOverlay .ry-col{ border-color:rgba(0,0,0,.12); }
+html.in-on body #ryOverlay .ry-col.sel{ border-color:#FFFFFF; box-shadow:0 0 0 3px #C9A54A; }
+html.in-on body #ryOverlay .ry-sub{ color:var(--lb-tx); text-transform:none; letter-spacing:.01em; }
+html.in-on body #ryOverlay .ry-check{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:20px; color:var(--lb-suavec); }
+html.in-on body #ryOverlay .ry-resumen span{ background:var(--lb-azul); color:var(--lb-suavec); }
+html.in-on body #ryOverlay .ry-resumen span b{ color:var(--lb-txc); }
+html.in-on body #ryOverlay .ry-jug{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:18px; color:var(--lb-txc); }
+html.in-on body #ryOverlay .ry-jug small{ color:var(--lb-suavec); }
+html.in-on body #ryOverlay .ry-jug.en small{ color:rgba(255,255,255,.92); }
+html.in-on body #ryOverlay .ry-fed-row{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:18px; }
+html.in-on body #ryOverlay .ry-par{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:20px; }
+html.in-on body #ryOverlay .ry-sel{ background:var(--lb-campo); border:1px solid var(--lb-linea); border-left:5px solid var(--c, var(--lb-linea)); color:var(--lb-tx) !important; color-scheme:light; }
+
+/* =====================================================================================
+   9) «APUNTARME A LA RYDER» (#riOverlay)
+   ===================================================================================== */
+html.in-on body #riOverlay{ background:#FFFFFF; color:var(--lb-tx); }
+html.in-on body #riOverlay .ri-x{ background:#FFFFFF; border:1.5px solid #C9A54A; color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-k{ color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-h{ color:var(--lb-tx); text-transform:none; letter-spacing:.01em; }
+html.in-on body #riOverlay .ri-dat{ color:var(--lb-suave); }
+html.in-on body #riOverlay .ri-in > .ri-dat:first-of-type{ color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-peq{ color:var(--lb-suave); }
+/* Tarjetas: azules con borde dorado (dentro, textos claros) */
+html.in-on body #riOverlay :is(.ri-tj, .ri-capt, .ri-vacio){ border:1.5px solid var(--lb-borde); border-radius:22px; }
+html.in-on body #riOverlay .ri-capt{ border-top:5px solid var(--c); }
+html.in-on body #riOverlay .ri-tj .ri-dat, html.in-on body #riOverlay .ri-tj .ri-peq{ color:var(--lb-suavec); }
+html.in-on body #riOverlay .ri-tj .ri-k, html.in-on body #riOverlay .ri-mar .ri-k{ color:var(--lb-oro); }
+html.in-on body #riOverlay .ri-vacio{ color:var(--lb-suavec); }
+html.in-on body #riOverlay .ri-ini{ background:#0F1626; }
+html.in-on body #riOverlay .ri-vs{ color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-ok{ background:var(--lb-azul); border:1.5px solid #E9CF8C; }
+html.in-on body #riOverlay .ri-ok span{ color:var(--lb-suavec); }
+html.in-on body #riOverlay .ri-tira{ background:rgba(255,255,255,.06); border-color:var(--lb-fila); }
+html.in-on body #riOverlay .ri-li > div{ border-top-color:var(--lb-fila); }
+html.in-on body #riOverlay .ri-li .vacio{ color:var(--lb-suavec); }
+/* Botones: secundarios con borde dorado; el principal (apuntarse, crear, guardar) rojo; los demás principales dorados */
+html.in-on body #riOverlay .ri-sec{ background:#FFFFFF; border:1.5px solid #C9A54A; color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-tj .ri-sec, html.in-on body #riOverlay .ri-capt .ri-sec{ background:transparent; border-color:var(--lb-borde); color:var(--lb-oro); }
+html.in-on body #riOverlay .ri-pri:is([data-ri="ap"], [data-ri="cuenta"], [data-ri="nueva"], [data-ri="crear"], [data-ri="guardarEd"]){ background:var(--lb-rojo); color:#FFFFFF; border-color:transparent; box-shadow:0 6px 16px rgba(215,38,61,.22); }
+html.in-on body #riOverlay .ri-link{ color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-adm .ri-link[data-ri="borrar"]{ color:#B3262E; }
+html.in-on body #riOverlay .ri-adm{ border:1.5px dashed #C9A54A; }
+html.in-on body #riOverlay .ri-adm h3{ color:var(--lb-oro-osc); }
+html.in-on body #riOverlay .ri-mini{ background:transparent; }
+/* Formularios claros */
+html.in-on body #riOverlay .ri-lab{ color:var(--lb-suave); }
+html.in-on body #riOverlay .ri-inp{ background:var(--lb-campo); border:1.5px solid var(--lb-linea); color:var(--lb-tx); font-size:18px; color-scheme:light; }
+html.in-on body #riOverlay .ri-inp::placeholder{ color:#8A939B; }
+html.in-on body #riOverlay .ri-inp:focus{ border-color:#C9A54A; box-shadow:0 0 0 3px rgba(201,165,74,.25); }
+html.in-on body #riOverlay input[type="date"]{ color-scheme:light; }
+html.in-on body #riOverlay input[type="date"]::-webkit-calendar-picker-indicator{ background:none !important; }
+html.in-on body #riOverlay .ri-col{ border-color:rgba(0,0,0,.12); }
+html.in-on body #riOverlay .ri-col.sel{ border-color:#FFFFFF; box-shadow:0 0 0 3px #C9A54A; }
+html.in-on body #riOverlay .ri-check{ background:var(--lb-azul); border:1.5px solid var(--lb-borde); border-radius:20px; color:var(--lb-suavec); }
+
+/* =====================================================================================
+   Móvil pequeño (360×640)
+   ===================================================================================== */
+@media (max-width:370px){
+  html.in-on body .screen:is([data-screen="2"],[data-screen="4"],[data-screen="6"]) .app-bar h1,
+  html.in-on.rj-on body .screen[data-screen="4"] .app-bar h1, html.in-on.cmj-on body .screen[data-screen="4"] .app-bar h1::after{ font-size:27px !important; }
+  html.in-on.cmj-on body .screen[data-screen="4"] .app-bar h1{ font-size:0 !important; }
+  html.in-on body #premiosHome .nv-tit, html.in-on body #medallasHome .premios-head .eyebrow, html.in-on body #medallasOverlay .med-titulo,
+  html.in-on body #hcpOverlay .reglas-cab h2, html.in-on body #ryOverlay .ry-tit, html.in-on body #riOverlay .ri-h{ font-size:27px !important; }
+  html.in-on body #clNuevo .cl-fila{ padding:8px 12px; min-height:52px; }
+}
