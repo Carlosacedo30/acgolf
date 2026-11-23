@@ -259,8 +259,8 @@
       pon(sh.firstChild, 'textContent', hc); pon(sh, 'hidden', !hc);
       pon(sp.firstChild, 'textContent', pa); pon(sp, 'hidden', !pa);
       pon(bloque.querySelector('.lm-stats'), 'hidden', !hc && !pa);
-      bloque.querySelectorAll('.lm-fila[data-de]').forEach(f => pon(f, 'hidden', !seVe(orig(f.dataset.de))));
-      bloque.querySelectorAll('.lm-card').forEach(c => pon(c, 'hidden', !c.querySelector('.lm-fila:not([hidden])')));
+      bloque.querySelectorAll('.lm-card:not(.mo-admin):not(.mo-dueno) .lm-fila[data-de]').forEach(f => pon(f, 'hidden', !seVe(orig(f.dataset.de))));
+      bloque.querySelectorAll('.lm-card:not(.mo-admin):not(.mo-dueno)').forEach(c => pon(c, 'hidden', !c.querySelector('.lm-fila:not([hidden])')));
       pon(bloque.querySelector('[data-lm="super"]'), 'hidden', !p.es_super);
       pon(bloque.querySelector('[data-lm="salir"]'), 'hidden', !todo.querySelector('[data-va="salir"]'));
     }

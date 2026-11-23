@@ -57,3 +57,8 @@ html.up-abierto, html.up-abierto body{ overflow:hidden; }
 
 /* debajo del próximo evento */
 html.in-on #homeAhora > #lmHoy{ order:27; }
+/* 23-nov: los cuadritos de GOLPES no se tocan entre sí ni con el nombre de la fila */
+.up-t .up-s{ width:22px; height:22px; margin:2px auto 0; font-size:14px; }
+.up-t .gol .l{ padding-right:6px; }
+.up-t .t{ width:36px; }
+@media (max-width:370px){ .up-t .up-s{ width:20px; height:20px; font-size:13px; } .up-t .l{ width:50px; letter-spacing:0; } .up-t .t{ width:34px; } .up-t th, .up-t td{ font-size:13px; } }
