@@ -1,14 +1,14 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 /* Marcador de jugadores (solo super administrador) */
 .ct-caja{ display:flex; align-items:center; gap:14px; width:calc(100% - 32px); max-width:560px; box-sizing:border-box; margin:14px auto 0; padding:12px 16px;
-  border-radius:16px; border:1.5px solid #C6F24E; background:#111316; color:#F2F4F5; cursor:pointer; text-align:left; font-family:'Barlow', system-ui, sans-serif; }
-.ct-num{ font:400 42px/1 'Anton', 'Barlow', sans-serif; color:#C6F24E; min-width:48px; text-align:center; }
+  border-radius:22px; border:1.5px solid rgba(217,190,122,.55); background:linear-gradient(160deg,#17233D,#0F1626); color:#F4F1E8; cursor:pointer; text-align:left; font-family:'Barlow', system-ui, sans-serif; }
+.ct-num{ font:400 42px/1 'Anton', 'Barlow', sans-serif; color:#E9CF8C; min-width:48px; text-align:center; }
 .ct-txt{ display:flex; flex-direction:column; flex:1; min-width:0; }
 .ct-txt b{ font-size:19px; }
 .ct-txt small{ font-size:15px; color:#9AA3AB; margin-top:2px; }
 .ct-flecha{ font-size:28px; color:#9AA3AB; }
 .ct-fila{ display:flex; justify-content:space-between; gap:12px; padding:12px 2px; border-bottom:1px solid rgba(255,255,255,.1); font-size:18px; }
-.ct-fila b{ font-size:20px; color:#C6F24E; }
+.ct-fila b{ font-size:20px; color:#E9CF8C; }
 .ct-sub{ font-weight:800; font-size:18px; margin:18px 0 2px; }
 .ct-nota{ font-size:15px; color:#9AA3AB; margin:14px 0 4px; }
 .ct-patro{ margin-top:8px; }
@@ -29,12 +29,12 @@
 .ct-filtros{ display:flex; gap:6px; margin:10px 0 0; }
 .ct-filtros button{ flex:1; min-height:44px; padding:8px 6px; border-radius:12px; border:1.5px solid rgba(255,255,255,.18); background:transparent;
   color:#F2F4F5; font:700 16px 'Barlow', system-ui, sans-serif; cursor:pointer; }
-.ct-filtros button.on{ background:#C6F24E; border-color:#C6F24E; color:#111316; }
+.ct-filtros button.on{ background:#E9CF8C; border-color:#E9CF8C; color:#111316; }
 .ct-filtros-sel{ align-items:center; }
 .ct-filtros select{ flex:1; min-width:0; min-height:44px; padding:8px 10px; border-radius:12px; border:1.5px solid rgba(255,255,255,.18);
   background:#1C1F23; color:#F2F4F5; font:600 16px 'Barlow', system-ui, sans-serif; }
 .ct-yo{ display:flex; align-items:center; gap:6px; font-size:15px; white-space:nowrap; color:#C9CFD4; }
-.ct-yo input{ width:22px; height:22px; accent-color:#C6F24E; }
+.ct-yo input{ width:22px; height:22px; accent-color:#E9CF8C; }
 .ct-resumen{ margin:14px 0 4px; font-size:16px; color:#C9CFD4; }
-.ct-resumen b{ font:400 26px/1 'Anton', 'Barlow', sans-serif; color:#C6F24E; margin-right:2px; }
-#ptLista .ct-q em{ font-size:20px; color:#C6F24E; }
+.ct-resumen b{ font:400 26px/1 'Anton', 'Barlow', sans-serif; color:#E9CF8C; margin-right:2px; }
+#ptLista .ct-q em{ font-size:20px; color:#E9CF8C; }
