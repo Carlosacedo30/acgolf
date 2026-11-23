@@ -24,12 +24,18 @@
     const total = salidas.reduce((n, s) => n + s.jug.length, 0);
     const grupo = (window.miPerfil && window.miPerfil.grupo) || 'Los Iscariotes';
     const yo = (window.miPerfil && window.miPerfil.player_name) || '';
+    // Hoyos que se juegan: 9 (Ida 1-9 o Vuelta 10-18) o 18; viene de la liga de la jornada
+    const hh = typeof window.acgolfLigaHoyos === 'function' ? window.acgolfLigaHoyos(c) : null;
+    const hoyosTxt = hh ? (hh.hoyos === 9
+      ? 'Se juegan 9 hoyos: ' + (hh.mitad === 'vuelta' ? 'la vuelta (hoyos 10 al 18)' : 'la ida (hoyos 1 al 9)') + '.'
+      : 'Se juegan los 18 hoyos.') : '';
     const asunto = 'Reserva de salida · ' + convLongDate(c.date) + ' · ' + total + ' jugadores';
     const cuerpo = 'Hola, buenos días, equipo de ' + campo.name + ':\n\n'
       + 'Os escribimos desde el grupo de golf «' + grupo + '», ¡esperamos que estéis muy bien!\n\n'
       + 'Queríamos reservar salida en ' + campo.name + ' para el ' + convLongDate(c.date).toLowerCase().replace(',', '')
       + (typeof convAlTiro === 'function' && convAlTiro(c) ? ', salida al tiro a las ' + convTime(c.times[0]) : '') + ':\n\n'
       + salidas.map(s => '· ' + s.etq + ' — ' + s.jug.length + (s.jug.length === 1 ? ' jugador: ' : ' jugadores: ') + s.jug.join(', ')).join('\n')
+      + (hoyosTxt ? '\n\n' + hoyosTxt : '')
       + '\n\nEn total, ' + total + (total === 1 ? ' jugador.' : ' jugadores.')
       + '\n\nPara confirmar la reserva, podéis llamarme' + (tel ? ' al ' + tel : '') + ' o responder a este correo.'
       + '\n\nMuchas gracias de antemano. Un saludo muy cordial,\n' + yo;

@@ -20,6 +20,7 @@
     const j = (l.jornadas || []).find(x => x.n === n) || {};
     return { hoyos: Number(j.nh || l.hoyos) === 9 ? 9 : 18, mitad: (j.mitad || l.mitad) === 'vuelta' ? 'vuelta' : 'ida' };
   };
+  window.acgolfLigaHoyos = hoyosDeConv;   // lo usa el correo de reserva al club
   window.acgolfLigaCurso = c => {
     const h = hoyosDeConv(c); if(!h || h.hoyos !== 9) return null;
     const base = COURSES.find(x => x.id === c.courseId); if(!base) return null;
