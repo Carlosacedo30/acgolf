@@ -250,3 +250,13 @@ html.in-on.lm-on .lm-cn .lm-pie button[data-lm="super"]::before{ display:none !i
   html.in-on.lm-on body .lm-fila{ min-height:52px; padding:5px 2px; }
 }
 @media (max-width:370px){ html.in-on.lm-on .in-tab{ font-size:14px; letter-spacing:.03em; } }
+
+/* ===== Botón «Ligas» (solo administrador): grande y dorado, sin dibujos ===== */
+html.in-on.lm-on .lm-adm{ margin:20px 0 0; }
+html.in-on.lm-on .lm-adm[hidden]{ display:none; }
+html.in-on.lm-on .lm-adm-t{ margin:0 4px 8px; font:900 15px/1.2 Archivo, system-ui, Arial, sans-serif; letter-spacing:.06em; color:#8A6A1F; }
+html.in-on.lm-on body .lm-adm button{ display:flex; align-items:center; justify-content:space-between; width:100%; min-height:68px; padding:0 24px; border:0; border-radius:999px; background:linear-gradient(180deg,#EBD08A,#C9A54A); color:#16120A; cursor:pointer; text-align:left; }
+html.in-on.lm-on .lm-adm button b{ display:block; font:900 22px/1.15 Archivo, system-ui, Arial, sans-serif; }
+html.in-on.lm-on .lm-adm button small{ display:block; font:700 15px/1.2 Barlow, system-ui, Arial, sans-serif; opacity:.8; }
+html.in-on.lm-on .lm-adm button i{ font:900 30px/1 Archivo, Arial, sans-serif; font-style:normal; }
+html.in-on.lm-on .lm-adm button:active{ transform:scale(.97); }
