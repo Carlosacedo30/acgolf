@@ -403,3 +403,10 @@ html.in-on body .av-rejilla{ grid-template-columns:repeat(5, minmax(0, 1fr)); }
   html.in-on body .av-rejilla{ padding:10px; gap:6px; }
   html.in-on body .av-op{ font-size:26px; }
 }
+
+/* ===== Sin barra de arriba «Ir a mi cuenta» + grupo en ninguna pantalla (Mi cuenta está abajo) ===== */
+html.in-on body .cg-barra,
+html.in-on body .screen .cg-barra,
+html.in-on body .screen[data-foco] .cg-barra,
+html.in-on body .screen[data-screen="0"][data-foco] .screen-content > #cgBarra.cg-barra,
+html.in-on.tb-on .cg-mi, html.in-on.tb-on .cg-selgrupo{ display:none !important; }
