@@ -267,4 +267,16 @@
     setInterval(repasar, 800);
     new MutationObserver(() => setTimeout(repasar, 0)).observe(cn, { attributes: true, attributeFilter: ['hidden'] });
   })();
+
+  // iPhone: marca la página como «desplazada» para que la hora no se mezcle con lo que sube por detrás
+  (function(){
+    const raiz = document.documentElement;
+    document.addEventListener('scroll', ev => {
+      const t = ev.target && ev.target.scrollTop != null ? ev.target : null;
+      if(!t || !t.classList || !t.classList.contains('screen-content')) return;
+      raiz.classList.toggle('lm-scrolled', t.scrollTop > 24);
+    }, true);
+    const quitar = () => raiz.classList.remove('lm-scrolled');
+    const g = window.goTo; if(typeof g === 'function') window.goTo = function(){ quitar(); return g.apply(this, arguments); };
+  })();
 })();
