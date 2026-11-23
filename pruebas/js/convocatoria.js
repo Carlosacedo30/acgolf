@@ -389,6 +389,7 @@
     }
   }
   async function convOpenRound(){
+    if(window.acgolfTarjeta4h && window.acgolfTarjeta4h.cerrada(conv.date, conv.times)){ window.acgolfTarjeta4h.aviso(conv.date, conv.times); return; }
     const res = await joinSharedRound(conv.roundCode);
     if(res.ok){ closeConv(); goTo(3); } else alert(res.msg);
   }

@@ -1,0 +1,9 @@
+/* Tarjeta cerrada hasta 4 horas antes (norma de Carlos, 23-nov-2026) */
+.t4-ov{ position:fixed; inset:0; z-index:100000; display:flex; align-items:center; justify-content:center; padding:24px 16px; background:rgba(10,12,16,.72); }
+.t4-caja{ box-sizing:border-box; width:100%; max-width:380px; padding:20px 18px; border-radius:20px; background:linear-gradient(160deg,#17233D,#0F1626); border:1.5px solid rgba(217,190,122,.55); color:#fff; text-align:center; }
+.t4-eti{ font:800 12px Archivo, system-ui, sans-serif; letter-spacing:.14em; color:#E9CF8C; }
+.t4-tit{ margin-top:8px; font:900 22px/1.2 Archivo, system-ui, sans-serif; }
+.t4-caja p{ margin:10px 0 0; font:600 16px/1.4 Barlow, system-ui, sans-serif; color:#E6EBF5; }
+.t4-ok{ margin-top:16px; width:100%; min-height:52px; border:0; border-radius:999px; background:linear-gradient(180deg,#E9CF8C,#C9A54A); color:#111316; font:900 16px Archivo, system-ui, sans-serif; letter-spacing:.05em; }
+.t4-ok:active{ transform:scale(.97); }
+html.in-on .ip-card .ip-ok.ip-cerrada{ color:#E9CF8C !important; }

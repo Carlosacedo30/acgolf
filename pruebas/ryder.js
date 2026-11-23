@@ -225,6 +225,7 @@
   }
   // Desde el Inicio: abre directamente el partido de la Ryder de este jugador
   async function abrirPartido(code, i){
+    try { const f = await traer(code); const t4 = window.acgolfTarjeta4h; const dia = f && (f.meta.date || f.meta.fecha); if(t4 && dia && t4.cerrada(dia, [])){ t4.aviso(dia, []); return; } } catch(e){}
     const ov = ventana(); ov.hidden = false; document.body.classList.add('ry-abierta');
     $('ryBody').innerHTML = '<div class="ry-cargando">Cargando…</div>';
     try { ryder = await traer(code); } catch(e){ ryder = null; }
