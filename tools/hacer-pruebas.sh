@@ -1023,7 +1023,7 @@ s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
 # Letra Playfair Display (cursiva dorada de la fecha y del puesto), cargada igual que Archivo
 s = s.replace('</head>', '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,600&display=swap">\n<link rel="stylesheet" href="inicio-nuevo.css?v=12">\n<link rel="stylesheet" href="jugar-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-nueva.css?v=1">\n<link rel="stylesheet" href="cuenta-nueva.css?v=2">\n<link rel="stylesheet" href="cuenta-lista.css?v=3">\n</head>', 1)
-s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=7"></script>\n<script src="otros-grupos.js?v=8"></script>\n<script src="jugar-nuevo.js?v=3"></script>\n<script src="liga-nueva.js?v=1"></script>\n<script src="cuenta-nueva.js?v=6"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="inicio-nuevo.js?v=7"></script>\n<script src="otros-grupos.js?v=8"></script>\n<script src="jugar-nuevo.js?v=3"></script>\n<script src="liga-nueva.js?v=1"></script>\n<script src="cuenta-nueva.js?v=7"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
@@ -1182,5 +1182,15 @@ s = open(p, encoding='utf-8').read()
 assert 'tarjeta-4h' not in s
 s = s.replace('</head>', '<link rel="stylesheet" href="tarjeta-4h.css?v=1">\n</head>', 1)
 s = s.replace('</body>', '<script src="tarjeta-4h.js?v=1"></script>\n</body>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
+
+# --- Mi cuenta ordenada: Ajustes con 4 pantallas y tarjeta de administrador (23-nov-2026) ---
+python3 - <<'PYEOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert 'mi-cuenta-orden' not in s
+s = s.replace('</head>', '<link rel="stylesheet" href="mi-cuenta-orden.css?v=2">\n</head>', 1)
+s = s.replace('</body>', '<script src="mi-cuenta-orden.js?v=2"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
