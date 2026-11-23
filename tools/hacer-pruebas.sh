@@ -1194,3 +1194,13 @@ s = s.replace('</head>', '<link rel="stylesheet" href="mi-cuenta-orden.css?v=2">
 s = s.replace('</body>', '<script src="mi-cuenta-orden.js?v=2"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
+
+# --- Cinta «ADMINISTRADOR» dentro de cada pantalla de administrador (23-nov-2026) ---
+python3 - <<'PYEOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert 'etiqueta-admin' not in s
+s = s.replace('</head>', '<link rel="stylesheet" href="etiqueta-admin.css?v=1">\n</head>', 1)
+s = s.replace('</body>', '<script src="etiqueta-admin.js?v=1"></script>\n</body>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
