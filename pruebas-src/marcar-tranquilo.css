@@ -7,13 +7,15 @@ html.mt-on .cu-flash .cu-cara, html.mt-on .cu-flash .cu-foto{ width:52px !import
 html.mt-on .cu-flash .cu-bocadillo{ font-size:14px !important; padding:8px 12px !important; max-height:76px; overflow:hidden; }
 html.mt-on .cu-flash .cu-bocadillo b{ font-size:12px !important; }
 /* Ritmo del campo: una sola píldora pequeña con un puntito, sin texto largo ni mapa */
-html.mt-on #rjAviso{ width:auto !important; display:inline-flex !important; padding:5px 12px 5px 6px !important; margin:4px 0 !important; border-width:1.5px !important; }
+html.mt-on #rjAviso:not([hidden]){ display:inline-flex !important; }
+html.mt-on #rjAviso[hidden]{ display:none !important; }
+html.mt-on #rjAviso{ width:auto !important; padding:5px 12px 5px 6px !important; margin:4px 0 !important; border-width:1.5px !important; }
 html.mt-on #rjAviso .rj-tx span, html.mt-on #rjAviso .rj-mp{ display:none !important; }
 html.mt-on #rjAviso .rj-tx b{ font-size:14px !important; }
 html.mt-on #rjAviso .rj-ic{ width:22px !important; height:22px !important; font-size:13px !important; }
 html.mt-on #rjAviso.rj-a::after, html.mt-on #rjAviso.rj-r::after{ content:''; width:10px; height:10px; border-radius:50%; background:#D7263D; margin-left:8px; flex:none; }
 html.mt-calla .cu-flash, html.mt-calla #rjAviso{ display:none !important; }
 /* Botón de emergencia */
-#mtQuitar{ position:fixed; right:12px; bottom:calc(env(safe-area-inset-bottom, 0px) + 14px); z-index:9650; display:none; align-items:center; gap:6px; min-height:44px; padding:0 16px; border:0; border-radius:999px; background:#111316; color:#fff; font:800 14px Archivo, system-ui, Arial, sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.3); }
+#mtQuitar{ position:fixed; right:14px; top:calc(env(safe-area-inset-top, 0px) + 150px); z-index:9650; display:none; align-items:center; gap:6px; min-height:44px; padding:0 16px; border:0; border-radius:999px; background:#111316; color:#fff; font:800 14px Archivo, system-ui, Arial, sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.3); }
 #mtQuitar:active{ transform:scale(.97); }
 html.mt-on.mt-hay #mtQuitar{ display:inline-flex; }

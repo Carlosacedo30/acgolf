@@ -97,7 +97,7 @@
         + '<span class="tb-cl-p' + color + '">' + alPar(s) + '</span>'
         + '<span class="tb-cl-h">' + s.holesFilled + '</span></button>';
     }).join('');
-    box.innerHTML = '<div class="tb-cl"><div class="tb-cl-cab"><span>#</span><span>JUGADOR · HCP</span><span>GOLPES</span><span>' + (sf ? 'PUNTOS' : 'AL PAR') + '</span><span>HOYOS</span></div>' + filas
+    box.innerHTML = '<div class="tb-cl"><div class="tb-cl-cab"><span>#</span><span>JUGADOR</span><span>GOLPES</span><span>' + (sf ? 'PUNTOS' : 'AL PAR') + '</span><span>HOYOS</span></div>' + filas
       + '</div>';
     box.querySelectorAll('.tb-cl-fila[data-p]').forEach(b => b.addEventListener('click', () => { tbDe = +b.dataset.p; renderHoleView(); }));
   };
