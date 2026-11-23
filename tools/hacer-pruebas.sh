@@ -1120,8 +1120,8 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=9">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n<link rel="stylesheet" href="crear-partida-nuevo.css?v=3">\n<link rel="stylesheet" href="confirmar-nuevo.css?v=3">\n<link rel="stylesheet" href="resumen-hcp-nuevo.css?v=1">\n<link rel="stylesheet" href="premios-nuevo.css?v=1">\n<link rel="stylesheet" href="ryder-nuevo.css?v=1">\n<link rel="stylesheet" href="barrido1-nuevo.css?v=1">\n<link rel="stylesheet" href="barrido2-nuevo.css?v=1">\n<link rel="stylesheet" href="barrido3-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio-nuevo.css?v=5">\n<link rel="stylesheet" href="limpio2a-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio2b-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio2c-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio2d-nuevo.css?v=3">\n</head>', 1)
-s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=4"></script>\n<script src="liga-pasos.js?v=4"></script>\n<script src="confirmar-nuevo.js?v=2"></script>\n<script src="limpio-nuevo.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="ritmo-jugador.css?v=9">\n<link rel="stylesheet" href="organizar-nuevo.css?v=5">\n<link rel="stylesheet" href="volver-nuevo.css?v=1">\n<link rel="stylesheet" href="liga-pasos.css?v=11">\n<link rel="stylesheet" href="crear-partida-nuevo.css?v=3">\n<link rel="stylesheet" href="confirmar-nuevo.css?v=3">\n<link rel="stylesheet" href="resumen-hcp-nuevo.css?v=1">\n<link rel="stylesheet" href="premios-nuevo.css?v=1">\n<link rel="stylesheet" href="ryder-nuevo.css?v=1">\n<link rel="stylesheet" href="barrido1-nuevo.css?v=1">\n<link rel="stylesheet" href="barrido2-nuevo.css?v=1">\n<link rel="stylesheet" href="barrido3-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio-nuevo.css?v=5">\n<link rel="stylesheet" href="limpio2a-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio2b-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio2c-nuevo.css?v=1">\n<link rel="stylesheet" href="limpio2d-nuevo.css?v=3">\n<link rel="stylesheet" href="ultima-partida.css?v=2">\n</head>', 1)
+s = s.replace('<div class="pr-banda">Pruebas</div>', '<script src="ritmo-jugador.js?v=3"></script>\n<script src="seguimiento-carlos.js?v=4"></script>\n<script src="liga-pasos.js?v=4"></script>\n<script src="confirmar-nuevo.js?v=2"></script>\n<script src="ultima-partida.js?v=2"></script>\n<script src="limpio-nuevo.js?v=2"></script>\n<div class="pr-banda">Pruebas</div>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 EOF
 
@@ -1135,5 +1135,17 @@ s = open(p, encoding='utf-8').read()
 a = '<div class="pr-banda">Pruebas</div>'
 assert s.count(a) == 1
 s = s.replace(a, '', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
+
+# --- Sin Hoyo 19 con cerveza (23-nov-2026): se quitan sus archivos de la página; «Tu última partida» (ultima-partida.js) ocupa su lugar ---
+python3 - <<'PYEOF'
+import re
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+n0 = len(s)
+s = re.sub(r'<script src="hoyo19[a-z-]*\.js\?v=\d+"></script>\n?', '', s)
+s = re.sub(r'<link rel="stylesheet" href="hoyo19[a-z-]*\.css\?v=\d+">\n?', '', s)
+assert 'hoyo19' not in s, 'quedan restos del hoyo 19'
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF

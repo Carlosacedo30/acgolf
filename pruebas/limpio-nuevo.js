@@ -3,7 +3,7 @@
 // Fondo blanco, todo en tarjetas azules, un solo botón rojo por pantalla, pocas filas y lo secundario en una línea gris abajo.
 // Este archivo SOLO pone piezas de aspecto y pulsa los botones de siempre: no guarda nada ni cambia cómo funciona la app.
 // · Inicio: UNA tarjeta según el momento:
-//     1) «Tu partida de hoy» (podio con el resultado NETO y «Ver la partida completa») desde que terminas una partida hasta las 12 de la noche;
+//     1) «Tu última partida» (marcador hoyo a hoyo y resumen técnico; golpes o Stableford según la partida);
 //     2) si no, el evento más próximo (los demás, en el mismo orden de fecha, se ven con «Ver N más»);
 //     3) si no hay nada, «Nada organizado · Organizar un partido».
 // · Jugar: sin «Ganadores de la semana» (pasa a Liga · Premios) y con el número de partidos organizados.
@@ -37,56 +37,28 @@
   };
 
   // ======================= INICIO =======================
-  // 1) Tu partida de hoy (hasta las 12 de la noche)
+  // 1) Tu última partida (marcador profesional; sustituye al Hoyo 19 y a «Tu partida de hoy»). Detalle en ultima-partida.js
   const hoyCard = crear('div', 'lm-card lm-hoy'); hoyCard.id = 'lmHoy'; hoyCard.hidden = true;
   ahora.appendChild(hoyCard);
-  let hoy = null, pedido = 0;
+  let hoy = null, pedido = 0, ultimoCodigo = '';
   async function buscarHoy(recent){
-    const n = ++pedido, y = yo();
-    const r = y ? (recent || []).find(x => x && x.finished === true && x.date && diaDe(x.date) === diaDe(Date.now()) && (x.players || []).some(p => norm(p) === y)) : null;
-    if(!r){ if(n === pedido){ hoy = null; pintarHoy(); } return; }
-    if(hoy && hoy.code === r.code && hoy.dia === diaDe(Date.now())) return;
+    const n = ++pedido, y = yo(), U = window.acgolfUltima;
+    const mias = y && U ? (recent || []).filter(x => x && x.finished === true && x.date && (x.players || []).some(p => norm(p) === y)).sort((a, b) => new Date(b.date) - new Date(a.date)) : [];
+    const r = mias[0];
+    if(!r || (Date.now() - new Date(r.date)) > 90 * 86400000){ if(n === pedido){ hoyCard.dataset.html = ''; pon(hoyCard, 'hidden', true); repasarInicio(); } return; }
+    if(r.code === ultimoCodigo && !hoyCard.hidden) return;
     let round = null;
     try { round = await L.leer(r.code); } catch(e){}
     if(n !== pedido) return;
-    hoy = round ? { code: r.code, dia: diaDe(Date.now()), round, campo: (round.course_name || r.courseName || '').replace(/^Club( de Golf)?\s+/i, '') } : null;
-    pintarHoy();
-  }
-  function podio(round){
-    const V = window.acgolfEnVivo; if(!V) return null;
-    if(round.scoring_type === 'matchplay') return [];
-    const pts = round.scoring_type === 'stableford';
-    let filas = null;
-    try { const pr = V.parejas && V.parejas(round); if(pr && pr.length) filas = pr.map(x => ({ n: x.nombre, v: x.total })); } catch(e){}
-    if(!filas){ try { filas = (V.tabla(round) || []).map(x => ({ n: x.n, v: pts ? x.pts : x.neto })); } catch(e){ filas = []; } }
-    return filas.slice(0, 3).map((f, i, a) => {
-      let pos = i; while(pos > 0 && a[pos - 1].v === f.v) pos--;   // empatados, mismo puesto
-      return { pos: pos + 1, n: f.n, r: pts ? f.v + ' pts' : signo(f.v) };
-    });
-  }
-  function pintarHoy(){
-    if(hoy && hoy.dia !== diaDe(Date.now())) hoy = null;   // a las 12 de la noche se quita
-    const filas = hoy ? podio(hoy.round) : null;
-    if(!hoy || !filas){ pon(hoyCard, 'hidden', true); hoyCard.dataset.html = ''; repasarInicio(); return; }
-    const html = '<div class="lm-k">Tu partida de hoy' + (hoy.campo ? ' · ' + esc(hoy.campo) : '') + '</div>'
-      + (filas.length ? '<ol class="lm-pod">' + filas.map(f => '<li><span class="lm-pn">' + f.pos + '</span><span class="lm-pnom">' + esc(f.n) + '</span><span class="lm-pr">' + esc(f.r) + '</span></li>').join('') + '</ol>'
-                      : '<p class="lm-s">' + esc(hoy.round.round_name || 'Partida terminada') + '</p>')
-      + '<button type="button" class="lm-oro" data-lm="verHoy">Ver la partida completa</button>'
-      + '<button type="button" class="lm-link" data-lm="resumenHoy" hidden>Ver el resumen de Curro y Lola</button>';
+    const act = round ? U.poner(round, r.code, r.date) : null;
+    if(!act){ pon(hoyCard, 'hidden', true); repasarInicio(); return; }
+    ultimoCodigo = r.code;
+    const html = U.html();
     if(hoyCard.dataset.html !== html){ hoyCard.innerHTML = html; hoyCard.dataset.html = html; }
     pon(hoyCard, 'hidden', false);
     repasarInicio();
   }
-  hoyCard.addEventListener('click', async ev => {
-    const b = ev.target.closest('[data-lm]'); if(!b || !hoy) return;
-    if(b.dataset.lm === 'resumenHoy'){ const r = resumenDe(hoy.code); if(r) r.click(); return; }
-    // Igual que «Ver» en «Últimas partidas»: abre la partida terminada
-    if(b.dataset.busy || typeof joinSharedRound !== 'function') return;
-    b.dataset.busy = '1'; const t = b.textContent; b.textContent = 'Abriendo…';
-    try { const res = await joinSharedRound(hoy.code); if(res && res.ok && typeof goTo === 'function') goTo(3); }
-    finally { delete b.dataset.busy; b.textContent = t; }
-  });
-  // El resumen de Curro y Lola de esa misma partida no sale aparte (un evento, una sola tarjeta): se abre desde la tarjeta
+  hoyCard.addEventListener('click', ev => { if(ev.target.closest('[data-up="abrir"]') && window.acgolfUltima) window.acgolfUltima.abrir(); });
   const resumenDe = code => document.querySelector('#vvExtras [data-vv-res="' + (window.CSS && CSS.escape ? CSS.escape(code) : code) + '"]');
 
   // Se engancha a lo que ya pinta el Inicio con las últimas partidas (rondas-compartidas.js → renderHomeEnMarcha)
@@ -98,7 +70,6 @@
     window.renderHomeEnMarcha = nuevo;
   }
   if(document.readyState === 'complete') enganchar(); else window.addEventListener('load', () => setTimeout(enganchar, 0));
-  setInterval(() => { if(hoy && hoy.dia !== diaDe(Date.now())) pintarHoy(); }, 60000);
 
   // 3) Nada organizado
   const nada = crear('div', 'lm-card lm-nada', '<div class="lm-k">Lo próximo</div><b class="lm-t">Nada organizado</b><span class="lm-s">¿Quedáis para jugar?</span>'
@@ -116,7 +87,7 @@
   function repasarInicio(){
     const box = $('convHome');
     const eventos = box ? Array.from(box.children).filter(n => n.matches('.ip-card, .og-card')) : [];
-    const conHoy = !hoyCard.hidden;
+    const conHoy = false;   // la tarjeta «Tu última partida» va debajo y no sustituye al próximo evento
     const visibles = conHoy ? 0 : 1;
     eventos.forEach((n, i) => { const o = !abiertoMas && i >= visibles; if(n.classList.contains('lm-oculta') !== o) n.classList.toggle('lm-oculta', o); });
     pon(nada, 'hidden', conHoy || eventos.length > 0);
