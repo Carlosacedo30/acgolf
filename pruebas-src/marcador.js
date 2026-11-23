@@ -333,7 +333,7 @@
         caja.querySelectorAll('.mn-put button').forEach(e => { e.disabled = true; e.onclick = null; });
         caja.querySelectorAll('.mn-pl[data-i]').forEach(e => { e.onclick = null; });
         const nota = document.createElement('div'); nota.className = 'mk-cerrada';
-        nota.innerHTML = '🔒 Tarjeta entregada: los golpes ya no se pueden cambiar.';
+        nota.innerHTML = '✓ Partida terminada. Tarjeta entregada: los golpes ya no se pueden cambiar.';
         caja.parentNode.insertBefore(nota, caja);
       }
     }
@@ -493,6 +493,8 @@
   }
   setInterval(() => { if(document.visibilityState === 'visible') pintarFirma(); }, 2000);
   // el Hoyo 19 y el resumen no se abren con una tarjeta sin firmar
+  // ¿La partida ya está terminada para mí? (todos los hoyos apuntados o tarjeta entregada)
+  window.acgolfPartidaTerminada = () => { try { const g = grupoEst(); return !!g && conMarcadorEn(currentRoundCode) && (todoApuntado(g) || cerrada(g)); } catch(e){ return false; } };
   // ¿me falta entregar MI tarjeta? (lo usa «terminar partida → Inicio»)
   window.acgolfEntregaPendiente = () => { try { const g = grupoEst(); return !!(currentRoundCode && conMarcadorEn(currentRoundCode) && soyJugador(g) && !entregadaYa(g)); } catch(e){ return false; } };
   window.acgolfTarjetaPendiente = () => pendientesInicio.find(p => p.mia_pendiente) || null;

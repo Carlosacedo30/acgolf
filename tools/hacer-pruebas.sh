@@ -1053,7 +1053,7 @@ python3 - <<'EOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert s.count('</head>') == 1 and s.count('<div class="pr-banda">Pruebas</div>') == 1
-for a, b in [('marcador.js?v=18', 'marcador.js?v=24'), ('marcador-mesa.js?v=1', 'marcador-mesa.js?v=2'), ('marcador-mesa.css?v=1', 'marcador-mesa.css?v=2')]:
+for a, b in [('marcador.js?v=18', 'marcador.js?v=25'), ('marcador-mesa.js?v=1', 'marcador-mesa.js?v=2'), ('marcador-mesa.css?v=1', 'marcador-mesa.css?v=2')]:
     assert s.count(a) == 1, a
     s = s.replace(a, b)
 s = s.replace('</head>', '<link rel="stylesheet" href="marcar-nuevo.css?v=5">\n</head>', 1)
@@ -1155,7 +1155,16 @@ python3 - <<'PYEOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert 'marcar-tranquilo' not in s
-s = s.replace('</head>', '<link rel="stylesheet" href="marcar-tranquilo.css?v=3">\n</head>', 1)
-s = s.replace('</body>', '<script src="marcar-tranquilo.js?v=2"></script>\n</body>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="marcar-tranquilo.css?v=4">\n</head>', 1)
+s = s.replace('</body>', '<script src="marcar-tranquilo.js?v=4"></script>\n</body>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
+
+# --- Ayuda de medidas de pantalla (5 toques en «© 2026 acgolf»), para la franja blanca del iPhone ---
+python3 - <<'PYEOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert 'diag-pantalla' not in s
+s = s.replace('</body>', '<script src="diag-pantalla.js?v=1"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
