@@ -43,7 +43,7 @@
     if(c) return;
     c = document.createElement('div'); c.id = 'mtTerminada'; c.className = 'mk-cerrada';
     c.innerHTML = '✓ Tarjeta entregada. Así quedó la partida.';
-    const ref = document.getElementById('marcadorVivo');
+    const ref = document.getElementById('holeViewSection') || document.getElementById('marcadorVivo');
     if(ref && ref.parentNode) ref.parentNode.insertBefore(c, ref); else sc.insertBefore(c, sc.firstChild);
   }
   // «Salir» de una partida terminada: directo a la pantalla principal, sin preguntar
