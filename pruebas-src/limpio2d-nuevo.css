@@ -435,3 +435,10 @@ html.in-on.lm-scrolled::before{ content:''; position:fixed; top:0; left:0; right
 html.in-on body #tfAdmin .tf-banda b{ font-size:clamp(16px, 5vw, 20px) !important; line-height:1.15; }
 html.in-on body #tfAdmin .tf-dos{ grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) !important; }
 html.in-on body #tfAdmin .tf-dos .tf-btn{ font-size:clamp(14px, 4.3vw, 18px) !important; white-space:nowrap; padding:8px 6px !important; letter-spacing:.02em; }
+
+/* Administrador: en el Inicio solo una línea discreta «Tarjetas por cerrar · N ›»; la lista se abre al tocarla */
+html.in-on body #tfAdmin{ margin:6px 16px 0; }
+html.in-on body #tfAdmin .tf-resumen{ display:flex; align-items:center; justify-content:center; gap:6px; width:100%; min-height:44px; border:0; background:none; color:#4A5058; font:700 15px Archivo, system-ui, Arial, sans-serif; }
+html.in-on body #tfAdmin .tf-resumen b{ background:#D7263D; color:#fff; border-radius:999px; padding:1px 9px; font-size:13px; }
+html.in-on body #tfAdmin .tf-solo{ margin:0 0 8px; font:600 13px Barlow, system-ui, sans-serif; color:#4A5058; text-align:center; }
+html.in-on body #tfAdmin .tf-lista[hidden]{ display:none; }
