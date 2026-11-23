@@ -332,7 +332,7 @@
         caja.querySelectorAll('.mn-keys, #mnMas').forEach(e => { e.style.display = 'none'; });
         caja.querySelectorAll('.mn-put button').forEach(e => { e.disabled = true; e.onclick = null; });
         caja.querySelectorAll('.mn-pl[data-i]').forEach(e => { e.onclick = null; });
-        const nota = document.createElement('div'); nota.className = 'tf-bien mk-cerrada';
+        const nota = document.createElement('div'); nota.className = 'mk-cerrada';
         nota.innerHTML = '🔒 Tarjeta entregada: los golpes ya no se pueden cambiar.';
         caja.parentNode.insertBefore(nota, caja);
       }
@@ -378,6 +378,7 @@
     if(nx){ nx.classList.toggle('mk-off', !ok && !ultimo); nx.classList.toggle('mk-go', ok && !ultimo); }
     const w = document.getElementById('hvPlayers'); if(!w) return;
     let a = document.getElementById('mkAvisoHoyo'); if(a) a.remove();
+    if(cerrada(g)) return;   // tarjeta entregada: ningún cartel de «pasando al hoyo»
     a = document.createElement('div'); a.id = 'mkAvisoHoyo';
     if(ok && !ultimo){
       a.className = 'mk-aviso ok';

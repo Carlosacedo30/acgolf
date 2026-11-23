@@ -20,8 +20,7 @@
     raiz.classList.toggle('mt-on', on);
     raiz.classList.toggle('mt-calla', on && callado);
     const flash = document.querySelector('.cu-flash.ver');
-    const rj = document.getElementById('rjAviso');
-    raiz.classList.toggle('mt-hay', on && !callado && (!!flash || (!!rj && !rj.hidden)));
+        raiz.classList.toggle('mt-hay', on && !callado && !!flash);   // solo mientras Curro o Lola están a la vista
     if(on && flash && !timers.get(flash)){   // se quita solo a los 4 segundos
       timers.set(flash, setTimeout(() => { flash.classList.remove('ver'); timers.delete(flash); }, 4000));
     }
