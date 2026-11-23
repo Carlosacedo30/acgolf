@@ -19,7 +19,8 @@
 .mh-oro{ background:#E9CF8C; border:3px solid #fff; box-shadow:0 0 0 2px rgba(0,0,0,.35); }
 .mh-dist span{ position:absolute; transform:translate(-50%,-50%); white-space:nowrap; padding:4px 12px; border-radius:999px; background:linear-gradient(160deg,#17233D,#0F1626); border:1.5px solid rgba(217,190,122,.8); color:#fff; font:900 18px Archivo, system-ui, sans-serif; }
 .mh-ov .leaflet-control-attribution{ font-size:11px; margin-bottom:0; max-width:70vw; }
-.mh-entrada{ margin:10px 0; text-align:center; }
+.mh-entrada{ margin:10px 16px; text-align:center; }
 .mh-entrada[hidden]{ display:none !important; }
-.mh-abrir{ min-height:52px; width:100%; max-width:420px; padding:0 18px; border-radius:999px; border:2px solid #C9A54A; background:linear-gradient(160deg,#17233D,#0F1626); color:#E9CF8C; font:900 15px Archivo, system-ui, sans-serif; }
+.mh-abrir{ min-height:52px; width:100%; max-width:420px; box-sizing:border-box; padding:0 18px; border-radius:999px; border:2px solid #C9A54A; background:linear-gradient(160deg,#17233D,#0F1626); color:#E9CF8C; font:900 15px Archivo, system-ui, sans-serif; }
 .mh-abrir[hidden]{ display:none !important; }
+
