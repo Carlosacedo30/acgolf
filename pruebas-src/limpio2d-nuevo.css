@@ -428,3 +428,10 @@ html.in-on .nv-volver{ top:env(safe-area-inset-top, 0px); }
 html.in-on body :is(#convOverlay, #leaguePlayersOverlay, #normasOverlay, #prOverlay, #greensMapaOverlay, #reglasOverlay, #hcpOverlay, #derbiOverlay){ padding-top:env(safe-area-inset-top, 0px) !important; }
 html.in-on body :is(#convOverlay, #leaguePlayersOverlay, #normasOverlay) > .modal-card{ padding-top:env(safe-area-inset-top, 0px) !important; }
 html.in-on body .nv-volver{ top:env(safe-area-inset-top, 0px) !important; }
+
+/* iPhone: al desplazar, lo que sube no pasa por debajo de la hora y la batería (Carlos, 23-nov-2026) */
+html.in-on.lm-scrolled::before{ content:''; position:fixed; top:0; left:0; right:0; height:env(safe-area-inset-top, 0px); background:#fff; z-index:99999; pointer-events:none; }
+/* «Tarjetas sin cerrar» (administrador): títulos y botones en una sola línea, sin partirse */
+html.in-on body #tfAdmin .tf-banda b{ font-size:clamp(16px, 5vw, 20px) !important; line-height:1.15; }
+html.in-on body #tfAdmin .tf-dos{ grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) !important; }
+html.in-on body #tfAdmin .tf-dos .tf-btn{ font-size:clamp(14px, 4.3vw, 18px) !important; white-space:nowrap; padding:8px 6px !important; letter-spacing:.02em; }
