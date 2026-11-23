@@ -1204,3 +1204,13 @@ s = s.replace('</head>', '<link rel="stylesheet" href="etiqueta-admin.css?v=1">\
 s = s.replace('</body>', '<script src="etiqueta-admin.js?v=1"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
+
+# --- Pantalla «Hoyo N» con foto aérea del IGN (23-nov-2026) ---
+python3 - <<'PYEOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+assert 'mapa-hoyo' not in s
+s = s.replace('</head>', '<link rel="stylesheet" href="mapa-hoyo.css?v=1">\n</head>', 1)
+s = s.replace('</body>', '<script src="mapa-hoyo.js?v=1"></script>\n</body>', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
