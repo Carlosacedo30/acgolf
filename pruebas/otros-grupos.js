@@ -160,7 +160,7 @@
     });
     nodos.partido.forEach(n => n.remove());
     nodos.partido = items.map(a => {
-      const n = nodo('<button type="button" class="og-card og-juego og-partido"><span class="og-etq">Tu partido de la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-vs">' + a.lineas + '</span><span class="og-sub">' + esc(a.sub) + '</span><span class="og-ir">ANOTAR MI PARTIDO</span></button>', a.fecha);
+      const n = nodo('<button type="button" class="og-card og-juego og-partido"><span class="og-etq">Tu partido de la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-vs">' + a.lineas + '</span><span class="og-sub">' + esc(a.sub) + '</span><span class="og-ir">' + (window.acgolfTarjeta4h && a.fecha && window.acgolfTarjeta4h.cerrada(a.fecha, []) ? '🔒 SE ABRE ' + esc(window.acgolfTarjeta4h.texto(a.fecha, []).toUpperCase()) : 'ANOTAR MI PARTIDO') + '</span></button>', a.fecha);
       n._partido = a; return n;
     });
     colocar();

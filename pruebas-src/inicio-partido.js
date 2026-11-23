@@ -80,7 +80,8 @@
       const etiqueta = esHoy && mi >= 0 ? 'Hoy juegas' : esHoy ? 'Hoy se juega' : 'Próximo partido';
       const cuando = esHoy && mi >= 0 ? campo + ' · salida a las ' + convTime(c.times[mi]) : DIAS[d.getDay()] + ' ' + d.getDate() + ' · ' + campo;
       const pie = esHoy && mi >= 0 && compis.length ? 'Con ' + compis.join(', ').replace(/, ([^,]*)$/, ' y $1') : total + (total === 1 ? ' apuntado' : ' apuntados') + ' · ' + horas;
-      const derecha = c.roundCode ? '<span class="ip-ok">Partida creada ›</span>'
+      const t4 = window.acgolfTarjeta4h, t4cerrada = !!(c.roundCode && t4 && t4.cerrada(c.date, c.times));
+      const derecha = c.roundCode ? (t4cerrada ? '<span class="ip-ok ip-cerrada">🔒 Se abre ' + esc(t4.texto(c.date, c.times)) + '</span>' : '<span class="ip-ok">Abrir mi tarjeta ›</span>')
         : mi >= 0 ? '<span class="ip-ok">✓ ' + esc(convTime(c.times[mi])) + '</span>'
         : '<button type="button" class="ip-apuntar" data-apuntar="' + esc(c.code) + '">Apuntarme</button>';
       const elegir = abierta === c.code ? '<div class="ip-horas">' + c.times.map((t, k) => {
@@ -100,6 +101,7 @@
     box.querySelectorAll('[data-conv-code]').forEach(card => card.addEventListener('click', () => {
       const c = convActivas.find(x => x.code === card.dataset.convCode); if(!c) return;
       if(!conv || conv.code !== c.code){ conv = c; convWatch(); }
+      if(c.roundCode && window.acgolfTarjeta4h && window.acgolfTarjeta4h.cerrada(c.date, c.times)){ window.acgolfTarjeta4h.aviso(c.date, c.times); return; }
       if(c.roundCode && typeof convOpenRound === 'function') convOpenRound(); else openConv(false);
     }));
     box.querySelectorAll('[data-gestionar]').forEach(b => b.addEventListener('click', ev => {
