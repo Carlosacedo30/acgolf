@@ -19,3 +19,4 @@ html.mt-calla .cu-flash, html.mt-calla #rjAviso{ display:none !important; }
 #mtQuitar{ position:fixed; right:14px; top:calc(env(safe-area-inset-top, 0px) + 150px); z-index:9650; display:none; align-items:center; gap:6px; min-height:44px; padding:0 16px; border:0; border-radius:999px; background:#111316; color:#fff; font:800 14px Archivo, system-ui, Arial, sans-serif; box-shadow:0 4px 14px rgba(0,0,0,.3); }
 #mtQuitar:active{ transform:scale(.97); }
 html.mt-on.mt-hay #mtQuitar{ display:inline-flex; }
+#mtTerminada{ box-sizing:border-box; margin:12px 0 !important; }

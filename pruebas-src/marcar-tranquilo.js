@@ -27,6 +27,33 @@
     if(!flash) timers.delete(document.querySelector('.cu-flash') || {});
     if(on && callado && flash) flash.classList.remove('ver');
   }
+  // ---- Partida terminada: se dice claro y al salir no se pregunta nada ----
+  const terminada = () => {
+    try {
+      if(typeof window.acgolfPartidaTerminada === 'function' && window.acgolfPartidaTerminada()) return true;
+      if(typeof roundMarkedFinished !== 'undefined' && roundMarkedFinished) return true;
+      return typeof isRoundFinished === 'function' && !!currentRoundCode && isRoundFinished(matchGroups);
+    } catch(e){ return false; }
+  };
+  function cartel(){
+    const sc = document.querySelector('.screen.active[data-screen="3"] .screen-content');
+    let c = document.getElementById('mtTerminada');
+    const quiere = !!sc && terminada() && !document.querySelector('.mk-cerrada');
+    if(!quiere){ if(c) c.remove(); return; }
+    if(c) return;
+    c = document.createElement('div'); c.id = 'mtTerminada'; c.className = 'mk-cerrada';
+    c.innerHTML = '✓ Partida terminada. Estás viendo cómo quedó.';
+    const ref = document.getElementById('marcadorVivo');
+    if(ref && ref.parentNode) ref.parentNode.insertBefore(c, ref); else sc.insertBefore(c, sc.firstChild);
+  }
+  // «Salir» de una partida terminada: directo a la pantalla principal, sin preguntar
+  document.addEventListener('click', ev => {
+    if(!ev.target || !ev.target.closest || !ev.target.closest('#s3Back')) return;
+    if(!terminada()) return;
+    ev.stopImmediatePropagation(); ev.preventDefault();
+    if(typeof leaveCurrentRound === 'function') leaveCurrentRound(); else if(typeof goTo === 'function') goTo(0);
+  }, true);
+  setInterval(cartel, 600);
   setInterval(revisar, 500);
   revisar();
 })();
