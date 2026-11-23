@@ -89,8 +89,16 @@
 
   function ir(h){ if(h < 1 || h > hayHoyos()) return; hoyo = h; colocando = false; pintar(); }
 
+  // El campo de la partida: «Hato Verde» aunque la partida lo guarde con otro código o con el nombre escrito distinto
+  function campoActual(){
+    const c = (typeof selectedCourse !== 'undefined') ? selectedCourse : null; if(!c) return null;
+    const hv = /hato\s*verde/i.test((c.name || '') + ' ' + (c.id || '')) || c.id === 'hato-verde';
+    if(!hv) return { id: c.id, par: c.par || null, tieneGreens: false };
+    const base = (typeof COURSES !== 'undefined' ? COURSES.find(x => x.id === 'hato-verde') : null) || {};
+    return { id: 'hato-verde', par: c.par || base.par || null, tieneGreens: true };
+  }
   async function abrir(){
-    campo = (typeof selectedCourse !== 'undefined') ? selectedCourse : null; if(!campo) return;
+    campo = campoActual(); if(!campo) return;
     hoyo = (typeof currentHole !== 'undefined' && currentHole) ? currentHole : 1;
     if(!ov) construir();
     ov.hidden = false; document.documentElement.classList.add('mh-abierto'); aviso('Cargando el mapa…');
@@ -112,8 +120,8 @@
     if(!b){ b = document.createElement('div'); b.id = 'mhEntrada'; b.className = 'mh-entrada';
       b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir">🗺 Ver el hoyo en el mapa</button>'; b.firstChild.onclick = abrir; }
     if(b.nextElementSibling !== ref) ref.before(b);
-    const id = (typeof selectedCourse !== 'undefined' && selectedCourse) ? selectedCourse.id : null;
-    b.hidden = id !== 'hato-verde';
+    const k = campoActual();
+    b.hidden = !(k && k.tieneGreens);
   }
   setInterval(botones, 1000);
   window.acgolfMapaHoyo = { abrir, cerrar };
