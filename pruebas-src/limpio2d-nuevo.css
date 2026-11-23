@@ -1,0 +1,405 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* DISEÑO LIMPIO (norma de Carlos, 23-nov-2026) llevado a las ventanas que salen de la puerta de entrada y de «Mi cuenta»:
+   la puerta (#cuentaGate: entrar, crear cuenta, contraseña, bienvenida, invitación, grupos, planes, portada, soporte y paneles
+   del super administrador), los trozos de Mi cuenta (Ajustes, Ayuda, Superadministrador), Manual, Ayuda, Redes, páginas legales,
+   Buscador de campos, Caddie Curro/Lola, invitado, avisos del móvil y presentación con vídeo.
+   Fondo BLANCO, texto oscuro; lo que lleva contenido en TARJETAS AZULES con borde dorado; un solo botón ROJO por pantalla;
+   secundarios dorados o con borde dorado; «‹ Volver» en dorado oscuro. Solo estilo (nada de funciones). Solo con html.in-on. */
+
+html.in-on{ --ld-tx:#111316; --ld-suave:#4A5058; --ld-linea:#DADFE3; --ld-campo:#F2F4F6; --ld-oro-osc:#8A6A1F; --ld-verde:#2E7D32;
+  --ld-azul:linear-gradient(160deg,#17233D,#0F1626); --ld-borde:rgba(217,190,122,.55); --ld-txc:#F4F1E8; --ld-suavec:#B5BFD0; --ld-oro:#E9CF8C;
+  --ld-fila:#26324F; --ld-boton:linear-gradient(180deg,#EBD08A,#C9A54A); --ld-rojo:#D7263D; --ld-error:#B3262E; }
+
+/* ======================================================================================================
+   1. LA PUERTA DE ENTRADA (#cuentaGate) — lo primero que ve un jugador nuevo: blanco, limpio y letra grande
+   ====================================================================================================== */
+html.in-on body #cuentaGate:not(.cg-pn){ background:#fff !important; color:var(--ld-tx); }
+html.in-on body #cuentaGate .cg-card{ background:transparent !important; border:0 !important; box-shadow:none !important; color:var(--ld-tx); }
+/* «‹ Volver» de arriba (lo pone navegacion.js) y los «‹ Volver» de las pantallas del panel y del chat */
+html.in-on body #cuentaGate .nv-volver{ background:#fff !important; color:var(--ld-oro-osc) !important; box-shadow:0 -80px 0 #fff !important; }
+html.in-on body #cuentaGate :is(.pn-atras, .sp-atras){ color:var(--ld-oro-osc) !important; background:none !important; }
+/* Cabecera: logo, etiqueta, título y explicación */
+html.in-on body #cuentaGate .cg-head .cg-logo{ filter:none; }
+html.in-on body #cuentaGate .cg-logo circle{ fill:#17233D; stroke:#C9A54A; }
+html.in-on body #cuentaGate .cg-eyebrow{ color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate .cg-title{ font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif; color:var(--ld-tx) !important; text-shadow:none; text-transform:none; letter-spacing:.01em; }
+html.in-on body #cuentaGate .cg-sub{ color:var(--ld-suave) !important; font-size:18px; }
+html.in-on body #cuentaGate .cg-sub b{ color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate .cg-p{ color:var(--ld-tx); }
+html.in-on body #cuentaGate .cg-p b{ color:var(--ld-oro-osc); }
+/* Casillas para escribir: gris muy claro, texto oscuro grande */
+html.in-on body #cuentaGate .cg-lbl{ color:var(--ld-tx); }
+html.in-on body #cuentaGate .cg-lbl small{ color:var(--ld-suave); }
+html.in-on body #cuentaGate :is(.cg-lbl input, .cg-lbl select, .cp-area, .cp-buscar, .sp-buscar, .sp-esc input, .cp-campo, textarea, input[type="text"], input[type="email"], input[type="search"]){
+  background:var(--ld-campo) !important; border:1.5px solid var(--ld-linea) !important; color:var(--ld-tx) !important; box-shadow:none !important; }
+html.in-on body #cuentaGate :is(.cg-lbl input, .sp-esc input, .sp-buscar, .cp-area, .cp-buscar, textarea, input)::placeholder{ color:#7B848D; }
+html.in-on body #cuentaGate :is(.cg-lbl input, .cg-lbl select, .cp-area, .cp-buscar, .sp-buscar, .sp-esc input, textarea, input[type="text"], input[type="email"], input[type="search"]):focus{
+  outline:none !important; background:#fff !important; border-color:#C9A54A !important; box-shadow:0 0 0 3px rgba(201,165,74,.25) !important; }
+html.in-on body #cuentaGate .cg-lbl select{ color-scheme:light; }
+/* Casillas de marcar (ver contraseña, acepto) */
+html.in-on body #cuentaGate .cg-ver{ color:var(--ld-tx); }
+html.in-on body #cuentaGate .cg-acepto{ color:var(--ld-tx); }
+html.in-on body #cuentaGate :is(.cg-ver, .cg-acepto) input{ background:#fff; border-color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate :is(.cg-acepto, .cg-legal) a{ color:var(--ld-oro-osc) !important; }
+html.in-on body #cuentaGate .cg-legal{ color:var(--ld-suave); }
+/* Botones. Principal ROJO (uno por pantalla); el resto dorado o con borde dorado */
+html.in-on body #cuentaGate .cg-btn{ background:var(--ld-boton) !important; color:#16120A !important; border:0 !important; }
+html.in-on body #cuentaGate .cg-card > :nth-child(1 of .cg-btn:not(.ghost, .danger, .sp-env, .sp-nuevo, #cgCerrar, #cgVolver)),
+html.in-on body #cuentaGate .cg-card > .bv > .bv-entrar,
+html.in-on body #cuentaGate .sp-esc .sp-env{
+  background:var(--ld-rojo) !important; color:#fff !important; box-shadow:0 6px 16px rgba(215,38,61,.22) !important; min-height:62px; font-size:20px; }
+html.in-on body #cuentaGate .sp-esc .sp-env{ min-height:56px; font-size:18px; }
+/* Si la pantalla ya tiene un botón de peligro rojo, el principal se queda dorado */
+html.in-on body #cuentaGate .cg-card:has(> .cg-btn.danger) > :nth-child(1 of .cg-btn:not(.ghost, .danger, .sp-env, .sp-nuevo, #cgCerrar, #cgVolver)){ background:var(--ld-boton) !important; color:#16120A !important; box-shadow:none !important; }
+html.in-on body #cuentaGate .cg-btn.ghost, html.in-on body #cuentaGate .cg-btn.cg-ayuda{ background:#fff !important; color:var(--ld-tx) !important; border:1.5px solid #C9A54A !important; box-shadow:none !important; }
+html.in-on body #cuentaGate .cg-btn.danger{ background:var(--ld-rojo) !important; color:#fff !important; }
+html.in-on body #cuentaGate .cg-btn:disabled{ opacity:.6; }
+html.in-on body #cuentaGate :is(.cg-btn, .cg-link, .cg-google):focus-visible{ outline:2px solid var(--ld-oro-osc); }
+html.in-on body #cuentaGate .cg-link{ color:var(--ld-oro-osc) !important; }
+html.in-on body #cuentaGate .cg-google{ background:#fff; color:var(--ld-tx); border:1.5px solid var(--ld-linea); }
+/* Separadores «¿Es tu primera vez?» */
+html.in-on body #cuentaGate .cg-sep{ color:var(--ld-suave); }
+html.in-on body #cuentaGate .cg-sep::before{ background:linear-gradient(270deg,var(--ld-linea),transparent); }
+html.in-on body #cuentaGate .cg-sep::after{ background:linear-gradient(90deg,var(--ld-linea),transparent); }
+/* Mensajes (error en rojo oscuro, bien en verde) */
+html.in-on body #cuentaGate .cg-msg{ color:var(--ld-error); }
+html.in-on body #cuentaGate .cg-msg.ok{ color:var(--ld-verde); }
+
+/* ---------- Todo lo que lleva contenido: TARJETA AZUL con borde dorado ---------- */
+html.in-on body #cuentaGate :is(.cg-camino, .cg-hcp-global, .cg-correo, .cg-grupo, .cg-invita, .cg-que, div.cg-ayuda, .cg-sigue, .cg-pasos, .cg-pasos-txt,
+  .cg-candado, .cg-opcion, .pl-op, .pl-resumen, .pl-pasarela, .bv-it, .bv-manual, .sp-row, .pa-fila, .pn-b, .gc-fila, .cp-caja, .cg-nombre, .pg-op, .pg-color, .pg-fondo){
+  background:var(--ld-azul) !important; border:1.5px solid var(--ld-borde) !important; border-radius:22px; color:var(--ld-txc) !important; box-shadow:none; }
+html.in-on body #cuentaGate .cg-grupo.on, html.in-on body #cuentaGate .cg-nombre.on, html.in-on body #cuentaGate .pg-op.on,
+html.in-on body #cuentaGate :is(.pg-color, .pg-fondo).on, html.in-on body #cuentaGate .pl-op:has(input:checked), html.in-on body #cuentaGate .sp-row.nuevo{
+  border-color:#E9CF8C !important; box-shadow:inset 0 0 0 1.5px #E9CF8C, 0 0 0 3px rgba(201,165,74,.28) !important; }
+/* Pasos «Mira tu correo» y «Crear tu grupo» */
+html.in-on body #cuentaGate .cg-pasos{ padding:14px 16px; }
+html.in-on body #cuentaGate .cg-pasos-txt{ padding:14px 16px 14px 40px; }
+html.in-on body #cuentaGate :is(.cg-pasos li, .cg-pasos-txt){ color:var(--ld-txc); }
+html.in-on body #cuentaGate :is(.cg-pasos, .cg-pasos-txt) b{ color:var(--ld-oro); }
+html.in-on body #cuentaGate .cg-pasos li + li{ border-top:1px solid var(--ld-fila); padding-top:10px; margin-top:10px; }
+/* «¿Qué es un grupo?», «¿Qué pego?», «¿Sigue sin llegar?» */
+html.in-on body #cuentaGate .cg-que summary{ color:var(--ld-oro); }
+html.in-on body #cuentaGate .cg-que p, html.in-on body #cuentaGate :is(div.cg-ayuda, .cg-sigue){ color:var(--ld-txc); }
+html.in-on body #cuentaGate div.cg-ayuda span{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate :is(div.cg-ayuda, .cg-sigue, .cg-que) b{ color:var(--ld-oro); }
+html.in-on body #cuentaGate div.cg-ayuda code{ background:#0A0C10; color:var(--ld-oro); }
+/* Los nombres de «¿Quién eres?»: el elegido en dorado */
+html.in-on body #cuentaGate .cg-nombre{ border-radius:18px; }
+html.in-on body #cuentaGate .cg-card .cg-nombre.on{ background:var(--ld-boton) !important; border-color:#C9A54A !important; color:#16120A !important; box-shadow:0 0 0 3px rgba(201,165,74,.28) !important; }
+html.in-on body #cuentaGate .cg-card .cg-nombre.on::after{ color:#16120A; }
+html.in-on body #cuentaGate .cg-card .pg-op.on, html.in-on body #cuentaGate .cg-card .pl-op:has(input:checked){ background:var(--ld-azul) !important; }
+/* Invitar amigos: el enlace y el QR dentro de la tarjeta azul */
+html.in-on body #cuentaGate .cg-invita .cg-p{ color:var(--ld-suavec) !important; }
+html.in-on body #cuentaGate .cg-enlace{ background:#0A0C10; border:1px solid var(--ld-fila); color:var(--ld-oro); }
+html.in-on body #cuentaGate .qr-caja{ background:transparent; border:0; border-top:1px solid var(--ld-fila); border-radius:0; padding:14px 0 0; }
+html.in-on body #cuentaGate .qr-caja img{ background:#fff; }
+html.in-on body #cuentaGate .cg-invita .cg-btn.ghost, html.in-on body #cuentaGate .cp-caja .cg-btn.ghost{ background:transparent !important; color:var(--ld-oro) !important; border-color:var(--ld-borde) !important; }
+html.in-on body #cuentaGate .cg-invita .cg-link{ color:var(--ld-oro) !important; }
+html.in-on body #cuentaGate .cg-invita > :nth-child(1 of .cg-btn:not(.ghost)){ background:var(--ld-boton) !important; color:#16120A !important; box-shadow:none !important; min-height:60px; font-size:19px; }
+html.in-on body #cuentaGate .cg-card:not(:has(> :is(.cg-btn, .bv):not(#cgCerrar, #cgVolver):not(.ghost))) .cg-invita > :nth-child(1 of .cg-btn:not(.ghost)){ background:var(--ld-rojo) !important; color:#fff !important; }
+/* Mis grupos */
+html.in-on body #cuentaGate .cg-grupo b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .cg-grupo span{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate .cg-grupo span.cg-grupo-adm{ color:var(--ld-oro); }
+html.in-on body #cuentaGate .cg-borrar-g{ color:var(--ld-error) !important; }
+html.in-on body #cuentaGate .cg-bajas{ color:var(--ld-txc); }
+/* Planes */
+html.in-on body #cuentaGate .pl-txt b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .pl-pasarela{ border-style:solid !important; }
+html.in-on body #cuentaGate .pl-pasarela span{ color:var(--ld-suavec); }
+/* Bienvenida al grupo nuevo («Tu golf, con tus amigos») */
+html.in-on body #cuentaGate .bv-eyebrow{ color:var(--ld-oro-osc); border-color:#C9A54A; }
+html.in-on body #cuentaGate .bv-titulo{ color:var(--ld-tx); text-shadow:none; }
+html.in-on body #cuentaGate .bv-sub{ color:var(--ld-suave); }
+html.in-on body #cuentaGate .bv-sub b{ color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate .bv-manual b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .bv-manual small{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate .bv-manual small b{ color:var(--ld-oro); }
+html.in-on body #cuentaGate .bv-entrar{ box-shadow:0 0 0 6px #fff, 0 6px 16px rgba(215,38,61,.22) !important; }
+html.in-on body #cuentaGate .bv-hero, html.in-on body #cuentaGate .bv{ background:transparent !important; }
+/* Asistente de la portada */
+html.in-on body #cuentaGate .pg-pasos i{ background:var(--ld-linea); }
+html.in-on body #cuentaGate .pg-paso-n{ color:var(--ld-suave); }
+html.in-on body #cuentaGate .pg-sub{ color:var(--ld-tx); }
+html.in-on body #cuentaGate :is(.pg-op, .pg-color, .pg-fondo) span{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .pg-vista{ border:1.5px solid var(--ld-borde); border-radius:22px; }
+
+/* ---------- Soporte: chat de la persona, bandeja y «Escribir a…» ---------- */
+html.in-on body #cuentaGate .sp-tt b{ color:var(--ld-tx); }
+html.in-on body #cuentaGate .sp-tt span{ color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate .sp-aviso{ color:var(--ld-suave); }
+html.in-on body #cuentaGate .sp-msgs{ border-color:var(--ld-linea); }
+html.in-on body #cuentaGate .sp-s{ background:var(--ld-azul); border:1.5px solid var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #cuentaGate .sp-m{ border:0; }
+html.in-on body #cuentaGate .sp-esc input{ border-radius:999px !important; }
+html.in-on body #cuentaGate .sp-rt b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .sp-chip{ background:#fff; border:1.5px solid var(--ld-linea); color:var(--ld-tx); }
+html.in-on body #cuentaGate .sp-chip.on{ background:var(--ld-boton); border-color:#C9A54A; color:#16120A; }
+html.in-on body #cuentaGate .sp-row.sp-off{ opacity:.7; }
+html.in-on body #cuentaGate .sp-nuevo{ background:var(--ld-rojo) !important; color:#fff !important; }
+/* Aviso «acgolf te ha escrito» */
+html.in-on body .sp-card{ background:var(--ld-azul); border:1.5px solid var(--ld-borde); }
+html.in-on body #cuentaGate .sp-card #spVer{ background:var(--ld-rojo) !important; color:#fff !important; }
+
+/* ---------- Paneles del super administrador y del administrador (Grupos, Usuarios, Códigos, Avisos, Miembros, Promociones…) ---------- */
+html.in-on body #cuentaGate .pa-fila-t b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .pa-fila-t span{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate .pa-b{ background:transparent; border:1.5px solid var(--ld-borde); color:var(--ld-oro); }
+html.in-on body #cuentaGate .pa-b.rojo{ border-color:rgba(255,140,153,.75); color:#FF8C99; }
+html.in-on body #cuentaGate .pa-rol{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .pa-rol select{ background:#0A0C10; border:1px solid var(--ld-fila); color:var(--ld-txc); }
+html.in-on body #cuentaGate .pa-tu{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate .pa-fila.pa-bloq{ border-style:dashed !important; }
+html.in-on body #cuentaGate .cg-candado b{ color:var(--ld-oro); }
+html.in-on body #cuentaGate .pa-tabs{ background:var(--ld-campo); border:1.5px solid var(--ld-linea); }
+html.in-on body #cuentaGate .pa-tabs button{ color:var(--ld-suave); }
+html.in-on body #cuentaGate .pa-tabs button.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #cuentaGate .pn-b b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .pn-b span{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate .pn-b.pri{ background:var(--ld-azul) !important; border-color:var(--ld-borde) !important; color:var(--ld-txc) !important; }
+html.in-on body #cuentaGate .pn-b.pri span{ color:var(--ld-suavec); }
+html.in-on body #cuentaGate .gc-fila b{ color:var(--ld-txc); }
+html.in-on body #cuentaGate .gc-fila span{ color:var(--ld-txc); }
+/* Promociones: casillas y botones de elegir */
+html.in-on body #cuentaGate :is(.cp-seg button, .cp-chip){ background:#fff; border:1.5px solid var(--ld-linea); color:var(--ld-tx); }
+html.in-on body #cuentaGate :is(.cp-seg button, .cp-chip).on{ background:var(--ld-boton); border-color:#C9A54A; color:#16120A; }
+html.in-on body #cuentaGate .cp-recuerda{ background:var(--ld-azul); border:1.5px solid var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #cuentaGate :is(.cp-et, .cp-ultimo){ color:var(--ld-suave); }
+html.in-on body #cuentaGate .cp-caja :is(.cp-et, .cp-ultimo){ color:var(--ld-suavec); }
+html.in-on body #cuentaGate :is(.cp-lista, .cp-fila){ border-color:var(--ld-linea); }
+html.in-on body #cuentaGate .cp-fila-t{ color:var(--ld-tx); }
+html.in-on body #cuentaGate .cp-fila-t small{ color:var(--ld-suave); }
+html.in-on body #cuentaGate .cp-ch{ background:#fff; border-color:var(--ld-oro-osc); }
+
+/* ---------- El Panel general antiguo (si llega a abrirse) ---------- */
+html.in-on body #cuentaGate.cg-pn:not([hidden]){ background:#fff !important; color:var(--ld-tx); }
+html.in-on body #cuentaGate.cg-pn .pn-volver{ background:none; border:0; color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate.cg-pn .pn-volver::before{ border-color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate.cg-pn .pn-zona{ background:var(--ld-azul); border:1.5px solid var(--ld-borde); border-radius:22px; }
+html.in-on body #cuentaGate.cg-pn .cn-sec{ color:var(--ld-suave); }
+html.in-on body #cuentaGate.cg-pn .cn-sec::after{ background:var(--ld-linea); }
+html.in-on body #cuentaGate.cg-pn .cn-card{ border-radius:22px; border:1.5px solid var(--ld-borde); }
+html.in-on body #cuentaGate.cg-pn .cn-salir{ background:var(--ld-boton); color:#16120A; border:0; }
+
+/* ---------- Estadísticas del super administrador (#sgPanel dentro de la puerta) ---------- */
+html.in-on body #cuentaGate:has(#sgPanel){ background:#fff !important; }
+html.in-on body #cuentaGate:has(#sgPanel) .cg-card{ color:var(--ld-tx); }
+html.in-on body #cuentaGate:has(#sgPanel) .pn-atras{ color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate:has(#sgPanel) .cg-eyebrow{ color:var(--ld-oro-osc); }
+html.in-on body #cuentaGate:has(#sgPanel) .cg-title{ color:var(--ld-tx); text-shadow:none; text-transform:none; letter-spacing:.01em; }
+html.in-on body #cuentaGate:has(#sgPanel) .cg-head{ text-align:center; }
+html.in-on body #cuentaGate:has(#sgPanel) .cg-sub{ color:var(--ld-suave); }
+html.in-on body #cuentaGate:has(#sgPanel) .cg-btn.ghost{ background:#fff !important; color:var(--ld-tx) !important; border:1.5px solid #C9A54A !important; }
+html.in-on body #sgPanel :is(.sg-carga, .sg-vacio, .sg-nota){ color:var(--ld-suave); }
+html.in-on body #sgPanel .sg-nota b{ color:var(--ld-tx); }
+html.in-on body #sgPanel :is(.sg-tot, .sg-ficha, .sg-explica, .sg-enviar, .sg-patro, .pa-fila){ background:var(--ld-azul) !important; border:1.5px solid var(--ld-borde) !important; border-radius:22px; color:var(--ld-txc); }
+html.in-on body #sgPanel button.sg-ficha.on{ box-shadow:inset 0 0 0 1.5px #E9CF8C, 0 0 0 3px rgba(201,165,74,.28) !important; }
+html.in-on body #sgPanel .sg-per{ background:var(--ld-campo); border:1.5px solid var(--ld-linea); }
+html.in-on body #sgPanel .sg-per button{ color:var(--ld-suave); }
+html.in-on body #sgPanel .sg-per button.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #sgPanel .sg-h{ color:var(--ld-tx); }
+html.in-on body #sgPanel :is(.sg-h small, .sg-h4 small){ color:var(--ld-suave); }
+html.in-on body #sgPanel .sg-h4{ color:var(--ld-oro-osc); }
+html.in-on body #sgPanel .sg-barra{ background:var(--ld-campo); border-color:var(--ld-linea); }
+html.in-on body #sgPanel .sg-barra i, html.in-on body #sgPanel .sg-col i.v, html.in-on body #sgPanel .sg-lv{ background:#C9A54A; }
+html.in-on body #sgPanel .sg-emb-f, html.in-on body #sgPanel .sg-emb-f b, html.in-on body #sgPanel .sg-orig-t b{ color:var(--ld-tx); }
+html.in-on body #sgPanel :is(.sg-emb-f em, .sg-orig-t span, .sg-dia span){ color:var(--ld-suave); }
+html.in-on body #sgPanel .sg-tabla{ color:var(--ld-tx); }
+html.in-on body #sgPanel .sg-tabla th{ color:var(--ld-suave); border-bottom-color:var(--ld-linea); }
+html.in-on body #sgPanel .sg-tabla td{ border-bottom-color:var(--ld-linea); }
+html.in-on body #sgPanel .sg-tabla b{ color:var(--ld-oro-osc); }
+html.in-on body #sgPanel :is(.sg-tot, .sg-ficha, .sg-explica, .sg-enviar, .sg-patro, .pa-fila) :is(.sg-tabla, .sg-tabla td){ color:var(--ld-txc); }
+html.in-on body #sgPanel :is(.sg-tot, .sg-ficha, .sg-explica, .sg-enviar, .sg-patro) .sg-tabla b{ color:var(--ld-oro); }
+html.in-on body #sgPanel .pa-b{ background:transparent; border:1.5px solid #C9A54A; color:var(--ld-oro-osc); }
+html.in-on body #sgPanel .pa-fila .pa-b{ color:var(--ld-oro); border-color:var(--ld-borde); }
+html.in-on body #sgPanel .sg-et.gris{ background:#DADFE3; color:var(--ld-tx); }
+
+/* ---------- Aviso fijo «Estás probando acgolf» ---------- */
+html.in-on body .cg-prueba{ background:var(--ld-azul); border:1.5px solid var(--ld-borde); }
+
+/* ---------- Móvil pequeño ---------- */
+@media (max-height:700px){
+  html.in-on body #cuentaGate .cg-title{ font-size:27px; }
+  html.in-on body #cuentaGate .cg-head .cg-logo{ width:58px; height:58px; margin-bottom:6px; }
+  html.in-on body #cuentaGate .cg-card > :nth-child(1 of .cg-btn:not(.ghost, .danger, .sp-env, .sp-nuevo, #cgCerrar, #cgVolver)){ min-height:58px; }
+}
+
+/* ======================================================================================================
+   2. MI CUENTA: trozos que se abren dentro (Avisos, pestañas Mi cuenta / Superadministrador)
+   ====================================================================================================== */
+html.in-on body #cnPant .cn-tabs{ background:var(--ld-campo); border:1.5px solid var(--ld-linea); }
+html.in-on body #cnPant .cn-tab{ color:var(--ld-suave); }
+html.in-on body #cnPant .cn-tab.on{ background:var(--ld-boton); color:#16120A; }
+/* Interruptores de Avisos: filas dentro de la misma tarjeta azul (sin cajas dentro de cajas) */
+html.in-on body #cnPant .cn-pleg .am-card{ background:transparent; border:0; border-top:1px solid var(--ld-fila); border-radius:0; }
+html.in-on body #cnPant .cn-pleg .cn-avisos > * + *{ margin-top:0; }
+html.in-on body #cnPant .cn-pleg .cn-avisos .cg-btn{ border-color:var(--ld-borde); color:var(--ld-oro); }
+
+/* ======================================================================================================
+   3. MANUAL DE LA APP (#manualOverlay) y botones de Ayuda («Escribir a soporte», «Visto»)
+   ====================================================================================================== */
+html.in-on body #manualOverlay, html.in-on body #manualOverlay .derbi-card{ background:#fff !important; color:var(--ld-tx); }
+html.in-on body #manualOverlay .reglas-cab{ background:#fff !important; }
+html.in-on body #manualOverlay .reglas-cab .derbi-cab-k{ color:var(--ld-oro-osc) !important; }
+html.in-on body #manualOverlay .reglas-cab h2{ color:var(--ld-tx) !important; text-shadow:none !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body #manualOverlay .reglas-cab p{ color:var(--ld-oro-osc) !important; }
+html.in-on body #manualOverlay :is(.pantalla-volver, .nv-volver){ background:#fff !important; color:var(--ld-oro-osc) !important; }
+html.in-on body #manualOverlay .mn-tabs{ background:var(--ld-campo); border:1.5px solid var(--ld-linea); }
+html.in-on body #manualOverlay .mn-tab{ color:var(--ld-suave) !important; }
+html.in-on body #manualOverlay .mn-tab.sel{ background:var(--ld-boton) !important; color:#16120A !important; }
+html.in-on body #manualOverlay .mn-novedades{ border:1.5px solid var(--ld-borde); }
+html.in-on body #manualOverlay .mn-nota{ background:var(--ld-azul) !important; border:1.5px solid var(--ld-borde); border-radius:22px; color:var(--ld-txc); }
+html.in-on body #manualOverlay .mn-nota b{ color:var(--ld-oro); }
+html.in-on body #manualOverlay .rg-sec-t{ color:var(--ld-suave) !important; }
+html.in-on body #manualOverlay .rg-sec-t::after{ background:var(--ld-linea); }
+html.in-on body #manualOverlay details.rg-item{ border:1.5px solid var(--ld-borde); border-radius:22px; }
+html.in-on body #manualOverlay .rg-pie{ color:var(--ld-suave); }
+html.in-on body #manualOverlay .rg-pie b{ color:var(--ld-tx); }
+html.in-on body .ay-soporte{ background:#fff; color:var(--ld-tx); border:1.5px solid #C9A54A; }
+html.in-on body .ay-visto{ background:var(--ld-rojo); color:#fff; box-shadow:0 6px 16px rgba(215,38,61,.22); }
+html.in-on body .ay-visto.hecho{ background:#fff; color:var(--ld-oro-osc); border:1.5px solid #C9A54A; box-shadow:none; }
+/* Aviso «Novedades en la app» (en el Inicio) */
+html.in-on body .ay-aviso{ border:1.5px solid var(--ld-borde); }
+html.in-on body .ay-aviso-abrir{ background:var(--ld-boton); color:#16120A; }
+
+/* ======================================================================================================
+   4. NORMAS DE LA LIGA: leer y aceptar (#normasOverlay) — pantalla blanca, la firma en tarjeta azul
+   ====================================================================================================== */
+html.in-on body #normasOverlay{ background:#fff !important; }
+html.in-on body #normasOverlay .modal-card{ background:#fff !important; border:0 !important; box-shadow:none !important; color:var(--ld-tx); }
+html.in-on body #normasOverlay h2{ color:var(--ld-tx) !important; text-transform:none !important; font-size:30px !important; }
+html.in-on body #normasOverlay .section-sub{ color:var(--ld-suave) !important; }
+html.in-on body #normasOverlay :is(.nv-volver, .pantalla-volver){ color:var(--ld-oro-osc) !important; background:#fff !important; }
+html.in-on body #normasOverlay .normas-h{ color:var(--ld-oro-osc); }
+html.in-on body #normasOverlay .normas-ul{ color:var(--ld-tx); }
+html.in-on body #normasOverlay .normas-ul li::marker{ color:var(--ld-oro-osc); }
+html.in-on body #normasOverlay .normas-firma{ margin-top:22px; padding:16px 18px 18px; border:1.5px solid var(--ld-borde); border-radius:22px; background:var(--ld-azul); color:var(--ld-txc); }
+html.in-on body #normasOverlay .normas-firma .section-sub{ color:var(--ld-suavec) !important; }
+html.in-on body #normasOverlay .normas-ok{ color:var(--ld-oro); }
+html.in-on body #normasOverlay .lp-lbl{ color:var(--ld-oro) !important; }
+html.in-on body #normasOverlay select{ background:var(--ld-campo) !important; border:1.5px solid var(--ld-linea) !important; color:var(--ld-tx) !important; color-scheme:light; }
+html.in-on body #normasOverlay .btn.primary{ background:var(--ld-rojo) !important; color:#fff !important; text-transform:none !important; letter-spacing:.01em !important; }
+html.in-on body #normasOverlay .btn.ghost{ background:#fff !important; color:var(--ld-oro-osc) !important; border-color:#C9A54A !important; }
+
+/* ======================================================================================================
+   5. FOTO O AVATAR (ventana de avatares.js)
+   ====================================================================================================== */
+html.in-on body .av-ov{ background:#fff !important; }
+html.in-on body .av-caja{ background:#fff !important; border:0 !important; box-shadow:none !important; color:var(--ld-tx) !important; }
+html.in-on body .av-caja :is(.nv-volver, .pantalla-volver){ background:#fff !important; color:var(--ld-oro-osc) !important; }
+html.in-on body .av-tit{ color:var(--ld-tx) !important; font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif !important; }
+html.in-on body :is(.av-quien, .av-sub){ color:var(--ld-suave) !important; }
+html.in-on body .av-quien select{ background:var(--ld-campo) !important; color:var(--ld-tx) !important; border:1.5px solid var(--ld-linea) !important; border-radius:16px !important; color-scheme:light; }
+html.in-on body .av-xl{ box-shadow:0 0 0 4px #C9A54A !important; }
+html.in-on body .av-btn{ border-radius:999px !important; min-height:58px; background:var(--ld-rojo) !important; color:#fff !important; border:0 !important; font:800 19px Archivo,system-ui,Arial,sans-serif !important; }
+html.in-on body .av-btn.av-foto-btn{ background:var(--ld-boton) !important; color:#16120A !important; }
+html.in-on body .av-btn.av-ghost{ background:#fff !important; color:var(--ld-tx) !important; border:1.5px solid #C9A54A !important; }
+html.in-on body .av-rejilla{ padding:14px; border-radius:22px; background:var(--ld-azul); border:1.5px solid var(--ld-borde); }
+html.in-on body .av-op{ background:rgba(255,255,255,.08) !important; border:2px solid transparent !important; color:var(--ld-txc) !important; }
+html.in-on body .av-op.sel{ border-color:#E9CF8C !important; box-shadow:0 0 0 3px rgba(233,207,140,.35) !important; }
+html.in-on body .av-msg{ color:var(--ld-error) !important; }
+html.in-on body .av-msg.ok{ color:var(--ld-verde) !important; }
+html.in-on body .av-x{ background:var(--ld-campo) !important; color:var(--ld-tx) !important; }
+
+/* ======================================================================================================
+   6. BUSCADOR DE CAMPOS (#bcOv): blanco, campos en tarjetas azules
+   ====================================================================================================== */
+html.in-on body #bcOv{ background:#fff !important; color:var(--ld-tx); }
+html.in-on body #bcOv :is(.pantalla-volver, .nv-volver, .bc-foto-volver){ background:#fff !important; color:var(--ld-oro-osc) !important; }
+html.in-on body #bcOv .bc-titulo{ color:var(--ld-tx); text-shadow:none; text-transform:none; letter-spacing:.01em; font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif; }
+html.in-on body #bcOv .bc-pestanas{ background:var(--ld-campo); border:1.5px solid var(--ld-linea); }
+html.in-on body #bcOv .bc-pest{ color:var(--ld-suave); }
+html.in-on body #bcOv .bc-pest.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #bcOv .bc-seg button{ background:#fff; border:1.5px solid var(--ld-linea); color:var(--ld-tx); }
+html.in-on body #bcOv .bc-seg button.on{ background:var(--ld-boton); border-color:#C9A54A; color:#16120A; }
+html.in-on body #bcOv :is(.bc-lbl, .bc-coords label, .bc-rango label, .bc-fila-lbl, .bc-barra-datos label){ color:var(--ld-tx); }
+html.in-on body #bcOv :is(.bc-o, .bc-nota, .bc-cuenta, .bc-paso){ color:var(--ld-suave); }
+html.in-on body #bcOv :is(.bc-input, .bc-rango select){ background:var(--ld-campo); border:1.5px solid var(--ld-linea); color:var(--ld-tx); color-scheme:light; }
+html.in-on body #bcOv .bc-input::placeholder{ color:#7B848D; }
+html.in-on body #bcOv :is(.bc-input, .bc-rango select):focus{ background:#fff; border-color:#C9A54A; box-shadow:0 0 0 3px rgba(201,165,74,.25); }
+html.in-on body #bcOv .bc-input.bc-mal{ border-color:var(--ld-rojo); background:#FDECEE; }
+/* Botones: «Buscar campos» dorado; «Hacer foto de la tarjeta» (el principal) rojo */
+html.in-on body #bcOv .bc-btn{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #bcOv :is(.bc-btn.sec, .bc-btn.fav){ background:#fff; border:1.5px solid #C9A54A; color:var(--ld-tx); }
+html.in-on body #bcOv .bc-btn.fav.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #bcOv .bc-btn.lima{ background:var(--ld-rojo); color:#fff; }
+html.in-on body #bcOv .bc-btn.quitar{ background:#fff; border:1.5px solid var(--ld-error); color:var(--ld-error); }
+html.in-on body #bcOv .bc-enlace{ color:var(--ld-oro-osc); }
+/* Filtros, avisos y cajas: tarjetas azules */
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-hoyos, .bc-barra-f, .bc-vacio, .bc-aviso-fijo, .bc-tarjeta, .bc-foto-card, .bc-foto-btn, .bc-pedir){
+  background:var(--ld-azul); border:1.5px solid var(--ld-borde); border-radius:22px; color:var(--ld-txc); }
+html.in-on body #bcOv .bc-aviso-fijo{ border-style:solid; }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-hoyos, .bc-barra-f, .bc-tarjeta, .bc-pedir, .bc-foto-card) :is(.bc-lbl, .bc-fila-lbl, label){ color:var(--ld-txc); }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-barra-f, .bc-pedir, .bc-foto-card) :is(.bc-nota, .bc-cuenta, .bc-paso, .bc-o, .bc-pedir-p, .bc-foto-card-p){ color:var(--ld-suavec); }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-barra-f) .bc-seg button{ background:transparent; border-color:var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-barra-f) .bc-seg button.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-barra-f, .bc-pedir) .bc-input{ background:#0A0C10; border-color:var(--ld-fila); color:var(--ld-txc); color-scheme:dark; }
+html.in-on body #bcOv :is(.bc-pedir, .bc-foto-card) .bc-btn.sec{ background:transparent; border-color:var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #bcOv .bc-chip{ background:#fff; border:1.5px solid var(--ld-linea); color:var(--ld-tx); }
+html.in-on body #bcOv .bc-chip.on{ background:var(--ld-boton); border-color:#C9A54A; color:#16120A; }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-barra-f) .bc-chip{ background:transparent; border-color:var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #bcOv :is(.bc-det, .bc-avanz, .bc-barra-f) .bc-chip.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #bcOv .bc-cargando{ color:var(--ld-oro-osc); }
+html.in-on body #bcOv .bc-rueda{ border-color:var(--ld-linea); border-top-color:#C9A54A; }
+html.in-on body #bcOv :is(.bc-error, .bc-pedir-error){ background:#FDECEE; border:1.5px solid rgba(179,38,46,.55); color:var(--ld-error); }
+html.in-on body #bcOv .bc-error p{ color:var(--ld-error); }
+html.in-on body #bcOv .bc-dato{ background:rgba(255,255,255,.06); border:1px solid var(--ld-fila); }
+html.in-on body #bcOv .bc-falta{ background:transparent; border:1px dashed #5A6475; color:var(--ld-suavec); }
+html.in-on body #bcOv .bc-sin{ color:var(--ld-suave); }
+html.in-on body #bcOv .bc-tarjeta .bc-sin{ color:var(--ld-suavec); }
+/* Ficha del campo y aviso de abajo: tarjeta azul encima de un velo oscuro (como los avisos) */
+html.in-on body #bcOv .bc-ficha :is(.bc-btn.sec, .bc-btn.fav){ background:transparent; border-color:var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #bcOv .bc-ficha .bc-btn.fav.on{ background:var(--ld-boton); color:#16120A; }
+
+/* ======================================================================================================
+   7. CARTAS (#caOverlay): lista, crear y explicación en blanco; las cartas (piezas del juego) se quedan como son
+   ====================================================================================================== */
+html.in-on body .ca-ov:not(.ca-claro){ background:#fff !important; }
+html.in-on body .ca-ov:not(.ca-claro) .ca-caja{ color:var(--ld-tx); }
+html.in-on body .ca-ov:not(.ca-claro) :is(.pantalla-volver, .nv-volver){ background:#fff !important; color:var(--ld-oro-osc) !important; }
+html.in-on body .ca-ov:not(.ca-claro) .ca-tit{ color:var(--ld-tx); text-transform:none; letter-spacing:.01em; }
+html.in-on body .ca-ov:not(.ca-claro) .ca-sub{ color:var(--ld-suave); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-p{ color:var(--ld-suave); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-p b{ color:var(--ld-tx); }
+html.in-on body .ca-ov:not(.ca-claro) :is(.ca-nota, .ca-cargando){ color:var(--ld-suave); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-msg{ color:var(--ld-error); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-volver{ color:var(--ld-oro-osc); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-lbl{ color:var(--ld-suave); }
+html.in-on body .ca-ov:not(.ca-claro) :is(.ca-lbl input, .ca-lbl select){ background:var(--ld-campo); border:1.5px solid var(--ld-linea); color:var(--ld-tx); color-scheme:light; }
+html.in-on body .ca-ov:not(.ca-claro) :is(#caNueva, #caCrear){ background:var(--ld-rojo); text-transform:none; letter-spacing:.01em; }
+html.in-on body .ca-ov:not(.ca-claro) .ca-btn.ghost{ background:#fff; color:var(--ld-tx); border:1.5px solid #C9A54A; }
+html.in-on body .ca-ov:not(.ca-claro) .ca-op{ background:#fff; border:1.5px solid #C9A54A; color:var(--ld-tx); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-op.on{ background:var(--ld-boton); color:#16120A; border-color:transparent; }
+html.in-on body .ca-ov:not(.ca-claro) :is(.ca-quitar, .ca-borrar){ background:#fff; border:1.5px solid var(--ld-error); color:var(--ld-error); }
+html.in-on body .ca-ov:not(.ca-claro) :is(.ca-info-btn, .ca-fila, .ca-jug, .ca-est-f, .ca-copa-f, .ca-rev-f, .ca-det, .ca-obj, .ca-res, .ca-liga-f, .ca-mq, .ca-aviso, .ca-premio, .ca-cab, .ca-final, .ca-top){
+  background:var(--ld-azul); border:1.5px solid var(--ld-borde); border-radius:22px; color:var(--ld-txc); }
+html.in-on body .ca-ov:not(.ca-claro) :is(.ca-info-btn, .ca-fila, .ca-jug, .ca-obj, .ca-est-f) :is(b, span:not([class])){ color:var(--ld-txc); }
+html.in-on body .ca-ov:not(.ca-claro) .ca-obj.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body .ca-ov:not(.ca-claro) .ca-top-c{ background:rgba(255,255,255,.06); }
+
+/* ======================================================================================================
+   8. PÁGINAS LEGALES (condiciones.html y privacidad.html): blancas, letra grande
+   ====================================================================================================== */
+html.in-on.legal-on body{ background:#fff; color:var(--ld-tx); }
+html.in-on.legal-on h1{ color:var(--ld-tx); text-transform:none; letter-spacing:.01em; font:900 30px/1.1 Archivo,system-ui,Arial,sans-serif; }
+html.in-on.legal-on h2{ color:var(--ld-oro-osc); }
+html.in-on.legal-on :is(p, li){ color:var(--ld-tx); }
+html.in-on.legal-on li::marker{ color:var(--ld-oro-osc); }
+html.in-on.legal-on :is(b, strong){ color:var(--ld-tx); }
+html.in-on.legal-on a{ color:var(--ld-oro-osc); }
+html.in-on.legal-on .aviso{ background:var(--ld-azul); border:1.5px solid var(--ld-borde); border-radius:22px; color:var(--ld-txc); padding:14px 16px; }
+html.in-on.legal-on .pie{ border-top-color:var(--ld-linea); color:var(--ld-oro-osc); }
+html.in-on.legal-on :is(th, td){ border-bottom-color:var(--ld-linea); }
+/* Botones dentro de la tarjeta de cada campo: con borde dorado sobre el azul */
+html.in-on body #bcOv .bc-tarjeta :is(.bc-btn.sec, .bc-btn.fav){ background:transparent; border-color:var(--ld-borde); color:var(--ld-txc); }
+html.in-on body #bcOv .bc-tarjeta .bc-btn.fav.on{ background:var(--ld-boton); color:#16120A; }
+html.in-on body #bcOv .bc-foto-card-t{ text-transform:none; }
+/* El «‹ Volver» fijo del buscador tapa lo que pasa por debajo al desplazar */
+html.in-on body #bcOv > :is(.pantalla-volver, .nv-volver){ box-shadow:0 -30px 0 #fff !important; z-index:6; }
+/* Rejilla de avatares: que quepa en móviles pequeños */
+html.in-on body .av-rejilla{ grid-template-columns:repeat(5, minmax(0, 1fr)); }
+@media (max-width:380px){
+  html.in-on body .av-rejilla{ padding:10px; gap:6px; }
+  html.in-on body .av-op{ font-size:26px; }
+}

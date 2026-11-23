@@ -1,0 +1,349 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
+/* DISEÑO LIMPIO (norma de Carlos, 23-nov-2026) para las ventanas de Ligas, Crear partida y Organizar partidos.
+   Solo cambia el aspecto (nada de funciones): fondo BLANCO, contenido en TARJETAS AZULES con borde dorado,
+   un solo botón ROJO por pantalla, botones dorados en pastilla y «‹ Volver» en dorado oscuro.
+   Pantallas: Ligas (Mis ligas, Crear liga en 4 pasos, Una liga, Una jornada) en #ligaOverlay,
+   Crear partida (#prOverlay, 4 pasos y sus variantes) y Organizar partidos / partido nuevo (#convOverlay).
+   Los avisos pequeños («¿Seguro?», partida sin terminar / incompleta) siguen como tarjeta azul sobre fondo oscuro (confirmar-nuevo.css).
+   Va DESPUÉS de todos los CSS -nuevo; todos los selectores empiezan por html.in-on. */
+
+html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay){
+  --l2-tx:#111316; --l2-suave:#4A5058; --l2-linea:#DADFE3; --l2-campo:#F2F4F6; --l2-oro-osc:#8A6A1F; --l2-verde:#2E7D32;
+  --l2-azul:linear-gradient(160deg,#17233D,#0F1626); --l2-borde:rgba(217,190,122,.55); --l2-txc:#F4F1E8; --l2-suavec:#B5BFD0; --l2-oro:#E9CF8C; --l2-fila:#26324F;
+  --l2-boton:linear-gradient(180deg,#EBD08A,#C9A54A); --l2-rojo:#D7263D;
+}
+
+/* ================= Ventana a pantalla completa en BLANCO ================= */
+html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay){ padding:0 !important; align-items:stretch !important; justify-content:center !important; background:#fff !important; }
+html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay) > .modal-card{
+  box-sizing:border-box !important; width:100% !important; max-width:520px !important; height:100% !important; max-height:none !important; margin:0 auto !important;
+  border:0 !important; border-radius:0 !important; box-shadow:none !important; background:#fff !important; color:var(--l2-tx) !important;
+  padding:0 16px 32px !important; overflow-x:hidden !important; overflow-y:auto !important; font-family:Barlow, system-ui, Arial, sans-serif; }
+html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay) > .modal-card > .conv-close{ display:none !important; }
+
+/* «‹ Volver» arriba, dorado oscuro sobre blanco */
+html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay) .nv-volver{
+  position:sticky !important; top:0 !important; z-index:6 !important; margin:0 -16px 4px !important; width:calc(100% + 32px) !important;
+  padding:calc(env(safe-area-inset-top, 0px) + 24px) 18px 0 !important; min-height:72px !important;
+  background:#fff !important; color:var(--l2-oro-osc) !important; font:800 18px Archivo, system-ui, Arial, sans-serif !important; }
+
+/* Títulos de pantalla: Archivo 900 30 px, oscuro */
+html.in-on body #ligaOverlay :is(.lg-titulo, .lgl-t),
+html.in-on body #prOverlay .pr-titulo,
+html.in-on body #convOverlay .conv-head h2{
+  margin:8px 2px 6px !important; font:900 30px/1.08 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.02em !important;
+  text-transform:none !important; text-align:left !important; color:var(--l2-tx) !important; text-shadow:none !important; overflow-wrap:break-word; }
+
+/* Rótulos de sección sobre blanco (mayúsculas pequeñas en dorado oscuro) */
+html.in-on body #ligaOverlay .conv-eyebrow, html.in-on body #ligaOverlay .lgl-sec, html.in-on body #ligaOverlay .lg-campos-t,
+html.in-on body #prOverlay .pr-op-t, html.in-on body #convOverlay .conv-eyebrow, html.in-on body #convOverlay .field label{
+  color:var(--l2-oro-osc) !important; font:800 13px/1.3 Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.16em !important; text-transform:uppercase !important; }
+html.in-on body #ligaOverlay :is(.conv-eyebrow, .lgl-sec)::after{ background:var(--l2-linea) !important; }
+html.in-on body #ligaOverlay .lg-cuenta{ color:var(--l2-suave) !important; font:600 15px Barlow, system-ui, Arial, sans-serif !important; letter-spacing:0 !important; text-transform:none !important; }
+
+/* Notas y avisos sobre blanco */
+html.in-on body #ligaOverlay .lg-aviso, html.in-on body #convOverlay .lg-aviso, html.in-on body #convOverlay .empty-hint{
+  margin-top:12px; padding:12px 16px !important; border-radius:16px !important; background:var(--l2-campo) !important; border:1px solid var(--l2-linea) !important;
+  color:var(--l2-suave) !important; font:600 16px/1.4 Barlow, system-ui, Arial, sans-serif !important; text-align:left; }
+html.in-on body #ligaOverlay .lg-aviso.lg-mal{ color:#B3262E !important; }
+html.in-on body #prOverlay :is(.pr-ayuda, .bc-sel-nota), html.in-on body #prOverlay #prBody > .pr-r-nota, html.in-on body #convOverlay :is(small, .bc-sel-nota, .tq-nota){ color:var(--l2-suave) !important; }
+html.in-on body #prOverlay .pr-ayuda b{ color:var(--l2-tx); }
+html.in-on body #prOverlay .pr-aviso{ color:#B3262E !important; font-weight:700 !important; }
+
+/* Campos de formulario: gris claro, texto oscuro grande */
+html.in-on body #ligaOverlay .field input, html.in-on body #ligaOverlay .field select,
+html.in-on body #convOverlay .field input, html.in-on body #convOverlay .field select,
+html.in-on body #prOverlay .pr-inv-l input{
+  box-sizing:border-box !important; width:100% !important; min-width:0 !important; min-height:58px !important; border-radius:16px !important;
+  background:var(--l2-campo) !important; border:1.5px solid var(--l2-linea) !important; color:var(--l2-tx) !important;
+  font:700 19px Archivo, system-ui, Arial, sans-serif !important; padding:0 14px !important; color-scheme:light !important; box-shadow:none !important; }
+html.in-on body :is(#ligaOverlay, #convOverlay, #prOverlay) :is(.field input, .field select, .pr-inv-l input):focus{ outline:none !important; border-color:#C9A54A !important; background:#fff !important; box-shadow:0 0 0 3px rgba(201,165,74,.25) !important; }
+html.in-on body :is(#ligaOverlay, #convOverlay) .field input::-webkit-calendar-picker-indicator{ filter:none !important; opacity:.75 !important; background:none !important; }
+html.in-on body :is(#ligaOverlay, #convOverlay, #prOverlay) input::placeholder{ color:#8A939B !important; }
+html.in-on body #ligaOverlay .field label{ color:var(--l2-oro-osc) !important; font:800 13px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.16em !important; text-transform:uppercase !important; }
+
+/* Teclas de elegir (sin elegir: gris claro; elegida: tarjeta azul con borde dorado) */
+html.in-on body #ligaOverlay :is(.lg-opc, .lg-chip, .lg-mover-b),
+html.in-on body #prOverlay :is(.pr-campo, .pr-tecla, .bc-sel-b),
+html.in-on body #convOverlay .bc-sel-b{
+  background:var(--l2-campo) !important; border:1.5px solid var(--l2-linea) !important; color:var(--l2-tx) !important; box-shadow:none !important; }
+html.in-on body #ligaOverlay :is(.lg-opc, .lg-chip) small, html.in-on body #prOverlay .pr-tecla small{ color:var(--l2-suave) !important; }
+html.in-on body #ligaOverlay :is(.lg-opc.on, .lg-chip.on),
+html.in-on body #prOverlay :is(.pr-campo.on, .pr-tecla.on, .bc-sel-b.on),
+html.in-on body #convOverlay .bc-sel-b.on{
+  background:var(--l2-azul) !important; border:2px solid #E9CF8C !important; color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay :is(.lg-opc.on, .lg-chip.on) small, html.in-on body #prOverlay .pr-tecla.on small{ color:var(--l2-suavec) !important; }
+html.in-on body #prOverlay .pr-tecla:disabled{ opacity:.4; }
+html.in-on body :is(#prOverlay, #convOverlay) .bc-sel-b .bc-ico{ color:var(--l2-oro-osc) !important; }
+html.in-on body :is(#prOverlay, #convOverlay) .bc-sel-b.on .bc-ico{ color:var(--l2-oro) !important; }
+/* «Buscar otro campo», «Añadir un invitado», «Añadir otra partida»: borde dorado de rayas */
+html.in-on body #prOverlay :is(.bc-sel-b.bus, .pr-mas), html.in-on body #convOverlay :is(.bc-sel-b.bus, .conv-mas-partida), html.in-on body #ligaOverlay .lg-buscar-campo{
+  background:#fff !important; border:1.5px dashed #C9A54A !important; color:var(--l2-oro-osc) !important; }
+html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay) :is(.lg-opc, .lg-chip, .pr-campo, .pr-tecla, .bc-sel-b, .pr-mas, .conv-mas-partida, .lg-jug, .pr-jug, .conv-row, .lgl-liga, .lg-cal-f):active{ transform:scale(.97); }
+
+/* Botones − y + redondos */
+html.in-on body #ligaOverlay .lg-mas, html.in-on body #prOverlay :is(.pr-npaso, .pr-gnav) .pr-tecla{
+  background:#fff !important; border:1.5px solid #C9A54A !important; color:var(--l2-oro-osc) !important; }
+html.in-on body #ligaOverlay .lg-num b, html.in-on body #prOverlay :is(.pr-nnum b, .pr-gnav-c b){ color:var(--l2-tx) !important; }
+html.in-on body #ligaOverlay .lg-num small, html.in-on body #prOverlay :is(.pr-nnum small, .pr-gnav-c span, .pr-gnav-c b small){ color:var(--l2-suave) !important; }
+
+/* ===== Botones comunes ===== */
+/* Principal ROJO */
+html.in-on body #ligaOverlay :is(.lgl-crear, .lgp-crear, .lgj .conv-btn.primary),
+html.in-on body #prOverlay .pr-empezar,
+html.in-on body #convOverlay :is(#convCreateRound, #convNewCreate){
+  background:var(--l2-rojo) !important; color:#fff !important; border:0 !important; border-radius:999px !important; box-shadow:0 6px 16px rgba(215,38,61,.22) !important; text-shadow:none !important; }
+/* Dorado relleno */
+html.in-on body #ligaOverlay :is(.lgp-sig, .lg-comp, .lg-nueva), html.in-on body #prOverlay .pr-sig, html.in-on body #convOverlay :is(#convOpenRound, #convVolverLiga){
+  background:var(--l2-boton) !important; color:#16120A !important; border:0 !important; border-radius:999px !important; box-shadow:none !important; }
+html.in-on body #prOverlay .pr-sig:disabled{ opacity:.45 !important; }
+/* Dorado con borde (sobre blanco) */
+html.in-on body #ligaOverlay :is(.lgp-atras, .lgv-det, .lg-bases, #lgBasesLista, #lgBasesVer, #lgBasesForm, .lgj .conv-btn.ghost),
+html.in-on body #prOverlay .pr-atras,
+html.in-on body #convOverlay :is(.conv-btn.ghost, .conv-btn.wa){
+  background:#fff !important; border:1.5px solid #C9A54A !important; color:var(--l2-oro-osc) !important; border-radius:999px !important; box-shadow:none !important; }
+/* Enlaces de texto */
+html.in-on body :is(#ligaOverlay, #convOverlay) .conv-link{ background:none !important; border:0 !important; color:var(--l2-oro-osc) !important; text-decoration:underline; text-underline-offset:3px; }
+/* «Borrar…»: discreto, en una línea (no es el botón principal) */
+html.in-on body :is(#ligaOverlay, #convOverlay) .conv-btn.borrar{
+  background:none !important; border:0 !important; box-shadow:none !important; min-height:48px !important; padding:6px !important;
+  color:#B3262E !important; font:700 16px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:0 !important; text-transform:none !important; }
+html.in-on body :is(#ligaOverlay, #convOverlay) .conv-btn.borrar svg{ stroke:#B3262E; }
+
+html.in-on body #prOverlay > .modal-card{ padding-bottom:24px !important; }
+html.in-on body #ligaOverlay > .modal-card.lgp{ padding-bottom:0 !important; }
+/* Pie fijo de abajo (Atrás / Siguiente): blanco con línea fina */
+html.in-on body #ligaOverlay .lgp-pie, html.in-on body #prOverlay .pr-pie{ background:#fff !important; border-top:1px solid var(--l2-linea) !important; box-shadow:0 -8px 16px rgba(255,255,255,.9) !important; }
+
+/* ================= LIGAS · «Mis ligas» ================= */
+html.in-on body #ligaOverlay .lgl .lgl-t{ margin-top:6px !important; }
+html.in-on body #ligaOverlay .lgl-crear{ min-height:62px !important; font-size:20px !important; margin-bottom:4px; }
+html.in-on body #ligaOverlay .lgl-sec{ margin:24px 2px 10px !important; }
+html.in-on body #ligaOverlay .lgl-liga, html.in-on body #ligaOverlay .lg-liga{
+  background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; color:var(--l2-txc) !important; padding:16px 18px 4px !important; margin:0 0 12px !important; opacity:1 !important; }
+html.in-on body #ligaOverlay .lg-liga:not(.lgl-liga){ padding:16px 18px !important; }
+html.in-on body #ligaOverlay .lg-liga:not(.lgl-liga) span{ color:var(--l2-suavec) !important; font-size:16px !important; }
+html.in-on body #ligaOverlay .lg-liga:not(.lgl-liga) .lg-liga-prox{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lgl-liga.fin h3{ color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgl-liga h3{ margin:10px 0 2px !important; font:800 22px/1.15 Archivo, system-ui, Arial, sans-serif !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lgl-liga p{ font-size:16px !important; color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgl-tag{ border-color:#5A6475 !important; color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgl-tag.on{ background:var(--l2-boton) !important; color:#16120A !important; }
+html.in-on body #ligaOverlay .lgl-pie{ border-top:1px solid var(--l2-fila) !important; margin-top:12px !important; }
+html.in-on body #ligaOverlay .lgl-pie span{ color:var(--l2-txc) !important; font-size:17px !important; }
+html.in-on body #ligaOverlay :is(.lg-bases, #lgBasesLista, #lgBasesVer, #lgBasesForm){ width:100% !important; min-height:54px !important; margin-top:14px !important; font:800 17px Archivo, system-ui, Arial, sans-serif !important; }
+html.in-on body #ligaOverlay :is(.lg-bases, #lgBasesLista, #lgBasesVer, #lgBasesForm) svg{ stroke:var(--l2-oro-osc); }
+
+/* ================= LIGAS · Crear liga (4 pasos) ================= */
+html.in-on body #ligaOverlay .lgp .lgp-t{ color:var(--l2-suave) !important; }
+html.in-on body #ligaOverlay .lgp .lgp-t b{ color:var(--l2-oro-osc) !important; }
+html.in-on body #ligaOverlay .lgp .lgp-barra i{ background:var(--l2-linea) !important; box-shadow:none !important; }
+html.in-on body #ligaOverlay .lgp .lgp-barra i.ok{ background:#C9A54A !important; }
+html.in-on body #ligaOverlay .lgp .lgp-barra i.ya{ background:var(--l2-boton) !important; box-shadow:0 0 0 2px rgba(201,165,74,.25) !important; }
+html.in-on body #ligaOverlay .lgp .lgp-preg{ color:var(--l2-tx) !important; font-size:28px !important; }
+html.in-on body #ligaOverlay .lgp .lgp-ayu{ color:var(--l2-suave) !important; font-size:17px !important; }
+html.in-on body #ligaOverlay .lgp .field input{ border-width:1.5px !important; }
+/* Lista de jugadores en UNA tarjeta azul, con filas */
+html.in-on body #ligaOverlay .lg-jugs{ gap:0 !important; padding:4px 16px !important; border-radius:22px; background:var(--l2-azul); border:1.5px solid var(--l2-borde); }
+html.in-on body #ligaOverlay .lg-jug{ min-height:58px !important; margin:0 !important; padding:6px 2px !important; border:0 !important; border-radius:0 !important; background:none !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-jug + .lg-jug{ border-top:1px solid var(--l2-fila) !important; }
+html.in-on body #ligaOverlay .lg-jug span{ white-space:normal !important; overflow:visible !important; text-overflow:clip !important; line-height:1.2; font-size:18px; }
+html.in-on body #ligaOverlay .lg-jug b{ color:var(--l2-suavec) !important; font-size:16px !important; }
+html.in-on body #ligaOverlay .lg-jug.on span{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lg-jug .lg-check{ border-color:#5A6475 !important; }
+html.in-on body #ligaOverlay .lg-jug.on .lg-check{ background:var(--l2-boton) !important; border:0 !important; color:#16120A !important; }
+/* Campo de la liga y resumen: tarjetas azules */
+html.in-on body #ligaOverlay .lgp-campo-on, html.in-on body #ligaOverlay .lgp-res{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; }
+html.in-on body #ligaOverlay .lgp-campo-on b, html.in-on body #ligaOverlay .lgp-res-t b{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lgp-campo-on span{ color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgp-res-t{ border-bottom-color:var(--l2-fila) !important; }
+html.in-on body #ligaOverlay .lgp-res-f{ border-top-color:var(--l2-fila) !important; color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgp-res-f b{ color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lgp .lgp-sub{ color:var(--l2-oro-osc) !important; font:800 13px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.16em !important; text-transform:uppercase; text-align:left !important; margin:24px 2px 10px !important; }
+html.in-on body #ligaOverlay .lgp-rec{ border-color:#C9A54A !important; color:var(--l2-oro-osc) !important; background:#fff; }
+html.in-on body #ligaOverlay :is(.lg-opc.on, .lg-chip.on) .lgp-rec{ border-color:rgba(217,190,122,.7) !important; color:var(--l2-oro) !important; background:transparent; }
+/* Calendario editable (paso 2) y calendario de la liga: UNA tarjeta azul con filas */
+html.in-on body #ligaOverlay .lg-cal{ gap:0 !important; padding:4px 16px !important; border-radius:22px; background:var(--l2-azul); border:1.5px solid var(--l2-borde); }
+html.in-on body #ligaOverlay .lg-cal-f{ min-height:64px !important; margin:0 !important; padding:8px 2px !important; border:0 !important; border-radius:0 !important; background:none !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-cal-f + .lg-cal-f{ border-top:1px solid var(--l2-fila) !important; }
+html.in-on body #ligaOverlay .lg-cal-f span{ border:1.5px solid rgba(217,190,122,.5) !important; color:var(--l2-oro) !important; background:none !important; }
+html.in-on body #ligaOverlay .lg-cal-f b{ color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-cal-f small{ color:var(--l2-suavec) !important; font-size:15px !important; }
+html.in-on body #ligaOverlay .lg-cal-f.lg-prox span{ background:var(--l2-boton) !important; border:0 !important; color:#16120A !important; }
+html.in-on body #ligaOverlay .lg-cal-f.lg-prox b{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lg-cal-f.lg-cambiada span{ border-style:dashed !important; }
+
+/* ================= LIGAS · Una liga ================= */
+html.in-on body #ligaOverlay .lgv .lg-sub{ color:var(--l2-suave) !important; }
+html.in-on body #ligaOverlay .lgv .lgv-jor{ color:var(--l2-oro-osc) !important; }
+html.in-on body #ligaOverlay .lgv .lg-sub small{ color:var(--l2-suave) !important; }
+html.in-on body #ligaOverlay .lg-chips-res span{ background:var(--l2-campo) !important; border:1px solid var(--l2-linea) !important; color:var(--l2-tx) !important; }
+html.in-on body #ligaOverlay .lg-ver{ display:flex; flex-wrap:wrap; gap:8px; }
+html.in-on body #ligaOverlay .lg-ver .lg-chip{ flex:1 1 auto; min-height:48px !important; padding:0 14px !important; border-radius:999px !important; font:700 16px Archivo, system-ui, Arial, sans-serif !important; }
+html.in-on body #ligaOverlay .lgv-cla{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; }
+html.in-on body #ligaOverlay .lgv-cab{ background:transparent !important; color:var(--l2-oro) !important; font-size:13px !important; letter-spacing:.16em !important; }
+html.in-on body #ligaOverlay .lgv-fila{ border-top:1px solid var(--l2-fila) !important; }
+html.in-on body #ligaOverlay .lgv-fila small{ color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgv-fila i{ color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lgv-fila.top i{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lgv-fila.oro i{ color:#16120A !important; }
+html.in-on body #ligaOverlay .lgv-fila.yo{ background:rgba(233,207,140,.10) !important; }
+html.in-on body #ligaOverlay .lgv-mas{ border-top:1px solid var(--l2-fila) !important; color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lgv-det{ font:800 16px Archivo, system-ui, Arial, sans-serif !important; }
+html.in-on body #ligaOverlay .lg-comp{ min-height:58px !important; }
+html.in-on body #ligaOverlay .lg-comp-n{ color:var(--l2-suave) !important; font-size:15px !important; text-align:center; margin-top:6px; }
+/* Tabla completa («Ver todos los datos»): en tarjeta azul, se desliza de lado dentro de ella */
+html.in-on body #ligaOverlay .lg-tabla-w{ border-radius:18px; background:var(--l2-azul); border:1.5px solid var(--l2-borde); }
+html.in-on body #ligaOverlay .lg-t{ color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-t th{ background:transparent !important; color:var(--l2-oro) !important; font-size:12px !important; }
+html.in-on body #ligaOverlay .lg-t td{ border-top-color:var(--l2-fila) !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-t tr.lg-lider td{ background:rgba(233,207,140,.10) !important; }
+html.in-on body #ligaOverlay .lg-t td.lg-pos{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lg-t s{ color:var(--l2-suavec); }
+/* Abajo: «Todas las ligas» y «Borrar esta liga» */
+html.in-on body #ligaOverlay .lgv .conv-actions{ gap:2px !important; margin-top:16px !important; }
+
+/* ================= LIGAS · Una jornada ================= */
+html.in-on body #ligaOverlay .lgj .lg-sub{ color:var(--l2-oro-osc) !important; }
+html.in-on body #ligaOverlay .lgj .lg-cuenta{ color:var(--l2-suave) !important; }
+html.in-on body #ligaOverlay .lg-tiro-f{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-tiro-g b{ color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay :is(.lg-tiro-g small, .lg-tiro-h small){ color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lg-tiro-h b{ color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lg-tiro-f .lg-mas{ background:transparent !important; border-color:rgba(217,190,122,.6) !important; color:var(--l2-oro) !important; }
+html.in-on body #ligaOverlay .lg-partida{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-partida :is(.lg-aviso){ background:rgba(255,255,255,.05) !important; border-color:var(--l2-fila) !important; color:var(--l2-suavec) !important; }
+html.in-on body #ligaOverlay .lg-pj{ background:rgba(255,255,255,.04) !important; border:1px solid #3A4A6B !important; color:var(--l2-txc) !important; }
+html.in-on body #ligaOverlay .lg-pj.sel{ background:var(--l2-boton) !important; border:0 !important; color:#16120A !important; }
+html.in-on body #ligaOverlay .lg-mover-b{ min-height:54px !important; border-radius:999px !important; }
+html.in-on body #ligaOverlay .lgj .conv-btn.primary{ min-height:62px !important; font:800 19px Archivo, system-ui, Arial, sans-serif !important; }
+
+/* ================= CREAR PARTIDA (#prOverlay) ================= */
+html.in-on body #prOverlay .pr-titulo{ margin-top:6px !important; }
+html.in-on body #prOverlay .pr-pasos span{ background:var(--l2-campo) !important; border:1.5px solid var(--l2-linea) !important; color:var(--l2-suave) !important; }
+html.in-on body #prOverlay .pr-pasos span.ok{ background:#fff !important; border-color:#C9A54A !important; color:var(--l2-oro-osc) !important; }
+html.in-on body #prOverlay .pr-pasos span.on{ background:var(--l2-boton) !important; border-color:transparent !important; color:#16120A !important; }
+html.in-on body #prOverlay .pr-q{ color:var(--l2-tx) !important; font:800 26px/1.15 Archivo, system-ui, Arial, sans-serif !important; }
+html.in-on body #prOverlay .pr-ayuda{ font-size:17px !important; }
+/* «¿Quién juega?»: la lista entera en UNA tarjeta azul, con filas */
+html.in-on body #prOverlay .pr-lista{ display:block !important; padding:4px 16px !important; border-radius:22px; background:var(--l2-azul); border:1.5px solid var(--l2-borde); }
+html.in-on body #prOverlay .pr-jug{ width:100%; min-height:60px !important; margin:0 !important; padding:6px 2px !important; border:0 !important; border-radius:0 !important; background:none !important; color:var(--l2-txc) !important; box-shadow:none !important; }
+html.in-on body #prOverlay .pr-jug.on{ border:0 !important; background:none !important; }
+html.in-on body #prOverlay .pr-jug + .pr-jug, html.in-on body #prOverlay .pr-jug.on + .pr-jug, html.in-on body #prOverlay .pr-jug + .pr-jug.on{ border-top:1px solid var(--l2-fila) !important; }
+html.in-on body #prOverlay .pr-jn{ display:flex; align-items:center; gap:10px; min-width:0; flex:1; line-height:1.2; text-align:left; }
+html.in-on body #prOverlay .pr-jug.on .pr-jn{ color:var(--l2-oro) !important; }
+html.in-on body #prOverlay .pr-jug.otro{ opacity:.55; }
+html.in-on body #prOverlay .pr-check{ border-color:#5A6475 !important; color:var(--l2-oro) !important; }
+html.in-on body #prOverlay .pr-jug.on .pr-check{ background:var(--l2-boton) !important; border:0 !important; color:#16120A !important; }
+html.in-on body #prOverlay .pr-jug .pr-inv-hcp{ color:var(--l2-suavec) !important; }
+html.in-on body #prOverlay .pr-jug .av{ flex:0 0 auto; }
+/* Parejas (Foursome / Fourball): cuadro en tarjeta azul */
+html.in-on body #prOverlay .pr-pj-fila{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; box-shadow:none !important; }
+html.in-on body #prOverlay .pr-pj-t{ background:transparent !important; color:var(--l2-oro) !important; font:800 13px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.16em !important; padding:12px 16px 2px !important; }
+html.in-on body #prOverlay .pr-pj-slot{ border-color:#3A4A6B !important; color:var(--l2-suavec) !important; }
+html.in-on body #prOverlay .pr-pj-slot.on{ border:1.5px solid #E9CF8C !important; background:rgba(233,207,140,.10) !important; color:var(--l2-txc) !important; }
+/* Invitado nuevo: tarjeta azul */
+html.in-on body #prOverlay .pr-inv-form{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; }
+html.in-on body #prOverlay .pr-inv-form .pr-op-t{ color:var(--l2-oro) !important; }
+html.in-on body #prOverlay .pr-inv-l{ color:var(--l2-suavec) !important; }
+html.in-on body #prOverlay .pr-inv-form .pr-atras{ background:transparent !important; border-color:rgba(217,190,122,.6) !important; color:var(--l2-oro) !important; }
+html.in-on body #prOverlay .pr-inv-form .pr-aviso{ color:#FF9AA5 !important; }
+/* Resumen: tarjeta azul */
+html.in-on body #prOverlay .pr-resumen{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; color:var(--l2-txc) !important; box-shadow:none !important; }
+html.in-on body #prOverlay .pr-r-campo{ color:var(--l2-oro) !important; }
+html.in-on body #prOverlay .pr-resumen :is(.pr-r-sub, .pr-r-nota, .pr-r-inv, .pr-r-barra){ color:var(--l2-suavec) !important; }
+html.in-on body #prOverlay .pr-r-jug{ border-top-color:var(--l2-fila) !important; color:var(--l2-txc) !important; }
+html.in-on body #prOverlay .pr-r-linea{ color:var(--l2-txc) !important; }
+html.in-on body #prOverlay .pr-r-barra-rec, html.in-on body #prOverlay .pr-r-barra b{ color:var(--l2-oro) !important; }
+html.in-on body #prOverlay .pr-resumen .pr-r-hcp-in, html.in-on body #prOverlay .pr-resumen .pr-barra-sel{ background:#0F1626 !important; color:var(--l2-txc) !important; border-color:rgba(217,190,122,.55) !important; }
+html.in-on body #prOverlay .sc-titulo{ color:var(--l2-oro) !important; font:800 13px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.16em !important; }
+html.in-on body #prOverlay .sc-pareja{ border-top-color:var(--l2-fila) !important; }
+html.in-on body #prOverlay .sc-nombres{ color:var(--l2-txc) !important; }
+html.in-on body #prOverlay :is(.sc-nombres small, .sc-golpes small){ color:var(--l2-suavec) !important; }
+html.in-on body #prOverlay .sc-golpes b{ color:var(--l2-oro) !important; }
+/* Botones de abajo */
+html.in-on body #prOverlay .pr-atras.solo{ background:none !important; border:0 !important; color:var(--l2-oro-osc) !important; text-decoration:underline; text-underline-offset:3px; }
+html.in-on body #prOverlay .pr-pie{ margin-left:-16px !important; margin-right:-16px !important; }
+
+/* ================= ORGANIZAR PARTIDOS (#convOverlay) ================= */
+html.in-on body #convOverlay .conv-head{ margin:2px 0 10px !important; }
+html.in-on body #convOverlay .conv-head :is(img, .conv-escudo){ width:52px !important; height:52px !important; flex:0 0 auto; }
+html.in-on body #convOverlay .conv-head .conv-escudo svg{ width:52px; height:52px; }
+html.in-on body #convOverlay .conv-head h2{ margin:0 !important; font-size:28px !important; }
+/* Día y campo: una tarjeta azul */
+html.in-on body #convBody .conv-when{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-bottom:0 !important; color:var(--l2-txc) !important; padding:16px 18px 2px !important; }
+html.in-on body #convBody .conv-where{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-top:0 !important; color:var(--l2-suavec) !important; padding:2px 18px 16px !important; }
+html.in-on body #convOverlay .conv-liga{ background:var(--l2-campo) !important; border:1px solid var(--l2-linea) !important; color:var(--l2-oro-osc) !important; border-radius:16px !important; font-size:16px !important; }
+/* El tiempo: tarjeta azul */
+html.in-on body #convOverlay #convTiempo.tq{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; }
+html.in-on body #convOverlay #convTiempo :is(.tq-t){ color:var(--l2-oro) !important; }
+html.in-on body #convOverlay #convTiempo :is(.tq-nota, small){ color:var(--l2-suavec) !important; }
+/* Cada hora: tarjeta azul con sus 4 sitios */
+html.in-on body #convBody .conv-tee{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; }
+html.in-on body #convBody .conv-tee-time{ color:var(--l2-oro) !important; }
+html.in-on body #convBody .conv-tee-n{ background:transparent !important; border:1px solid #3A4A6B !important; color:var(--l2-txc) !important; }
+html.in-on body #convBody .conv-seat{ background:transparent !important; border:1px dashed #3A4A6B !important; color:#8C97AB !important; }
+html.in-on body #convBody .conv-seat.filled{ border:1px solid #3A4A6B !important; color:var(--l2-txc) !important; }
+html.in-on body #convBody .conv-seat.me{ border-color:#E9CF8C !important; background:rgba(233,207,140,.12) !important; color:var(--l2-oro) !important; }
+html.in-on body #convBody .conv-tee-x{ background:transparent !important; border:1.5px solid rgba(255,138,144,.7) !important; color:#FF9AA5 !important; }
+html.in-on body #convBody .conv-created{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; color:var(--l2-txc) !important; }
+html.in-on body #convBody .conv-created svg{ stroke:var(--l2-oro); }
+/* Buscador y lista de apuntados: UNA tarjeta azul con filas */
+html.in-on body #convBody .conv-search{ background:var(--l2-campo) !important; border:1.5px solid var(--l2-linea) !important; color:var(--l2-suave) !important; }
+html.in-on body #convBody .conv-search input{ color:var(--l2-tx) !important; font-size:18px !important; }
+html.in-on body #convBody .conv-list{ margin-top:10px; padding:4px 16px; border-radius:22px; background:var(--l2-azul); border:1.5px solid var(--l2-borde); }
+html.in-on body #convBody .conv-list:not(:has(.conv-row)){ display:none; }
+html.in-on body #convBody .conv-row{ margin:0 !important; padding:12px 2px !important; border:0 !important; border-radius:0 !important; background:none !important; min-height:58px; box-sizing:border-box; }
+html.in-on body #convBody .conv-row + .conv-row, html.in-on body #convBody .conv-pick + .conv-row{ border-top:1px solid var(--l2-fila) !important; }
+html.in-on body #convBody .conv-row-name{ color:var(--l2-txc) !important; }
+html.in-on body #convBody .conv-row.me .conv-row-name, html.in-on body #convBody .conv-row.open .conv-row-name{ color:var(--l2-oro) !important; }
+html.in-on body #convBody .conv-row-tag{ background:transparent !important; border:1px solid #3A4A6B; color:var(--l2-suavec) !important; border-radius:999px; }
+html.in-on body #convBody .conv-row-tag.in{ background:var(--l2-boton) !important; border-color:transparent; color:#16120A !important; }
+html.in-on body #convBody .conv-pick{ background:rgba(233,207,140,.06) !important; border:0 !important; border-radius:16px !important; margin:0 0 10px; padding:8px !important; }
+html.in-on body #convBody .conv-pick-btn{ background:transparent !important; border:1.5px solid rgba(217,190,122,.6) !important; color:var(--l2-oro) !important; min-height:48px; }
+html.in-on body #convBody .conv-pick-btn.sel{ background:var(--l2-boton) !important; border-color:transparent !important; color:#16120A !important; }
+html.in-on body #convBody .conv-pick-btn.no{ border-color:rgba(255,138,144,.7) !important; color:#FF9AA5 !important; }
+html.in-on body #convBody .conv-pick-btn:disabled{ opacity:.45; }
+/* Interruptor «Partida normal / Con marcador»: tarjeta azul */
+html.in-on body #convOverlay .pr-marc{ background:var(--l2-azul) !important; border:1.5px solid var(--l2-borde) !important; border-radius:22px !important; color:var(--l2-txc) !important; }
+html.in-on body #convOverlay .pr-marc-t b{ color:var(--l2-txc) !important; font-family:Archivo, system-ui, Arial, sans-serif !important; }
+html.in-on body #convOverlay .pr-marc.on .pr-marc-t b{ color:var(--l2-oro) !important; }
+html.in-on body #convOverlay .pr-marc-t small{ color:var(--l2-suavec) !important; font-size:15px !important; }
+html.in-on body #convOverlay .pr-marc-sw{ background:#5A6475 !important; }
+html.in-on body #convOverlay .pr-marc.on .pr-marc-sw{ background:var(--l2-boton) !important; }
+html.in-on body #convOverlay .pr-marc.on .pr-marc-sw i{ background:#16120A !important; }
+html.in-on body #convOverlay .pr-marc:focus-visible{ outline:3px solid #C9A54A !important; }
+/* Botones de abajo */
+html.in-on body #convBody .conv-actions{ display:grid; gap:10px; }
+html.in-on body #convBody .conv-btn{ min-height:58px; box-sizing:border-box; display:flex; align-items:center; justify-content:center; text-align:center; }
+html.in-on body #convBody :is(#convCreateRound, #convNewCreate){ min-height:64px !important; font-size:19px !important; }
+html.in-on body #convBody .conv-mas-partida{ font:800 17px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:0 !important; text-transform:none !important; border-radius:999px !important; }
+html.in-on body #convBody .conv-btn.wa, html.in-on body #convBody .conv-btn.ghost{ font:800 17px Archivo, system-ui, Arial, sans-serif !important; letter-spacing:.02em !important; text-transform:none !important; }
+/* Formulario de partido nuevo */
+html.in-on body #convOverlay .field{ margin-top:14px; }
+html.in-on body #convOverlay .field select{ -webkit-appearance:none; appearance:none; background-image:linear-gradient(45deg,transparent 50%,#8A6A1F 50%),linear-gradient(135deg,#8A6A1F 50%,transparent 50%) !important; background-position:calc(100% - 22px) 50%, calc(100% - 16px) 50% !important; background-size:6px 6px,6px 6px !important; background-repeat:no-repeat !important; padding-right:40px !important; }
+html.in-on body #convOverlay .bc-btn:not(.lima):not(.on){ background:#fff !important; border-color:#C9A54A !important; color:var(--l2-oro-osc) !important; }
+html.in-on body #convOverlay :is(.bc-btn.lima, .bc-btn.fav.on, .bc-chip.on){ background:var(--l2-boton) !important; color:#16120A !important; }
+
+/* ================= Móvil pequeño (360×640) ================= */
+@media (max-height:700px){
+  html.in-on body :is(#ligaOverlay, #prOverlay, #convOverlay) .nv-volver{ min-height:64px !important; }
+  html.in-on body #ligaOverlay :is(.lg-titulo, .lgl-t), html.in-on body #prOverlay .pr-titulo, html.in-on body #convOverlay .conv-head h2{ font-size:26px !important; margin-top:2px !important; }
+  html.in-on body #prOverlay .pr-q{ font-size:23px !important; margin:12px 2px 10px !important; }
+  html.in-on body #ligaOverlay .lgp .lgp-preg{ font-size:24px !important; margin-top:14px !important; }
+  html.in-on body #prOverlay .pr-jug, html.in-on body #ligaOverlay .lg-jug{ min-height:52px !important; }
+  html.in-on body #convOverlay .conv-head :is(img, .conv-escudo), html.in-on body #convOverlay .conv-head .conv-escudo svg{ width:44px !important; height:44px !important; }
+}
+
+/* Solo en la web de pruebas: el cartel «PRUEBAS» no tapa el «‹ Volver» de Ligas */
+html.in-on body:has(#ligaOverlay:not([hidden])) .pr-banda{ top:auto !important; bottom:calc(env(safe-area-inset-bottom, 0px) + 10px) !important; }
+/* «Borrar este partido» siempre el último, en su línea discreta */
+html.in-on body #convBody .conv-actions > #convDeleteBtn{ order:10; gap:8px; }
+html.in-on body #convBody .conv-actions > #convNewBtn{ order:9; }
+html.in-on body #ligaOverlay .conv-btn.borrar{ gap:8px; display:flex; align-items:center; justify-content:center; }
+/* Fecha y hora lado a lado: que quepa el número entero */
+html.in-on body #ligaOverlay .field-row .field input{ font-size:17px !important; padding:0 10px !important; }
+@media (max-width:370px){
+  html.in-on body #ligaOverlay .field-row .field input{ font-size:15px !important; padding:0 6px !important; }
+  html.in-on body #prOverlay .pr-teclas .pr-tecla{ overflow-wrap:normal !important; word-break:normal !important; hyphens:none; font-size:16px !important; padding-left:4px !important; padding-right:4px !important; }
+}
