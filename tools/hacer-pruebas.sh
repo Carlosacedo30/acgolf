@@ -1127,3 +1127,13 @@ EOF
 
 # --- Todos los avisos de «¿Seguro?» pasan al diseño nuevo (21-nov-2026); va al final, cuando ya están todos los parches ---
 python3 tools/confirmar-a-nuevo.py || exit 1
+
+# --- Sin cartel «Pruebas» (23-nov-2026): se quita la señal y, con ella, la franja naranja y el hueco de arriba (las reglas :has(.pr-banda) dejan de aplicarse) ---
+python3 - <<'PYEOF'
+p = 'pruebas/index.html'
+s = open(p, encoding='utf-8').read()
+a = '<div class="pr-banda">Pruebas</div>'
+assert s.count(a) == 1
+s = s.replace(a, '', 1)
+open(p, 'w', encoding='utf-8').write(s)
+PYEOF
