@@ -105,14 +105,16 @@
   }
   function cerrar(){ if(ov) ov.hidden = true; document.documentElement.classList.remove('mh-abierto'); colocando = false; }
 
-  // Botón de entrada dentro de la tarjeta del hoyo (solo si el campo tiene greens colocados)
-  async function botones(){
-    const info = document.querySelector('#holeMapCard .hole-map-info'); if(!info) return;
-    let b = $('mhAbrir');
-    if(!b){ b = document.createElement('button'); b.type = 'button'; b.id = 'mhAbrir'; b.className = 'mh-abrir'; b.textContent = 'Ver el hoyo en el mapa'; b.onclick = abrir; info.appendChild(b); }
+  // Botón de entrada propio, junto a la tarjeta del hoyo (no depende de que se vea la tarjeta de la distancia al green)
+  function botones(){
+    const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
+    let b = $('mhEntrada');
+    if(!b){ b = document.createElement('div'); b.id = 'mhEntrada'; b.className = 'mh-entrada';
+      b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir">🗺 Ver el hoyo en el mapa</button>'; b.firstChild.onclick = abrir; }
+    if(b.nextElementSibling !== ref) ref.before(b);
     const id = (typeof selectedCourse !== 'undefined' && selectedCourse) ? selectedCourse.id : null;
-    b.hidden = !(id && (id === 'hato-verde' || (pts && Object.keys(pts).length)));
+    b.hidden = id !== 'hato-verde';
   }
-  setInterval(botones, 1500);
+  setInterval(botones, 1000);
   window.acgolfMapaHoyo = { abrir, cerrar };
 })();
