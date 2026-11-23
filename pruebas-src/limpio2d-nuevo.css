@@ -421,3 +421,10 @@ html.in-on .screen[data-screen="4"] .pattern, html.in-on .screen[data-screen="4"
 html.in-on .screen[data-screen="4"] .actions{ background:#FFFFFF !important; border-top:1px solid #DADFE3 !important; }
 html.in-on .screen[data-screen="4"] .btn.primary{ background:#D7263D !important; color:#fff !important; border:0 !important; border-radius:999px !important; box-shadow:none !important; }
 html.in-on .screen[data-screen="4"] .back-btn{ color:#8A6A1F !important; }
+
+/* ===== iPhone: las ventanas a pantalla completa dejan sitio a la hora y la batería (nada se pisa con los botones de arriba) ===== */
+html.in-on :is(#prOverlay, #greensMapaOverlay, #reglasOverlay, #hcpOverlay, #derbiOverlay, #convOverlay, #leaguePlayersOverlay, #normasOverlay){ padding-top:env(safe-area-inset-top, 0px) !important; box-sizing:border-box; }
+html.in-on .nv-volver{ top:env(safe-area-inset-top, 0px); }
+html.in-on body :is(#convOverlay, #leaguePlayersOverlay, #normasOverlay, #prOverlay, #greensMapaOverlay, #reglasOverlay, #hcpOverlay, #derbiOverlay){ padding-top:env(safe-area-inset-top, 0px) !important; }
+html.in-on body :is(#convOverlay, #leaguePlayersOverlay, #normasOverlay) > .modal-card{ padding-top:env(safe-area-inset-top, 0px) !important; }
+html.in-on body .nv-volver{ top:env(safe-area-inset-top, 0px) !important; }
