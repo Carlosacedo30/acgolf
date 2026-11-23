@@ -410,3 +410,14 @@ html.in-on body .screen .cg-barra,
 html.in-on body .screen[data-foco] .cg-barra,
 html.in-on body .screen[data-screen="0"][data-foco] .screen-content > #cgBarra.cg-barra,
 html.in-on.tb-on .cg-mi, html.in-on.tb-on .cg-selgrupo{ display:none !important; }
+
+/* ===== «¿Cómo jugué?» (pantalla 4): un solo «Volver» y diseño limpio ===== */
+html.in-on .screen[data-screen="4"] > .screen-content > .home-volver{ display:none !important; }
+html.in-on .screen[data-screen="4"] .screen-content{ background:#FFFFFF !important; }
+html.in-on .screen[data-screen="4"] .diag-otro{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1.5px solid rgba(217,190,122,.55) !important; border-radius:22px !important; color:#F4F1E8 !important; box-shadow:none !important; }
+html.in-on .screen[data-screen="4"] .diag-otro svg, html.in-on .screen[data-screen="4"] .diag-otro svg *{ color:#E9CF8C !important; stroke:#E9CF8C !important; }
+html.in-on .screen[data-screen="4"] .diag-otro [data-ico]{ background:rgba(233,207,140,.16) !important; }
+html.in-on .screen[data-screen="4"] .pattern, html.in-on .screen[data-screen="4"] #s4Pattern{ background:linear-gradient(160deg,#17233D,#0F1626) !important; border:1.5px solid rgba(217,190,122,.55) !important; border-radius:22px !important; color:#F4F1E8 !important; }
+html.in-on .screen[data-screen="4"] .actions{ background:#FFFFFF !important; border-top:1px solid #DADFE3 !important; }
+html.in-on .screen[data-screen="4"] .btn.primary{ background:#D7263D !important; color:#fff !important; border:0 !important; border-radius:999px !important; box-shadow:none !important; }
+html.in-on .screen[data-screen="4"] .back-btn{ color:#8A6A1F !important; }
