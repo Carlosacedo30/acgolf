@@ -1,0 +1,5 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. */
+.ea-cinta{ display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin:0 0 14px; }
+.ea-cinta span{ display:inline-flex; align-items:center; min-height:34px; padding:0 16px; border-radius:999px;
+  background:linear-gradient(160deg,#E9CF8C,#C9A54A); color:#111316; font:900 15px Archivo, system-ui, sans-serif; letter-spacing:.08em; }
+.ea-cinta small{ font:600 13px Barlow, system-ui, sans-serif; color:#5B636B; padding-left:4px; }
