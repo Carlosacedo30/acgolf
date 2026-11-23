@@ -223,6 +223,14 @@
     if(ryder) vigilar();
     pintar();
   }
+  // Desde el Inicio: abre directamente el partido de la Ryder de este jugador
+  async function abrirPartido(code, i){
+    const ov = ventana(); ov.hidden = false; document.body.classList.add('ry-abierta');
+    $('ryBody').innerHTML = '<div class="ry-cargando">Cargando…</div>';
+    try { ryder = await traer(code); } catch(e){ ryder = null; }
+    if(!ryder){ vista = 'marcador'; pintar(); return; }
+    vigilar(); abrirDuelo(+i || 0);
+  }
   function cerrar(){ ventana().hidden = true; document.body.classList.remove('ry-abierta'); }
   function pintar(){
     if(vista === 'crear') return pintarCrear();
@@ -613,5 +621,5 @@
     ref.parentNode.insertBefore(b, ref.nextSibling);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ponerBoton); else ponerBoton();
-  window.acgolfRyder = { abrir, desdeLista, _estado: estado, _puntos: puntos };
+  window.acgolfRyder = { abrir, abrirPartido, desdeLista, _estado: estado, _puntos: puntos };
 })();

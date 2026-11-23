@@ -255,3 +255,10 @@ html.in-on #homeAhora #convHome > .og-card{ order:6; }
 html.in-on body #homeAhora .ip-card .ip-cuando .in-salidas{ display:flex; flex-direction:column; gap:2px; margin-top:6px; font:800 20px/1.2 Archivo,system-ui,Arial,sans-serif; font-style:normal; letter-spacing:.01em; color:#F4F1E8; }
 html.in-on body #homeAhora .ip-card .ip-cuando .in-salidas{ color:#E9CF8C; font-size:21px; }
 @media (max-height:700px){ html.in-on body .screen[data-screen="0"]:not([data-foco]) #homeAhora .ip-card .ip-apuntar{ height:46px !important; } }
+
+/* Tu partido de la Ryder: quién juega con quién y botón para abrirlo */
+html.in-on .og-card.og-partido{ text-align:left; align-items:stretch; }
+html.in-on .og-partido .og-vs{ display:block; margin-top:8px; font:600 17px/1.35 Barlow, system-ui, sans-serif; color:#fff; }
+html.in-on .og-partido .og-vs b{ font-weight:800; color:#E9CF8C; }
+html.in-on .og-partido .og-sub{ display:block; margin-top:6px; }
+html.in-on .og-partido .og-ir{ display:block; margin-top:12px; padding:13px; border-radius:999px; text-align:center; font:900 16px Archivo, system-ui, sans-serif; letter-spacing:.04em; color:#111316; background:linear-gradient(180deg,#E9CF8C,#C9A54A); }
