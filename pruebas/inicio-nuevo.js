@@ -107,7 +107,7 @@
   (function esperarCuenta(n){
     if(window.miPerfil){
       const C = window.acgolfClasifLiga;
-      if(C && !document.documentElement.classList.contains('es-invitado')) Promise.resolve().then(() => C.cargarTodo()).then(pintarLiga, () => {});
+      if(C && !document.documentElement.classList.contains('es-invitado')) Promise.resolve().then(() => C.cargarTodo()).then(() => { pintarLiga(); try { if(typeof renderConvHome === 'function') renderConvHome(); } catch(e){} }, () => {});
       return;
     }
     if(n < 120) setTimeout(() => esperarCuenta(n + 1), 500);

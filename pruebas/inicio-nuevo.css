@@ -262,3 +262,15 @@ html.in-on .og-partido .og-vs{ display:block; margin-top:8px; font:600 17px/1.35
 html.in-on .og-partido .og-vs b{ font-weight:800; color:#E9CF8C; }
 html.in-on .og-partido .og-sub{ display:block; margin-top:6px; }
 html.in-on .og-partido .og-ir{ display:block; margin-top:12px; padding:13px; border-radius:999px; text-align:center; font:900 16px Archivo, system-ui, sans-serif; letter-spacing:.04em; color:#111316; background:linear-gradient(180deg,#E9CF8C,#C9A54A); }
+
+/* Modelos de tarjeta: LIGA (barra dorada + tu puesto) y RYDER (marcador por equipos) */
+html.in-on body #homeAhora .ip-card.ip-card-liga{ border-left:6px solid #D9BE7A !important; }
+html.in-on body #homeAhora .ip-card .ip-puesto{ display:flex !important; justify-content:space-between; align-items:center; margin-top:10px !important; padding:8px 12px; border-radius:12px; background:rgba(255,255,255,.08); color:#C9D2E3; font:600 14px Barlow, system-ui, sans-serif; }
+html.in-on body #homeAhora .ip-card .ip-puesto b{ font:900 18px Archivo, system-ui, sans-serif; color:#E9CF8C; }
+html.in-on body #homeAhora .ip-card .ip-falta{ margin-top:4px; color:#C9D2E3; font:600 13px Barlow, system-ui, sans-serif; }
+html.in-on .og-partido .og-ry-mar{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; font:900 16px Archivo, system-ui, sans-serif; color:#fff; }
+html.in-on .og-partido .og-ry-mar b{ display:inline-flex; align-items:center; gap:6px; font-weight:900; }
+html.in-on .og-partido .og-ry-mar i{ width:10px; height:10px; border-radius:50%; display:inline-block; flex:none; }
+html.in-on .og-partido .og-ry-mar em{ color:#C9D2E3; font-style:normal; }
+html.in-on .og-partido .og-tu{ display:block; margin-top:10px; padding-top:8px; border-top:1px solid rgba(217,190,122,.35); color:#E9CF8C; font:800 11px Archivo, system-ui, sans-serif; letter-spacing:.1em; text-transform:uppercase; }
+html.in-on .og-partido .og-ir{ background:none !important; border:1.5px solid #D9BE7A; color:#E9CF8C !important; }

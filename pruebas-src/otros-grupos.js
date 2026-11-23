@@ -153,14 +153,24 @@
         const con = conmigo.filter(n => norm(n) !== yo);
         const campo = (typeof COURSES !== 'undefined' ? COURSES : []).find(c => c.id === meta.courseId);
         codigosConPartido.add(f.code);
-        items.push({ code: f.code, i, fecha: dia, titulo: (meta.titulo || 'Ryder Cup') + ' · ' + (MODO[d.tipo] || 'Partido'),
+        const R = window.acgolfRyder && window.acgolfRyder.resumenFila ? window.acgolfRyder.resumenFila(f) : null;
+        const lado = conmigo === a ? 'A' : 'B';
+        let va = '';
+        if(R){
+          const e = R.estado(i);
+          va = e.terminado ? (!e.lider ? 'Empatado' : e.lider === lado ? 'Ganado' : 'Perdido')
+            : !e.jugados ? 'Sin empezar' : !e.lider ? 'Igualados' : 'Vais ' + String(e.grande).replace(' arriba', '') + (e.lider === lado ? ' arriba' : ' abajo');
+        }
+        const pt = v => { const n = Math.floor(v); return (n || v < .5 ? n : '') + (v - n >= .5 ? '½' : ''); };
+        const marcador = R ? '<span class="og-ry-mar"><b><i style="background:' + esc(meta.colorA || '#2E7D32') + '"></i>' + esc(String(meta.nombreA || 'Equipo 1').toUpperCase()) + ' ' + pt(R.p.A) + '</b><em>–</em><b><i style="background:' + esc(meta.colorB || '#1F4E9C') + '"></i>' + esc(String(meta.nombreB || 'Equipo 2').toUpperCase()) + ' ' + pt(R.p.B) + '</b></span>' : '';
+        items.push({ marcador, va, code: f.code, i, fecha: dia, titulo: (meta.titulo || 'Ryder Cup') + ' · ' + (MODO[d.tipo] || 'Partido'),
           lineas: '<b>Tú' + (con.length ? ' y ' + con.map(esc).join(' y ') : '') + '</b> contra <b>' + rival.map(esc).join(' y ') + '</b>',
           sub: (dia ? fecha(dia) + ' ' + new Date(dia + 'T12:00:00').toLocaleDateString('es-ES', { month: 'long' }) : 'Fecha por confirmar') + (campo ? ' · ' + campo.name : '') });
       });
     });
     nodos.partido.forEach(n => n.remove());
     nodos.partido = items.map(a => {
-      const n = nodo('<button type="button" class="og-card og-juego og-partido"><span class="og-etq">Tu partido de la Ryder</span><span class="og-tit">' + esc(a.titulo) + '</span><span class="og-vs">' + a.lineas + '</span><span class="og-sub">' + esc(a.sub) + '</span><span class="og-ir">' + (window.acgolfTarjeta4h && a.fecha && window.acgolfTarjeta4h.cerrada(a.fecha, []) ? '🔒 SE ABRE ' + esc(window.acgolfTarjeta4h.texto(a.fecha, []).toUpperCase()) : 'ANOTAR MI PARTIDO') + '</span></button>', a.fecha);
+      const n = nodo('<button type="button" class="og-card og-juego og-partido"><span class="og-etq">⚔ Ryder · ' + esc(a.titulo) + '</span>' + (a.marcador || '') + '<span class="og-tu">Tu partido</span><span class="og-vs">' + a.lineas + '</span><span class="og-sub">' + esc(a.sub) + (a.va ? ' · ' + esc(a.va) : '') + '</span><span class="og-ir">' + (window.acgolfTarjeta4h && a.fecha && window.acgolfTarjeta4h.cerrada(a.fecha, []) ? '🔒 SE ABRE ' + esc(window.acgolfTarjeta4h.texto(a.fecha, []).toUpperCase()) : 'ANOTAR MI PARTIDO') + '</span></button>', a.fecha);
       n._partido = a; return n;
     });
     colocar();
