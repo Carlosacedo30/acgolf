@@ -113,11 +113,11 @@
       const p = parDe(h), v = golpesDe(h, i), rec = recibe(h);
       par += p || 0;
       if(v != null){ golpes += v; alguno = true; }
-      hoyos += '<button type="button" class="tb-h' + (h === actual ? ' actual' : '') + '" data-h="' + h + '" aria-label="Ir al hoyo ' + h + '">' + h + '</button>';
+      hoyos += '<button type="button" class="tb-h' + (h === actual ? ' actual' : '') + '" data-h="' + h + '" aria-label="Ir al hoyo ' + window.etqHoyo(h) + '">' + window.etqHoyo(h) + '</button>';
       pares += '<span class="tb-pc">' + (p == null ? '' : p) + (rec ? '<em class="tb-pts" aria-label="Recibe ' + rec + (rec === 1 ? ' golpe' : ' golpes') + '">' + '•'.repeat(Math.min(rec, 3)) + '</em>' : '') + '</span>';
       marcas += '<span><i class="tb-m ' + clase(v, p) + '">' + (v == null ? '' : v) + '</i></span>';
     }
-    const nom = desde === 1 ? 'Ida' : 'Vta';
+    const nom = window.etqHoyo(desde) === 1 ? 'Ida' : 'Vta';
     return '<div class="tb-bloque">'
       + '<div class="tb-r tb-r-h"><span class="tb-lbl">Hoyo</span>' + hoyos + '<span class="tb-tot">' + nom + '</span></div>'
       + '<div class="tb-r tb-r-p"><span class="tb-lbl">Par</span>' + pares + '<span class="tb-tot">' + par + '</span></div>'
@@ -133,7 +133,7 @@
     const nombre = String(players[tbDe] || '').includes(' / ') ? nombrePareja(String(players[tbDe]).split(' / ')) : String(players[tbDe] || '').trim().split(/\s+/)[0];
     const ida = currentHole <= 9;
     t.innerHTML = '<div class="tb-tira-cab"><b>' + esc(nombre).toUpperCase() + ' · TARJETA</b><span class="tb-pts-ley"><em class="tb-pts">•</em> recibe golpe</span></div>'
-      + (tbEntera ? bloque(tbDe, 1, currentHole) + bloque(tbDe, 10, currentHole) : bloque(tbDe, ida ? 1 : 10, currentHole))
+      + (tbEntera ? bloque(tbDe, 1, currentHole) + (hoyosPartida() > 9 ? bloque(tbDe, 10, currentHole) : '') : bloque(tbDe, ida ? 1 : 10, currentHole))
       + (n > 1 ? '<p class="tb-pista">Toca un jugador de la clasificación para ver su tarjeta.</p>' : '');
     t.querySelectorAll('.tb-h').forEach(b => b.addEventListener('click', () => { currentHole = +b.dataset.h; renderHoleView(); }));
   }

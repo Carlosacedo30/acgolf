@@ -207,6 +207,8 @@
   COURSES.slice().forEach(c => cursoNueve(c));
   COURSES.slice().forEach(c => cursoNueveVuelta(c));
   COURSES.forEach(c => { if(c.holes9 && !c.nueve) c.hcp = hcpNueveA18(c.hcp); });
+  // Número de hoyo que se ve en pantalla: en una partida de 9 hoyos por la vuelta, el hoyo 1 se muestra como 10, etc.
+  window.etqHoyo = h => (typeof selectedCourse !== 'undefined' && selectedCourse && /-9v$/.test(String(selectedCourse.id)) && h >= 1 && h <= 9) ? h + 9 : h;
   // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás
   function hoyosPartida(){ return (typeof selectedCourse !== 'undefined' && selectedCourse && selectedCourse.nueve) ? 9 : 18; }
 
