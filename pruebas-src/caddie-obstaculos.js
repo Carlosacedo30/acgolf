@@ -8,7 +8,7 @@
   const dist = (a, b) => (typeof metersBetween === 'function') ? metersBetween(a, b) : Math.hypot(a.lat - b.lat, a.lng - b.lng) * 111000;
   const cliente = () => { try { return typeof initSupabase === 'function' ? initSupabase() : null; } catch(e){ return null; } };
   const mapaHoyo = () => window.acgolfMapaHoyo || null;
-  let datos = null, datosId = null, pos = null, gpsId = null, ov = null, hoyo = 1;
+  let gpsOk = false, gpsMsg = '', datos = null, datosId = null, pos = null, gpsId = null, ov = null, hoyo = 1;
 
   async function cargar(id){
     if(datosId === id && datos) return;
@@ -76,6 +76,17 @@
   }
   function cerrar(){ pararGps(); if(ov) ov.hidden = true; }
 
+  // Al empezar: un solo botón «Activar GPS para ver los obstáculos». Si aceptan, salen los dos botones (mapa y caddie).
+  function activarAqui(){
+    if(!navigator.geolocation){ gpsMsg = 'Este móvil no deja usar el GPS.'; boton(); return; }
+    gpsMsg = 'Buscando tu posición…'; boton();
+    navigator.geolocation.getCurrentPosition(
+      p => { pos = { lat: p.coords.latitude, lng: p.coords.longitude }; gpsOk = true; window.acgolfGpsOk = true; gpsMsg = ''; try { sessionStorage.setItem('acgolfGpsObst', '1'); } catch(e){} boton(); },
+      () => { gpsMsg = 'No pude ver tu posición. Revisa que el GPS esté activado y que la app tenga permiso.'; boton(); },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 5000 });
+  }
+  try { if(sessionStorage.getItem('acgolfGpsObst') === '1'){ gpsOk = true; window.acgolfGpsOk = true; } } catch(e){}
+
   // Los dos botones (mapa y caddie) van en una sola fila, justo debajo de «Hoyo completo»/«Siguiente hoyo» y encima de la tarjeta.
   function boton(){
     const m = mapaHoyo(); const k = m && m.campoActual ? m.campoActual() : null;
@@ -92,7 +103,14 @@
     const me = $('mhEntrada');
     if(me && me.parentNode !== fila) fila.appendChild(me);
     if(b.parentNode !== fila) fila.appendChild(b);
-    b.hidden = !visible; fila.hidden = !visible;
+    let g = $('cdGate');
+    if(!g){ g = document.createElement('div'); g.id = 'cdGate'; g.className = 'cd-gate';
+      g.innerHTML = '<button type="button" class="cd-gps"><i>📍</i>Activar GPS para ver los obstáculos</button><p class="cd-gmsg" id="cdGmsg"></p>'; g.firstChild.onclick = activarAqui; fila.appendChild(g); }
+    const dos = visible && gpsOk;
+    b.hidden = !dos; if(me) me.hidden = !dos;
+    g.hidden = !(visible && !gpsOk);
+    $('cdGmsg').textContent = gpsMsg; $('cdGmsg').hidden = !gpsMsg;
+    fila.hidden = !visible;
   }
   setInterval(boton, 1000);
 })();
