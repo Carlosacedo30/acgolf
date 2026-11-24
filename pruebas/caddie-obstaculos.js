@@ -82,7 +82,7 @@
     const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
     let b = $('cdEntrada');
     if(!b){ b = document.createElement('div'); b.id = 'cdEntrada'; b.className = 'cd-entrada';
-      b.innerHTML = '<button type="button" class="cd-abrir">🧢 Tu caddie dice…</button>'; b.firstChild.onclick = abrir; }
+      b.innerHTML = '<button type="button" class="cd-abrir"><i>🧢</i>Tu caddie dice…</button>'; b.firstChild.onclick = abrir; }
     const visible = !!(k && m.piloto && m.piloto.indexOf(k.id) >= 0);
     let fila = $('cdFila');
     if(!fila){ fila = document.createElement('div'); fila.id = 'cdFila'; fila.className = 'cd-fila'; }
