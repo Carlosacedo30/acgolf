@@ -68,3 +68,6 @@ html .vv-plato .vv-pctl button{ min-height:44px; }
 /* El Plató: «Ver resultados» en una sola línea, pequeño y abajo del todo, sin tapar el título (iPhone, 24-nov) */
 html .vv-mas{ bottom:calc(env(safe-area-inset-bottom, 0px) + 14px) !important; flex-direction:row !important; gap:8px !important; padding:8px 18px !important; white-space:nowrap; font-size:16px !important; min-height:44px; align-items:center; }
 html .vv-mas i{ font-size:22px !important; line-height:1 !important; }
+
+/* Acgolf TV: el botón de pantalla completa ya no tapa la cabeza de Lola; va en la esquina de abajo a la derecha (Carlos, 24-nov) */
+html .vt-mesa .vt-grande{ top:auto !important; left:auto !important; right:0 !important; bottom:0 !important; width:26px !important; height:26px !important; border-radius:8px 0 0 0 !important; border:0 !important; border-left:1px solid #E9CF8C !important; border-top:1px solid #E9CF8C !important; font-size:13px; line-height:1; }
