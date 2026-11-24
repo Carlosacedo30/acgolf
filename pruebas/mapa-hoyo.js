@@ -204,7 +204,7 @@
       L.tileLayer(IGN, { maxNativeZoom: 19, maxZoom: 20, attribution: CRED }).addTo(mapa);
       mapa.on('click', e => { if(colocando === 'tee') guardarSalida(e.latlng); else if(colocando === 'green') guardarGreen(e.latlng); else if(colocando && colocando.indexOf('ob:') === 0) guardarObst(colocando.slice(3), e.latlng); });
     }
-    setTimeout(() => { mapa.invalidateSize(); pintar(); }, 60);
+    setTimeout(() => { mapa.invalidateSize(); pintar(); if(window.acgolfGpsOk && gpsId === null) activarGps(); }, 60);
   }
   function cerrar(){ paraGps(); if(ov) ov.hidden = true; document.documentElement.classList.remove('mh-abierto'); colocando = false; }
 
@@ -216,7 +216,7 @@
       b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir"><i>🗺</i>Mapa del hoyo</button>'; b.firstChild.onclick = abrir; }
     if(!(b.parentNode && b.parentNode.id === 'cdFila') && b.nextElementSibling !== ref) ref.before(b);
     const k = campoActual();
-    b.hidden = !(k && PILOTO.indexOf(k.id) >= 0);
+    b.hidden = !(k && PILOTO.indexOf(k.id) >= 0) || (!!b.parentNode && b.parentNode.id === 'cdFila' && !window.acgolfGpsOk);
   }
   setInterval(botones, 1000);
   window.acgolfMapaHoyo = { abrir, cerrar, campoActual, piloto: PILOTO };
