@@ -72,3 +72,6 @@
 
 .vt-mp b{ font-size:1.1em; }
 .vt-tira{ margin-top:.5em; gap:.25em; } .vt-tira span{ min-width:1.6em; height:1.6em; font-size:clamp(9px,2.4vw,13px); }
+
+/* Cartel de última hora (24-nov-2026): etiqueta roja pequeña delante del rótulo; texto blanco sobre rojo = contraste alto */
+.vt-rot .uh{ display:inline-block; margin:0 6px 2px 0; padding:2px 8px; border-radius:999px; background:#E5484D; color:#fff; font:900 .8em/1.2 'Archivo', sans-serif; letter-spacing:.06em; white-space:nowrap; }

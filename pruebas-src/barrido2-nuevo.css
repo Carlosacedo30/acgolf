@@ -473,3 +473,6 @@ html.in-on .vv-clas b, html.in-on .vv-clas strong{ color:#F4F1E8; }
 /* ===================== 6. «Ver completa» (ver-completa.js) en las listas que no tienen ya su estilo nuevo ===================== */
 html.in-on[data-tema] .vc-btn, html.in-on .vc-btn{ min-height:54px; border-radius:999px !important; border:1px solid rgba(217,190,122,.6) !important; background:transparent !important; color:#E9CF8C !important; font:800 17px Archivo,system-ui,Arial,sans-serif; }
 html.in-on .vc-btn:active{ transform:scale(.97); }
+
+/* Cartel ÚLTIMA HORA en el diseño nuevo: píldora roja, letra blanca */
+html.in-on .vt-rot .uh{ background:#E5484D; color:#fff; }

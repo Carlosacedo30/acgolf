@@ -14,8 +14,13 @@
   'use strict';
   const VOCES = 'https://svnkgmbfanwftncopqjg.supabase.co/storage/v1/object/public/voces-directo/v1/';
   // Nombres con voz (de Lola). Clave: primer nombre sin acentos. Otras formas → el grabado.
-  const NOMBRES = ['alvaro','carlos','fernando','francisco','jesus','jose','juan','lorenzo','manuel','rafael','camilo','emilio','jorge','maria','segundo','antonio','ivan'];
-  const APODOS = { fco:'francisco', paco:'francisco', pepe:'jose', manu:'manuel', manolo:'manuel', rafa:'rafael', chema:'jose', toni:'antonio', antoñito:'antonio' };
+  const NOMBRES = ['alvaro','carlos','fernando','francisco','jesus','jose','juan','lorenzo','manuel','rafael','camilo','emilio','jorge','maria','segundo','antonio','ivan','javier','aitor','carlitos','cesar','chente','covadonga','enrique','isidro','juanma','miguel','moises'];
+  const APODOS = { fco:'francisco', paco:'francisco', pepe:'jose', manu:'manuel', manolo:'manuel', rafa:'rafael', chema:'jose', toni:'antonio', antoñito:'antonio', migue:'miguel', kike:'enrique', quique:'enrique', javi:'javier', juanmi:'juanma' };
+  // Voces nuevas (24-nov-2026): frases y nombres grabados con la voz de Lola y Curro. Viven en su propia carpeta.
+  const VOCES_X = 'https://qjtsjcfalettgvrlwwnr.supabase.co/storage/v1/object/public/voces-directo/v1/';
+  const NUEVOS = ['n-javier','n-aitor','n-carlitos','n-cesar','n-chente','n-covadonga','n-enrique','n-isidro','n-juanma','n-miguel','n-moises'];
+  const esNueva = k => k.indexOf('x-') === 0 || NUEVOS.indexOf(k) >= 0;
+  const urlVoz = k => (esNueva(k) ? VOCES_X : VOCES) + k + '.mp3';
   const VIDEOS = { lola: ['tele-lola-a.mp4?v=1', 'tele-lola-b.mp4?v=1'], curro: ['tele-curro-a.mp4?v=1', 'tele-curro-b.mp4?v=1'] };
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -26,6 +31,7 @@
   const primeraPalabra = n => String(n || '').trim().split(/\s+/)[0] || String(n || '');
   const esEquipo = n => String(n || '').includes(' / ');
   const corto = n => esEquipo(n) ? n.split(' / ').map(primeraPalabra).filter(Boolean).join(' y ') : primeraPalabra(n);
+  const largo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García»; parejas «Carlos y Jose»
   const signo = d => d === 0 ? 'E' : (d > 0 ? '+' : '−') + Math.abs(d);
   const yo = () => (window.miPerfil && window.miPerfil.player_name) || (() => { try { return localStorage.getItem('golfAppConvMe') || ''; } catch(e){ return ''; } })();
   function claveNombre(n){
@@ -33,6 +39,49 @@
     const k2 = APODOS[k] || k;
     return NOMBRES.includes(k2) ? 'n-' + k2 : null;
   }
+  // ---------- Frases nuevas (24-nov-2026) ----------
+  // Cada frase con nombre va por trozos: el trozo de quien habla, el nombre (voz de Lola) y el trozo de quien sigue.
+  // Cada vez sale una distinta (al azar) para que no se repitan; si el nombre no está grabado, solo las frases sin nombre.
+  const azar = l => l[Math.floor(Math.random() * l.length)];
+  const Lp = (clips, rot) => ({ q: 'lola', clips: [].concat(clips).filter(Boolean), rot });
+  const Cp = (clips, rot) => ({ q: 'curro', clips: [].concat(clips).filter(Boolean), rot });
+  const ULT = '<span class="uh">ÚLTIMA HORA</span>';
+  function pasosBirdie(kn, rot, aguila){
+    const v = [[Lp('l-birdie', rot), Cp('c-birdie', rot)]];
+    if(aguila){
+      v.push([Lp('x-aguila-b', rot)]);
+      if(kn){ v.push([Cp('x-aguila-a1', rot), Lp(kn, rot), Cp('x-aguila-a2', rot)]); v.push([Cp('x-aguila-c1', rot), Lp(kn, rot)]); }
+    } else {
+      v.push([Lp('x-birdie-c', rot)]);
+      if(kn){
+        v.push([Lp(['x-birdie-a1', kn, 'x-birdie-a2'], rot)]);
+        v.push([Lp(kn, rot), Cp('x-birdie-b2', rot)]);
+        v.push([Cp('x-birdie-d1', rot), Lp(kn, rot), Cp('x-birdie-d2', rot)]);
+        v.push([Lp(['x-birdie-e1', kn, 'x-birdie-e2'], rot)]);
+      }
+    }
+    return azar(v);
+  }
+  function pasosLider(kn, rot){
+    const v = [[kn ? Lp(['l-manda', kn], rot) : null, Cp(Math.random() < 0.5 ? 'c-eso-es-golf' : 'c-como-un-tiro', rot)].filter(Boolean)];
+    if(kn){
+      v.push([Lp(['x-lider-a1', kn, 'x-lider-a2'], rot)]);
+      v.push([Lp(kn, rot), Cp('x-lider-b2', rot)]);
+      v.push([Cp('x-lider-d1', rot), Lp(kn, rot), Cp('x-lider-d2', rot)]);
+    }
+    return azar(v);
+  }
+  function pasosMalo(kn, rot){
+    const v = [[Cp('c-atragantado', rot)], [Cp('x-malo-e', rot)]];
+    if(kn){
+      v.push([Cp('x-malo-a1', rot), Lp(kn, rot), Cp('x-malo-a2', rot)]);
+      v.push([Lp(['x-malo-b1', kn, 'x-malo-b2'], rot)]);
+      v.push([Cp('x-malo-c1', rot), Lp(kn, rot)]);
+      v.push([Lp(['x-malo-d1', kn, 'x-malo-d2'], rot)]);
+    }
+    return azar(v);
+  }
+  const pasoFinal = rot => azar([Lp('l-final', rot), Lp('x-final-a', rot), Cp('x-final-b', rot), Lp('x-final-c', rot), Cp('x-final-d', rot)]);
 
   // ---------- Sonido ----------
   // Se oye con un reproductor normal (<audio>), como el resto de la app: así suena aunque el iPhone tenga
@@ -48,7 +97,7 @@
   async function cargar(clave){
     if(cache[clave]) return cache[clave];
     cache[clave] = (async () => {
-      const r = await fetch(VOCES + clave + '.mp3');
+      const r = await fetch(urlVoz(clave));
       if(!r.ok) throw new Error('no está ' + clave);
       const ab = await r.arrayBuffer();
       const url = URL.createObjectURL(new Blob([ab.slice(0)], { type: 'audio/mpeg' }));
@@ -145,6 +194,33 @@
   // ---------- El guion: se monta con las frases grabadas según cómo va la partida ----------
   let visitas = 0;
   try { visitas = (+localStorage.getItem('acgolfTeleVisitas') || 0) + 1; localStorage.setItem('acgolfTeleVisitas', String(visitas)); } catch(e){ visitas = 1 + Math.floor(Math.random() * 2); }
+  // Resumen final (cuando todos han terminado): ganador, segundo, tercero, quién paga las cervezas y despedida.
+  // La regla de las cervezas es la de En vivo: paga la mitad de abajo; si son impares, el del medio se libra.
+  function guionFinal(t){
+    const marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
+    const k = i => t[i] ? claveNombre(t[i].n) : null;
+    const pasos = [];
+    const r1 = '🏆 <b>Gana ' + esc(largo(t[0].n)) + '</b> · ' + marca(t[0]);
+    pasos.push(Lp(['x-fin-a1', k(0), 'x-fin-a2'], r1));
+    if(t[1]){
+      const r2 = '2.º · <b>' + esc(largo(t[1].n)) + '</b> · ' + marca(t[1]);
+      if(k(1)){ pasos.push(Cp('x-fin-b1', r2)); pasos.push(Lp(k(1), r2)); pasos.push(Cp('x-fin-b2', r2)); }
+      else pasos.push(Cp('x-fin-b2', r2));
+    }
+    if(t[2]){
+      const r3 = '3.º · <b>' + esc(largo(t[2].n)) + '</b> · ' + marca(t[2]);
+      if(k(2)){ pasos.push(Lp(['x-fin-c1', k(2), 'x-fin-c2'], r3)); }
+    }
+    const pagan = t.length >= 2 ? Math.floor(t.length / 2) : 0;
+    if(pagan > 0){
+      const nombres = t.slice(t.length - pagan).map(x => '<b>' + esc(largo(x.n)) + '</b>').join(', ');
+      const rc = '🍺 Hoy pagan las cervezas: ' + nombres;
+      pasos.push(Cp('x-cerv-a', rc)); pasos.push(Lp('x-cerv-b', rc));
+    }
+    const ra = 'acgolf <b>TV</b> · hasta la próxima';
+    pasos.push(Cp(azar(['x-adios-a', 'x-adios-c']), ra)); pasos.push(Lp('x-adios-b', ra));
+    return pasos;
+  }
   function guion(round){
     const EV = window.acgolfEnVivo || {};
     const t = EV.tabla ? EV.tabla(round) : [];
@@ -154,36 +230,37 @@
     const C = (clips, rot) => pasos.push({ q: 'curro', clips: [].concat(clips).filter(Boolean), rot });
     // 1. Saludo (unas veces empieza Lola y otras Curro)
     const quienMira = yo(), kn = claveNombre(quienMira);
-    const saludo = '<b>¡Hola' + (quienMira ? ', ' + esc(corto(quienMira)) : '') + '!</b> Bienvenido a la mesa de Lola y Curro';
+    const saludo = '<b>¡Hola' + (quienMira ? ', ' + esc(largo(quienMira)) : '') + '!</b> Bienvenido a la mesa de Lola y Curro';
     if(visitas % 2 === 1){ L([kn || 'l-hola-campeon', 'l-bienvenida'], saludo); C('c-hola', saludo); }
     else { C('c-hola', saludo); L([kn || 'l-hola-campeon', 'l-bienvenida'], saludo); }
+    if(t.length >= 2 && t.every(x => x.pos >= NH(t))){ guionFinal(t).forEach(x => pasos.push(x)); return pasos; }
     if(!t.length){ L('l-empieza', 'Aún no hay golpes: <b>la partida está a punto de empezar</b>'); L('l-cierre', 'acgolf <b>TV</b> · seguimos en directo'); return pasos; }
     // 2. En qué momento está
     const av = avance(t), hoyo = av.pos;
     if(hoyo <= 4) L('l-empieza', 'Hoyo ' + window.etqV(av.num) + ' · <b>está todo por decidir</b>');
-    else if(hoyo >= NH(t) - 3) L('l-final', 'Hoyo ' + window.etqV(av.num) + ' · <b>¡se decide en los últimos hoyos!</b>');
+    else if(hoyo >= NH(t) - 3) pasos.push(pasoFinal('Hoyo ' + window.etqV(av.num) + ' · <b>¡se decide en los últimos hoyos!</b>'));
     else if(hoyo >= Math.ceil(NH(t) / 2)) L('l-mitad', 'Hoyo ' + window.etqV(av.num) + ' · <b>segunda mitad de la partida</b>');
     // 3. El líder (en puntos si se juega por puntos, en neto si no)
     const l = t[0], k1 = claveNombre(l.n), esPtos = l.esPtos;
     const marca = x => esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
-    const rotLider = 'Líder · <b>' + esc(corto(l.n)) + '</b> ' + marca(l);
+    const rotLider = 'Líder · <b>' + esc(largo(l.n)) + '</b> ' + marca(l);
     if(k1) L(['l-manda', k1], rotLider);
     C(visitas % 2 ? 'c-como-un-tiro' : 'c-eso-es-golf', rotLider);
     // 4. El segundo
     if(t[1]){
       const dif = esPtos ? l.pts - t[1].pts : t[1].neto - l.neto, k2 = claveNombre(t[1].n);
-      const rot2 = '2.º · <b>' + esc(corto(t[1].n)) + '</b> ' + marca(t[1]) + (dif === 0 ? ' · ¡empatados!' : ' · a ' + dif + (esPtos ? (dif === 1 ? ' punto' : ' puntos') : (dif === 1 ? ' golpe' : ' golpes')));
+      const rot2 = '2.º · <b>' + esc(largo(t[1].n)) + '</b> ' + marca(t[1]) + (dif === 0 ? ' · ¡empatados!' : ' · a ' + dif + (esPtos ? (dif === 1 ? ' punto' : ' puntos') : (dif === 1 ? ' golpe' : ' golpes')));
       if(dif === 0) C('c-empate', rot2);
-      else { if(k2) L(['l-sigue', k2], rot2); if(dif >= 3) C('c-diferencia', rot2); }
+      else { if(k2) L(['l-sigue', k2], rot2); if(dif >= 3) C('c-diferencia', rot2); else if(k2 && dif <= 1 && Math.random() < 0.5) L(['x-lider-e1', k2, 'x-lider-e2'], rot2); }
     }
     // 5. Birdies y hoyos para olvidar
     const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
-    if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b> en el hoyo ' + window.etqV(bir.h); L('l-birdie', r); C('c-birdie', r); }
+    if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(largo(bir.n)) + '</b> en el hoyo ' + window.etqV(bir.h); pasosBirdie(claveNombre(bir.n), r, bir.d <= -2).forEach(x => pasos.push(x)); }
     const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
-    if(malo) { const r = 'Hoyo ' + window.etqV(malo.h) + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); C('c-atragantado', r); }
+    if(malo) { const r = 'Hoyo ' + window.etqV(malo.h) + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); pasosMalo(claveNombre(malo.n), r).forEach(x => pasos.push(x)); }
     // 6. Predicción y broma
     C(visitas % 2 ? 'c-prediccion-greens' : 'c-prediccion-putts', 'La predicción de <b>Curro</b>');
-    if(t.length >= 3) C('c-ultimo', 'Último · <b>' + esc(corto(t[t.length - 1].n)) + '</b> · el hoyo 19 lo gana cualquiera');
+    if(t.length >= 3) C('c-ultimo', 'Último · <b>' + esc(largo(t[t.length - 1].n)) + '</b> · el hoyo 19 lo gana cualquiera');
     L('l-cierre', 'acgolf <b>TV</b> · seguimos en directo');
     return pasos;
   }
@@ -212,16 +289,17 @@
     const t = ahora.t;
     const marcaT = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
     if(ahora.lider && antes.lider && norm(ahora.lider) !== norm(antes.lider) && !ahora.empate){
-      const k = claveNombre(ahora.lider), rot = '¡Nuevo líder! · <b>' + esc(corto(ahora.lider)) + '</b> ' + marcaT(t[0]);
-      avisos.push({ prio: 1, pasos: [k ? L(['l-manda', k], rot) : null, C(turno % 2 ? 'c-eso-es-golf' : 'c-como-un-tiro', rot)].filter(Boolean) });
+      const k = claveNombre(ahora.lider), rot = '¡Nuevo líder! · <b>' + esc(largo(ahora.lider)) + '</b> ' + marcaT(t[0]);
+      const rotU = ULT + rot;
+      avisos.push({ prio: 1, pasos: pasosLider(k, rotU) });
     } else if(ahora.empate && !antes.empate){
-      avisos.push({ prio: 2, pasos: [C('c-empate', '¡Empate arriba! · <b>' + esc(corto(t[0].n)) + '</b> y <b>' + esc(corto(t[1].n)) + '</b> ' + marcaT(t[0]))] });
+      avisos.push({ prio: 2, pasos: [C(['c-empate'], ULT + '¡Empate arriba! · <b>' + esc(largo(t[0].n)) + '</b> y <b>' + esc(largo(t[1].n)) + '</b> ' + marcaT(t[0]))] });
     }
     const bir = nuevas.filter(x => x.d < 0).sort((a, b) => a.d - b.d)[0];
-    if(bir) avisos.push({ prio: 3, pasos: [C('c-birdie', (bir.d <= -2 ? '¡Águila' : '¡Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b>! · hoyo ' + window.etqV(bir.h))] });
+    if(bir){ const rb = ULT + (bir.d <= -2 ? '¡Águila' : '¡Birdie') + ' de <b>' + esc(largo(bir.n)) + '</b>! · hoyo ' + window.etqV(bir.h); avisos.push({ prio: 3, pasos: pasosBirdie(claveNombre(bir.n), rb, bir.d <= -2) }); }
     const malo = nuevas.filter(x => x.d >= 3).sort((a, b) => b.d - a.d)[0];
-    if(malo && !bir) avisos.push({ prio: 5, pasos: [C('c-atragantado', 'Hoyo ' + window.etqV(malo.h) + ' · <b>' + esc(corto(malo.n)) + '</b> ' + malo.v + ' golpes en un par ' + malo.par)] });
-    if(ahora.hoyo >= ahora.n - 3 && antes.hoyo < antes.n - 3) avisos.push({ prio: 4, pasos: [L('l-final', 'Hoyo ' + window.etqV(ahora.num) + ' · <b>¡recta final!</b>')] });
+    if(malo && !bir) avisos.push({ prio: 5, pasos: pasosMalo(claveNombre(malo.n), ULT + 'Hoyo ' + window.etqV(malo.h) + ' · <b>' + esc(largo(malo.n)) + '</b> ' + malo.v + ' golpes en un par ' + malo.par) });
+    if(ahora.hoyo >= ahora.n - 3 && antes.hoyo < antes.n - 3) avisos.push({ prio: 4, pasos: [pasoFinal(ULT + 'Hoyo ' + window.etqV(ahora.num) + ' · <b>¡recta final!</b>')] });
     antes = ahora;
     if(avisos.length > 3) avisos = avisos.sort((a, b) => a.prio - b.prio).slice(0, 3);
     siguienteAviso();
@@ -234,7 +312,7 @@
     avisos.sort((a, b) => a.prio - b.prio);
     const a = avisos.shift();
     // Un aviso viejo de líder ya no vale si el líder ha vuelto a cambiar
-    if(a.prio === 1 && ronda){ const f = foto(ronda); if(!f.lider || a.pasos[a.pasos.length - 1].rot.indexOf(esc(corto(f.lider))) < 0) return siguienteAviso(); }
+    if(a.prio === 1 && ronda){ const f = foto(ronda); if(!f.lider || a.pasos[a.pasos.length - 1].rot.indexOf(esc(largo(f.lider))) < 0) return siguienteAviso(); }
     ultimoAviso = Date.now();
     reproducir(a.pasos);
   }
@@ -281,7 +359,7 @@
     else {
       const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
       centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
-        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + window.etqV(l.ultimo)) + '</em></div>';
+        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(largo(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + window.etqV(l.ultimo)) + '</em></div>';
     }
     let PP = null, MM = null; try { PP = EV.parejas ? EV.parejas(round) : null; MM = EV.partidos ? EV.partidos(round) : null; } catch(e){}
     if(MM) MM = MM.filter(m => m.jug); if(!MM || !MM.length) MM = null; if(!PP || !PP.length) PP = null;
