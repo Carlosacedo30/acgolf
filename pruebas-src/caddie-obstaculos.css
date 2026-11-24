@@ -39,3 +39,19 @@ html.mn-on .screen[data-screen="3"] .hv-completo span{ font-size:14px !important
 /* El Plató: «Pausa» y «Otra vez» ya no tapan la etiqueta «EL PLATÓ» (iPhone, 24-nov) */
 html .vv-plato .vv-pctl{ top:56px !important; right:10px; left:10px; justify-content:flex-end; }
 html .vv-plato .vv-pctl button{ min-height:44px; }
+
+/* Diseño de los dos botones (Carlos, 24-nov): tarjetas azules con borde dorado, dibujo en círculo, todo centrado */
+.cd-fila{ width:calc(100% - 32px); max-width:440px; margin:10px auto 0 !important; gap:12px; justify-content:center; align-items:stretch; box-sizing:border-box; }
+.cd-fila .mh-entrada, .cd-fila .cd-entrada{ margin:0 !important; display:flex; }
+.cd-fila .mh-abrir, .cd-fila .cd-abrir, .cd-gps{
+  border-radius:20px !important; border:1.5px solid #C9A54A !important; min-height:104px !important; padding:12px 8px !important;
+  background:linear-gradient(160deg,#1B2B4A,#0F1626) !important; box-shadow:0 4px 12px rgba(15,22,38,.25), inset 0 1px 0 rgba(233,207,140,.18);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center;
+  font:900 17px/1.15 Archivo,system-ui,sans-serif !important; color:#fff !important; }
+.cd-fila .mh-abrir i, .cd-fila .cd-abrir i, .cd-gps i{
+  width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  background:rgba(233,207,140,.14); border:1.5px solid rgba(233,207,140,.75); font-style:normal; font-size:24px; line-height:1; }
+.cd-gps{ min-height:96px !important; flex-direction:row !important; gap:14px !important; padding:12px 18px !important; font-size:18px !important; }
+.cd-gate{ width:100%; }
+@media (max-width:380px){ .cd-fila{ gap:8px; } .cd-fila .mh-abrir, .cd-fila .cd-abrir{ font-size:15px !important; min-height:96px !important; } .cd-fila .mh-abrir i, .cd-fila .cd-abrir i{ width:40px; height:40px; font-size:20px; } }
+.cd-gps{ flex-direction:column !important; gap:8px !important; min-height:104px !important; }
