@@ -5,6 +5,8 @@
 (function(){
   'use strict';
   const IGN = 'https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg';
+  // PRUEBA PILOTO (Carlos, 24-nov): el mapa del hoyo solo sale en estos campos. Para abrirlo a otros, se añade su código aquí.
+  const PILOTO = ['hato-verde'];
   const CRED = 'Ortofoto © IGN España (PNOA) · CC BY 4.0 scne.es';
   let mapaVacio = false, ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null;
   const $ = id => document.getElementById(id);
@@ -136,7 +138,8 @@
     if(!b){ b = document.createElement('div'); b.id = 'mhEntrada'; b.className = 'mh-entrada';
       b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir">🗺 Ver el hoyo en el mapa</button>'; b.firstChild.onclick = abrir; }
     if(b.nextElementSibling !== ref) ref.before(b);
-    b.hidden = !campoActual();
+    const k = campoActual();
+    b.hidden = !(k && PILOTO.indexOf(k.id) >= 0);
   }
   setInterval(botones, 1000);
   window.acgolfMapaHoyo = { abrir, cerrar };
