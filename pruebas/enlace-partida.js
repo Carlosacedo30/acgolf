@@ -1,7 +1,7 @@
 /* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. Ver LICENSE. */
 // Enlace directo a una partida: .../pruebas/?partida=CODIGO abre esa partida en cuanto el jugador ha entrado con su cuenta.
 // También .../pruebas/?conv=CODIGO abre la convocatoria (si al cargar todavía no había sesión, se abre al entrar).
-// Y los avisos del móvil: ?ver=ganadores&semana=AAAA-MM-DD abre los Ganadores de esa semana; ?ver=handicap abre Mi hándicap.
+// Y los avisos del móvil: ?ver=ganadores&semana=AAAA-MM-DD abre los Ganadores de esa semana; ?ver=handicap abre Mi hándicap; ?ver=partido (el recordatorio «Mañana juegas») abre el Inicio con tu próximo partido.
 // Y ?resumen=CODIGO abre directamente «El plató» (Curro y Lola comentando esa partida) en cuanto hay sesión.
 (function(){
   const qs = new URLSearchParams(location.search);
@@ -25,6 +25,10 @@
         if(bt) bt.click(); else if(typeof hcpAbrir === 'function') hcpAbrir();
       } else if(ver === 'liga'){
         goTo(6);
+      } else if(ver === 'partido'){
+        // «Mañana juegas»: el Inicio ya enseña tu próximo partido (día, hora, campo y con quién sales)
+        goTo(0);
+        window.scrollTo(0, 0);
       }
     }, 500);
   }
