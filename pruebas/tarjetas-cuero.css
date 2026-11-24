@@ -1,0 +1,32 @@
+/* © 2026 Carlos Acedo Domínguez. Todas las tarjetas del resumen final con el relleno de cuero azul del plató (24-nov-2026, pruebas).
+   Sin panel de «Ganador del día»: el ganador es la primera fila de la clasificación, resaltada en dorado.
+   Contraste mínimo 4,5:1: letra blanca o dorada #E9CF8C sobre azul #16315C–#2A5AA6. */
+html.in-on, html.in-on.lm-on{ --cuero: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .45  0 0 0 0 .3  0 0 0 .55 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"); }
+html.in-on .vv-fcl, html.in-on.lm-on .vv-fcl,
+html.in-on .vv-fm, html.in-on.lm-on .vv-fm,
+html.in-on .vv-fg, html.in-on.lm-on .vv-fg,
+html.in-on .vv-fbir, html.in-on.lm-on .vv-fbir,
+html.in-on .vv-prot .vv-r, html.in-on.lm-on .vv-prot .vv-r,
+html.in-on .vv-asi-l li, html.in-on.lm-on .vv-asi-l li{
+  background:var(--cuero), linear-gradient(180deg,#2A5AA6 0%,#16315C 100%); background-blend-mode:soft-light, normal;
+  border:1.5px solid #E9CF8C; border-radius:18px; color:#FFFFFF; box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 0 0 4px rgba(10,24,54,.35); }
+html.in-on .vv-asi-l li, html.in-on.lm-on .vv-asi-l li{ border-radius:999px; box-shadow:none; }
+html.in-on .vv-asi-l li.lider, html.in-on.lm-on .vv-asi-l li.lider{ background:#E9CF8C; color:#0A0C10; }
+html.in-on .vv-asi-l li.lider i, html.in-on .vv-asi-l li.lider span, html.in-on .vv-asi-l li.lider small{ color:#0A0C10; }
+html.in-on .vv-asi-l li span, html.in-on .vv-asi-l li i{ color:#E9CF8C; }
+html.in-on .vv-fcl, html.in-on.lm-on .vv-fcl{ display:block; padding:2px 14px; overflow:hidden; margin:0 16px; }
+html.in-on .vv-fcl > div, html.in-on.lm-on .vv-fcl > div{ background:none; border:0; border-bottom:1px solid rgba(233,207,140,.28); border-radius:0; color:#FFFFFF; padding:12px 0; }
+html.in-on .vv-fcl > div:last-child, html.in-on.lm-on .vv-fcl > div:last-child{ border-bottom:0; }
+html.in-on .vv-fcl > div.uno, html.in-on.lm-on .vv-fcl > div.uno{ background:rgba(233,207,140,.16); margin:0 -14px; padding:12px 14px; }
+html.in-on .vv-fcl > div.uno span, html.in-on.lm-on .vv-fcl > div.uno span{ font-size:1.08em; font-weight:800; }
+html.in-on .vv-fcl > div.uno b, html.in-on.lm-on .vv-fcl > div.uno b{ font-size:26px; }
+html.in-on .vv-fcl > div.uno i, html.in-on.lm-on .vv-fcl > div.uno i{ width:32px; height:32px; margin-right:10px; border-radius:50%; background:#E9CF8C; color:#0A0C10; display:flex; align-items:center; justify-content:center; flex:0 0 auto; box-shadow:0 0 0 3px rgba(233,207,140,.45); }
+html.in-on .vv-fcl small, html.in-on.lm-on .vv-fcl small, html.in-on .vv-fm span, html.in-on.lm-on .vv-fm span{ color:#DCE5F4; }
+html.in-on .vv-fcl i, html.in-on .vv-fcl b, html.in-on .vv-fm b, html.in-on .vv-fg b, html.in-on .vv-fbir b,
+html.in-on.lm-on .vv-fcl i, html.in-on.lm-on .vv-fcl b, html.in-on.lm-on .vv-fm b, html.in-on.lm-on .vv-fg b, html.in-on.lm-on .vv-fbir b{ color:#E9CF8C; }
+html.in-on .vv-fm.o b, html.in-on.lm-on .vv-fm.o b{ color:#DCE5F4; }
+html.in-on .vv-fm strong, html.in-on.lm-on .vv-fm strong, html.in-on .vv-fg, html.in-on.lm-on .vv-fg, html.in-on .vv-fbir, html.in-on.lm-on .vv-fbir{ color:#FFFFFF; }
+html.in-on .vv-prot .vv-r{ border-left:1.5px solid #E9CF8C; }
+html.in-on .vv-prot .vv-r small{ color:#E9CF8C; } html.in-on .vv-prot .vv-r p{ color:#DCE5F4; }
+html.in-on .vv-asi-l li:not(.lider) i, html.in-on.lm-on .vv-asi-l li:not(.lider) i, html.in-on .vv-asi-l li:not(.lider) span, html.in-on.lm-on .vv-asi-l li:not(.lider) span{ color:#E9CF8C !important; opacity:1; }
+html.in-on .vv-asi-l li:not(.lider), html.in-on.lm-on .vv-asi-l li:not(.lider){ color:#FFFFFF !important; }
