@@ -30,6 +30,7 @@
   const primeraPalabra = n => String(n || '').trim().split(/\s+/)[0] || String(n || '');
   const esEquipo = n => String(n || '').includes(' / ');
   const corto = n => esEquipo(n) ? n.split(' / ').map(primeraPalabra).filter(Boolean).join(' y ') : primeraPalabra(n);
+  const largo = n => esEquipo(n) ? corto(n) : String(n || '').trim().split(/\s+/).slice(0, 2).join(' ');   // «Pepe García» (nombre y primer apellido) para los textos de la tele y los resúmenes
   const apellido = n => {
     if(esEquipo(n)) return '';   // una pareja no tiene un solo apellido que mostrar
     const w = String(n || '').trim().split(/\s+/); return w.length >= 4 ? w[w.length - 2] : (w[1] || '');
@@ -441,7 +442,7 @@
       return;
     }
     box.innerHTML = '<div class="vv-asi-t">' + (fin ? 'Clasificación final · ' + titulo : 'Así va · ' + titulo) + '</div><ol class="vv-asi-l">'
-      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(corto(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : signo(x.neto)) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.pos >= nHoyos(x.g) ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
+      + t.map((x, i) => '<li class="' + (i === 0 ? 'lider' : '') + '"><i>' + (i + 1) + '</i><b>' + esc(largo(x.n)) + '</b><span>' + (esPtos ? x.pts + ' pts' : signo(x.neto)) + '</span><small>' + (fin ? x.bruto + (esPtos ? ' golpes' : '−' + x.hc) : (x.pos >= nHoyos(x.g) ? 'fin' : 'h' + x.ultimo)) + '</small></li>').join('')
       + '</ol>';
   }
 
@@ -473,13 +474,13 @@
             const v = +((sc[p] || {})[h]); const par = pares[h - 1] || 4;
             const clave = gi + ':' + p + ':' + h;
             if(detectar && v > 0 && previo && !previo[clave]){
-              nuevos.push({ n: corto(n), g: v, par, h });
+              nuevos.push({ n: largo(n), g: v, par, h });
               // Aviso destacado: birdie o mejor, o tercer par seguido (siguiendo el orden de salida de ESTE grupo)
-              if(v - par <= -1) apuntaDest({ q: 'curro', t: v - par <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(n) + ', en el ' + h, f: v - par <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' });
+              if(v - par <= -1) apuntaDest({ q: 'curro', t: v - par <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: largo(n) + ', en el ' + h, f: v - par <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' });
               else if(v === par){
                 const o = ordenDe(g), k = posDe(g, h);
                 const seguidos = k >= 3 && [1, 2].every(d => { const hh = o[k - 1 - d]; const x = +((sc[p] || {})[hh]); return x > 0 && x === (pares[hh - 1] || 4); });
-                if(seguidos) apuntaDest({ q: 'lola', t: 'RACHA', n: corto(n) + ', 3 pares seguidos', f: 'Así me gusta, sin sustos.' });
+                if(seguidos) apuntaDest({ q: 'lola', t: 'RACHA', n: largo(n) + ', 3 pares seguidos', f: 'Así me gusta, sin sustos.' });
               }
             }
             const d = v - par, nota = !(v > 0) ? '' : d <= -2 ? 'ag' : d === -1 ? 'bi' : d === 0 ? 'pa' : d === 1 ? 'bo' : 'db';
@@ -504,7 +505,7 @@
     // Si entras con la partida ya empezada, «Lo último» arranca con los últimos birdies/águilas (el más reciente según el orden de cada grupo)
     if(!previo){
       (m0 => m0.filter(x => x.d <= -1 && x.pos >= Math.max(...m0.map(y => y.pos)) - 3))(momentos(round)).sort((x, y) => y.pos - x.pos || x.gi - y.gi).slice(0, 2).reverse()
-        .forEach(x => apuntaDest({ q: 'curro', t: x.d <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: corto(x.n) + ', en el ' + x.h, f: x.d <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' }));
+        .forEach(x => apuntaDest({ q: 'curro', t: x.d <= -2 ? '¡ÁGUILA!' : '¡BIRDIE!', n: largo(x.n) + ', en el ' + x.h, f: x.d <= -2 ? 'Esto hay que enmarcarlo.' : 'Birdie de categoría.' }));
       pintarDest(ov);
     }
     // Recordar lo que había, para saber qué golpe es nuevo
@@ -529,12 +530,12 @@
     const pagan = t.length >= 2 ? Math.floor(t.length / 2) : 0;
     const paga = i => pagan > 0 && i >= t.length - pagan;
     h += '<h5>Clasificación · ' + (esPtos ? 'puntos' : 'neto') + '</h5><div class="vv-fcl">' + t.map((x, i) => '<div><i>' + (i + 1) + '</i><span>' + (paga(i) ? '<em class="vv-birra" aria-label="Paga cerveza">🍺</em>' : '') + esc(nombreCompleto(x.n)) + '<small>hcp ' + x.hc + ' · ' + x.bruto + ' golpes</small></span><b>' + res(x) + '</b></div>').join('') + '</div>';
-    if(pagan > 0) h += '<div class="vv-fbir">🍺 Hoy pagan las cervezas: <b>' + t.slice(t.length - pagan).map(x => esc(corto(x.n))).join(', ') + '</b></div>';
+    if(pagan > 0) h += '<div class="vv-fbir">🍺 Hoy pagan las cervezas: <b>' + t.slice(t.length - pagan).map(x => esc(largo(x.n))).join(', ') + '</b></div>';
     const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
     const peor = m.slice().sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
     const tarj = [];
-    if(mejor && mejor.d < 0) tarj.push('<div class="vv-fm"><img src="curro-risa.webp?v=1" alt=""><div><b>MEJOR HOYO</b><strong>' + (mejor.d <= -2 ? 'Águila' : 'Birdie') + ' de ' + esc(corto(mejor.n)) + ' en el ' + window.etqV(mejor.h) + '</strong><span>«Birdie de categoría.»</span></div></div>');
-    if(peor && peor.d >= 2) tarj.push('<div class="vv-fm o"><img src="lola.webp?v=1" alt=""><div><b>HOYO PARA OLVIDAR</b><strong>' + esc(corto(peor.n)) + ', ' + peor.v + ' golpes en el ' + window.etqV(peor.h) + '</strong><span>«Ese hoyo lo borramos y aquí no ha pasado nada.»</span></div></div>');
+    if(mejor && mejor.d < 0) tarj.push('<div class="vv-fm"><img src="curro-risa.webp?v=1" alt=""><div><b>MEJOR HOYO</b><strong>' + (mejor.d <= -2 ? 'Águila' : 'Birdie') + ' de ' + esc(largo(mejor.n)) + ' en el ' + window.etqV(mejor.h) + '</strong><span>«Birdie de categoría.»</span></div></div>');
+    if(peor && peor.d >= 2) tarj.push('<div class="vv-fm o"><img src="lola.webp?v=1" alt=""><div><b>HOYO PARA OLVIDAR</b><strong>' + esc(largo(peor.n)) + ', ' + peor.v + ' golpes en el ' + window.etqV(peor.h) + '</strong><span>«Ese hoyo lo borramos y aquí no ha pasado nada.»</span></div></div>');
     if(tarj.length) h += '<h5>Lo mejor y lo peor</h5>' + tarj.join('');
     h += '<h5>Cómo jugó cada grupo</h5><div class="vv-fg">' + grupos(round).map((g, gi) => {
       const o = ordenDe(g);
@@ -591,13 +592,13 @@
     else {
       const l = t[0], esPtos = l.esPtos;
       const marca = x => esPtos ? x.pts + ' puntos' : signo(x.neto) + ' neto';
-      lineas.push('Va ganando <strong>' + esc(corto(l.n)) + '</strong> con ' + marca(l) + (t[1] ? ', y <strong>' + esc(corto(t[1].n)) + '</strong> le sigue con ' + marca(t[1]) : '') + '.');
+      lineas.push('Va ganando <strong>' + esc(largo(l.n)) + '</strong> con ' + marca(l) + (t[1] ? ', y <strong>' + esc(largo(t[1].n)) + '</strong> le sigue con ' + marca(t[1]) : '') + '.');
       grupos(round).forEach((g, gi) => {
         const u = t.filter(x => x.gi === gi).reduce((a, x) => Math.max(a, x.pos), 0);
         if(u) lineas.push((g.time ? 'La salida de las ' + esc(g.time) : 'El grupo ' + (gi + 1)) + (u >= nHoyos(g) ? ' ya ha terminado.' : ' va por el hoyo ' + window.etqV(ordenDe(g)[u]) + '.'));
       });
       const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
-      if(mejor && mejor.d < 0) lineas.push('Lo mejor hasta ahora: <strong>' + nombreJugada(mejor.d) + ' de ' + esc(corto(mejor.n)) + '</strong> en el hoyo ' + window.etqV(mejor.h) + '.');
+      if(mejor && mejor.d < 0) lineas.push('Lo mejor hasta ahora: <strong>' + nombreJugada(mejor.d) + ' de ' + esc(largo(mejor.n)) + '</strong> en el hoyo ' + window.etqV(mejor.h) + '.');
     }
     const C = window.acgolfCurro, cara = C && C.cara ? C.cara('feliz', 'curro') : '';
     sitio.innerHTML = '<div class="vv-entra"><div class="vv-com">' + cara + '<div class="vv-bur"><b>Curro · así va la partida</b><p>' + lineas.join('<br>') + '</p></div></div>'
