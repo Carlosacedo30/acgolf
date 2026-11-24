@@ -116,18 +116,20 @@
     return cache[clave];
   }
   // Toca una frase; si el móvil no deja sonar (nadie ha tocado la pantalla), devuelve 'bloqueado'
-  function tocar(s){
+  function tocar(s, alEmpezar){
     const el = reproductor();
     return new Promise(ok => {
       let hecho = false;
       const fin = r => { if(hecho) return; hecho = true; clearTimeout(cortaT); el.onended = null; el.onerror = null; try { el.pause(); } catch(e){} ok(r); };
-      el.onended = () => fin('ok'); el.onerror = () => fin('error');
+      el.onplaying = null; el.onended = () => fin('ok'); el.onerror = () => fin('error');
       const empezar = () => {
         try { if(s.ini) el.currentTime = s.ini; } catch(e){}
         const pr = el.play();
         const corta = () => { if(s.dur) cortaT = setTimeout(() => fin('ok'), s.dur * 1000 + 80); };
-        if(pr && pr.then) pr.then(corta, err => fin(err && err.name === 'NotAllowedError' ? 'bloqueado' : 'error'));
-        else corta();
+        // La boca solo se mueve cuando la voz suena de verdad (evento «playing»), no cuando se pide sonar
+        el.onplaying = () => { el.onplaying = null; try { if(alEmpezar) alEmpezar(); } catch(e){} corta(); };
+        if(pr && pr.then) pr.then(() => {}, err => fin(err && err.name === 'NotAllowedError' ? 'bloqueado' : 'error'));
+        else if(el.readyState >= 3 && !el.paused){ el.onplaying = null; try { if(alEmpezar) alEmpezar(); } catch(e){} corta(); }
       };
       el.muted = false;
       if(el.src !== s.url){ el.src = s.url; el.onloadedmetadata = () => { el.onloadedmetadata = null; empezar(); }; el.load(); }
@@ -142,15 +144,22 @@
   }
 
   // ---------- La mesa de Lola y Curro ----------
+  // mesa(quien) pone el marco de quien habla y deja el vídeo preparado y quieto; moverBoca() lo arranca justo cuando suena la voz
+  // y quietaBoca() lo para en cuanto acaba cada trozo (así los silencios entre frases no mueven la boca).
   function mesa(quien){
     const box = document.querySelector('#vvOverlay .vt-mesa'); if(!box) return;
     const v = box.querySelector('video');
+    const cambia = box.dataset.habla !== (quien || '');
     box.dataset.habla = quien || '';
     if(!quien){ if(v){ v.pause(); } return; }
-    const lista = VIDEOS[quien]; const src = lista[(turno++) % lista.length];
-    if(v && !v.src.endsWith(src)){ v.src = src; }
-    if(v){ v.currentTime = 0; v.play().catch(() => {}); }
+    if(cambia || !v.src){
+      const lista = VIDEOS[quien]; const src = lista[(turno++) % lista.length];
+      if(v && !v.src.endsWith(src)){ v.src = src; }
+      if(v){ try { v.currentTime = 0; } catch(e){} }
+    }
   }
+  function moverBoca(){ const v = document.querySelector('#vvOverlay .vt-mesa video'); if(v) v.play().catch(() => {}); }
+  function quietaBoca(){ const v = document.querySelector('#vvOverlay .vt-mesa video'); if(v) v.pause(); }
   function rotulo(html){
     const r = document.querySelector('#vvOverlay .vt-rot'); if(!r) return;
     if(!html){ r.classList.remove('ver'); return; }
@@ -180,7 +189,8 @@
         let s; try { s = await cargar(k); } catch(e){ continue; }
         if(cola !== mia) return;
         mesa(p.q);
-        const r = await tocar(s);
+        const r = await tocar(s, moverBoca);
+        quietaBoca();
         if(r === 'ok') suena = true;
         if(r === 'bloqueado'){ hablando = false; mesa(null); rotulo(''); cola = []; botonOir(true, 'Escuchar a Lola y Curro'); return false; }
       }
