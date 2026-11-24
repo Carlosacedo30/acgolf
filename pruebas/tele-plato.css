@@ -1,49 +1,51 @@
 /* © 2026 Carlos Acedo Domínguez. «acgolf TV» con aspecto de plató de televisión (24-nov-2026, pruebas).
    Fondo de estudio azul oscuro con focos y suelo brillante; paneles de cristal azul con borde dorado; el líder en cuero.
    Colores del diseño nuevo: fondo #0A0C10, azul #16315C, dorado #E9CF8C, rojo #E5484D, texto blanco. Contraste mínimo 4,5:1. */
-.vt{ background:#0A0C10; border:1px solid rgba(233,207,140,.35); }
-.vt-fondo{ background:
+html.in-on .vt{ background:#0A0C10; border:1px solid rgba(233,207,140,.35); }
+html.in-on .vt-fondo{ background:
   linear-gradient(180deg, rgba(10,12,16,0) 0%, rgba(10,12,16,.55) 100%),
   radial-gradient(ellipse 60% 55% at 50% 30%, rgba(70,120,215,.42) 0%, rgba(30,60,120,.18) 55%, rgba(10,12,16,0) 80%),
   linear-gradient(180deg, #0E1B3B 0%, #0A1226 62%, #0A0C10 100%); }
 /* focos de luz y suelo brillante con la línea dorada del horizonte */
-.vt-fondo::before{ content:""; position:absolute; inset:0 0 28% 0; background:
+html.in-on .vt-fondo::before{ content:""; position:absolute; inset:0 0 28% 0; background:
   linear-gradient(105deg, transparent 8%, rgba(150,185,255,.13) 12%, transparent 24%),
   linear-gradient(75deg, transparent 76%, rgba(150,185,255,.13) 88%, transparent 92%); }
-.vt-fondo::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:30%; border-top:1px solid rgba(233,207,140,.45);
+html.in-on .vt-fondo::after{ content:""; position:absolute; left:0; right:0; bottom:0; height:30%; border-top:1px solid rgba(233,207,140,.45);
   background:radial-gradient(ellipse 60% 100% at 50% 0%, rgba(110,160,255,.30) 0%, rgba(20,34,70,.55) 55%, rgba(10,12,16,.9) 100%); }
-.vt-logo{ background:rgba(10,12,16,.72); border-left:3px solid #E9CF8C; border-radius:4px 8px 8px 4px; }
-.vt-logo b{ color:#E9CF8C; }
-.vt-live{ background:#E5484D; border-radius:999px; padding:.3em .8em; }
+html.in-on .vt-logo{ background:rgba(10,12,16,.72); border-left:3px solid #E9CF8C; border-radius:4px 8px 8px 4px; }
+html.in-on .vt-logo b{ color:#E9CF8C; }
+html.in-on .vt-live{ background:#E5484D; border-radius:999px; padding:.3em .8em; }
 /* El líder: panel de cuero azul con filo dorado */
-.vt-centro small{ color:#CFD8E8; }
-.vt-lider{ margin-top:.4em; padding:.5em .8em .55em; border:2px solid #E9CF8C; border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 0 0 4px rgba(10,24,54,.35);
+html.in-on .vt-centro small{ color:#CFD8E8; }
+html.in-on .vt-lider{ margin-top:.4em; padding:.5em .8em .55em; border:2px solid #E9CF8C; border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 0 0 4px rgba(10,24,54,.35);
   background:
    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .45  0 0 0 0 .3  0 0 0 .55 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"),
    linear-gradient(180deg, #2A5AA6 0%, #16315C 100%); background-blend-mode:soft-light, normal; }
-.vt-lider span{ color:#E9CF8C; }
-.vt-lider h3{ color:#FFFFFF; }
-.vt-lider b{ color:#E9CF8C; }
-.vt-lider em{ color:#E3EAF6; }
+html.in-on .vt-lider span{ color:#E9CF8C; }
+html.in-on .vt-lider h3{ color:#FFFFFF; }
+html.in-on .vt-lider b{ color:#E9CF8C; }
+html.in-on .vt-lider em{ color:#E3EAF6; }
 /* El rótulo de lo que dicen: cristal azul */
-.vt-rot{ background:linear-gradient(90deg, rgba(15,36,76,.96) 0%, rgba(22,49,92,.88) 100%); border-left:4px solid #E9CF8C; border-radius:0 10px 10px 0; box-shadow:0 4px 12px rgba(0,0,0,.45); }
-.vt-rot b{ color:#E9CF8C; }
+html.in-on .vt-rot{ background:linear-gradient(90deg, rgba(15,36,76,.96) 0%, rgba(22,49,92,.88) 100%); border-left:4px solid #E9CF8C; border-radius:0 10px 10px 0; box-shadow:0 4px 12px rgba(0,0,0,.45); }
+html.in-on .vt-rot b{ color:#E9CF8C; }
 /* Lola y Curro */
-.vt-mesa{ border:2px solid #E9CF8C; border-radius:12px; }
-.vt-mesa span{ background:rgba(10,24,54,.85); color:#E9CF8C; }
-.vt-mesa[data-habla="lola"], .vt-mesa[data-habla="curro"]{ border-color:#FFFFFF; box-shadow:0 0 0 2px rgba(233,207,140,.8), 0 4px 14px rgba(0,0,0,.55); }
+html.in-on .vt-mesa{ border:2px solid #E9CF8C; border-radius:12px; }
+html.in-on .vt-mesa span{ background:rgba(10,24,54,.85); color:#E9CF8C; }
+html.in-on .vt-mesa[data-habla="lola"], html.in-on .vt-mesa[data-habla="curro"]{ border-color:#FFFFFF; box-shadow:0 0 0 2px rgba(233,207,140,.8), 0 4px 14px rgba(0,0,0,.55); }
 /* Barra de abajo: cristal oscuro con filo dorado */
-.vt-bajo{ background:linear-gradient(180deg, rgba(15,36,76,.97) 0%, rgba(10,18,38,.99) 100%); border-top:2px solid #E9CF8C; }
-.vt-reloj{ background:#E9CF8C; color:#0A0C10; }
-.vt-cinta span{ background:linear-gradient(180deg, #1D3F78 0%, #16315C 100%); border:1.5px solid #E9CF8C; border-radius:999px; height:2em; }
-.vt-cinta i{ background:#E9CF8C; color:#0A0C10; border-radius:999px; min-width:1.7em; }
-.vt-cinta em{ color:#FFFFFF; }
-.vt-cinta b{ color:#E9CF8C; }
-.vt-cinta small{ color:#CFD8E8; }
-.vt-cinta span.uno{ background:linear-gradient(180deg, #2A5AA6 0%, #16315C 100%); box-shadow:0 0 0 2px rgba(233,207,140,.55); }
-.vt-cinta span.uno i{ background:#E9CF8C; color:#0A0C10; }
-.vt-cinta span.rot{ background:#E5484D; color:#FFFFFF; border-color:#E5484D; }
-.vt-oir{ background:#E5484D; color:#FFFFFF; }
-.vt-admin-btn{ background:#16315C !important; color:#E9CF8C !important; border:2px solid #E9CF8C !important; }
-.vt-grande{ background:rgba(10,24,54,.8); border:1px solid #E9CF8C; }
-.vt-centro{ width:54%; }
+html.in-on .vt-bajo{ background:linear-gradient(180deg, rgba(15,36,76,.97) 0%, rgba(10,18,38,.99) 100%); border-top:2px solid #E9CF8C; }
+html.in-on .vt-reloj{ background:#E9CF8C; color:#0A0C10; }
+html.in-on .vt-cinta span{ background:linear-gradient(180deg, #1D3F78 0%, #16315C 100%); border:1.5px solid #E9CF8C; border-radius:999px; height:2em; }
+html.in-on .vt-cinta i{ background:#E9CF8C; color:#0A0C10; border-radius:999px; min-width:1.7em; }
+html.in-on .vt-cinta em{ color:#FFFFFF; }
+html.in-on .vt-cinta b{ color:#E9CF8C; }
+html.in-on .vt-cinta small{ color:#CFD8E8; }
+html.in-on .vt-cinta span.uno{ background:linear-gradient(180deg, #2A5AA6 0%, #16315C 100%); box-shadow:0 0 0 2px rgba(233,207,140,.55); }
+html.in-on .vt-cinta span.uno i{ background:#E9CF8C; color:#0A0C10; }
+html.in-on .vt-cinta span.rot{ background:#E5484D; color:#FFFFFF; border-color:#E5484D; }
+html.in-on .vt-oir{ background:#E5484D; color:#FFFFFF; }
+html.in-on .vt-admin-btn{ background:#16315C !important; color:#E9CF8C !important; border:2px solid #E9CF8C !important; }
+html.in-on .vt-grande{ background:rgba(10,24,54,.8); border:1px solid #E9CF8C; }
+html.in-on .vt-centro{ width:54%; }
+html.in-on .vt-lider h3, html.in-on .vt-lider b{ font-size:clamp(15px, 4.4vw, 28px); line-height:1.1; white-space:nowrap; }
+html.in-on .vt-lider{ padding:.4em .7em .45em; }
