@@ -160,9 +160,9 @@
     if(!t.length){ L('l-empieza', 'Aún no hay golpes: <b>la partida está a punto de empezar</b>'); L('l-cierre', 'acgolf <b>TV</b> · seguimos en directo'); return pasos; }
     // 2. En qué momento está
     const av = avance(t), hoyo = av.pos;
-    if(hoyo <= 4) L('l-empieza', 'Hoyo ' + av.num + ' · <b>está todo por decidir</b>');
-    else if(hoyo >= NH(t) - 3) L('l-final', 'Hoyo ' + av.num + ' · <b>¡se decide en los últimos hoyos!</b>');
-    else if(hoyo >= Math.ceil(NH(t) / 2)) L('l-mitad', 'Hoyo ' + av.num + ' · <b>segunda mitad de la partida</b>');
+    if(hoyo <= 4) L('l-empieza', 'Hoyo ' + window.etqV(av.num) + ' · <b>está todo por decidir</b>');
+    else if(hoyo >= NH(t) - 3) L('l-final', 'Hoyo ' + window.etqV(av.num) + ' · <b>¡se decide en los últimos hoyos!</b>');
+    else if(hoyo >= Math.ceil(NH(t) / 2)) L('l-mitad', 'Hoyo ' + window.etqV(av.num) + ' · <b>segunda mitad de la partida</b>');
     // 3. El líder (en puntos si se juega por puntos, en neto si no)
     const l = t[0], k1 = claveNombre(l.n), esPtos = l.esPtos;
     const marca = x => esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
@@ -178,9 +178,9 @@
     }
     // 5. Birdies y hoyos para olvidar
     const bir = m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
-    if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b> en el hoyo ' + bir.h; L('l-birdie', r); C('c-birdie', r); }
+    if(bir) { const r = (bir.d <= -2 ? 'Águila' : 'Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b> en el hoyo ' + window.etqV(bir.h); L('l-birdie', r); C('c-birdie', r); }
     const malo = m.filter(x => x.d >= 2).sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
-    if(malo) { const r = 'Hoyo ' + malo.h + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); C('c-atragantado', r); }
+    if(malo) { const r = 'Hoyo ' + window.etqV(malo.h) + ' · ' + malo.v + ' golpes en un par ' + malo.par; L('l-olvidar', r); C('c-atragantado', r); }
     // 6. Predicción y broma
     C(visitas % 2 ? 'c-prediccion-greens' : 'c-prediccion-putts', 'La predicción de <b>Curro</b>');
     if(t.length >= 3) C('c-ultimo', 'Último · <b>' + esc(corto(t[t.length - 1].n)) + '</b> · el hoyo 19 lo gana cualquiera');
@@ -218,10 +218,10 @@
       avisos.push({ prio: 2, pasos: [C('c-empate', '¡Empate arriba! · <b>' + esc(corto(t[0].n)) + '</b> y <b>' + esc(corto(t[1].n)) + '</b> ' + marcaT(t[0]))] });
     }
     const bir = nuevas.filter(x => x.d < 0).sort((a, b) => a.d - b.d)[0];
-    if(bir) avisos.push({ prio: 3, pasos: [C('c-birdie', (bir.d <= -2 ? '¡Águila' : '¡Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b>! · hoyo ' + bir.h)] });
+    if(bir) avisos.push({ prio: 3, pasos: [C('c-birdie', (bir.d <= -2 ? '¡Águila' : '¡Birdie') + ' de <b>' + esc(corto(bir.n)) + '</b>! · hoyo ' + window.etqV(bir.h))] });
     const malo = nuevas.filter(x => x.d >= 3).sort((a, b) => b.d - a.d)[0];
-    if(malo && !bir) avisos.push({ prio: 5, pasos: [C('c-atragantado', 'Hoyo ' + malo.h + ' · <b>' + esc(corto(malo.n)) + '</b> ' + malo.v + ' golpes en un par ' + malo.par)] });
-    if(ahora.hoyo >= ahora.n - 3 && antes.hoyo < antes.n - 3) avisos.push({ prio: 4, pasos: [L('l-final', 'Hoyo ' + ahora.num + ' · <b>¡recta final!</b>')] });
+    if(malo && !bir) avisos.push({ prio: 5, pasos: [C('c-atragantado', 'Hoyo ' + window.etqV(malo.h) + ' · <b>' + esc(corto(malo.n)) + '</b> ' + malo.v + ' golpes en un par ' + malo.par)] });
+    if(ahora.hoyo >= ahora.n - 3 && antes.hoyo < antes.n - 3) avisos.push({ prio: 4, pasos: [L('l-final', 'Hoyo ' + window.etqV(ahora.num) + ' · <b>¡recta final!</b>')] });
     antes = ahora;
     if(avisos.length > 3) avisos = avisos.sort((a, b) => a.prio - b.prio).slice(0, 3);
     siguienteAviso();
@@ -281,7 +281,7 @@
     else {
       const l = t[0], marca = x => x.esPtos ? x.pts + ' pts' : signo(x.neto) + ' neto';
       centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small>'
-        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
+        + '<div class="vt-lider"><span>Líder</span><h3>' + esc(corto(l.n)) + '</h3><b>' + marca(l) + '</b><em>' + (l.pos >= NH(t) ? 'terminado' : 'hoyo ' + window.etqV(l.ultimo)) + '</em></div>';
     }
     let PP = null, MM = null; try { PP = EV.parejas ? EV.parejas(round) : null; MM = EV.partidos ? EV.partidos(round) : null; } catch(e){}
     if(MM) MM = MM.filter(m => m.jug); if(!MM || !MM.length) MM = null; if(!PP || !PP.length) PP = null;
@@ -289,7 +289,7 @@
       const cintaPM = caja.querySelector('.vt-cinta');
       if(PP){
         const l = PP[0];
-        centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small><div class="vt-lider"><span>Pareja líder</span><h3>' + esc(l.nombre) + '</h3><b>' + (l.esPtos ? l.total + ' pts' : signo(l.total) + ' neto') + '</b><em>' + (l.pos >= 18 || l.pos >= (l.g.nueve ? 9 : 18) ? 'terminado' : 'hoyo ' + l.ultimo) + '</em></div>';
+        centro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + ' · ' + esc(round.course_name || '') + '</small><div class="vt-lider"><span>Pareja líder</span><h3>' + esc(l.nombre) + '</h3><b>' + (l.esPtos ? l.total + ' pts' : signo(l.total) + ' neto') + '</b><em>' + (l.pos >= 18 || l.pos >= (l.g.nueve ? 9 : 18) ? 'terminado' : 'hoyo ' + window.etqV(l.ultimo)) + '</em></div>';
         const it = PP.map((x, i) => '<span class="' + (i === 0 ? 'uno' : '') + '"><i>' + (i + 1) + '</i><em>' + esc(x.nombre) + '</em><b>' + (x.esPtos ? x.total : signo(x.total)) + '</b><small>' + (x.esPtos ? 'pts' : 'neto') + ' · H' + x.ultimo + '</small></span>').join('');
         const rot = '<span class="rot">PAREJAS · MEJOR BOLA</span>';
         cintaPM.innerHTML = rot + it; cintaPM.classList.toggle('anda', PP.length > 3); if(PP.length > 3) cintaPM.innerHTML += rot + it;

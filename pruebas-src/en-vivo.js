@@ -66,7 +66,9 @@
     try { const c = (typeof COURSES !== 'undefined' ? COURSES : []).find(x => x.id === round.course_id); if(c && Array.isArray(c.hcp) && c.hcp.length >= 9) return c.hcp.map(Number); } catch(e){}
     return Array.from({ length: 18 }, (_, i) => i + 1);
   }
-  const grupos = round => (round.match_groups || []).filter(g => g && (g.players || []).filter(Boolean).length);
+  // Partida de 9 hoyos por la vuelta (campo «-9v»): los hoyos se ven como 10 al 18 (por dentro siguen 1 al 9)
+  window.etqV = h => (window.acgolfOffHoyo && h >= 1 && h <= 9) ? h + window.acgolfOffHoyo : h;
+  const grupos = round => { window.acgolfOffHoyo = /-9v$/.test(String((round && round.course_id) || '')) ? 9 : 0; return (round.match_groups || []).filter(g => g && (g.players || []).filter(Boolean).length); };
 
   // REGLA PARA SIEMPRE: el resumen se cuenta según el hoyo por el que salió CADA grupo.
   // Si salió por el 10, su primer hoyo es el 10 y el último (el 18.º que juega) es el 9.
@@ -203,13 +205,13 @@
     if(P && P.length){
       const esPtos = P[0].esPtos;
       return '<div class="vv-tab vv-parejas"><div class="vv-hoyo">PAREJAS · MEJOR BOLA<span>' + (esPtos ? 'puntos' : 'neto') + ' con hándicap</span></div><div class="vv-sale">En cada hoyo cuenta la mejor bola de los dos</div>'
-        + P.map((x, i) => '<div class="vv-par' + (i === 0 ? ' lider' : '') + '"><i>' + (i + 1) + '</i><div class="n"><b>' + esc(x.nombre) + '</b><small>' + x.por.map(j => esc(corto(j.n)) + ' ' + (esPtos ? j.pts : signo(j.neto))).join(' · ') + '</small></div><div class="p"><b>' + (esPtos ? x.total : signo(x.total)) + '</b><small>' + (esPtos ? 'puntos' : 'neto') + ' · ' + (x.pos >= nHoyos(x.g) ? 'fin' : 'hoyo ' + x.ultimo) + '</small></div></div>').join('') + '</div>';
+        + P.map((x, i) => '<div class="vv-par' + (i === 0 ? ' lider' : '') + '"><i>' + (i + 1) + '</i><div class="n"><b>' + esc(x.nombre) + '</b><small>' + x.por.map(j => esc(corto(j.n)) + ' ' + (esPtos ? j.pts : signo(j.neto))).join(' · ') + '</small></div><div class="p"><b>' + (esPtos ? x.total : signo(x.total)) + '</b><small>' + (esPtos ? 'puntos' : 'neto') + ' · ' + (x.pos >= nHoyos(x.g) ? 'fin' : 'hoyo ' + window.etqV(x.ultimo)) + '</small></div></div>').join('') + '</div>';
     }
     if(M && M.some(m => m.jug)){
       return M.filter(m => m.jug).map(m => {
         const hora = m.g.time ? 'Salida ' + esc(m.g.time) : (gs.length > 1 ? 'Partida ' + (m.gi + 1) : '');
         return '<div class="vv-tab vv-mp"><div class="vv-hoyo">MATCH PLAY<span>' + hora + '</span></div>'
-          + '<div class="vv-sale">Sale por el ' + salidaDe(m.g) + ' · ' + (m.final ? 'terminado' : 'van por el hoyo ' + m.ultimo) + '</div>'
+          + '<div class="vv-sale">Sale por el ' + window.etqV(salidaDe(m.g)) + ' · ' + (m.final ? 'terminado' : 'van por el hoyo ' + window.etqV(m.ultimo)) + '</div>'
           + '<div class="vv-mp-vs"><b class="' + (m.lider === 'A' ? 'g' : '') + '">' + esc(m.a) + '</b><em>contra</em><b class="' + (m.lider === 'B' ? 'g' : '') + '">' + esc(m.b) + '</b></div>'
           + '<div class="vv-mp-est">' + (m.lider === 'B' && !/^GANA|EMPATE/.test(m.texto) ? m.texto : m.texto) + '</div>'
           + '<div class="vv-mp-det">' + (m.lider ? (m.final ? 'Gana ' : 'Va por delante ') + esc(m.lider === 'A' ? m.a : m.b) + '. ' : '') + (m.final && m.rest > 0 ? 'Ya no se puede remontar: ' + (m.rest === 1 ? 'queda 1 hoyo' : 'quedan ' + m.rest + ' hoyos') + ' por jugar. ' : '') + 'Han ganado ' + hoyosTxt(m.ga) + ' contra ' + m.gb + ' · ' + m.ge + (m.ge === 1 ? ' empatado' : ' empatados') + (m.final ? '' : ' · quedan ' + m.rest) + '</div>'
@@ -489,11 +491,11 @@
         }).join('');
         return '<table class="vv-bl' + (oculta ? ' oculta' : '') + '" data-b="' + b + '">'
           + (bloqueActual > 0 && nHoyos(g) > 9 ? '<caption>' + (b === 0 ? 'Primeros 9 hoyos' : 'Últimos 9 hoyos') + '</caption>' : '')
-          + '<tr><th></th>' + cols.map(h => '<th class="hh' + (h === actual ? ' ahora' : '') + '"><b>' + h + '</b><small>P' + (pares[h - 1] || 4) + '</small></th>').join('') + '<th>' + (round.scoring_type === 'stableford' ? 'Pts' : 'Neto') + '</th></tr>' + filas + '</table>';
+          + '<tr><th></th>' + cols.map(h => '<th class="hh' + (h === actual ? ' ahora' : '') + '"><b>' + window.etqV(h) + '</b><small>P' + (pares[h - 1] || 4) + '</small></th>').join('') + '<th>' + (round.scoring_type === 'stableford' ? 'Pts' : 'Neto') + '</th></tr>' + filas + '</table>';
       };
       const tablas = bloqueActual > 0 && nHoyos(g) > 9 ? [hacer(0, false, true), hacer(bloqueActual, true, false)] : [hacer(bloqueActual, true, false)];
       const hora = g.time ? 'Salida ' + esc(g.time) : (gs.length > 1 ? 'Partida ' + (gi + 1) : '');
-      const salida = 'Sale por el ' + salidaDe(g) + ' · ' + (nHoyos(g) === 9 ? '9 hoyos' : '18 hoyos') + ' · termina en el ' + orden[nHoyos(g) - 1];   // siempre según el hoyo de salida de ESTE grupo
+      const salida = 'Sale por el ' + window.etqV(salidaDe(g)) + ' · ' + (nHoyos(g) === 9 ? '9 hoyos' : '18 hoyos') + ' · termina en el ' + window.etqV(orden[nHoyos(g) - 1]);   // siempre según el hoyo de salida de ESTE grupo
       return '<div class="vv-tab"' + (tablas.length > 1 ? ' data-rot="1"' : '') + '><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
         + tablas.join('') + '</div>';
     }).join('');
@@ -531,12 +533,12 @@
     const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
     const peor = m.slice().sort((a, b) => b.d - a.d || b.pos - a.pos)[0];
     const tarj = [];
-    if(mejor && mejor.d < 0) tarj.push('<div class="vv-fm"><img src="curro-risa.webp?v=1" alt=""><div><b>MEJOR HOYO</b><strong>' + (mejor.d <= -2 ? 'Águila' : 'Birdie') + ' de ' + esc(corto(mejor.n)) + ' en el ' + mejor.h + '</strong><span>«Birdie de categoría.»</span></div></div>');
-    if(peor && peor.d >= 2) tarj.push('<div class="vv-fm o"><img src="lola.webp?v=1" alt=""><div><b>HOYO PARA OLVIDAR</b><strong>' + esc(corto(peor.n)) + ', ' + peor.v + ' golpes en el ' + peor.h + '</strong><span>«Ese hoyo lo borramos y aquí no ha pasado nada.»</span></div></div>');
+    if(mejor && mejor.d < 0) tarj.push('<div class="vv-fm"><img src="curro-risa.webp?v=1" alt=""><div><b>MEJOR HOYO</b><strong>' + (mejor.d <= -2 ? 'Águila' : 'Birdie') + ' de ' + esc(corto(mejor.n)) + ' en el ' + window.etqV(mejor.h) + '</strong><span>«Birdie de categoría.»</span></div></div>');
+    if(peor && peor.d >= 2) tarj.push('<div class="vv-fm o"><img src="lola.webp?v=1" alt=""><div><b>HOYO PARA OLVIDAR</b><strong>' + esc(corto(peor.n)) + ', ' + peor.v + ' golpes en el ' + window.etqV(peor.h) + '</strong><span>«Ese hoyo lo borramos y aquí no ha pasado nada.»</span></div></div>');
     if(tarj.length) h += '<h5>Lo mejor y lo peor</h5>' + tarj.join('');
     h += '<h5>Cómo jugó cada grupo</h5><div class="vv-fg">' + grupos(round).map((g, gi) => {
       const o = ordenDe(g);
-      return '<div><b>' + (g.time ? 'Salida ' + esc(g.time) : 'Grupo ' + (gi + 1)) + '</b> · salió por el ' + salidaDe(g) + ' y terminó en el ' + o[nHoyos(g) - 1] + '.</div>';
+      return '<div><b>' + (g.time ? 'Salida ' + esc(g.time) : 'Grupo ' + (gi + 1)) + '</b> · salió por el ' + window.etqV(salidaDe(g)) + ' y terminó en el ' + window.etqV(o[nHoyos(g) - 1]) + '.</div>';
     }).join('') + '</div>';
     // Botón «Ir al hoyo 19» arriba del resumen final (lo pone hoyo19.js; si no está, no se nota)
     let h19 = ''; try { h19 = (window.acgolfHoyo19 && window.acgolfHoyo19.botonFinal) ? window.acgolfHoyo19.botonFinal(round) : ''; } catch(e){}
@@ -566,7 +568,7 @@
     // Se turnan por hoyo (impares Curro, pares Lola), igual en todos los móviles; si el jugador eligió uno solo, ese
     try { const m = C && C.modoCaddie ? C.modoCaddie() : 'turnos'; fijo = m === 'turnos' ? (x.h % 2 ? 'curro' : 'lola') : m; } catch(e){}
     try { if(C && C.frase) f = C.frase({ n: x.n, bruto: x.g - x.par, neto: x.g - x.par, h: x.h }, fijo); } catch(e){}
-    burbuja((f && f.quien) || 'curro', 'hoyo ' + x.h, f ? f.t : esc(x.n) + ' hace ' + x.g + ' en el hoyo ' + x.h + '.', f && f.animo);
+    burbuja((f && f.quien) || 'curro', 'hoyo ' + window.etqV(x.h), f ? f.t : esc(x.n) + ' hace ' + x.g + ' en el hoyo ' + window.etqV(x.h) + '.', f && f.animo);
   }
   // Ratos muertos: una curiosidad, un consejo o la app
   function rellenar(){
@@ -592,10 +594,10 @@
       lineas.push('Va ganando <strong>' + esc(corto(l.n)) + '</strong> con ' + marca(l) + (t[1] ? ', y <strong>' + esc(corto(t[1].n)) + '</strong> le sigue con ' + marca(t[1]) : '') + '.');
       grupos(round).forEach((g, gi) => {
         const u = t.filter(x => x.gi === gi).reduce((a, x) => Math.max(a, x.pos), 0);
-        if(u) lineas.push((g.time ? 'La salida de las ' + esc(g.time) : 'El grupo ' + (gi + 1)) + (u >= nHoyos(g) ? ' ya ha terminado.' : ' va por el hoyo ' + ordenDe(g)[u] + '.'));
+        if(u) lineas.push((g.time ? 'La salida de las ' + esc(g.time) : 'El grupo ' + (gi + 1)) + (u >= nHoyos(g) ? ' ya ha terminado.' : ' va por el hoyo ' + window.etqV(ordenDe(g)[u]) + '.'));
       });
       const mejor = m.slice().sort((a, b) => a.d - b.d || b.pos - a.pos)[0];
-      if(mejor && mejor.d < 0) lineas.push('Lo mejor hasta ahora: <strong>' + nombreJugada(mejor.d) + ' de ' + esc(corto(mejor.n)) + '</strong> en el hoyo ' + mejor.h + '.');
+      if(mejor && mejor.d < 0) lineas.push('Lo mejor hasta ahora: <strong>' + nombreJugada(mejor.d) + ' de ' + esc(corto(mejor.n)) + '</strong> en el hoyo ' + window.etqV(mejor.h) + '.');
     }
     const C = window.acgolfCurro, cara = C && C.cara ? C.cara('feliz', 'curro') : '';
     sitio.innerHTML = '<div class="vv-entra"><div class="vv-com">' + cara + '<div class="vv-bur"><b>Curro · así va la partida</b><p>' + lineas.join('<br>') + '</p></div></div>'
@@ -661,11 +663,11 @@
       for(let k = lo; k < Math.min(lo + 9, ord.length); k++){
         const x = ord[k], v = +d.sc[x], par = d.pares[x - 1] || 4, dd = v - par;
         const c = !(v > 0) || k + 1 > d.pos ? '' : dd <= -2 ? 'ag' : dd === -1 ? 'bi' : dd === 0 ? 'p' : dd === 1 ? 'bo' : 'mal';
-        tira.push('<div class="' + (x === d.h ? 'now' : '') + '"><em>' + x + '</em><b class="' + c + '">' + (v > 0 && k + 1 <= d.pos ? v : '·') + '</b></div>');
+        tira.push('<div class="' + (x === d.h ? 'now' : '') + '"><em>' + window.etqV(x) + '</em><b class="' + c + '">' + (v > 0 && k + 1 <= d.pos ? v : '·') + '</b></div>');
       }
       const palabra = d.d <= 2 ? nombreJugada(d.d) : '+' + d.d;
       const ape = apellido(d.n);
-      return '<div class="vv-r"><small>Hoyo ' + d.h + ' · Par ' + d.par + '</small><div class="vv-rnom">' + esc(corto(d.n)) + (ape ? ' <i>' + esc(ape) + '</i>' : '') + '</div>'
+      return '<div class="vv-r"><small>Hoyo ' + window.etqV(d.h) + ' · Par ' + d.par + '</small><div class="vv-rnom">' + esc(corto(d.n)) + (ape ? ' <i>' + esc(ape) + '</i>' : '') + '</div>'
         + '<div class="vv-rres"><b class="' + col + '">' + esc(palabra) + '</b><span><big>' + d.v + '</big>golpes</span></div><div class="vv-rtira">' + tira.join('') + '</div></div>';
     }
     if(tipo === 'apretado') return '<div class="vv-r"><small>Se decide por ' + (d.esPtos ? (d.dif === 1 ? 'un punto' : d.dif + ' puntos') : (d.dif === 1 ? 'un golpe' : d.dif + ' golpes') + ' · neto') + '</small><ol class="vv-rk">' + d.t.slice(0, 2).map(x => '<li><span>' + esc((corto(x.n) + ' ' + apellido(x.n)).trim()) + '</span><em>' + (d.esPtos ? x.bruto + ' golpes' : x.bruto + ' − ' + x.hc) + '</em><b>' + (d.esPtos ? x.pts + ' pts' : signo(x.neto)) + '</b></li>').join('') + '</ol></div>';
