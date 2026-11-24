@@ -662,7 +662,7 @@
   function paraPlato(){ clearTimeout(platoT); platoPasos = null; try { if(platoAudio){ platoAudio.pause(); platoAudio.src = ''; } } catch(e){} }
 
   function rotulo(tipo, d){
-    if(tipo === 'titulo') return '<div class="vv-r"><small>Resumen de la partida</small><h3>' + esc(d.nombre) + '</h3><p>' + esc(d.campo) + ' · ' + d.n + ' jugadores</p></div>';
+    if(tipo === 'titulo') return '<div class="vv-r"><small>Resumen de la partida</small><h3>' + esc(d.nombre) + '</h3><p>' + esc(d.campo) + ' · ' + d.n + (Number(d.n) === 1 ? ' jugador' : ' jugadores') + '</p></div>';
     if(tipo === 'salida') return '<div class="vv-r"><small>' + esc(d.titulo) + '</small><div class="vv-rchips">' + d.nombres.map(n => '<span>' + esc(corto(n)) + '</span>').join('') + '</div></div>';
     if(tipo === 'jugada'){
       const col = d.d <= -2 ? 'ag' : d.d === -1 ? 'bi' : d.d === 0 ? 'p' : d.d === 1 ? 'bo' : 'mal';
