@@ -76,14 +76,23 @@
   }
   function cerrar(){ pararGps(); if(ov) ov.hidden = true; }
 
+  // Los dos botones (mapa y caddie) van en una sola fila, justo debajo de «Hoyo completo»/«Siguiente hoyo» y encima de la tarjeta.
   function boton(){
     const m = mapaHoyo(); const k = m && m.campoActual ? m.campoActual() : null;
-    const ref = $('mhEntrada') || $('greenArriba') || $('holeViewSection'); if(!ref) return;
+    const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
     let b = $('cdEntrada');
     if(!b){ b = document.createElement('div'); b.id = 'cdEntrada'; b.className = 'cd-entrada';
       b.innerHTML = '<button type="button" class="cd-abrir">🧢 Tu caddie dice…</button>'; b.firstChild.onclick = abrir; }
-    if(b.previousElementSibling !== ref) ref.after(b);
-    b.hidden = !(k && m.piloto && m.piloto.indexOf(k.id) >= 0);
+    const visible = !!(k && m.piloto && m.piloto.indexOf(k.id) >= 0);
+    let fila = $('cdFila');
+    if(!fila){ fila = document.createElement('div'); fila.id = 'cdFila'; fila.className = 'cd-fila'; }
+    const tira = $('tbTira');
+    const sitio = tira || ref;
+    if(tira ? fila.nextElementSibling !== tira : fila.previousElementSibling !== sitio){ tira ? tira.before(fila) : sitio.after(fila); }
+    const me = $('mhEntrada');
+    if(me && me.parentNode !== fila) fila.appendChild(me);
+    if(b.parentNode !== fila) fila.appendChild(b);
+    b.hidden = !visible; fila.hidden = !visible;
   }
   setInterval(boton, 1000);
 })();
