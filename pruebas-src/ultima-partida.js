@@ -18,7 +18,7 @@
     const rec = h => n === 9 ? Math.floor(e.hc / 9) + ((e.hc % 9) >= (si[h - 1] || 9) ? 1 : 0) : V.golpesRegalo(e.hc, si[h - 1] || 18);
     const holes = orden.map(h => {
       const v = +e.sc[h] || 0, par = pares[h - 1] || 4, r = rec(h);
-      return { h, par, v, r, d: v ? v - par : null, pts: v ? Math.max(0, 2 - (v - par - r)) : null };
+      return { h: window.etqV ? window.etqV(h) : h, par, v, r, d: v ? v - par : null, pts: v ? Math.max(0, 2 - (v - par - r)) : null };   // h = el número que se ve (vuelta de 9 hoyos: 10 al 18)
     });
     const hechos = holes.filter(x => x.v > 0);
     let puesto = 1; for(let i = 0; i < idx; i++){ const o = tb[i], mejor = e.esPtos ? o.pts > e.pts : o.neto < e.neto; if(mejor) puesto++; }
