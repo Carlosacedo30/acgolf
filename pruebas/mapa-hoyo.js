@@ -104,14 +104,15 @@
   // El campo de la partida: «Hato Verde» aunque la partida lo guarde con otro código o con el nombre escrito distinto
   function campoActual(){
     const c = (typeof selectedCourse !== 'undefined') ? selectedCourse : null; if(!c) return null;
-    const hv = /hato\s*verde/i.test((c.name || '') + ' ' + (c.id || '')) || c.id === 'hato-verde';
+    const hv = /hato[\s-]*verde/i.test((c.name || '') + ' ' + (c.id || ''));   // «hato-verde», «hato-verde-9», «hato-verde-9v» o el nombre escrito
     if(!hv) return { id: c.id, par: c.par || null, tieneGreens: false };
     const base = (typeof COURSES !== 'undefined' ? COURSES.find(x => x.id === 'hato-verde') : null) || {};
-    return { id: 'hato-verde', par: c.par || base.par || null, tieneGreens: true };
+    return { id: 'hato-verde', par: base.par || c.par || null, tieneGreens: true };   // siempre los 18 hoyos del campo
   }
   async function abrir(){
     campo = campoActual(); if(!campo) return;
     hoyo = (typeof currentHole !== 'undefined' && currentHole) ? currentHole : 1;
+    if(typeof window.etqHoyo === 'function') hoyo = window.etqHoyo(hoyo);   // 9 hoyos por la vuelta: el hoyo 1 es el 10
     if(!ov) construir();
     ov.hidden = false; document.documentElement.classList.add('mh-abierto'); aviso('Cargando el mapa…');
     try { await cargarLeaflet(); } catch(e){ aviso('No se pudo cargar el mapa. Revisa la conexión.'); return; }
