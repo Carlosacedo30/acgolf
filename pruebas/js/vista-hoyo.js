@@ -230,7 +230,7 @@
     const input0 = document.querySelector('.golpes-input[data-hole="' + currentHole + '"]');
     const par = input0 ? parseInt(input0.dataset.par, 10) : null;
     const strokeIndex = input0 ? parseInt(input0.dataset.strokeIndex, 10) : null;
-    holeNumEl.textContent = currentHole;
+    holeNumEl.textContent = window.etqHoyo(currentHole);
     const parEl = document.getElementById('hvPar'); if(parEl) parEl.textContent = par != null ? par : '—';
     const hcpEl = document.getElementById('hvHcp'); if(hcpEl) hcpEl.textContent = strokeIndex != null ? strokeIndex : '—';
     const prevBtn = document.getElementById('holePrevBtn');
@@ -412,7 +412,7 @@
       const filled = inputs.filter(i => i.value !== '').length;
       const state = filled === 0 ? '' : (filled >= Math.min(nPlayers, inputs.length) ? ' done' : ' partial');
       const sal = h === hoyoSalidaActual() && h > 1;
-      html += '<button type="button" class="hole-chip' + state + (h === currentHole ? ' current' : '') + (sal ? ' salida' : '') + '" data-hole="' + h + '" aria-label="Hoyo ' + h + (sal ? ', hoyo de salida' : '') + '">' + h + '</button>';
+      html += '<button type="button" class="hole-chip' + state + (h === currentHole ? ' current' : '') + (sal ? ' salida' : '') + '" data-hole="' + h + '" aria-label="Hoyo ' + window.etqHoyo(h) + (sal ? ', hoyo de salida' : '') + '">' + window.etqHoyo(h) + '</button>';
       if(h === 9 && hoyosPartida() > 9) html += '<span class="hole-strip-sep" aria-hidden="true"></span>';
     }
     strip.innerHTML = html;
@@ -457,7 +457,7 @@
     if(!ov || !grid){ return; }
     numPadPick = o.onPick;
     document.getElementById('npTitle').textContent = o.name || 'Jugador';
-    document.getElementById('npSub').innerHTML = 'Hoyo ' + o.hole + (o.par != null ? ' · Par ' + o.par : '') + (o.tuPar != null && o.tuPar !== o.par ? ' · <b>Tu par ' + o.tuPar + '</b>' : '');
+    document.getElementById('npSub').innerHTML = 'Hoyo ' + window.etqHoyo(o.hole) + (o.par != null ? ' · Par ' + o.par : '') + (o.tuPar != null && o.tuPar !== o.par ? ' · <b>Tu par ' + o.tuPar + '</b>' : '');
     const cur = parseInt(o.value, 10);
     let html = '';
     for(let n = 1; n <= 12; n++){

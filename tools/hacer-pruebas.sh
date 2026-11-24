@@ -1221,3 +1221,23 @@ s = s.replace('</head>', '<link rel="stylesheet" href="mapa-hoyo.css?v=4">\n</he
 s = s.replace('</body>', '<script src="mapa-hoyo.js?v=5"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
+
+# --- Partida de 9 hoyos por la vuelta: los hoyos se llaman 10 al 18 (solo el número que se ve; por dentro siguen 1 al 9) ---
+python3 - <<'PYEOF'
+def cambia(p, a, b):
+    s = open(p, encoding='utf-8').read()
+    assert s.count(a) == 1, (p, a[:70], s.count(a))
+    open(p, 'w', encoding='utf-8').write(s.replace(a, b))
+cambia('pruebas/js/data.js', "  // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás",
+"""  // Número de hoyo que se ve en pantalla: en una partida de 9 hoyos por la vuelta, el hoyo 1 se muestra como 10, etc.
+  window.etqHoyo = h => (typeof selectedCourse !== 'undefined' && selectedCourse && /-9v$/.test(String(selectedCourse.id)) && h >= 1 && h <= 9) ? h + 9 : h;
+  // Hoyos de la partida en juego: 9 en La Cartuja a 9 hoyos, 18 en todo lo demás""")
+V = 'pruebas/js/vista-hoyo.js'
+cambia(V, "    holeNumEl.textContent = currentHole;", "    holeNumEl.textContent = window.etqHoyo(currentHole);")
+cambia(V, """aria-label="Hoyo ' + h + (sal ? ', hoyo de salida' : '') + '">' + h + '</button>';""", """aria-label="Hoyo ' + window.etqHoyo(h) + (sal ? ', hoyo de salida' : '') + '">' + window.etqHoyo(h) + '</button>';""")
+cambia(V, "'Hoyo ' + o.hole + (o.par != null", "'Hoyo ' + window.etqHoyo(o.hole) + (o.par != null")
+T = 'pruebas/js/tarjeta-blanca.js'
+cambia(T, """aria-label="Ir al hoyo ' + h + '">' + h + '</button>';""", """aria-label="Ir al hoyo ' + window.etqHoyo(h) + '">' + window.etqHoyo(h) + '</button>';""")
+cambia(T, "const nom = desde === 1 ? 'Ida' : 'Vta';", "const nom = window.etqHoyo(desde) === 1 ? 'Ida' : 'Vta';")
+cambia(T, "bloque(tbDe, 1, currentHole) + bloque(tbDe, 10, currentHole) :", "bloque(tbDe, 1, currentHole) + (hoyosPartida() > 9 ? bloque(tbDe, 10, currentHole) : '') :")  # 9 hoyos: una sola media tarjeta
+PYEOF
