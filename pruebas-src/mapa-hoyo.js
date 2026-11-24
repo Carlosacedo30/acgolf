@@ -213,8 +213,8 @@
     const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
     let b = $('mhEntrada');
     if(!b){ b = document.createElement('div'); b.id = 'mhEntrada'; b.className = 'mh-entrada';
-      b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir">🗺 Ver el hoyo en el mapa</button>'; b.firstChild.onclick = abrir; }
-    if(b.nextElementSibling !== ref) ref.before(b);
+      b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir">🗺 Mapa del hoyo</button>'; b.firstChild.onclick = abrir; }
+    if(!(b.parentNode && b.parentNode.id === 'cdFila') && b.nextElementSibling !== ref) ref.before(b);
     const k = campoActual();
     b.hidden = !(k && PILOTO.indexOf(k.id) >= 0);
   }
