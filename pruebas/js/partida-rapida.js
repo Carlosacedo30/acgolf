@@ -58,6 +58,7 @@
   const PR_BARRA_TXT = { blancas:'Blancas', amarillas:'Amarillas', azules:'Azules', rojas:'Rojas' };
   const prBarrasOn = () => !!window.acgolfBarras && !prParejas() && typeof BARRAS_SALIDA !== 'undefined';
   const prBarra = n => (typeof BARRAS_SALIDA !== 'undefined' && BARRAS_SALIDA.includes(prBarras[n])) ? prBarras[n] : 'amarillas';
+  function prMitadElegible(){ const c = COURSES.find(x => x.id === prCampo); return !!(c && !c.nueve && Array.isArray(c.par) && c.par.length >= 18); }
   function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? (window.acgolfMitad === 'vuelta' ? cursoNueveVuelta(c) : cursoNueve(c)) : c; }
   function prRecibe(n){
     const campo = prCurso();
@@ -120,6 +121,7 @@
         + (prDesde ? '<div class="pr-r-nota">Jugadores del partido (ya apuntados): <b>' + prEsc(prGrupos.map(g => g.map(n => String(n).split(' ')[0]).join(', ')).join(' · ')) + '</b></div>' : '')
         + fila('Puntuación', 'punt', PR_PUNT, prPunt)
         + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
+        + (Number(prHoyos) === 9 && prMitadElegible() ? fila('¿Qué vuelta?', 'mitad', [['ida','Ida (1–9)'],['vuelta','Vuelta (10–18)']], window.acgolfMitad === 'vuelta' ? 'vuelta' : 'ida') : '')
         + fila('Modalidad', 'modal', PR_MODAL, prModal)
         + (MAX_GROUPS > GRUPOS_EN_PESTANAS
             ? '<div class="pr-op-t">Grupos</div><div class="pr-npaso"><button type="button" class="pr-tecla pr-nmas" data-d="-1" aria-label="Un grupo menos"' + (prNGrupos > 1 ? '' : ' disabled') + '>−</button>'
@@ -178,7 +180,7 @@
       h += '<div class="pr-q">¿Todo bien?</div>'
         + '<div class="pr-resumen">'
         + '<div class="pr-r-campo">' + prEsc(campo ? campo.name : '') + '</div>'
-        + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · ' + prModalTxt(prModal) + (window.acgolfTorneo ? ' · ' + (window.acgolfTorneo.con ? 'con marcador' : 'sin marcador') : '') + ' · hoy</div>'
+        + '<div class="pr-r-sub">' + prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos' + (Number(prHoyos) === 9 && prMitadElegible() ? (window.acgolfMitad === 'vuelta' ? ' (vuelta 10–18)' : ' (ida 1–9)') : '') + ' · ' + prModalTxt(prModal) + (window.acgolfTorneo ? ' · ' + (window.acgolfTorneo.con ? 'con marcador' : 'sin marcador') : '') + ' · hoy</div>'
         + (llenos.length > GRUPOS_EN_PESTANAS && !prParejas() && !prTodos().some(prEsInv)
             ? llenos.map((g, i) => '<div class="pr-r-linea"><b>Grupo ' + (i + 1) + '</b> ' + g.map(n => { const w = String(n).trim().split(/\s+/); return prEsc(w.length > 2 ? w.slice(0, -1).join(' ') : w.join(' ')); }).join(', ') + '</div>').join('')
             : llenos.map((g, i) => (llenos.length > 1 ? '<div class="pr-r-grupo">Grupo ' + (i + 1) + '</div>' : '')
@@ -271,6 +273,7 @@
       const k = b.dataset.k, v = b.dataset.v;
       if(k === 'punt') prPunt = v;
       if(k === 'hoyos') prHoyos = Number(v);
+      if(k === 'mitad') window.acgolfMitad = v === 'vuelta' ? 'vuelta' : 'ida';
       if(k === 'modal') prModal = v;
       if(k === 'torneo' && window.acgolfTorneo) window.acgolfTorneo.con = v === '1';
       if(k === 'grupos') prCambiarNGrupos(Number(v));

@@ -324,12 +324,19 @@ cambia('pruebas/js/players.js', """    return Math.floor(h / 18) + ((h % 18) >= 
        """    const base = (typeof hoyosPartida === 'function') ? hoyosPartida() : 18; // 9 hoyos: los golpes se reparten en 9
     return Math.floor(h / base) + ((h % base) >= strokeIndex ? 1 : 0);""")
 # Crear partida: La Cartuja viene a 9 hoyos; con «9 hoyos» se juega la versión de una vuelta
-cambia('pruebas/js/partida-rapida.js', """  function prRecibe(n){""", """  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? (window.acgolfMitad === 'vuelta' ? cursoNueveVuelta(c) : cursoNueve(c)) : c; }
+cambia('pruebas/js/partida-rapida.js', """  function prRecibe(n){""", """  function prMitadElegible(){ const c = COURSES.find(x => x.id === prCampo); return !!(c && !c.nueve && Array.isArray(c.par) && c.par.length >= 18); }
+  function prCurso(){ const c = COURSES.find(x => x.id === prCampo); return c && Number(prHoyos) === 9 && typeof cursoNueve === 'function' ? (window.acgolfMitad === 'vuelta' ? cursoNueveVuelta(c) : cursoNueve(c)) : c; }
   function prRecibe(n){""")
 p_ = 'pruebas/js/partida-rapida.js'; t_ = open(p_, encoding='utf-8').read()
 assert t_.count("COURSES.find(c => c.id === prCampo)") == 4
 open(p_, 'w', encoding='utf-8').write(t_.replace("COURSES.find(c => c.id === prCampo)", "prCurso()"))
 cambia('pruebas/js/partida-rapida.js', """prCampo = b.dataset.campo; prPaso = 2; prPintar();""", """prCampo = b.dataset.campo; prPaso = 2; prHoyos = prCampo === 'la-cartuja' ? 9 : 18; prPintar();""")
+# Crear partida: con «9 hoyos» en un campo de 18 se elige la vuelta: Ida (1-9) o Vuelta (10-18), como en las ligas
+cambia('pruebas/js/partida-rapida.js', """        + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)""", """        + fila('Hoyos', 'hoyos', [[9,'9 hoyos'],[18,'18 hoyos']], prHoyos)
+        + (Number(prHoyos) === 9 && prMitadElegible() ? fila('¿Qué vuelta?', 'mitad', [['ida','Ida (1–9)'],['vuelta','Vuelta (10–18)']], window.acgolfMitad === 'vuelta' ? 'vuelta' : 'ida') : '')""")
+cambia('pruebas/js/partida-rapida.js', """      if(k === 'hoyos') prHoyos = Number(v);""", """      if(k === 'hoyos') prHoyos = Number(v);
+      if(k === 'mitad') window.acgolfMitad = v === 'vuelta' ? 'vuelta' : 'ida';""")
+cambia('pruebas/js/partida-rapida.js', """prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos · '""", """prPuntTxt(prPunt) + ' · ' + prHoyos + ' hoyos' + (Number(prHoyos) === 9 && prMitadElegible() ? (window.acgolfMitad === 'vuelta' ? ' (vuelta 10–18)' : ' (ida 1–9)') : '') + ' · '""")
 cambia('pruebas/js/partida-rapida.js', """      delete g.modo; delete g.parejas;""", """      delete g.modo; delete g.parejas;
       if(campo.nueve) g.nueve = true; else delete g.nueve; // partida de 9 hoyos""")
 # Partidas guardadas: se recuerda que son de 9 hoyos y terminan en el 9
