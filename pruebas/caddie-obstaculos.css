@@ -35,3 +35,7 @@ html.mn-on .screen[data-screen="3"] .hv-completo span{ font-size:14px !important
 .cd-gps:active{ transform:scale(.97); }
 .cd-gmsg{ margin:8px 4px 0; padding:8px 12px; border-radius:12px; background:#FFF3CD; border:2px solid #C9A54A; color:#111316; font:700 16px Barlow,system-ui,sans-serif; text-align:center; }
 .cd-gmsg[hidden]{ display:none; }
+
+/* El Plató: «Pausa» y «Otra vez» ya no tapan la etiqueta «EL PLATÓ» (iPhone, 24-nov) */
+html .vv-plato .vv-pctl{ top:56px !important; right:10px; left:10px; justify-content:flex-end; }
+html .vv-plato .vv-pctl button{ min-height:44px; }
