@@ -6,7 +6,7 @@
   'use strict';
   const IGN = 'https://www.ign.es/wmts/pnoa-ma?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=OI.OrthoimageCoverage&STYLE=default&TILEMATRIXSET=GoogleMapsCompatible&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image/jpeg';
   const CRED = 'Ortofoto © IGN España (PNOA) · CC BY 4.0 scne.es';
-  let ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null;
+  let mapaVacio = false, ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null;
   const $ = id => document.getElementById(id);
   const dist = (a, b) => (typeof metersBetween === 'function') ? metersBetween(a, b) : Math.hypot(a.lat - b.lat, a.lng - b.lng) * 111000;
   const cliente = () => { try { return typeof initSupabase === 'function' ? initSupabase() : null; } catch(e){ return null; } };
@@ -101,14 +101,15 @@
 
   function ir(h){ if(h < 1 || h > hayHoyos()) return; hoyo = h; colocando = false; pintar(); }
 
-  // El campo de la partida: «Hato Verde» aunque la partida lo guarde con otro código o con el nombre escrito distinto
+  // El campo de la partida, sea cual sea (norma de Carlos, 24-nov: todo vale para TODOS los campos).
+  // Los códigos de 9 hoyos (-9 ida, -9v vuelta) se reducen al campo de 18 hoyos, que es donde se guardan los greens y las salidas.
   function campoActual(){
-    const c = (typeof selectedCourse !== 'undefined') ? selectedCourse : null; if(!c) return null;
-    const hv = /hato[\s-]*verde/i.test((c.name || '') + ' ' + (c.id || ''));   // «hato-verde», «hato-verde-9», «hato-verde-9v» o el nombre escrito
-    if(!hv) return { id: c.id, par: c.par || null, tieneGreens: false };
-    const base = (typeof COURSES !== 'undefined' ? COURSES.find(x => x.id === 'hato-verde') : null) || {};
-    return { id: 'hato-verde', par: base.par || c.par || null, tieneGreens: true };   // siempre los 18 hoyos del campo
+    const c = (typeof selectedCourse !== 'undefined') ? selectedCourse : null; if(!c || !c.id) return null;
+    const id = String(c.id).replace(/-9v?$/, '');
+    const base = (typeof COURSES !== 'undefined' ? COURSES.find(x => x.id === id) : null) || c;
+    return { id, par: base.par || c.par || null, nombre: base.name || c.name || '' };
   }
+
   async function abrir(){
     campo = campoActual(); if(!campo) return;
     hoyo = (typeof currentHole !== 'undefined' && currentHole) ? currentHole : 1;
@@ -117,6 +118,8 @@
     ov.hidden = false; document.documentElement.classList.add('mh-abierto'); aviso('Cargando el mapa…');
     try { await cargarLeaflet(); } catch(e){ aviso('No se pudo cargar el mapa. Revisa la conexión.'); return; }
     await cargarPuntos();
+    if(!Object.keys(pts).length){ aviso('Este campo todavía no tiene su mapa. En cuanto se coloquen los greens, aparecerá aquí.'); mapaVacio = true; $('mhAnt').disabled = true; $('mhSig').disabled = true; $('mhH').textContent = campo.nombre || 'Campo'; $('mhP').textContent = ''; return; }
+    mapaVacio = false;
     if(!mapa){
       mapa = L.map('mhMapa', { zoomControl: false, attributionControl: true, maxZoom: 20 }).setView([37.565, -6.095], 17);
       L.tileLayer(IGN, { maxNativeZoom: 19, maxZoom: 20, attribution: CRED }).addTo(mapa);
@@ -133,8 +136,7 @@
     if(!b){ b = document.createElement('div'); b.id = 'mhEntrada'; b.className = 'mh-entrada';
       b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir">🗺 Ver el hoyo en el mapa</button>'; b.firstChild.onclick = abrir; }
     if(b.nextElementSibling !== ref) ref.before(b);
-    const k = campoActual();
-    b.hidden = !(k && k.tieneGreens);
+    b.hidden = !campoActual();
   }
   setInterval(botones, 1000);
   window.acgolfMapaHoyo = { abrir, cerrar };
