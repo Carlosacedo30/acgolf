@@ -8,7 +8,8 @@
   // PRUEBA PILOTO (Carlos, 24-nov): el mapa del hoyo solo sale en estos campos. Para abrirlo a otros, se añade su código aquí.
   const PILOTO = ['hato-verde'];
   const CRED = 'Ortofoto © IGN España (PNOA) · CC BY 4.0 scne.es';
-  let gpsPos = null, gpsId = null, ajustado = null, mapaVacio = false, ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null;
+  let gpsPos = null, gpsId = null, ajustado = null, obstAviso = '', mapaVacio = false, ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null, obst = {};
+  const TIPOS = { bunker: ['🏖', 'Bunker'], agua: ['💧', 'Agua'], arbol: ['🌳', 'Árbol'], fuera: ['⛔', 'Fuera de límites'] };
   const $ = id => document.getElementById(id);
   const dist = (a, b) => (typeof metersBetween === 'function') ? metersBetween(a, b) : Math.hypot(a.lat - b.lat, a.lng - b.lng) * 111000;
   const cliente = () => { try { return typeof initSupabase === 'function' ? initSupabase() : null; } catch(e){ return null; } };
@@ -30,22 +31,28 @@
       (g.data || []).forEach(r => { (pts[r.hole] = pts[r.hole] || {}).green = { lat: r.lat, lng: r.lng }; });
       (t.data || []).forEach(r => { (pts[r.hole] = pts[r.hole] || {}).tee = { lat: r.lat, lng: r.lng }; });
     } catch(e){ /* sin conexión */ }
+    obst = {};
+    try {
+      const o = await c.from('hole_obstacles').select('id, hole, tipo, lat, lng').eq('course_id', campo.id);
+      (o.data || []).forEach(r => { (obst[r.hole] = obst[r.hole] || []).push(r); });
+    } catch(e){ /* sin obstáculos */ }
   }
 
   function construir(){
     ov = document.createElement('div'); ov.id = 'mhOv'; ov.className = 'mh-ov'; ov.hidden = true;
     ov.innerHTML = '<div id="mhMapa" class="mh-mapa"></div>'
       + '<button type="button" class="mh-atras" id="mhAtras" aria-label="Volver">‹</button>'
-      + '<div class="mh-adms"><button type="button" class="mh-adm" id="mhSalida" hidden>Colocar la salida</button>'
+      + '<div class="mh-adms"><button type="button" class="mh-adm" id="mhObst" hidden>+ Obstáculo</button><button type="button" class="mh-adm" id="mhSalida" hidden>Colocar la salida</button>'
       + '<button type="button" class="mh-adm" id="mhGreen" hidden>Colocar el green</button></div>'
       + '<div class="mh-aviso" id="mhAviso" hidden></div>'
       + '<div class="mh-hoja"><button type="button" class="mh-flecha" id="mhAnt" aria-label="Hoyo anterior">‹</button>'
-      + '<div class="mh-tit"><h1 id="mhH">Hoyo 1</h1><p id="mhP"></p><button type="button" class="mh-gps" id="mhGps">📍 Activar mi posición</button></div>'
+      + '<div class="mh-tit"><h1 id="mhH">Hoyo 1</h1><p id="mhP"></p><p class="mh-ol" id="mhOL" hidden></p><div class="mh-tipos" id="mhTipos" hidden></div><button type="button" class="mh-gps" id="mhGps">📍 Activar mi posición</button></div>'
       + '<button type="button" class="mh-flecha" id="mhSig" aria-label="Hoyo siguiente">›</button></div>';
     document.body.appendChild(ov);
     $('mhAtras').onclick = cerrar;
     $('mhGps').onclick = activarGps;
     $('mhAnt').onclick = () => ir(hoyo - 1); $('mhSig').onclick = () => ir(hoyo + 1);
+    $('mhObst').onclick = elegirObst;
     $('mhSalida').onclick = () => { colocando = colocando === 'tee' ? false : 'tee'; aviso(colocando ? 'Toca en el mapa donde está la salida' : ''); };
     $('mhGreen').onclick = () => { colocando = colocando === 'green' ? false : 'green'; aviso(colocando ? 'Toca en el mapa donde está el centro del green' : ''); };
   }
@@ -63,11 +70,13 @@
     $('mhH').textContent = 'Hoyo ' + hoyo;
     $('mhP').textContent = 'Par ' + par(hoyo) + (g && t ? ' · ' + Math.round(dist(t, g)) + ' m' : '');
     $('mhAnt').disabled = hoyo <= 1; $('mhSig').disabled = hoyo >= hayHoyos();
-    const adm = !!(window.miPerfil && window.miPerfil.es_admin); $('mhSalida').hidden = !adm; $('mhGreen').hidden = !(window.miPerfil && window.miPerfil.es_super);
+    const adm = !!(window.miPerfil && window.miPerfil.es_admin); $('mhSalida').hidden = !adm; $('mhObst').hidden = !adm; $('mhGreen').hidden = !(window.miPerfil && window.miPerfil.es_super);
     if(!g){ aviso(colocando ? 'Toca en el mapa donde está el centro del green' : 'Este hoyo todavía no tiene el green colocado'); return; }
     if(!colocando) aviso(t || adm ? '' : 'Este hoyo todavía no tiene la salida colocada');
     const verde = L.divIcon({ className: 'mh-pin mh-green', html: '⚑', iconSize: [34, 34], iconAnchor: [17, 17] });
     L.marker([g.lat, g.lng], { icon: verde, interactive: false }).addTo(capa);
+    pintarObst(g);
+    $('mhOL').textContent = obstAviso; $('mhOL').hidden = !obstAviso;
     // Con el GPS activo y cerca del campo: tu posición, una sola línea al green y la distancia grande
     const cerca = gpsPos && dist(gpsPos, g) <= 2000;
     $('mhGps').hidden = gpsId !== null;
@@ -96,6 +105,46 @@
       e1.setLatLng(mitad(ini, Q)).setIcon(etiqueta(dist(ini, Q))); e2.setLatLng(mitad(Q, g)).setIcon(etiqueta(dist(Q, g))); };
     punto.on('drag', mover);
     mapa.fitBounds(L.latLngBounds([[ini.lat, ini.lng], [g.lat, g.lng]]).pad(0.5), { animate: false, paddingBottomRight: [0, 140] });
+  }
+
+
+  // Obstáculos (dibujo aprobado por Carlos, 24-nov): bunker, agua, árbol, fuera de límites. Distancia desde tu posición (GPS) o, si no, desde la salida.
+  function pintarObst(g){
+    const lista = obst[hoyo] || [], t = (pts[hoyo] || {}).tee;
+    const desde = (gpsPos && dist(gpsPos, g) <= 2000) ? gpsPos : t;
+    const adm = !!(window.miPerfil && window.miPerfil.es_admin);
+    const avisos = [];
+    lista.forEach(o => {
+      const tp = TIPOS[o.tipo] || TIPOS.bunker, m = desde ? Math.round(dist(desde, o)) : null;
+      if(m !== null) avisos.push({ m, txt: tp[1] + ' a ' + m + ' m' });
+      const ic = L.divIcon({ className: 'mh-ob', html: '<span><i>' + tp[0] + '</i>' + (m !== null ? tp[1] + ' ' + m + ' m' : tp[1]) + '</span>', iconSize: [0, 0] });
+      const mk = L.marker([o.lat, o.lng], { icon: ic, interactive: adm }).addTo(capa);
+      if(adm) mk.on('click', () => { if(window.confirm('¿Borrar este obstáculo (' + tp[1] + ')?')) borrarObst(o); });
+    });
+    avisos.sort((a, b) => a.m - b.m);
+    obstAviso = avisos.length ? '⚠ ' + avisos.map(a => a.txt).join(' · ') : '';
+  }
+  function elegirObst(){
+    if(typeof colocando === 'string' && colocando.indexOf('ob:') === 0){ colocando = false; aviso(''); return; }
+    const d = $('mhTipos'); if(!d.hidden){ d.hidden = true; return; }
+    d.innerHTML = Object.keys(TIPOS).map(k => '<button type="button" data-t="' + k + '">' + TIPOS[k][0] + ' ' + TIPOS[k][1] + '</button>').join('');
+    d.hidden = false;
+    d.onclick = e => { const b = e.target.closest('button'); if(!b) return; d.hidden = true; colocando = 'ob:' + b.dataset.t; aviso('Toca en el mapa donde está el obstáculo'); };
+  }
+  async function guardarObst(tipo, ll){
+    const c = cliente(); if(!c) return;
+    aviso('Guardando…');
+    const r = await c.rpc('add_obstaculo', { p_course: campo.id, p_hole: hoyo, p_tipo: tipo, p_lat: ll.lat, p_lng: ll.lng });
+    colocando = false;
+    if(r.error || !r.data){ aviso('No se pudo guardar: solo lo puede hacer un administrador'); return; }
+    (obst[hoyo] = obst[hoyo] || []).push({ id: r.data, hole: hoyo, tipo, lat: ll.lat, lng: ll.lng });
+    pintar(); aviso('Obstáculo guardado'); setTimeout(() => pintar(), 1500);
+  }
+  async function borrarObst(o){
+    const c = cliente(); if(!c) return;
+    const r = await c.rpc('del_obstaculo', { p_id: o.id });
+    if(r.error || r.data !== true){ aviso('No se pudo borrar'); return; }
+    obst[hoyo] = (obst[hoyo] || []).filter(x => x.id !== o.id); pintar();
   }
 
   async function guardarSalida(ll){
@@ -153,7 +202,7 @@
     if(!mapa){
       mapa = L.map('mhMapa', { zoomControl: false, attributionControl: true, maxZoom: 20 }).setView([37.565, -6.095], 17);
       L.tileLayer(IGN, { maxNativeZoom: 19, maxZoom: 20, attribution: CRED }).addTo(mapa);
-      mapa.on('click', e => { if(colocando === 'tee') guardarSalida(e.latlng); else if(colocando === 'green') guardarGreen(e.latlng); });
+      mapa.on('click', e => { if(colocando === 'tee') guardarSalida(e.latlng); else if(colocando === 'green') guardarGreen(e.latlng); else if(colocando && colocando.indexOf('ob:') === 0) guardarObst(colocando.slice(3), e.latlng); });
     }
     setTimeout(() => { mapa.invalidateSize(); pintar(); }, 60);
   }
