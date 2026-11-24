@@ -476,3 +476,15 @@ html.in-on .vc-btn:active{ transform:scale(.97); }
 
 /* Cartel ÚLTIMA HORA en el diseño nuevo: píldora roja, letra blanca */
 html.in-on .vt-rot .uh{ background:#E5484D; color:#fff; }
+
+/* En vivo: la tabla del hoyo SIEMPRE cabe dentro de su tarjeta (columnas fijas: nombre 22 %, total 15 %, hoyos iguales) */
+html.in-on .vv .vv-tab table{ table-layout:fixed; width:100%; }
+html.in-on .vv .vv-tab table tr:first-child > :first-child{ width:22%; }
+html.in-on .vv .vv-tab table tr:first-child > :last-child{ width:15%; }
+html.in-on .vv .vv-tab td.nom{ width:auto; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+html.in-on .vv .vv-tab td.tot{ width:auto; }
+/* acgolf TV: el rótulo «Lola y Curro» se centra a la izquierda del botón de pantalla completa */
+html .vt-mesa span{ padding-right:28px; }
+/* Los cuadrados y círculos de cada hoyo siguen siendo cuadrados y caben en su columna en cualquier móvil */
+html.in-on .vv .vv-tab td .nt{ width:min(100%, 30px) !important; height:auto !important; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; box-sizing:border-box; margin:0 auto; font-size:clamp(11px, 3.6vw, 17px); line-height:1; padding:0; }
+html.in-on .vv .vv-tab td{ padding-left:1px; padding-right:1px; }
