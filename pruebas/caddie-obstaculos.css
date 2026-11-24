@@ -57,3 +57,10 @@ html .vv-plato .vv-pctl button{ min-height:44px; }
 .cd-gps{ flex-direction:column !important; gap:8px !important; min-height:104px !important; }
 .cd-fila i svg, .cd-gps i svg{ width:26px; height:26px; display:block; }
 .cd-fila i svg, .cd-gps i svg{ width:30px !important; height:30px !important; }
+
+/* Ya jugando: los botones al final de la tarjeta; «Activar GPS» pequeño si no se aceptó al empezar */
+.cd-top{ margin-top:10px; }
+.cd-top[hidden]{ display:none !important; }
+.cd-link{ flex:1 1 100%; min-height:48px; border-radius:999px; border:2px solid #C9A54A; background:#fff; color:#17233D; font:900 16px Archivo,system-ui,sans-serif; }
+.cd-link[hidden]{ display:none !important; }
+.cd-link:active{ transform:scale(.97); }
