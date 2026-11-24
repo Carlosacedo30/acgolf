@@ -8,7 +8,7 @@
   // PRUEBA PILOTO (Carlos, 24-nov): el mapa del hoyo solo sale en estos campos. Para abrirlo a otros, se añade su código aquí.
   const PILOTO = ['hato-verde'];
   const CRED = 'Ortofoto © IGN España (PNOA) · CC BY 4.0 scne.es';
-  let mapaVacio = false, ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null;
+  let gpsPos = null, gpsId = null, ajustado = null, mapaVacio = false, ov = null, mapa = null, capa = null, hoyo = 1, campo = null, pts = {}, colocando = false, punto = null;
   const $ = id => document.getElementById(id);
   const dist = (a, b) => (typeof metersBetween === 'function') ? metersBetween(a, b) : Math.hypot(a.lat - b.lat, a.lng - b.lng) * 111000;
   const cliente = () => { try { return typeof initSupabase === 'function' ? initSupabase() : null; } catch(e){ return null; } };
@@ -40,10 +40,11 @@
       + '<button type="button" class="mh-adm" id="mhGreen" hidden>Colocar el green</button></div>'
       + '<div class="mh-aviso" id="mhAviso" hidden></div>'
       + '<div class="mh-hoja"><button type="button" class="mh-flecha" id="mhAnt" aria-label="Hoyo anterior">‹</button>'
-      + '<div class="mh-tit"><h1 id="mhH">Hoyo 1</h1><p id="mhP"></p></div>'
+      + '<div class="mh-tit"><h1 id="mhH">Hoyo 1</h1><p id="mhP"></p><button type="button" class="mh-gps" id="mhGps">📍 Activar mi posición</button></div>'
       + '<button type="button" class="mh-flecha" id="mhSig" aria-label="Hoyo siguiente">›</button></div>';
     document.body.appendChild(ov);
     $('mhAtras').onclick = cerrar;
+    $('mhGps').onclick = activarGps;
     $('mhAnt').onclick = () => ir(hoyo - 1); $('mhSig').onclick = () => ir(hoyo + 1);
     $('mhSalida').onclick = () => { colocando = colocando === 'tee' ? false : 'tee'; aviso(colocando ? 'Toca en el mapa donde está la salida' : ''); };
     $('mhGreen').onclick = () => { colocando = colocando === 'green' ? false : 'green'; aviso(colocando ? 'Toca en el mapa donde está el centro del green' : ''); };
@@ -67,6 +68,21 @@
     if(!colocando) aviso(t || adm ? '' : 'Este hoyo todavía no tiene la salida colocada');
     const verde = L.divIcon({ className: 'mh-pin mh-green', html: '⚑', iconSize: [34, 34], iconAnchor: [17, 17] });
     L.marker([g.lat, g.lng], { icon: verde, interactive: false }).addTo(capa);
+    // Con el GPS activo y cerca del campo: tu posición, una sola línea al green y la distancia grande
+    const cerca = gpsPos && dist(gpsPos, g) <= 2000;
+    $('mhGps').hidden = gpsId !== null;
+    if(gpsPos && !cerca){ aviso('Estás lejos del campo'); }
+    if(cerca){
+      const me = L.latLng(gpsPos.lat, gpsPos.lng), m = Math.round(dist(gpsPos, g));
+      if(t) L.marker([t.lat, t.lng], { icon: L.divIcon({ className: 'mh-pin mh-t', html: 'T', iconSize: [34, 34], iconAnchor: [17, 17] }), interactive: false }).addTo(capa);
+      L.polyline([me, [g.lat, g.lng]], { color: '#fff', weight: 3 }).addTo(capa);
+      L.marker(me, { icon: L.divIcon({ className: 'mh-pin mh-yo', html: '', iconSize: [22, 22], iconAnchor: [11, 11] }), interactive: false }).addTo(capa);
+      L.marker(mitad(gpsPos, g), { icon: L.divIcon({ className: 'mh-dist mh-grande', html: '<span>' + m + ' m</span>', iconSize: [0, 0] }), interactive: false }).addTo(capa);
+      $('mhP').textContent = 'Par ' + par(hoyo) + ' · ' + m + ' m al green';
+      const clave = campo.id + '|' + hoyo;
+      if(ajustado !== clave){ ajustado = clave; mapa.fitBounds(L.latLngBounds([me, [g.lat, g.lng]]).pad(0.5), { animate: false, paddingBottomRight: [0, 140] }); }
+      return;
+    }
     const ini = t || { lat: g.lat - 0.0012, lng: g.lng };   // sin salida: el punto dorado parte de abajo para medir al green
     if(t) L.marker([t.lat, t.lng], { icon: L.divIcon({ className: 'mh-pin mh-t', html: 'T', iconSize: [34, 34], iconAnchor: [17, 17] }), interactive: false }).addTo(capa);
     const medio = { lat: (ini.lat + g.lat) / 2, lng: (ini.lng + g.lng) / 2 };
@@ -101,7 +117,19 @@
     (pts[hoyo] = pts[hoyo] || {}).green = { lat: ll.lat, lng: ll.lng }; aviso('Green guardado'); setTimeout(() => aviso(''), 1800); pintar();
   }
 
-  function ir(h){ if(h < 1 || h > hayHoyos()) return; hoyo = h; colocando = false; pintar(); }
+  function activarGps(){
+    if(gpsId !== null) return;
+    if(!navigator.geolocation){ aviso('Este móvil no deja usar el GPS'); return; }
+    aviso('Buscando tu posición…');
+    gpsId = navigator.geolocation.watchPosition(
+      pos => { gpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }; if(ov && !ov.hidden){ if($('mhAviso').textContent === 'Buscando tu posición…') aviso(''); pintar(); } },
+      () => { gpsId = null; aviso('No pude ver tu posición. Revisa que el GPS esté activado y que la app tenga permiso.'); $('mhGps').hidden = false; },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    $('mhGps').hidden = true;
+  }
+  function paraGps(){ if(gpsId !== null && navigator.geolocation) navigator.geolocation.clearWatch(gpsId); gpsId = null; gpsPos = null; ajustado = null; }
+
+  function ir(h){ if(h < 1 || h > hayHoyos()) return; hoyo = h; colocando = false; ajustado = null; pintar(); }
 
   // El campo de la partida, sea cual sea (norma de Carlos, 24-nov: todo vale para TODOS los campos).
   // Los códigos de 9 hoyos (-9 ida, -9v vuelta) se reducen al campo de 18 hoyos, que es donde se guardan los greens y las salidas.
@@ -129,7 +157,7 @@
     }
     setTimeout(() => { mapa.invalidateSize(); pintar(); }, 60);
   }
-  function cerrar(){ if(ov) ov.hidden = true; document.documentElement.classList.remove('mh-abierto'); colocando = false; }
+  function cerrar(){ paraGps(); if(ov) ov.hidden = true; document.documentElement.classList.remove('mh-abierto'); colocando = false; }
 
   // Botón de entrada propio, junto a la tarjeta del hoyo (no depende de que se vea la tarjeta de la distancia al green)
   function botones(){
