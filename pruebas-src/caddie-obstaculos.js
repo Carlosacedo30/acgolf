@@ -87,30 +87,39 @@
   }
   try { if(sessionStorage.getItem('acgolfGpsObst') === '1'){ gpsOk = true; window.acgolfGpsOk = true; } } catch(e){}
 
-  // Los dos botones (mapa y caddie) van en una sola fila, justo debajo de «Hoyo completo»/«Siguiente hoyo» y encima de la tarjeta.
+  // Orden en pantalla (Carlos, 24-nov): al empezar, solo «Activar GPS» arriba. Ya jugando, los dos botones van al FINAL de la tarjeta.
+  function alPrincipio(){
+    try { const h = (typeof hoyoSalidaActual === 'function') ? hoyoSalidaActual() : 1; return !(typeof isHoleComplete === 'function' && isHoleComplete(h)); } catch(e){ return true; }
+  }
   function boton(){
     const m = mapaHoyo(); const k = m && m.campoActual ? m.campoActual() : null;
     const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
+    const visible = !!(k && m.piloto && m.piloto.indexOf(k.id) >= 0);
     let b = $('cdEntrada');
     if(!b){ b = document.createElement('div'); b.id = 'cdEntrada'; b.className = 'cd-entrada';
       b.innerHTML = '<button type="button" class="cd-abrir"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E9CF8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15c0-5 2.800-8.500 7.200-8.500 3.200 0 5.500 1.800 6.300 4.500l.5 3"/><path d="M4 15c3.500 1.300 8.500 1.400 14 .5"/><path d="M18 13.300c2.400.5 3.800 1.600 4.200 3.200-3.200.2-6.500-.1-9.700-.8"/><path d="M11.200 6.500c-1.600 2.400-2 5.300-1.200 8.400"/></svg></i>Tu caddie dice…</button>'; b.firstChild.onclick = abrir; }
-    const visible = !!(k && m.piloto && m.piloto.indexOf(k.id) >= 0);
+    let top = $('cdTop');
+    if(!top){ top = document.createElement('div'); top.id = 'cdTop'; top.className = 'cd-fila cd-top';
+      top.innerHTML = '<div class="cd-gate" id="cdGate"><button type="button" class="cd-gps"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E9CF8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.600-6.500-11a6.500 6.500 0 0 1 13 0c0 5.400-6.500 11-6.500 11z"/><circle cx="12" cy="10" r="2.300"/></svg></i>Activar GPS para ver los obstáculos</button><p class="cd-gmsg" id="cdGmsg"></p></div>';
+      top.querySelector('.cd-gps').onclick = activarAqui; }
     let fila = $('cdFila');
-    if(!fila){ fila = document.createElement('div'); fila.id = 'cdFila'; fila.className = 'cd-fila'; }
+    if(!fila){ fila = document.createElement('div'); fila.id = 'cdFila'; fila.className = 'cd-fila';
+      fila.innerHTML = '<button type="button" class="cd-link" id="cdLink">📍 Activar GPS para ver los obstáculos</button>'; fila.querySelector('.cd-link').onclick = activarAqui; }
     const tira = $('tbTira');
-    const sitio = tira || ref;
-    if(tira ? fila.nextElementSibling !== tira : fila.previousElementSibling !== sitio){ tira ? tira.before(fila) : sitio.after(fila); }
+    const sitioTop = tira || ref;
+    if(tira ? top.nextElementSibling !== tira : top.previousElementSibling !== sitioTop){ tira ? tira.before(top) : sitioTop.after(top); }
+    const fin = $('tbLeyenda') || tira || ref;
+    if(fin.nextElementSibling !== fila){ fin.after(fila); }
     const me = $('mhEntrada');
-    if(me && me.parentNode !== fila) fila.appendChild(me);
-    if(b.parentNode !== fila) fila.appendChild(b);
-    let g = $('cdGate');
-    if(!g){ g = document.createElement('div'); g.id = 'cdGate'; g.className = 'cd-gate';
-      g.innerHTML = '<button type="button" class="cd-gps"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E9CF8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.600-6.500-11a6.500 6.500 0 0 1 13 0c0 5.400-6.500 11-6.500 11z"/><circle cx="12" cy="10" r="2.300"/></svg></i>Activar GPS para ver los obstáculos</button><p class="cd-gmsg" id="cdGmsg"></p>'; g.firstChild.onclick = activarAqui; fila.appendChild(g); }
+    if(me && me.parentNode !== fila) fila.insertBefore(me, fila.firstChild);
+    if(b.parentNode !== fila) fila.insertBefore(b, $('cdLink'));
+    const inicio = alPrincipio();
     const dos = visible && gpsOk;
+    top.hidden = !(visible && !gpsOk && inicio);
     b.hidden = !dos; if(me) me.hidden = !dos;
-    g.hidden = !(visible && !gpsOk);
+    $('cdLink').hidden = !(visible && !gpsOk && !inicio);
+    fila.hidden = !visible || (!dos && inicio);
     $('cdGmsg').textContent = gpsMsg; $('cdGmsg').hidden = !gpsMsg;
-    fila.hidden = !visible;
   }
   setInterval(boton, 1000);
 })();
