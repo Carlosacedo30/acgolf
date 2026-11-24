@@ -1,0 +1,16 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. */
+.cd-entrada{ margin:10px 16px 0; }
+.cd-entrada[hidden]{ display:none !important; }
+.cd-abrir{ width:100%; min-height:56px; border-radius:999px; border:2px solid #C9A54A; background:linear-gradient(160deg,#17233D,#0F1626); color:#E9CF8C; font:900 19px Archivo, system-ui, sans-serif; }
+.cd-abrir:active{ transform:scale(.97); }
+.cd-ov{ position:fixed; inset:0; z-index:100000; background:rgba(10,12,16,.6); display:flex; align-items:center; justify-content:center; padding:calc(env(safe-area-inset-top, 0px) + 16px) 16px calc(env(safe-area-inset-bottom, 0px) + 16px); }
+.cd-ov[hidden]{ display:none !important; }
+.cd-pop{ width:100%; max-width:420px; max-height:100%; overflow:auto; background:linear-gradient(160deg,#17233D,#0F1626); border:2px solid #C9A54A; border-radius:24px; padding:20px 18px; color:#fff; }
+.cd-pop small{ display:block; color:#E9CF8C; font:800 15px Archivo, system-ui, sans-serif; letter-spacing:.03em; }
+.cd-txt{ margin:10px 0 12px; font:900 27px/1.2 Archivo, system-ui, sans-serif; color:#fff; }
+.cd-txt b{ color:#E9CF8C; }
+.cd-sub{ font:800 19px Barlow, system-ui, sans-serif; margin:6px 0; color:#fff; }
+.cd-nota{ font:600 16px Barlow, system-ui, sans-serif; margin-top:10px; color:#E9CF8C; }
+.cd-ok{ display:block; width:100%; min-height:52px; margin-top:16px; border:0; border-radius:999px; background:#C62B3A; color:#fff; font:900 19px Archivo, system-ui, sans-serif; }
+.cd-mapa{ display:block; width:100%; min-height:48px; margin-top:10px; border-radius:999px; border:2px solid #C9A54A; background:transparent; color:#E9CF8C; font:900 17px Archivo, system-ui, sans-serif; }
+.cd-ok:active, .cd-mapa:active{ transform:scale(.97); }

@@ -219,5 +219,5 @@
     b.hidden = !(k && PILOTO.indexOf(k.id) >= 0);
   }
   setInterval(botones, 1000);
-  window.acgolfMapaHoyo = { abrir, cerrar };
+  window.acgolfMapaHoyo = { abrir, cerrar, campoActual, piloto: PILOTO };
 })();
