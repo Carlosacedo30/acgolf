@@ -341,7 +341,7 @@ html.in-on.lm-on body:has(.screen[data-screen="5"].active), html.in-on.lm-on bod
 @media (max-width:370px){
   html.in-on.lm-on .h19h-titulo{ font-size:24px; letter-spacing:.04em; }
   html.in-on.lm-on .vv-tit b{ font-size:18px; }
-  html.in-on.lm-on .vv .vv-tab{ margin:10px 8px; padding:10px 4px; }
+  html.in-on.lm-on .vv .vv-tab{ margin:10px 16px; padding:10px 4px; }   /* mismo margen que la tele (16): todo alineado en cualquier móvil */
   html.in-on.lm-on .vv td.tot{ width:40px; font-size:17px; }
   html.in-on.lm-on .vv td.nom{ width:58px; font-size:14px; }
 }
