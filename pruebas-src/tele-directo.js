@@ -197,7 +197,7 @@
       mesa(null);
       await new Promise(ok => setTimeout(ok, 220));
     }
-    if(cola === mia){ rotulo(''); botonOir(true, 'Volver a escuchar a Lola y Curro'); hablando = false; setTimeout(siguienteAviso, 1500); }
+    if(cola === mia){ rotulo(''); hablando = false; setTimeout(siguienteAviso, 1500); }
     return true;
   }
 
