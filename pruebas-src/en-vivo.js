@@ -496,7 +496,7 @@
       const tablas = bloqueActual > 0 && nHoyos(g) > 9 ? [hacer(0, false, true), hacer(bloqueActual, true, false)] : [hacer(bloqueActual, true, false)];
       const hora = g.time ? 'Salida ' + esc(g.time) : (gs.length > 1 ? 'Partida ' + (gi + 1) : '');
       const salida = 'Sale por el ' + window.etqV(salidaDe(g)) + ' · ' + (nHoyos(g) === 9 ? '9 hoyos' : '18 hoyos') + ' · termina en el ' + window.etqV(orden[nHoyos(g) - 1]);   // siempre según el hoyo de salida de ESTE grupo
-      return '<div class="vv-tab"' + (tablas.length > 1 ? ' data-rot="1"' : '') + '><div class="vv-hoyo">' + (actual ? 'HOYO ' + actual + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
+      return '<div class="vv-tab"' + (tablas.length > 1 ? ' data-rot="1"' : '') + '><div class="vv-hoyo">' + (actual ? 'HOYO ' + window.etqV(actual) + ' · PAR ' + (pares[actual - 1] || '') : 'AÚN SIN GOLPES') + '<span>' + hora + '</span></div><div class="vv-sale">' + salida + '</div>'
         + tablas.join('') + '</div>';
     }).join('');
     let extraPM = ''; try { extraPM = bloqueParejas(round); } catch(e){}
