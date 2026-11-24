@@ -93,7 +93,7 @@
     const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
     let b = $('cdEntrada');
     if(!b){ b = document.createElement('div'); b.id = 'cdEntrada'; b.className = 'cd-entrada';
-      b.innerHTML = '<button type="button" class="cd-abrir"><i>🧢</i>Tu caddie dice…</button>'; b.firstChild.onclick = abrir; }
+      b.innerHTML = '<button type="button" class="cd-abrir"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E9CF8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15c0-5 2.800-8.500 7.200-8.500 3.200 0 5.500 1.800 6.300 4.500l.5 3"/><path d="M4 15c3.500 1.300 8.500 1.400 14 .5"/><path d="M18 13.300c2.400.5 3.800 1.600 4.200 3.200-3.200.2-6.500-.1-9.700-.8"/><path d="M11.200 6.500c-1.600 2.400-2 5.300-1.200 8.400"/></svg></i>Tu caddie dice…</button>'; b.firstChild.onclick = abrir; }
     const visible = !!(k && m.piloto && m.piloto.indexOf(k.id) >= 0);
     let fila = $('cdFila');
     if(!fila){ fila = document.createElement('div'); fila.id = 'cdFila'; fila.className = 'cd-fila'; }
@@ -105,7 +105,7 @@
     if(b.parentNode !== fila) fila.appendChild(b);
     let g = $('cdGate');
     if(!g){ g = document.createElement('div'); g.id = 'cdGate'; g.className = 'cd-gate';
-      g.innerHTML = '<button type="button" class="cd-gps"><i>📍</i>Activar GPS para ver los obstáculos</button><p class="cd-gmsg" id="cdGmsg"></p>'; g.firstChild.onclick = activarAqui; fila.appendChild(g); }
+      g.innerHTML = '<button type="button" class="cd-gps"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E9CF8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.600-6.500-11a6.500 6.500 0 0 1 13 0c0 5.400-6.500 11-6.500 11z"/><circle cx="12" cy="10" r="2.300"/></svg></i>Activar GPS para ver los obstáculos</button><p class="cd-gmsg" id="cdGmsg"></p>'; g.firstChild.onclick = activarAqui; fila.appendChild(g); }
     const dos = visible && gpsOk;
     b.hidden = !dos; if(me) me.hidden = !dos;
     g.hidden = !(visible && !gpsOk);
