@@ -55,3 +55,5 @@ html .vv-plato .vv-pctl button{ min-height:44px; }
 .cd-gate{ width:100%; }
 @media (max-width:380px){ .cd-fila{ gap:8px; } .cd-fila .mh-abrir, .cd-fila .cd-abrir{ font-size:15px !important; min-height:96px !important; } .cd-fila .mh-abrir i, .cd-fila .cd-abrir i{ width:40px; height:40px; font-size:20px; } }
 .cd-gps{ flex-direction:column !important; gap:8px !important; min-height:104px !important; }
+.cd-fila i svg, .cd-gps i svg{ width:26px; height:26px; display:block; }
+.cd-fila i svg, .cd-gps i svg{ width:30px !important; height:30px !important; }

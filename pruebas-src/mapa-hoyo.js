@@ -213,7 +213,7 @@
     const ref = $('greenArriba') || $('holeViewSection'); if(!ref) return;
     let b = $('mhEntrada');
     if(!b){ b = document.createElement('div'); b.id = 'mhEntrada'; b.className = 'mh-entrada';
-      b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir"><i>🗺</i>Mapa del hoyo</button>'; b.firstChild.onclick = abrir; }
+      b.innerHTML = '<button type="button" class="mh-abrir" id="mhAbrir"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#E9CF8C" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5l6-2.5 6 2.5 6-2.5v13.5l-6 2.5-6-2.5-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg></i>Mapa del hoyo</button>'; b.firstChild.onclick = abrir; }
     if(!(b.parentNode && b.parentNode.id === 'cdFila') && b.nextElementSibling !== ref) ref.before(b);
     const k = campoActual();
     b.hidden = !(k && PILOTO.indexOf(k.id) >= 0) || (!!b.parentNode && b.parentNode.id === 'cdFila' && !window.acgolfGpsOk);
