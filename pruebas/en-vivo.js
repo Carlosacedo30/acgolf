@@ -642,8 +642,7 @@
   let platoAudio = null, platoPasos = null, platoI = 0, platoT = null, platoPausa = false;
 
   function entradaResumen(round, empezarYa){
-    const sitio = document.querySelector('#vvOverlay .vv-plato-sitio'); if(!sitio || sitio.querySelector('.vv-plato') || sitio.querySelector('.em')) return;
-    try { if(window.acgolfEmision && window.acgolfEmision.montar(sitio, round, empezarYa)){ apuntar('envivo', 'R:' + round.code); return; } } catch(e){}
+    const sitio = document.querySelector('#vvOverlay .vv-plato-sitio'); if(!sitio || sitio.querySelector('.vv-plato')) return;
     sitio.innerHTML = '<div class="vv-plato"><video class="vv-pv" src="plato-risa.mp4?v=1" poster="plato.webp?v=1" muted playsinline loop preload="auto"></video>'
       + '<div class="vv-pbug">🎬 EL <b>PLATÓ</b></div><div class="vv-prot"></div>'
       + '<button type="button" class="vv-pplay">▶<span>Ver el resumen con Curro y Lola</span></button>'
@@ -660,7 +659,7 @@
     if(empezarYa) pl.click();
     apuntar('envivo', 'R:' + round.code);
   }
-  function paraPlato(){ try { if(window.acgolfEmision) window.acgolfEmision.parar(); } catch(e){} clearTimeout(platoT); platoPasos = null; try { if(platoAudio){ platoAudio.pause(); platoAudio.src = ''; } } catch(e){} }
+  function paraPlato(){ clearTimeout(platoT); platoPasos = null; try { if(platoAudio){ platoAudio.pause(); platoAudio.src = ''; } } catch(e){} }
 
   function rotulo(tipo, d){
     if(tipo === 'titulo') return '<div class="vv-r"><small>Resumen de la partida</small><h3>' + esc(d.nombre) + '</h3><p>' + esc(d.campo) + ' · ' + d.n + ' jugadores</p></div>';
