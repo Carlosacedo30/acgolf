@@ -413,5 +413,5 @@
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);
 
-  window.acgolfTele = { montar, actualizar, quitar, guion, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
+  window.acgolfTele = { montar, actualizar, quitar, guion, guionFinal, urlVoz, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
 })();
