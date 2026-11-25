@@ -489,3 +489,10 @@ html.in-on #holeMapCard{ display:none !important; }
 /* Barra de abajo: la palabra de cada pestaña (sobre todo «CUENTA» en dorado) cabe siempre dentro de su pastilla, en cualquier ancho */
 html.in-on.lm-on body .screen[data-screen="0"] > .in-nav{ grid-template-columns:repeat(4,minmax(0,1fr)); }
 html.in-on.lm-on body .in-tab, html.in-on.lm-on body .in-tab.on{ min-width:0; max-width:100%; overflow:hidden; font-size:clamp(10.5px, 3.5vw, 15px) !important; letter-spacing:.015em !important; }
+
+/* Ryder, apuntar un hoyo: el número va arriba, grande, y los botones − y + debajo, dentro de su tarjeta en cualquier ancho */
+html.in-on body #ryOverlay .ry-conts{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+html.in-on body #ryOverlay .ry-cont{ min-width:0; box-sizing:border-box; overflow:hidden; }
+html.in-on body #ryOverlay .ry-cont-f{ display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)); justify-items:center; align-items:center; row-gap:8px; column-gap:6px; }
+html.in-on body #ryOverlay .ry-cont-f b{ grid-column:1 / 3; grid-row:1; min-width:0 !important; text-align:center; }
+html.in-on body #ryOverlay .ry-cont-f .ry-mm{ width:min(100%,56px) !important; height:auto !important; aspect-ratio:1 / 1; }
