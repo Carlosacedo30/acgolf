@@ -499,3 +499,13 @@ html.in-on body #ryOverlay .ry-cont-f .ry-mm{ width:min(100%,56px) !important; h
 
 /* Ryder: la ventana blanca llega hasta el borde de abajo del iPhone (antes quedaba una franja negra de ~48 px). Se estira por debajo y se compensa con relleno. */
 html.in-on body :is(#ryOverlay, #riOverlay){ bottom:-64px !important; padding-bottom:calc(env(safe-area-inset-bottom, 0px) + 110px + 64px) !important; }
+
+/* Liga, una partida que se juega otro día: caja clara dentro de la tarjeta de la partida, campos y botones dentro de su tarjeta */
+html.in-on body #ligaOverlay .lg-otra{ margin-top:12px; padding:12px; border-radius:16px; background:#fff; color:#111316; box-sizing:border-box; }
+html.in-on body #ligaOverlay .lg-otra-t{ font:800 13px Archivo,system-ui,Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; color:#8A6A1F; margin-bottom:6px; }
+html.in-on body #ligaOverlay .lg-otra label{ color:#4A5058 !important; }
+html.in-on body #ligaOverlay .lg-otra input{ width:100%; box-sizing:border-box; min-width:0; background:#F2F4F6; color:#111316; border:1px solid #DADFE3; border-radius:12px; padding:10px; font:700 16px Barlow,system-ui,Arial,sans-serif; }
+html.in-on body #ligaOverlay .lg-otra .conv-link{ color:#8A6A1F !important; margin-top:8px; }
+html.in-on body #ligaOverlay .lg-otra-btn{ width:100%; margin-top:12px; min-height:52px; border-radius:999px !important; background:linear-gradient(180deg,#EBD08A,#C9A54A) !important; border:0 !important; color:#0F1626 !important; font:800 16px Archivo,system-ui,Arial,sans-serif !important; }
+html.in-on body #ligaOverlay .lg-otra .field-row{ display:grid !important; grid-template-columns:minmax(0,1fr) !important; gap:8px !important; }
+html.in-on body #ligaOverlay .lg-otra .field{ min-width:0; }
