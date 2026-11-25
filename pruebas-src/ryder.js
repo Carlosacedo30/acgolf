@@ -254,7 +254,7 @@
             + '<div class="ry-paso"><span>3</span><p>Cuando cierres la lista, la app te prepara los partidos por hándicap y tú los cambias.</p></div>'
             + '<button type="button" class="ry-btn" id="ryPublica">Publicar mi Ryder</button></div>'
             + '<button type="button" class="ry-btn ry-sec" id="ryLista">Ver la lista de inscripción</button>'
-            + '<button type="button" class="ry-info-btn" id="ryNueva">Crear una Ryder eligiendo yo a los jugadores, sin lista</button>'
+            + '<button type="button" class="ry-info-btn" id="ryNueva">Crear una Ryder eligiendo jugadores</button>'
           : '<button type="button" class="ry-btn" id="ryLista">Ver la lista de inscripción</button><p class="ry-p">Todavía no hay ninguna Ryder en marcha. La organiza el administrador del grupo.</p>');
       if($('ryNueva')) $('ryNueva').onclick = empezarCrear;
       if($('ryPublica')) $('ryPublica').onclick = () => { cerrar(); if(window.acgolfRyderIns && window.acgolfRyderIns.nueva) window.acgolfRyderIns.nueva(); };
