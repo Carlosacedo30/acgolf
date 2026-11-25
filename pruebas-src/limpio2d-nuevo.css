@@ -442,3 +442,7 @@ html.in-on body #tfAdmin .tf-resumen{ display:flex; align-items:center; justify-
 html.in-on body #tfAdmin .tf-resumen b{ background:#D7263D; color:#fff; border-radius:999px; padding:1px 9px; font-size:13px; }
 html.in-on body #tfAdmin .tf-solo{ margin:0 0 8px; font:600 13px Barlow, system-ui, sans-serif; color:#4A5058; text-align:center; }
 html.in-on body #tfAdmin .tf-lista[hidden]{ display:none; }
+
+/* Ventanas a pantalla completa: el margen de la hora/batería se cuenta UNA sola vez (antes se sumaba 3 veces y dejaba un hueco en blanco arriba) y la tarjeta llega hasta abajo del todo (Carlos, 25-nov-2026) */
+html.in-on body :is(#convOverlay, #prOverlay) .nv-volver{ padding-top:20px !important; min-height:56px !important; }
+html.in-on body :is(#convOverlay, #prOverlay, #leaguePlayersOverlay, #normasOverlay) > .modal-card{ height:auto !important; align-self:stretch !important; padding-top:0 !important; }
