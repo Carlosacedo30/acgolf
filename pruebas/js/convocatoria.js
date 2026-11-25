@@ -42,12 +42,13 @@
       id: row.id, code: row.code, updatedAt: row.updated_at,
       times: slots.map(g => g.time),
       groups: slots.map(g => Array.isArray(g.players) ? g.players.slice() : []),
+      fechas: slots.map(g => g.fecha || ''), // si una partida se juega otro día, su fecha (si no, la del partido)
       hoyos: slots.map(g => Number(g.hoyo) || null), // salida al tiro: hoyo por el que sale cada grupo
       date: meta.date || '', courseId: meta.courseId || 'hato-verde', roundCode: meta.roundCode || null, organiza: meta.organiza || null, campo: (() => { const k = meta.campo; if(k && k.id && Array.isArray(k.par) && !COURSES.some(x => x.id === k.id)) COURSES.push(Object.assign({}, k, { externo: true })); return k || null; })(),
     };
   }
   function convToGroups(c){
-    return c.times.map((t, i) => Object.assign({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }, (c.hoyos && c.hoyos[i]) ? { hoyo: c.hoyos[i] } : {}))
+    return c.times.map((t, i) => Object.assign({ time: t, players: c.groups[i] || [], handicaps: [], scores: {} }, (c.hoyos && c.hoyos[i]) ? { hoyo: c.hoyos[i] } : {}, (c.fechas && c.fechas[i]) ? { fecha: c.fechas[i] } : {}))
       .concat([{ players: [], handicaps: [], scores: {}, meta: { date: c.date, courseId: c.courseId, roundCode: c.roundCode, organiza: c.organiza || null, campo: c.campo || null } }]);
   }
 
@@ -135,7 +136,12 @@
     const l = typeof window.acgolfLigaHoyos === 'function' ? window.acgolfLigaHoyos(c) : null;
     return l ? (l.mitad === 'vuelta' && l.hoyos === 9 ? 10 : 1) : null;
   }
-  function convEtq(c, i){ const h = convHoyoSalida(c, i); return h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i]); }
+  // Una partida que se juega otro día lleva su día delante: «Vie 27 · 9:00»
+  function convDiaOtra(c, i){
+    const f = c.fechas && c.fechas[i]; if(!f || f === c.date) return '';
+    const d = new Date(f + 'T12:00:00'); return ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][d.getDay()] + ' ' + d.getDate() + ' · ';
+  }
+  function convEtq(c, i){ const h = convHoyoSalida(c, i), o = convDiaOtra(c, i); return o + (h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i])); }
 
   async function convSignUp(name, slot){ // slot = -1 -> no juega
     convSetMe(name);
@@ -389,7 +395,7 @@
     }
   }
   async function convOpenRound(){
-    if(window.acgolfTarjeta4h && window.acgolfTarjeta4h.cerrada(conv.date, conv.times)){ window.acgolfTarjeta4h.aviso(conv.date, conv.times); return; }
+    if(window.acgolfTarjeta4h && window.acgolfTarjeta4h.cerradaConv(conv)){ window.acgolfTarjeta4h.avisoConv(conv); return; }
     const res = await joinSharedRound(conv.roundCode);
     if(res.ok){ closeConv(); goTo(3); } else alert(res.msg);
   }

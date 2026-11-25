@@ -38,7 +38,18 @@
     ov.addEventListener('click', e => { if(e.target === ov || e.target.closest('.t4-ok')) ov.remove(); });
     document.body.appendChild(ov);
   }
-  window.acgolfTarjeta4h = { apertura, cerrada, aviso, texto: (f, h) => textoApertura(apertura(f, h)) };
+  // Partido con una partida en otro día (c.fechas[i]): cada jugador se rige por la salida de SU partida;
+  // el resto del partido, por las partidas que juegan el día del partido.
+  function paramsConv(c){
+    let me = ''; try { me = (typeof convMe === 'function') ? convMe() : ''; } catch(e){}
+    const f = (c && c.fechas) || [];
+    const k = me && c.groups ? c.groups.findIndex(g => (g || []).includes(me)) : -1;
+    if(k >= 0 && f[k]) return [f[k], [c.times[k]]];
+    const horas = (c.times || []).filter((t, i) => !f[i]);
+    return [c.date, horas.length ? horas : c.times];
+  }
+  window.acgolfTarjeta4h = { apertura, cerrada, aviso, texto: (f, h) => textoApertura(apertura(f, h)),
+    cerradaConv: c => cerrada.apply(null, paramsConv(c)), avisoConv: c => aviso.apply(null, paramsConv(c)), textoConv: c => textoApertura(apertura.apply(null, paramsConv(c))) };
   // La etiqueta de «Partida creada» se refresca sola cuando llega la hora
   setInterval(() => { try { if(document.querySelector('.ip-cerrada') && typeof renderConvHome === 'function') renderConvHome(); } catch(e){} }, 60000);
 })();
