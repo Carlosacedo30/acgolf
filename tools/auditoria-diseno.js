@@ -36,7 +36,7 @@ function revisar(estado) {
     // 4) Letra que no se lee
     if (tieneTexto && !e.closest('.derbi-cab, #derbiOverlay .derbi-banda')) { const col = rgb(cs.color), bg = fondo(e); if (col && bg) { const a = col[3]; const fg = a < 1 ? col.slice(0, 3).map((v, i) => v * a + bg[i] * (1 - a)) : col; const l1 = lum(fg), l2 = lum(bg), ratio = (Math.max(l1, l2) + .05) / (Math.min(l1, l2) + .05); if (ratio < 3) out.push(['no-se-lee', nombre(e), 'contraste ' + ratio.toFixed(1) + ' «' + e.textContent.trim().slice(0, 22) + '»']); } }
     // 5) Botón tapado
-    if ((/^(BUTTON|A)$/.test(e.tagName) || e.getAttribute('role') === 'button') && !/^(prAbrirBtn|adminModeBtn)$/.test(e.id)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2; if (cx >= 0 && cx <= vw && cy >= 0 && cy <= vh) { const t = document.elementFromPoint(cx, cy); if (t && !t.closest('#inNav, .in-nav, .vv-mas, #diagPant') && !(t === e || e.contains(t) || t.contains(e))) out.push(['boton-tapado', nombre(e), 'lo tapa ' + nombre(t)]); } if (r.top >= 0 && r.top < 47 && getComputedStyle(e).position !== 'static' && r.bottom > 5) out.push(['boton-bajo-la-hora', nombre(e), 'arriba=' + Math.round(r.top)]); }
+    if ((/^(BUTTON|A)$/.test(e.tagName) || e.getAttribute('role') === 'button') && !/^(prAbrirBtn|adminModeBtn)$/.test(e.id)) { const cx = r.left + r.width / 2, cy = r.top + r.height / 2; if (cx >= 0 && cx <= vw && cy >= 0 && cy <= vh) { const t = document.elementFromPoint(cx, cy); if (t && !t.closest('#inNav, .in-nav, .vv-mas, #diagPant, .lgp-pie, .pr-pie') && !(t === e || e.contains(t) || t.contains(e))) out.push(['boton-tapado', nombre(e), 'lo tapa ' + nombre(t)]); } if (r.top >= 0 && r.top < 47 && getComputedStyle(e).position !== 'static' && r.bottom > 5 && r.top + (parseFloat(getComputedStyle(e).paddingTop) || 0) < 47) out.push(['boton-bajo-la-hora', nombre(e), 'arriba=' + Math.round(r.top)]); }
     // 6) Cuadrados que no son cuadrados
     if (typeof e.className === 'string' && /(^|\s)(nt|tk|tecla|hole-cell|tb-eagle|tb-birdie|tb-par|tb-bogey|tb-doble)(\s|$)/.test(e.className) && Math.abs(r.width - r.height) > 2.5 && r.width < 80) out.push(['no-es-cuadrado', nombre(e), Math.round(r.width) + '×' + Math.round(r.height)]);
   }
@@ -53,7 +53,7 @@ function revisar(estado) {
     if (process.argv[3] === 'gate') await p.evaluate(() => { window.__soloGate = true; });
     await p.evaluate(() => { document.documentElement.classList.add('in-on', 'lm-on', 'mn-on', 'tb-on'); if (!window.__soloGate) { const g = document.getElementById('cuentaGate'); if (g) g.remove(); } });
     const ovs = await p.evaluate(() => [...document.querySelectorAll('[id$="Overlay"]')].map(e => e.id));
-    const lista = process.argv[3] === 'gate' ? [['entrada(cuentaGate)', 'gate:x']] : [...ESTADOS.filter(e => !e[1].startsWith('ov:')), ...ovs.map(i => ['ov:' + i, 'ov:' + i]), ['en-vivo', 'vivo:x']];
+    const lista = process.argv[3] === 'gate' ? [['entrada(cuentaGate)', 'gate:x']] : [...ESTADOS.filter(e => !e[1].startsWith('ov:')), ...ovs.map(i => ['ov:' + i, 'ov:' + i]), ['en-vivo', 'vivo:x'], ['liga-nueva-paso1', 'liga:1'], ['liga-nueva-paso2', 'liga:2'], ['liga-nueva-paso3', 'liga:3'], ['liga-nueva-paso4', 'liga:4'], ['mis-ligas', 'liga:lista']];
     for (const [nombre, clave] of lista) {
       const hay = await p.evaluate(([clave]) => {
         document.querySelectorAll('[id$="Overlay"]').forEach(o => o.hidden = true);
@@ -64,11 +64,13 @@ function revisar(estado) {
         if (tipo === 'pant') { const s = document.querySelector('.screen[data-screen="0"]'); s.classList.add('active'); ['jgPant','lgPant','cnPant'].forEach(i => { const x = document.getElementById(i); if (x) x.hidden = i !== v; }); const e = document.getElementById(v); if (!e) return false; return true; }
         if (tipo === 'foco') { const s = document.querySelector('.screen[data-screen="0"]'); s.classList.add('active'); s.dataset.foco = v; const id = { premios: 'premiosHome', medallas: 'medallasHome', recientes: 'homeRecientes' }[v]; const el = document.getElementById(id); if (el) { el.style.display = ''; el.classList.add('home-foco-on'); } return true; }
         if (tipo === 'vivo') { return 'vivo'; }
+        if (tipo === 'liga') { return 'liga'; }
         if (tipo === 'gate') { return true; }
         if (tipo === 'ov') { const o = document.getElementById(v); if (!o) return false; o.hidden = false; return true; }
         return false;
       }, [clave]);
-      if (hay === 'vivo') { await p.evaluate(() => { const round = { code: 'X', round_name: 'Liga mar 24 nov', course_id: 'hato-verde', course_name: 'Club Hato Verde', scoring_type: 'strokeplay', match_groups: [{ players: ['Carlos Acedo Dominguez', 'Pedro Ruiz Gómez'], handicaps: [11, 18], scores: { 0: { 1: 3, 2: 5, 3: 5 }, 1: { 1: 4, 2: 6 } }, hoyoSalida: 1 }] }; window.acgolfEnVivo.pantalla('X', round); }); await p.waitForTimeout(1500); }
+      if (hay === 'liga') { const paso = clave.split(':')[1]; await p.evaluate(async ([paso]) => { const ov = ligaVentana(); ov.hidden = false; if (paso === 'lista') { try { ligaForm = null; if (typeof ligaPintarLista === 'function') ligaPintarLista(); } catch (e) {} return; } ligaForm = null; ligaPintarForm(); const n = Number(paso); for (let i = 1; i < n; i++) { const nom = document.getElementById('lgNombre'); if (nom) { nom.value = 'Liga de otoño'; ligaForm.nombre = nom.value; } ligaForm.jugadores = ligaForm.jugadores && ligaForm.jugadores.length ? ligaForm.jugadores : ['a', 'b']; const sig = document.getElementById('lgpSig'); if (sig) sig.click(); await new Promise(r => setTimeout(r, 200)); } }, [paso]); await p.waitForTimeout(400); }
+      else if (hay === 'vivo') { await p.evaluate(() => { const round = { code: 'X', round_name: 'Liga mar 24 nov', course_id: 'hato-verde', course_name: 'Club Hato Verde', scoring_type: 'strokeplay', match_groups: [{ players: ['Carlos Acedo Dominguez', 'Pedro Ruiz Gómez'], handicaps: [11, 18], scores: { 0: { 1: 3, 2: 5, 3: 5 }, 1: { 1: 4, 2: 6 } }, hoyoSalida: 1 }] }; window.acgolfEnVivo.pantalla('X', round); }); await p.waitForTimeout(1500); }
       else if (!hay) continue; await p.waitForTimeout(250);
       const res = await p.evaluate(revisar, nombre);
       for (const [tipo, el, det] of res) { const k = tipo + '|' + nombre + '|' + el; (resumen[k] = resumen[k] || { tipo, estado: nombre, el, det, tamanos: [] }).tamanos.push(w); }
