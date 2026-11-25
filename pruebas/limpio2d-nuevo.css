@@ -482,3 +482,6 @@ html.in-on body #ligaOverlay .lg-cal-f b{ min-width:0; overflow-wrap:anywhere; }
 html.in-on body #ligaOverlay .lg-cal-f span{ width:44px !important; height:44px !important; border-radius:50% !important; display:flex !important; align-items:center; justify-content:center; font:800 15px Archivo,system-ui,Arial,sans-serif; }
 html.in-on body #ligaOverlay .conv-eyebrow .lg-cuenta{ display:block !important; float:none !important; margin:6px 0 0 !important; text-align:left !important; font:600 15px Barlow,system-ui,Arial,sans-serif !important; letter-spacing:0 !important; text-transform:none !important; color:#4A5058 !important; }
 html.in-on body #ligaOverlay .field-row{ align-items:end !important; }
+
+/* Marcador: se quita la tarjeta «Distancia al green» (Carlos, 25-nov). El GPS se activa al empezar; la distancia va en «Mapa del hoyo» y «Tu caddie». */
+html.in-on #holeMapCard{ display:none !important; }
