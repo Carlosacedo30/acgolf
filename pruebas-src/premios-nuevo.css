@@ -3,15 +3,15 @@
    Las insignias de medalla conservan sus colores (bronce, plata, oro, diamante) porque identifican la medalla. */
 
 /* ===================== Pantalla «Ganadores» y «Medallas» abiertas desde el Inicio, Jugar o Liga ===================== */
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]){ background:#0A0C10 !important; }
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) .screen-content{
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]){ background:#0A0C10 !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) .screen-content{
   background:#0A0C10 !important; color:#F4F1E8; padding:max(6px, env(safe-area-inset-top)) 16px 110px !important; overflow-x:hidden !important; box-sizing:border-box; }
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVolver{
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) #homeVolver{
   position:sticky; top:0; z-index:5; display:flex !important; align-items:center; gap:6px; width:100% !important; box-sizing:border-box; min-height:52px !important; height:auto !important;
   margin:0 0 6px !important; padding:0 6px !important; border:0 !important; border-radius:0 !important; background:#0A0C10 !important; box-shadow:none !important;
   color:#E9CF8C !important; font:800 18px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.02em !important; text-transform:none !important; text-align:left !important; }
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVolver:active{ transform:scale(.97); }
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVacio{
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) #homeVolver:active{ transform:scale(.97); }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) #homeVacio{
   margin:8px 0 0 !important; padding:18px !important; border-radius:22px !important; background:linear-gradient(160deg,#17233D,#0F1626) !important;
   border:1px solid rgba(217,190,122,.45) !important; color:#B5BFD0 !important; font:600 17px/1.4 Barlow,system-ui,Arial,sans-serif !important; box-shadow:none !important; }
 

@@ -14,12 +14,12 @@ html.in-on{ --lb-tx:#111316; --lb-suave:#4A5058; --lb-linea:#DADFE3; --lb-oro-os
 /* =====================================================================================
    1) GANADORES DE LA SEMANA y MEDALLAS (abiertos desde Inicio / Liga: pantalla 0 con data-foco)
    ===================================================================================== */
-html.in-on body:has(.screen[data-screen="0"].active:is([data-foco="premios"],[data-foco="medallas"])),
-html.in-on body:has(.screen[data-screen="0"].active:is([data-foco="premios"],[data-foco="medallas"])) .frame,
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]),
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) .screen-content{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVolver{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; }
-html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"]) #homeVacio{ border:1.5px solid var(--lb-borde) !important; color:var(--lb-suavec) !important; }
+html.in-on body:has(.screen[data-screen="0"].active:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"])),
+html.in-on body:has(.screen[data-screen="0"].active:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"])) .frame,
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]),
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) .screen-content{ background:#FFFFFF !important; color:var(--lb-tx) !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) #homeVolver{ background:#FFFFFF !important; color:var(--lb-oro-osc) !important; }
+html.in-on body .screen[data-screen="0"]:is([data-foco="premios"],[data-foco="medallas"],[data-foco="recientes"]) #homeVacio{ border:1.5px solid var(--lb-borde) !important; color:var(--lb-suavec) !important; }
 
 /* Cabecera sobre blanco */
 html.in-on body #premiosHome .nv-tit{ color:var(--lb-tx) !important; text-transform:none !important; letter-spacing:.01em !important; }
