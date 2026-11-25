@@ -485,3 +485,7 @@ html.in-on body #ligaOverlay .field-row{ align-items:end !important; }
 
 /* Marcador: se quita la tarjeta «Distancia al green» (Carlos, 25-nov). El GPS se activa al empezar; la distancia va en «Mapa del hoyo» y «Tu caddie». */
 html.in-on #holeMapCard{ display:none !important; }
+
+/* Barra de abajo: la palabra de cada pestaña (sobre todo «CUENTA» en dorado) cabe siempre dentro de su pastilla, en cualquier ancho */
+html.in-on.lm-on body .screen[data-screen="0"] > .in-nav{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+html.in-on.lm-on body .in-tab, html.in-on.lm-on body .in-tab.on{ min-width:0; max-width:100%; overflow:hidden; font-size:clamp(10.5px, 3.5vw, 15px) !important; letter-spacing:.015em !important; }
