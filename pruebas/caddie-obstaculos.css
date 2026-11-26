@@ -78,3 +78,4 @@ html .vt-sitio .vt:not(.vt-full){ position:relative; width:100%; aspect-ratio:16
 @media (min-width:600px){ html .vt-sitio .vt:not(.vt-full){ min-height:0; } }
 html .vv-tableros{ position:relative; z-index:0; clear:both; }
 
+.cd-green{ background:#1B3F85; border:1.5px solid #E9CF8C; border-radius:12px; padding:10px 12px; margin-top:10px; font:700 20px Barlow, system-ui, sans-serif; color:#fff; }
