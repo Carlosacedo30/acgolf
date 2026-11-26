@@ -1217,8 +1217,8 @@ python3 - <<'PYEOF'
 p = 'pruebas/index.html'
 s = open(p, encoding='utf-8').read()
 assert 'mapa-hoyo' not in s
-s = s.replace('</head>', '<link rel="stylesheet" href="mapa-hoyo.css?v=8">\n<link rel="stylesheet" href="caddie-obstaculos.css?v=21">\n</head>', 1)
-s = s.replace('</body>', '<script src="mapa-hoyo.js?v=17"></script>\n<script src="caddie-obstaculos.js?v=9"></script>\n</body>', 1)
+s = s.replace('</head>', '<link rel="stylesheet" href="mapa-hoyo.css?v=8">\n<link rel="stylesheet" href="caddie-obstaculos.css?v=21">\n<link rel="stylesheet" href="liga-anadir.css?v=1">\n</head>', 1)
+s = s.replace('</body>', '<script src="mapa-hoyo.js?v=17"></script>\n<script src="caddie-obstaculos.js?v=9"></script>\n<script src="liga-anadir.js?v=1"></script>\n</body>', 1)
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
 

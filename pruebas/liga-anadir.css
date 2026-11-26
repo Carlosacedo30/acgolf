@@ -1,0 +1,11 @@
+/* © 2026 Carlos Acedo Domínguez. Todos los derechos reservados. */
+.la-btn{ display:block; width:100%; min-height:52px; margin:14px 0 4px; border-radius:999px; border:2px solid #C9A54A; background:transparent; color:#8A6A12; font:900 17px Archivo, system-ui, sans-serif; }
+.la-btn:active{ transform:scale(.97); }
+.la-t{ margin:10px 0 12px; font:900 22px/1.2 Archivo, system-ui, sans-serif; color:#fff; }
+.la-lista{ display:flex; flex-direction:column; gap:8px; max-height:44vh; overflow:auto; }
+.la-j{ display:flex; justify-content:space-between; align-items:center; gap:10px; width:100%; min-height:52px; padding:8px 14px; border-radius:14px; border:1.5px solid #C9A54A; background:#1B3F85; color:#fff; font:700 17px Barlow, system-ui, sans-serif; text-align:left; }
+.la-j b{ font:900 17px Archivo, system-ui, sans-serif; min-width:0; overflow-wrap:anywhere; }
+.la-j span{ color:#E9CF8C; white-space:nowrap; font-size:15px; }
+.la-j:active{ transform:scale(.97); }
+.la-nota{ margin:12px 0 0; color:#E9CF8C; font:600 16px Barlow, system-ui, sans-serif; }
+.lg-nuevo{ color:#8A6A12; font-weight:800; margin-left:6px; font-size:.85em; }
