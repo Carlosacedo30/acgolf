@@ -40,7 +40,7 @@
       return { cab: cab + ' · hoyo ' + hoyo, txt: lista.length ? 'No tienes obstáculos por delante. Al green: <b>' + Math.round(dG) + ' m</b>' : 'Este hoyo no tiene obstáculos marcados. Al green: <b>' + Math.round(dG) + ' m</b>', sub: [], notas };
     }
     const p = delante[0], tp = TIPOS[p.o.tipo] || TIPOS.bunker;
-    return { cab: cab + ' · hoyo ' + hoyo, txt: cab + ':<br>' + tp[2] + ' está a <b>' + p.m + ' m</b>' + (cerca ? ' de ti' : ''), sub: delante.slice(1, 4).map(x => (TIPOS[x.o.tipo] || TIPOS.bunker)[0] + ' ' + (TIPOS[x.o.tipo] || TIPOS.bunker)[1] + ' a ' + x.m + ' m'), notas };
+    return { cab: cab + ' · hoyo ' + hoyo, txt: cab + ':<br>' + tp[2] + ' está a <b>' + p.m + ' m</b>' + (cerca ? ' de ti' : '') + '<div class="cd-green">🚩 Al green: <b>' + Math.round(dG) + ' m</b></div>', sub: delante.slice(1, 4).map(x => (TIPOS[x.o.tipo] || TIPOS.bunker)[0] + ' ' + (TIPOS[x.o.tipo] || TIPOS.bunker)[1] + ' a ' + x.m + ' m'), notas };
   }
 
   function pintar(){
