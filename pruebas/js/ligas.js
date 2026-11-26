@@ -205,11 +205,11 @@ function ligaDesdeFila(row){
     dia: meta.dia, courseId: meta.courseId, hora: meta.hora || '08:40', cada: meta.cada || 7, hoyoInicio: meta.hoyoInicio || 1, jornadas: meta.jornadas || [],
     hoyos: meta.hoyos === 9 ? 9 : 18, mitad: meta.mitad === 'vuelta' ? 'vuelta' : 'ida',
     frec: meta.frec || null, formato: meta.formato === 'stableford' ? 'stableford' : 'stroke', regla: meta.regla || 'todas', cuentan: meta.cuentan || null,
-    fijas: Array.isArray(meta.fijas) ? meta.fijas : [], minimo: meta.minimo || 0, sorteo: meta.sorteo || 'azar', campos: (ligaRegistrarCampos(meta.campos), meta.campos || {}) };
+    nuevos: meta.nuevos || {}, fijas: Array.isArray(meta.fijas) ? meta.fijas : [], minimo: meta.minimo || 0, sorteo: meta.sorteo || 'azar', campos: (ligaRegistrarCampos(meta.campos), meta.campos || {}) };
 }
 function ligaAFila(l){
   return [{ players: [], handicaps: [], scores: {}, meta: { liga: { nombre: l.nombre, jugadores: l.jugadores, dia: l.dia, courseId: l.courseId, hora: l.hora, cada: l.cada || 7, hoyoInicio: l.hoyoInicio || 1, jornadas: l.jornadas, hoyos: l.hoyos === 9 ? 9 : 18, mitad: l.mitad === 'vuelta' ? 'vuelta' : 'ida',
-    frec: l.frec || null, formato: l.formato || 'stroke', regla: l.regla || 'todas', cuentan: l.cuentan || null, fijas: l.fijas || [], minimo: l.minimo || 0, sorteo: l.sorteo || 'azar', campos: l.campos || {} } } }];
+    frec: l.frec || null, formato: l.formato || 'stroke', regla: l.regla || 'todas', cuentan: l.cuentan || null, nuevos: l.nuevos || {}, fijas: l.fijas || [], minimo: l.minimo || 0, sorteo: l.sorteo || 'azar', campos: l.campos || {} } } }];
 }
 const ligaCodigoJornada = (l, n) => l.code + 'J' + n;
 
@@ -542,7 +542,7 @@ function ligaTabla(l, res, regla){
     const media = stb.length ? stb.reduce((a, b) => a + b, 0) / stb.length : null;
     return { jugador: n, hcp: ligaHcp(n), puntos: validas.reduce((a, x) => a + x.v, 0), validas: validas.length, jugadas: rs.length,
       victorias: rs.filter(x => x.pos === 1).length, mejor: stb.length ? Math.max(...stb) : null, media, dif: stb.length ? rs.filter(x => x.stb != null).reduce((a, x) => a + x.stb - 2 * x.nH, 0) / stb.length : null,
-      descartadas: rs.filter(x => !vset.has(x.n)), entra: rs.length >= (l.minimo || 0) && rs.length > 0 };
+      descartadas: rs.filter(x => !vset.has(x.n)), entra: !!(l.nuevos && l.nuevos[n]) || (rs.length >= (l.minimo || 0) && rs.length > 0), nuevo: !!(l.nuevos && l.nuevos[n] && !rs.length) };
   });
   filas.sort((a, b) => (b.entra - a.entra) || b.puntos - a.puntos || (a.hcp ?? 99) - (b.hcp ?? 99));
   return filas;
@@ -582,7 +582,7 @@ async function ligaVer(code){
     + (hayPuntos ? '' : '<div class="lg-aviso">Los puntos empiezan a contar cuando se juegue la primera ronda.</div>')
     + '<div class="lg-tabla-w"><table class="lg-t"><thead><tr><th>#</th><th>Jugador</th><th>' + (l.formato === 'stableford' ? 'Puntos' : 'Pts F1') + '</th><th>PR</th><th>Mejor</th><th>Promedio</th><th>Dif. hcp</th><th>Rondas descartadas</th></tr></thead><tbody>'
     + (() => { let pos = 0; return clasif.map(c => { if(c.entra) pos++;
-        return '<tr class="' + (c.entra && pos === 1 && hayPuntos ? 'lg-lider' : '') + (c.entra || !hayPuntos ? '' : ' lg-gris') + '"><td class="lg-pos">' + (hayPuntos && c.entra ? pos : '–') + '</td><td class="lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + '</td>'
+        return '<tr class="' + (c.entra && pos === 1 && hayPuntos ? 'lg-lider' : '') + (c.entra || !hayPuntos ? '' : ' lg-gris') + '"><td class="lg-pos">' + (hayPuntos && c.entra ? pos : '–') + '</td><td class="lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + (c.nuevo ? '<span class="lg-nuevo"> · nuevo</span>' : '') + '</td>'
           + '<td class="lg-pts">' + c.puntos + '</td><td>' + c.validas + '</td><td>' + fmt(c.mejor) + '</td><td>' + fmt(c.media, 1) + '</td><td>' + (c.dif == null ? '–' : (c.dif > 0 ? '+' : '') + fmt(c.dif, 1)) + '</td>'
           + '<td class="lg-desc">' + (c.descartadas.length ? c.descartadas.map(x => '<s>R' + x.n + ' · ' + x.v + (l.formato === 'stableford' ? '' : ' pts') + '</s>').join('') : '—') + '</td></tr>'; }).join(''); })()
     + '</tbody></table></div>'

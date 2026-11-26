@@ -65,3 +65,11 @@ parche('pruebas/js/convocatoria.js', [
   function convEtq(c, i){ const h = convHoyoSalida(c, i), o = convDiaOtra(c, i); return o + (h ? (convAlTiro(c) ? 'Hoyo ' + h : convTime(c.times[i]) + ' · hoyo ' + h) : convTime(c.times[i])); }"""),
 ])
 print('parche-otro-dia aplicado')
+
+# Jugadores añadidos a una liga ya empezada (Carlos, 26-nov-2026). SOLO pruebas.
+parche('pruebas/js/ligas.js', [
+("""fijas: Array.isArray(meta.fijas) ? meta.fijas : [],""", """nuevos: meta.nuevos || {}, fijas: Array.isArray(meta.fijas) ? meta.fijas : [],"""),
+("""fijas: l.fijas || [], minimo: l.minimo || 0,""", """nuevos: l.nuevos || {}, fijas: l.fijas || [], minimo: l.minimo || 0,"""),
+("""entra: rs.length >= (l.minimo || 0) && rs.length > 0 };""", """entra: !!(l.nuevos && l.nuevos[n]) || (rs.length >= (l.minimo || 0) && rs.length > 0), nuevo: !!(l.nuevos && l.nuevos[n] && !rs.length) };"""),
+("""lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + '</td>'""", """lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + (c.nuevo ? '<span class="lg-nuevo"> · nuevo</span>' : '') + '</td>'"""),
+])
