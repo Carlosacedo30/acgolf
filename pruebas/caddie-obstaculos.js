@@ -53,9 +53,11 @@
 
   function empezarGps(){
     if(gpsId !== null || !navigator.geolocation) return;
-    gpsId = navigator.geolocation.watchPosition(p => { pos = { lat: p.coords.latitude, lng: p.coords.longitude }; pintar(); }, () => { gpsId = null; pintar(); }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+    // Ahorro de batería (Carlos, 26-nov): una lectura cada 30 segundos, no GPS continuo.
+    const leer = () => navigator.geolocation.getCurrentPosition(p => { pos = { lat: p.coords.latitude, lng: p.coords.longitude }; pintar(); }, () => { pintar(); }, { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 });
+    gpsId = setInterval(leer, 30000); leer();
   }
-  function pararGps(){ if(gpsId !== null && navigator.geolocation) navigator.geolocation.clearWatch(gpsId); gpsId = null; }
+  function pararGps(){ if(gpsId !== null) clearInterval(gpsId); gpsId = null; }
 
   function construir(){
     ov = document.createElement('div'); ov.id = 'cdOv'; ov.className = 'cd-ov'; ov.hidden = true;

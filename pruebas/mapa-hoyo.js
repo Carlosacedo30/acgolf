@@ -170,13 +170,15 @@
     if(gpsId !== null) return;
     if(!navigator.geolocation){ aviso('Este móvil no deja usar el GPS'); return; }
     aviso('Buscando tu posición…');
-    gpsId = navigator.geolocation.watchPosition(
+    // Ahorro de batería (Carlos, 26-nov): se lee la posición una vez cada 30 segundos; entre lecturas el GPS descansa.
+    const leer = () => navigator.geolocation.getCurrentPosition(
       pos => { gpsPos = { lat: pos.coords.latitude, lng: pos.coords.longitude }; if(ov && !ov.hidden){ if($('mhAviso').textContent === 'Buscando tu posición…') aviso(''); pintar(); } },
-      () => { gpsId = null; aviso('No pude ver tu posición. Revisa que el GPS esté activado y que la app tenga permiso.'); $('mhGps').hidden = false; },
-      { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+      () => { if(gpsPos) return; if(gpsId !== null) clearInterval(gpsId); gpsId = null; aviso('No pude ver tu posición. Revisa que el GPS esté activado y que la app tenga permiso.'); $('mhGps').hidden = false; },
+      { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 });
+    gpsId = setInterval(leer, 30000); leer();
     $('mhGps').hidden = true;
   }
-  function paraGps(){ if(gpsId !== null && navigator.geolocation) navigator.geolocation.clearWatch(gpsId); gpsId = null; gpsPos = null; ajustado = null; }
+  function paraGps(){ if(gpsId !== null) clearInterval(gpsId); gpsId = null; gpsPos = null; ajustado = null; }
 
   function ir(h){ if(h < 1 || h > hayHoyos()) return; hoyo = h; colocando = false; ajustado = null; pintar(); }
 
