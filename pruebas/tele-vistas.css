@@ -7,6 +7,13 @@
 @keyframes tvLento{ from{ transform:scale(1.08); } to{ transform:scale(1.2); } }
 .vt.tv-on .vt-centro{ display:none; }
 .tv-cap{ position:absolute; left:3%; top:15%; width:57%; height:58%; }
+.tv-cap{ transform-origin:50% 50%; transition:transform .95s cubic-bezier(.2,.85,.2,1); will-change:transform; }
+/* Pantalla grande: la vista crece hasta llenar la tele (menos el marcador de abajo) y la ventanita de Lola y Curro se aparta */
+.tv-cap.grande{ transform:translate(18.5cqw,-1cqw) scale(1.3); z-index:2; }
+.vt.tv-on .vt-mesa{ transition:opacity .5s, transform .5s; }
+.vt.tv-grande .vt-mesa{ opacity:0; transform:scale(.9); pointer-events:none; }
+.vt.tv-on .vt-rot{ z-index:3; }
+.vt.tv-grande .vt-fondo{ filter:blur(6px) brightness(.35); }
 .tv-v{ position:absolute; inset:0; opacity:0; transform:translateY(8px); transition:opacity .6s, transform .6s; }
 .tv-v.on{ opacity:1; transform:none; }
 .tv-card{ height:100%; background:linear-gradient(180deg,#2A5AA6 0%,#16315C 100%); border:1.5px solid #E9CF8C; border-radius:3.2cqw; padding:1.6cqw 2cqw; color:#fff;
@@ -62,4 +69,6 @@
 .tv-intro small{ font:800 2.4cqw 'Archivo',sans-serif; letter-spacing:.22em; color:#E9CF8C; text-transform:uppercase; }
 .tv-intro b{ font:900 11cqw 'Archivo',sans-serif; letter-spacing:.04em; } .tv-intro b span{ color:#E9CF8C; }
 .tv-intro em{ font:italic 400 3cqw Georgia,serif; color:#E9CF8C; }
-@media (prefers-reduced-motion: reduce){ .vt.tv-on .vt-fondo{ animation:none; } .tv-v{ transition:none; } }
+@media (prefers-reduced-motion: reduce){ .tv-cap{ transition:none; } .vt.tv-on .vt-fondo{ animation:none; } .tv-v{ transition:none; } }
+.vt.tv-grande .vt-rot{ bottom:19.6%; font-size:clamp(10px,2.2cqw,15px); }
+.vt.tv-on .vt-logo, .vt.tv-on .vt-live{ z-index:3; }

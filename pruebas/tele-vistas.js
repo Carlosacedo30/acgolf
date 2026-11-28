@@ -14,7 +14,7 @@
   const etq = h => (window.etqV ? window.etqV(h) : h);
   const cliente = () => { try { return typeof initSupabase === 'function' ? initSupabase() : null; } catch(e){ return null; } };
 
-  let ronda = null, vista = 0, grupoTurno = 0, timer = null, fiestaT = null, memoria = null, geo = {}, geoPidiendo = {};
+  let zumT1 = null, zumT2 = null, ronda = null, vista = 0, grupoTurno = 0, timer = null, fiestaT = null, memoria = null, geo = {}, geoPidiendo = {};
   const TIEMPO = 9000;
 
   // ---------- Datos ----------
@@ -142,6 +142,11 @@
     requestAnimationFrame(() => { nueva.classList.add('on'); colocarPins(nueva); });
     if(vieja){ vieja.classList.remove('on'); setTimeout(() => vieja.remove(), 700); }
     cap.dataset.vista = vista % VISTAS.length;
+    // Efecto zum: la vista nace pequeña y, pasados unos segundos, se hace pantalla grande; antes del cambio vuelve a su sitio
+    clearTimeout(zumT1); clearTimeout(zumT2);
+    const vt = cap.closest('.vt'); cap.classList.remove('grande'); if(vt) vt.classList.remove('tv-grande');
+    zumT1 = setTimeout(() => { if(document.querySelector('#vvOverlay .tv-fiesta.on')) return; cap.classList.add('grande'); if(vt) vt.classList.add('tv-grande'); setTimeout(() => colocarPins(nueva), 950); }, 3000);
+    zumT2 = setTimeout(() => { cap.classList.remove('grande'); if(vt) vt.classList.remove('tv-grande'); }, TIEMPO - 1200);
   }
   // Los marcadores (grupo y salida) van derechos encima del dibujo inclinado
   function colocarPins(v){
@@ -202,7 +207,7 @@
     const m0 = T.montar, a0 = T.actualizar, q0 = T.quitar;
     T.montar = function(code, round){ const r = m0.apply(this, arguments); try { engancharse(code, round); } catch(e){} return r; };
     T.actualizar = function(round){ const r = a0.apply(this, arguments); try { ronda = round; mirarNovedades(); } catch(e){} return r; };
-    T.quitar = function(){ clearInterval(timer); clearTimeout(fiestaT); ronda = null; memoria = null; return q0.apply(this, arguments); };
+    T.quitar = function(){ clearInterval(timer); clearTimeout(fiestaT); clearTimeout(zumT1); clearTimeout(zumT2); ronda = null; memoria = null; return q0.apply(this, arguments); };
     T._tvFiesta = fiesta; T._tvPinta = pinta;
   }
   if(window.acgolfTele) arrancar(); else window.addEventListener('load', () => setTimeout(arrancar, 300));
