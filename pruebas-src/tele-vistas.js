@@ -142,11 +142,6 @@
     requestAnimationFrame(() => { nueva.classList.add('on'); colocarPins(nueva); });
     if(vieja){ vieja.classList.remove('on'); setTimeout(() => vieja.remove(), 700); }
     cap.dataset.vista = vista % VISTAS.length;
-    // Efecto zum: la vista nace pequeña y, pasados unos segundos, se hace pantalla grande; antes del cambio vuelve a su sitio
-    clearTimeout(zumT1); clearTimeout(zumT2);
-    const vt = cap.closest('.vt'); cap.classList.remove('grande'); if(vt) vt.classList.remove('tv-grande');
-    zumT1 = setTimeout(() => { if(document.querySelector('#vvOverlay .tv-fiesta.on')) return; cap.classList.add('grande'); if(vt) vt.classList.add('tv-grande'); setTimeout(() => colocarPins(nueva), 950); }, 3000);
-    zumT2 = setTimeout(() => { cap.classList.remove('grande'); if(vt) vt.classList.remove('tv-grande'); }, TIEMPO - 1200);
   }
   // Los marcadores (grupo y salida) van derechos encima del dibujo inclinado
   function colocarPins(v){
@@ -159,17 +154,94 @@
     pins.innerHTML = (s ? '<span class="tv-p tv-sal" style="left:' + s[0] + '%;top:' + s[1] + '%">SALIDA</span>' : '') + (a ? '<span class="tv-p tv-g1" style="left:' + a[0] + '%;top:' + a[1] + '%">G</span>' : '');
   }
 
-  // ---------- Animación al anotar ----------
-  function fiesta(tipo, quien, detalle){
-    const cap = document.querySelector('#vvOverlay .vt'); if(!cap) return;
-    clearTimeout(fiestaT); const viejo = cap.querySelector('.tv-fiesta'); if(viejo) viejo.remove();
-    const vid = tipo === 'BIRDIE' ? 'tv-birdie.mp4?v=1' : tipo === 'FIN' ? 'tv-brindis.mp4?v=1' : 'tv-aplausos.mp4?v=1';
-    const f = document.createElement('div'); f.className = 'tv-fiesta ' + (tipo === 'ÁGUILA' ? 'oro' : '');
-    f.innerHTML = '<video muted playsinline autoplay preload="auto" src="' + vid + '"></video><div class="tv-cartel"><b>' + esc(tipo) + '</b><strong>' + esc(quien) + '</strong><small>' + esc(detalle) + '</small></div>';
-    const fondo = cap.querySelector('.tv-cap'); cap.insertBefore(f, fondo ? fondo.nextSibling : cap.firstChild);
-    const v = f.querySelector('video'); try { v.play().catch(() => {}); } catch(e){}
-    requestAnimationFrame(() => f.classList.add('on'));
-    fiestaT = setTimeout(() => { f.classList.remove('on'); setTimeout(() => f.remove(), 600); }, 6500);
+  // ---------- El realizador: decide qué se ve y cuándo (28-nov-2026, idea de Carlos) ----------
+  // Guion de la emisión:
+  //  1. Entrada: la mesa de Lola y Curro a pantalla grande; saludo y cómo va la partida.
+  //  2. Auto rotación: la mesa se hace pequeña y pasan las vistas (clasificación, hoyo, campo) mientras comentan.
+  //  3. Vuelta a la mesa grande con las marcas en la tele y el marcador que se mueve debajo.
+  //  4. Fundido al hoyo del campo donde está la partida.
+  //  Cuando alguien hace birdie o águila: pantalla negra de gran evento (con foto-resumen y, pequeña, la celebración),
+  //  luego mesa grande comentándolo y fundido al hoyo. Después se sigue con la rotación.
+  let gen = 0, modo = '', ocupado = false, pend = [], rotT = null, vtEl = () => document.querySelector('#vvOverlay .vt');
+  const T_ = () => window.acgolfTele || {};
+  const espera = (ms, g) => new Promise(ok => { const t = setTimeout(ok, ms); });
+  const vive = g => g === gen && !!ronda && !!vtEl();
+  function setModo(m){ modo = m; const vt = vtEl(); if(vt) vt.dataset.modo = m; }
+  async function decir(pasos, minMs, g){
+    // Habla con las voces grabadas; si el móvil no deja sonar, espera el tiempo mínimo en silencio
+    const ini = Date.now(); let r;
+    try { r = await T_()._reproducir(pasos); } catch(e){ r = false; }
+    const resto = minMs - (Date.now() - ini); if(resto > 0) await espera(resto, g);
+    return r;
+  }
+  function rotar(on){
+    clearInterval(rotT); rotT = null;
+    if(!on) return;
+    pinta(); rotT = setInterval(() => { vista = (vista + 1) % VISTAS.length; pinta(); }, TIEMPO);
+  }
+  function marcas(){
+    const vt = vtEl(); if(!vt) return;
+    let D; try { D = datos(ronda); } catch(e){ return; }
+    const ti = D.t.map((x, i) => { const k = D.esPtos ? x.pts : x.neto; let a = i; while(a > 0 && (D.esPtos ? D.t[a - 1].pts : D.t[a - 1].neto) === k) a--; let b = i; while(b < D.t.length - 1 && (D.esPtos ? D.t[b + 1].pts : D.t[b + 1].neto) === k) b++; return (b > a ? 'T' : '') + (a + 1); });
+    const filas = D.t.slice(0, 3).map((x, i) => '<div class="' + (i === 0 ? 'uno' : '') + '"><i>' + ti[i] + '</i><em>' + esc(largo(x.n)) + '</em><b>' + (D.esPtos ? x.pts : signo(x.neto)) + '</b></div>').join('');
+    let m = vt.querySelector('.tv-marcas'); if(!m){ m = document.createElement('div'); m.className = 'tv-marcas'; vt.appendChild(m); }
+    m.innerHTML = '<h5>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</h5>' + (filas || '<p>Esperando los primeros golpes…</p>');
+  }
+  async function entrada(g){
+    const T = T_(); let P = []; try { P = T.guion(ronda); } catch(e){}
+    setModo('intro'); marcas(); rotar(false);
+    const A = P.slice(0, 3), B = P.slice(3, 6), C = P.slice(6);
+    await decir(A, 9000, g); if(!vive(g)) return;
+    await bucle(g, B, C);
+  }
+  async function bucle(g, B, C){
+    // Ciclo: rotación (mesa pequeña) → mesa grande con marcas → fundido al hoyo → vuelta a la rotación
+    while(vive(g)){
+      setModo('rot'); rotar(true);
+      await decir(B || [], 22000, g); B = null; if(!vive(g)) return;
+      setModo('host'); rotar(false); marcas();
+      await decir(C || [], 10000, g); C = null; if(!vive(g)) return;
+      setModo('hoyo'); vista = 1; grupoTurno = Math.floor(Math.random() * 3); pinta();
+      document.querySelector('#vvOverlay .tv-cap') && document.querySelector('#vvOverlay .tv-cap').classList.add('grande');
+      await espera(9000, g); if(!vive(g)) return;
+      const cp = document.querySelector('#vvOverlay .tv-cap'); if(cp) cp.classList.remove('grande');
+    }
+  }
+  // Pantalla negra de gran evento
+  async function liv(ev, g){
+    const vt = vtEl(); if(!vt) return;
+    let D; try { D = datos(ronda); } catch(e){ D = { t: [] }; }
+    const x = D.t.find(y => y.n === ev.n) || D.t[0], pos = x ? D.t.indexOf(x) + 1 : '';
+    const col = ev.tipo === 'ÁGUILA' ? 'oro' : (ev.tipo === 'NUEVO LÍDER' ? 'azul' : '');
+    const old = vt.querySelector('.tv-liv'); if(old) old.remove();
+    const vid = ev.tipo === 'BIRDIE' ? 'tv-birdie.mp4?v=1' : 'tv-aplausos.mp4?v=1';
+    const e = document.createElement('div'); e.className = 'tv-liv ' + col;
+    e.innerHTML = '<i class="l1"></i><i class="l2"></i><div class="tv-lt"><small>EN DIRECTO · ' + esc(ronda.round_name || '') + '</small><b>' + esc(ev.tipo) + '</b><strong>' + esc(ev.nombre) + '</strong><span>' + esc(ev.detalle) + '</span>'
+      + '<div class="tv-cifras"><div><small>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</small><b>' + (x ? (D.esPtos ? x.pts : signo(x.neto)) : '—') + '</b></div><div><small>PUESTO</small><b>' + pos + '</b></div><div><small>EN EL HOYO</small><b>' + (ev.golpes || '—') + '</b></div></div></div>'
+      + '<div class="tv-pip"><video muted playsinline autoplay preload="auto" src="' + vid + '"></video></div>';
+    vt.appendChild(e); setModo('liv'); rotar(false);
+    requestAnimationFrame(() => e.classList.add('on'));
+    try { e.querySelector('video').play().catch(() => {}); } catch(er){}
+    await espera(7000, g);
+    e.classList.remove('on'); setTimeout(() => e.remove(), 700);
+  }
+  async function evento(ev){
+    if(!ronda) return; const g = ++gen; ocupado = true;
+    try {
+      const avs = pend.splice(0);                       // lo que dicen Lola y Curro sobre esta jugada
+      const voz = avs.length ? avs.sort((a, b) => a.prio - b.prio)[0].pasos : null;
+      if(ev){
+        if(voz) T_()._reproducir(voz);                  // hablan mientras se ve la pantalla negra
+        await liv(ev, g); if(!vive(g)) return;
+        setModo('host'); marcas(); await espera(5000, g); if(!vive(g)) return;
+      } else if(voz){
+        setModo('host'); marcas(); rotar(false); await decir(voz, 6000, g); if(!vive(g)) return;
+      }
+      setModo('hoyo'); vista = 1; pinta(); const cp = document.querySelector('#vvOverlay .tv-cap'); if(cp) cp.classList.add('grande');
+      await espera(8000, g); if(!vive(g)) return;
+      if(cp) cp.classList.remove('grande');
+      await bucle(g, [], []);
+    } finally { ocupado = false; }
   }
   function mirarNovedades(){
     if(!ronda) return;
@@ -180,26 +252,31 @@
     if(memoria){
       const nuevas = Object.keys(claves).filter(k => !memoria.claves[k]).map(k => claves[k]);
       const mejor = nuevas.filter(x => x.d < 0).sort((a, b) => a.d - b.d)[0];
-      if(mejor){ const aguila = mejor.d <= -2; fiesta(aguila ? 'ÁGUILA' : 'BIRDIE', largo(mejor.n), 'HOYO ' + etq(mejor.h) + ' · ' + mejor.v + ' GOLPES · PAR ' + mejor.par); }
-      else if(lider && memoria.lider && lider !== memoria.lider && t.length > 1){ const x = t[0]; fiesta('NUEVO LÍDER', largo(x.n), (x.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO')); }
+      if(mejor){ setTimeout(() => evento({ tipo: mejor.d <= -2 ? 'ÁGUILA' : 'BIRDIE', n: mejor.n, nombre: largo(mejor.n), detalle: 'HOYO ' + etq(mejor.h) + ' · PAR ' + mejor.par, golpes: mejor.v }), 400); }
+      else if(lider && memoria.lider && lider !== memoria.lider && t.length > 1){ const x = t[0]; setTimeout(() => evento({ tipo: 'NUEVO LÍDER', n: x.n, nombre: largo(x.n), detalle: x.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO', golpes: '' }), 400); }
     }
     memoria = { claves, lider };
   }
 
+  // El aviso que ya preparaba la tele de siempre (cambio de líder, birdie, recta final…) lo recoge el realizador
+  window.acgolfTeleDir = function(o){
+    if(!o) return;
+    if(o.aviso){ pend.push(o.aviso); if(!ocupado) setTimeout(() => { if(pend.length && !ocupado) evento(null); }, 900); return; }
+    if(o.inicio){ if(!ronda) return; const g = ++gen; entrada(g); }
+  };
+
   // ---------- Montaje ----------
   function engancharse(code, round){
     const vt = document.querySelector('#vvOverlay .vt'); if(!vt) return;
-    ronda = round; vista = 0; grupoTurno = 0; memoria = null;
+    ronda = round; vista = 0; grupoTurno = 0; memoria = null; pend = []; ocupado = false;
     if(vt.querySelector('.tv-cap')) return;
-    vt.classList.add('tv-on');
+    vt.classList.add('tv-on'); vt.dataset.modo = 'intro';
     const fondo = vt.querySelector('.vt-fondo');
     const cap = document.createElement('div'); cap.className = 'tv-cap';
     if(fondo) fondo.after(cap); else vt.prepend(cap);
     const intro = document.createElement('div'); intro.className = 'tv-intro';
     intro.innerHTML = '<small>' + esc(round.round_name || 'Partida') + '</small><b>ac<span>golf</span> TV</b><em>' + esc(round.course_name || '') + '</em>';
-    vt.appendChild(intro); setTimeout(() => intro.classList.add('fuera'), 2600); setTimeout(() => intro.remove(), 3400);
-    setTimeout(pinta, 2400);
-    clearInterval(timer); timer = setInterval(() => { if(document.querySelector('#vvOverlay .tv-fiesta.on')) return; vista = (vista + 1) % VISTAS.length; pinta(); }, TIEMPO);
+    vt.appendChild(intro); setTimeout(() => intro.classList.add('fuera'), 2200); setTimeout(() => intro.remove(), 3000);
     mirarNovedades();
   }
   function arrancar(){
@@ -207,8 +284,8 @@
     const m0 = T.montar, a0 = T.actualizar, q0 = T.quitar;
     T.montar = function(code, round){ const r = m0.apply(this, arguments); try { engancharse(code, round); } catch(e){} return r; };
     T.actualizar = function(round){ const r = a0.apply(this, arguments); try { ronda = round; mirarNovedades(); } catch(e){} return r; };
-    T.quitar = function(){ clearInterval(timer); clearTimeout(fiestaT); clearTimeout(zumT1); clearTimeout(zumT2); ronda = null; memoria = null; return q0.apply(this, arguments); };
-    T._tvFiesta = fiesta; T._tvPinta = pinta;
+    T.quitar = function(){ gen++; clearInterval(rotT); rotT = null; clearTimeout(zumT1); clearTimeout(zumT2); ronda = null; memoria = null; pend = []; ocupado = false; return q0.apply(this, arguments); };
+    T._tvEvento = evento; T._tvPinta = pinta; T._tvModo = setModo;
   }
   if(window.acgolfTele) arrancar(); else window.addEventListener('load', () => setTimeout(arrancar, 300));
 })();

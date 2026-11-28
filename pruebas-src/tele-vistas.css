@@ -73,3 +73,54 @@
 .vt.tv-grande .vt-rot{ bottom:19.6%; font-size:clamp(10px,2.2cqw,15px); }
 .vt.tv-on .vt-logo, .vt.tv-on .vt-live{ z-index:3; }
 .vt.tv-on .vt-mesa{ aspect-ratio:16/9; width:36%; background-image:url('tv-mesa-quieta.jpg?v=1'); }
+
+/* ===== Realizador (28-nov-2026): la mesa de Lola y Curro pasa de grande a pequeña según el momento ===== */
+.vt.tv-on .vt-mesa{ aspect-ratio:auto; width:36cqw; height:20.25cqw; right:3cqw; bottom:12.94cqw; border-radius:12px; z-index:1;
+  transition:right .9s cubic-bezier(.2,.85,.2,1), bottom .9s cubic-bezier(.2,.85,.2,1), width .9s cubic-bezier(.2,.85,.2,1), height .9s cubic-bezier(.2,.85,.2,1), border-radius .9s, opacity .8s; }
+.vt.tv-on .vt-mesa video{ object-position:50% 25%; }
+.vt[data-modo="intro"] .vt-mesa, .vt[data-modo="host"] .vt-mesa, .vt[data-modo="hoyo"] .vt-mesa{ right:0; bottom:10.69cqw; width:100cqw; height:45.56cqw; border-radius:0; border-width:0; }
+.vt[data-modo="hoyo"] .vt-mesa, .vt[data-modo="liv"] .vt-mesa{ opacity:0; }
+.vt[data-modo="intro"] .vt-mesa span, .vt[data-modo="host"] .vt-mesa span, .vt[data-modo="intro"] .vt-grande, .vt[data-modo="host"] .vt-grande{ opacity:0; pointer-events:none; }
+.tv-cap{ opacity:0; }
+.vt[data-modo="rot"] .tv-cap, .vt[data-modo="hoyo"] .tv-cap{ opacity:1; }
+.vt[data-modo="host"] .vt-fondo, .vt[data-modo="intro"] .vt-fondo{ filter:blur(5px) brightness(.5); }
+/* Las marcas en la tele (arriba a la izquierda, sobre la pantalla del plató) */
+.tv-marcas{ position:absolute; left:2.5cqw; top:9cqw; width:27cqw; z-index:2; padding:1.2cqw 1.6cqw; color:#fff; opacity:0; transform:translateY(-1cqw); transition:opacity .7s, transform .7s; pointer-events:none;
+  background:linear-gradient(180deg,rgba(42,90,166,.96),rgba(22,49,92,.96)); border:1.5px solid #E9CF8C; border-radius:2.2cqw; box-shadow:0 .8cqw 2cqw rgba(0,0,0,.55); }
+.vt[data-modo="host"] .tv-marcas, .vt[data-modo="intro"] .tv-marcas{ opacity:1; transform:none; }
+.tv-marcas h5{ margin:0 0 .6cqw; font:800 1.5cqw 'Archivo',sans-serif; letter-spacing:.14em; color:#E9CF8C; }
+.tv-marcas div{ display:grid; grid-template-columns:3.6cqw 1fr 5cqw; align-items:center; padding:.45cqw .3cqw; border-bottom:1px solid rgba(233,207,140,.28); font:700 1.9cqw 'Barlow',sans-serif; }
+.tv-marcas div:last-child{ border:0; } .tv-marcas i{ font:900 1.7cqw 'Archivo',sans-serif; font-style:normal; color:#E9CF8C; } .tv-marcas em{ font-style:normal; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tv-marcas b{ text-align:right; font:900 2.3cqw 'Archivo',sans-serif; color:#E9CF8C; }
+.tv-marcas div.uno{ background:#E9CF8C; border-radius:1cqw; color:#0A0C10; border:0; } .tv-marcas div.uno i, .tv-marcas div.uno b{ color:#0A0C10; }
+.tv-marcas p{ margin:0; font:700 1.9cqw 'Barlow',sans-serif; }
+/* Pantalla negra de gran evento (birdie, águila, nuevo líder) */
+.tv-liv{ position:absolute; inset:0; z-index:6; background:#000; opacity:0; transition:opacity .35s; overflow:hidden; color:#fff; }
+.tv-liv.on{ opacity:1; }
+.tv-liv i{ position:absolute; top:-10%; height:120%; transform:skewX(-18deg); background:#C62B3A; }
+.tv-liv .l1{ left:-8%; width:2.2cqw; animation:tvBarra 1s cubic-bezier(.2,.85,.2,1) both; }
+.tv-liv .l2{ left:-2%; width:.6cqw; background:#fff; animation:tvBarra 1.2s .1s cubic-bezier(.2,.85,.2,1) both; }
+.tv-liv.oro i.l1{ background:#E9CF8C; } .tv-liv.azul i.l1{ background:#2A5AA6; }
+@keyframes tvBarra{ from{ transform:translateX(-30cqw) skewX(-18deg); } to{ transform:translateX(0) skewX(-18deg); } }
+.tv-lt{ position:absolute; left:6cqw; top:7cqw; max-width:62cqw; animation:tvEntra .9s .15s cubic-bezier(.2,.85,.2,1) both; }
+@keyframes tvEntra{ from{ opacity:0; transform:translateX(-6cqw); } to{ opacity:1; transform:none; } }
+.tv-lt small{ display:block; font:800 1.9cqw 'Archivo',sans-serif; letter-spacing:.22em; color:#E9CF8C; }
+.tv-lt > b{ display:block; margin-top:.4cqw; font:900 italic 14cqw/1 'Archivo',sans-serif; letter-spacing:.01em; text-transform:uppercase; }
+.tv-liv.oro .tv-lt > b{ color:#E9CF8C; }
+.tv-lt strong{ display:block; font:900 5.6cqw 'Archivo',sans-serif; text-transform:uppercase; letter-spacing:.03em; }
+.tv-lt span{ display:block; margin-top:.4cqw; font:800 2.6cqw 'Barlow',sans-serif; letter-spacing:.08em; color:#E9CF8C; }
+.tv-cifras{ display:flex; gap:1.6cqw; margin-top:3cqw; }
+.tv-cifras div{ min-width:13cqw; padding:1cqw 1.6cqw; border:1px solid #E9CF8C; border-left:.7cqw solid #C62B3A; background:rgba(255,255,255,.05); }
+.tv-liv.oro .tv-cifras div{ border-left-color:#E9CF8C; }
+.tv-cifras small{ font:800 1.4cqw 'Archivo',sans-serif; letter-spacing:.16em; color:#DCE5F4; } .tv-cifras b{ display:block; font:900 5cqw/1.1 'Archivo',sans-serif; color:#fff; }
+.tv-pip{ position:absolute; right:3cqw; bottom:3cqw; width:30cqw; aspect-ratio:16/9; border:.3cqw solid #E9CF8C; border-radius:1.6cqw; overflow:hidden; box-shadow:0 1cqw 3cqw rgba(0,0,0,.7); animation:tvEntra .9s .4s cubic-bezier(.2,.85,.2,1) both; }
+.tv-pip video{ width:100%; height:100%; object-fit:cover; display:block; }
+@media (prefers-reduced-motion: reduce){ .tv-liv i, .tv-lt, .tv-pip{ animation:none; } .vt.tv-on .vt-mesa{ transition:none; } }
+
+/* Marcas en la tele: tira horizontal arriba (no tapa a los presentadores) */
+.tv-marcas{ left:50%; top:1.8cqw; width:60cqw; transform:translate(-50%,-1.2cqw); display:flex; align-items:center; gap:1.2cqw; padding:.7cqw 1.4cqw; border-radius:999px; }
+.vt[data-modo="host"] .tv-marcas, .vt[data-modo="intro"] .tv-marcas{ transform:translate(-50%,0); }
+.tv-marcas h5{ margin:0; font-size:1.4cqw; flex:0 0 auto; }
+.tv-marcas div{ flex:1; min-width:0; display:flex; align-items:center; gap:.8cqw; grid-template-columns:none; padding:.3cqw 1cqw; border:0; border-radius:999px; font-size:1.45cqw; background:rgba(255,255,255,.08); }
+.tv-marcas div em{ flex:1; min-width:0; } .tv-marcas div b{ font-size:2cqw; }
+.tv-marcas div.uno{ background:#E9CF8C; border-radius:999px; }

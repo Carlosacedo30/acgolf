@@ -325,6 +325,7 @@
     // Un aviso viejo de líder ya no vale si el líder ha vuelto a cambiar
     if(a.prio === 1 && ronda){ const f = foto(ronda); if(!f.lider || a.pasos[a.pasos.length - 1].rot.indexOf(esc(largo(f.lider))) < 0) return siguienteAviso(); }
     ultimoAviso = Date.now();
+    if(window.acgolfTeleDir){ window.acgolfTeleDir({ aviso: a }); return; }   // con la tele nueva manda el realizador (tele-vistas.js)
     reproducir(a.pasos);
   }
   function montar(code, round){
@@ -341,7 +342,7 @@
       + '<div class="vt-bajo"><div class="vt-reloj"></div><div class="vt-marcador"><div class="vt-cinta"></div></div></div>'
       + '<button type="button" class="vt-oir">🔊 <span>Escuchar a Lola y Curro</span></button>'
       + '</div>';
-    sitio.querySelector('.vt-oir').onclick = () => { desbloquear(); reproducir(guion(ronda)); };
+    sitio.querySelector('.vt-oir').onclick = () => { desbloquear(); if(window.acgolfTeleDir) window.acgolfTeleDir({ inicio: true, toque: true }); else reproducir(guion(ronda)); };
     sitio.querySelector('.vt-grande').onclick = () => {
       const el = sitio.querySelector('.vt');
       try { if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch(e){} }).catch(() => el.classList.toggle('vt-full')); else el.classList.toggle('vt-full'); } catch(e){ el.classList.toggle('vt-full'); }
@@ -349,7 +350,7 @@
     actualizar(round);
     clearInterval(reloj); reloj = setInterval(pintarReloj, 30000);
     // Al entrar, se intenta empezar solos (vienen de tocar «Seguir en vivo»); si el móvil no deja, sale el botón
-    setTimeout(() => { if(!empezado){ empezado = true; reproducir(guion(ronda)); } }, 600);
+    setTimeout(() => { if(!empezado){ empezado = true; if(window.acgolfTeleDir) window.acgolfTeleDir({ inicio: true }); else reproducir(guion(ronda)); } }, 600);
   }
   function pintarReloj(){
     const r = document.querySelector('#vvOverlay .vt-reloj'); if(!r || !ronda) return;
@@ -414,5 +415,5 @@
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);
 
-  window.acgolfTele = { montar, actualizar, quitar, guion, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
+  window.acgolfTele = { montar, actualizar, quitar, guion, _parar: parar, _hablando: () => hablando, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
 })();
