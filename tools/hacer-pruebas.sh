@@ -1219,6 +1219,7 @@ s = open(p, encoding='utf-8').read()
 assert 'mapa-hoyo' not in s
 s = s.replace('</head>', '<link rel="stylesheet" href="mapa-hoyo.css?v=8">\n<link rel="stylesheet" href="caddie-obstaculos.css?v=21">\n<link rel="stylesheet" href="liga-anadir.css?v=1">\n<link rel="stylesheet" href="tele-vistas.css?v=12">\n</head>', 1)
 s = s.replace('</body>', '<script src="mapa-hoyo.js?v=17"></script>\n<script src="caddie-obstaculos.js?v=9"></script>\n<script src="liga-anadir.js?v=1"></script>\n<script src="tele-vistas.js?v=8"></script>\n</body>', 1)
+s = s.replace('marcador.js?v=25', 'marcador.js?v=27')
 open(p, 'w', encoding='utf-8').write(s)
 PYEOF
 
