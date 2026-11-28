@@ -84,6 +84,19 @@
   }
   const pasoFinal = rot => azar([Lp('l-final', rot), Lp('x-final-a', rot), Cp('x-final-b', rot), Lp('x-final-c', rot), Cp('x-final-d', rot)]);
 
+  // ---------- Música de fondo (tv/musica.mp3 del servidor de pruebas): muy baja, en bucle, empieza con la primera voz ----------
+  let fondoM = null;
+  function musica(on){
+    try {
+      if(on){
+        if(!fondoM){ fondoM = new Audio(VOCES_X.replace('/v1/', '/tv/') + 'musica.mp3'); fondoM.loop = true; fondoM.preload = 'auto'; fondoM.setAttribute('playsinline', ''); }
+        fondoM.volume = 0.12; const pr = fondoM.play(); if(pr && pr.catch) pr.catch(() => {});
+      } else if(fondoM){
+        const m = fondoM; let v = m.volume;
+        const t = setInterval(() => { v -= 0.02; if(v <= 0.01){ clearInterval(t); m.pause(); m.currentTime = 0; } else m.volume = v; }, 120);
+      }
+    } catch(e){}
+  }
   // ---------- Sonido ----------
   // Se oye con un reproductor normal (<audio>), como el resto de la app: así suena aunque el iPhone tenga
   // el interruptor de silencio puesto. Cada frase se baja una vez, se mira dónde empieza y acaba la voz
@@ -198,7 +211,7 @@
         if(cola !== mia) return;
         mesa(p.q);
         const r = await tocar(s, moverBoca);
-        if(r === 'ok') suena = true;
+        if(r === 'ok'){ suena = true; if(!fondoM || fondoM.paused) musica(true); }
         if(r === 'bloqueado'){ hablando = false; mesa(null); rotulo(''); cola = []; botonOir(true, 'Escuchar a Lola y Curro'); return false; }
       }
       mesa(null);
@@ -409,7 +422,7 @@
     if(t.length > 3) cinta.innerHTML += rotulo + items;   // dos veces, para que la cinta corra sin saltos
     pintarReloj();
   }
-  function quitar(){ parar(); hablando = false; avisos = []; antes = null; clearTimeout(avisoT); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
+  function quitar(){ parar(); musica(false); hablando = false; avisos = []; antes = null; clearTimeout(avisoT); clearInterval(reloj); reloj = null; ronda = null; codigo = null; }
 
   // Para verlo como espectador aunque juegues o seas administrador: acgolf.es/#vivo=CÓDIGO
   async function porEnlace(){
@@ -421,5 +434,5 @@
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);
 
-  window.acgolfTele = { montar, actualizar, quitar, guion, _parar: parar, _hablando: () => hablando, _reposo: () => mesa(null), claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
+  window.acgolfTele = { montar, actualizar, quitar, guion, _parar: parar, _hablando: () => hablando, _reposo: () => mesa(null), _musica: musica, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
 })();

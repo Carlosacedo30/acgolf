@@ -245,6 +245,7 @@
     setModo('host'); marcas(); await decir(adios, 6000, g); if(!vive(g)) return;
     // 5. Fin de la emisión: tarjeta de despedida y se queda la clasificación final con un botón para verlo otra vez
     { const vt0 = vtEl(); if(vt0){ const f = document.createElement('div'); f.className = 'tv-fin'; f.innerHTML = '<small>FIN DE LA EMISIÓN</small><b>ac<span>golf</span> TV</b><em>Gracias por verlo · hasta la próxima partida</em>'; vt0.appendChild(f); requestAnimationFrame(() => f.classList.add('on')); await espera(4500, g); f.classList.remove('on'); setTimeout(() => f.remove(), 900); if(!vive(g)) return; } }
+    T_()._musica && T_()._musica(false);   // se acaba la música con la emisión
     setModo('rot'); vistaForzada = vClasif; pinta();
     const vt = vtEl(); if(vt && !vt.querySelector('.tv-otra')){ const b = document.createElement('button'); b.type = 'button'; b.className = 'tv-otra'; b.textContent = '↺ Ver el resumen otra vez'; b.onclick = () => { b.remove(); window.acgolfTeleDir({ inicio: true }); }; vt.appendChild(b); }
   }
