@@ -22,8 +22,8 @@ html.mn-on .screen[data-screen="3"] .app-bar .back:active{ transform:scale(.97);
 .mn-esc{ width:48px; height:48px; border-radius:50%; overflow:hidden; box-shadow:0 2px 8px rgba(23,35,61,.18); }
 .mn-esc:empty{ box-shadow:none; }
 .mn-esc svg, .mn-esc img{ display:block; width:100%; height:100%; object-fit:cover; }
-.mn-cnt{ justify-self:end; text-align:right; font:800 12px/1.15 Archivo,system-ui,Arial,sans-serif; letter-spacing:.14em; color:#4A5568; text-transform:uppercase; }
-.mn-cnt b{ display:block; font:900 20px Archivo,system-ui,Arial,sans-serif; letter-spacing:0; color:#17233D; text-transform:none; white-space:nowrap; }
+.mn-cnt{ justify-self:end; text-align:right; font:900 17px/1.1 Archivo,system-ui,Arial,sans-serif; letter-spacing:.12em; color:#C62B3A; text-transform:uppercase; }
+.mn-cnt b{ display:block; font:900 34px/1.05 Archivo,system-ui,Arial,sans-serif; letter-spacing:0; color:#C62B3A; text-transform:none; white-space:nowrap; }
 
 /* Cartel «Estás en el Grupo 2 · sales a las 08:40» */
 html.mn-on .screen[data-screen="3"] .mk-cartel{ margin:8px 16px 0; background:#fff; border:1px solid #C9A54A; border-radius:999px; padding:7px 14px; font:800 14px Archivo,system-ui,Arial,sans-serif; color:#17233D; text-align:center; }
@@ -118,7 +118,7 @@ html.mn-on .screen[data-screen="3"] .mn-bot .hole-nav-btn{ width:auto !important
 html.mn-on .screen[data-screen="3"] .mn-bot .hole-nav-btn:active{ transform:scale(.97); }
 html.mn-on .screen[data-screen="3"] .mn-bot #holePrevBtn{ flex:0 0 120px; border:2px solid #C9A54A !important; background:#fff !important; color:#17233D !important; box-shadow:none !important; font:900 17px Archivo,system-ui,Arial,sans-serif !important; }
 html.mn-on .screen[data-screen="3"] .mn-bot #holePrevBtn.disabled{ opacity:.4; cursor:default; }
-html.mn-on .screen[data-screen="3"] .mn-bot #holeNextBtn{ flex:1 1 0; border:0 !important; background:linear-gradient(180deg,#B3262E,#8A1A21) !important; color:#fff !important; font:900 19px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.05em; box-shadow:0 8px 18px rgba(179,38,46,.28) !important; }
+html.mn-on .screen[data-screen="3"] .mn-bot #holeNextBtn{ flex:1 1 0; border:0 !important; background:linear-gradient(180deg,#B3262E,#8A1A21) !important; color:#fff !important; font:900 21px Archivo,system-ui,Arial,sans-serif !important; letter-spacing:.04em; box-shadow:0 8px 18px rgba(179,38,46,.28) !important; }
 /* Todavía faltan marcas en este hoyo: el botón se ve apagado (como antes) */
 html.mn-on .screen[data-screen="3"] .mn-bot #holeNextBtn.mk-off{ background:#F2F4F6 !important; color:#4A5568 !important; border:1.5px solid #DADFE3 !important; box-shadow:none !important; }
 html.mn-on .screen[data-screen="3"] #holeViewSection.mn-ultimo .mn-bot #holeNextBtn{ display:none !important; }
@@ -263,7 +263,8 @@ body:has(.pr-banda) .tf-fondo{ padding-top:calc(env(safe-area-inset-top, 0px) + 
   html.mn-on .screen[data-screen="3"] .app-bar .back{ height:38px; font-size:15px !important; padding:0 14px !important; }
   .mn-esc{ width:36px; height:36px; }
   html.mn-on .screen[data-screen="3"] .mk-cartel{ margin-top:4px; padding:3px 12px; }
-  .mn-cnt b{ font-size:18px; }
+  .mn-cnt b{ font-size:28px; }
+  .mn-cnt{ font-size:15px; }
   html.mn-on .screen[data-screen="3"] #holeViewSection{ padding-bottom:10px !important; }
   html.mn-on .screen[data-screen="3"] .hole-card-header{ flex-direction:row; align-items:baseline; gap:10px !important; margin-top:2px !important; }
   html.mn-on .screen[data-screen="3"] .hole-badge-big{ font-size:28px; }
