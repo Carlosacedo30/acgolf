@@ -385,18 +385,19 @@
       if(String(s.name).includes(' / ')) return nombrePareja(String(s.name).split(' / '));
       return nombreCorto(s.name);
     };
+    const largo = s => (s.pIndexes && s.pIndexes.length > 1) || String(s.name).includes(' / ') || /^Pareja [AB]/.test(s.name) ? corto(s) : String(s.name || '').trim();
     // Match Play entre dos: "Pareja A 2 arriba" / "Igualados"
     if(scoringType === 'matchplay' && lista.length === 2){
       const [a, b] = lista;
       const dif = a.holesWon - b.holesWon;
       const txt = a.holesFilled === 0 ? 'Sin empezar' : dif === 0 ? 'Igualados' : corto(dif > 0 ? a : b) + ' ' + Math.abs(dif) + ' arriba';
-      box.innerHTML = '<div class="mv-match"><span class="mv-l">' + esc(corto(a)) + '</span><b class="mv-res">' + esc(txt) + '</b><span class="mv-l">' + esc(corto(b)) + '</span></div>'
+      box.innerHTML = '<div class="mv-match"><span class="mv-l">' + esc(largo(a)) + '</span><b class="mv-res">' + esc(txt) + '</b><span class="mv-l">' + esc(largo(b)) + '</span></div>'
         + '<div class="mv-pie">' + a.holesFilled + ' hoyos jugados</div>';
       return;
     }
     box.innerHTML = '<div class="mv-fila" style="--n:' + Math.min(lista.length, 4) + '">' + lista.slice(0, 8).map((s, i) =>
       '<div class="mv-item' + (i === 0 && s.holesFilled > 0 ? ' lider' : '') + '">'
-      + '<span class="mv-n">' + (s.holesFilled > 0 ? (i + 1) + 'º ' : '') + esc(corto(s)) + '</span>'
+      + '<span class="mv-n">' + (s.holesFilled > 0 ? (i + 1) + 'º ' : '') + esc(largo(s)) + '</span>'
       + '<b class="mv-v">' + (s.holesFilled === 0 ? '—' : esc(scoringType === 'stableford' ? s.points + ' pts' : formatStandingScore(s))) + '</b>'
       + '</div>').join('') + '</div>';
   }

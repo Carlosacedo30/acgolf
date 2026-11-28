@@ -73,3 +73,11 @@ parche('pruebas/js/ligas.js', [
 ("""entra: rs.length >= (l.minimo || 0) && rs.length > 0 };""", """entra: !!(l.nuevos && l.nuevos[n]) || (rs.length >= (l.minimo || 0) && rs.length > 0), nuevo: !!(l.nuevos && l.nuevos[n] && !rs.length) };"""),
 ("""lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + '</td>'""", """lg-nom">' + ligaEsc(ligaCortoN(c.jugador)) + (c.nuevo ? '<span class="lg-nuevo"> · nuevo</span>' : '') + '</td>'"""),
 ])
+
+# Marcador en directo: nombre COMPLETO del jugador (norma de Carlos, 13-nov y 28-nov-2026). SOLO pruebas.
+parche('pruebas/js/vista-hoyo.js', [
+("    // Match Play entre dos:", "    const largo = s => (s.pIndexes && s.pIndexes.length > 1) || String(s.name).includes(' / ') || /^Pareja [AB]/.test(s.name) ? corto(s) : String(s.name || '').trim();\n    // Match Play entre dos:"),
+("<span class=\"mv-l\">' + esc(corto(a)) + '</span>", "<span class=\"mv-l\">' + esc(largo(a)) + '</span>"),
+("<span class=\"mv-l\">' + esc(corto(b)) + '</span>", "<span class=\"mv-l\">' + esc(largo(b)) + '</span>"),
+("(i + 1) + 'º ' : '') + esc(corto(s)) + '</span>'", "(i + 1) + 'º ' : '') + esc(largo(s)) + '</span>'"),
+])
