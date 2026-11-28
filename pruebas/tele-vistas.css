@@ -72,3 +72,4 @@
 @media (prefers-reduced-motion: reduce){ .tv-cap{ transition:none; } .vt.tv-on .vt-fondo{ animation:none; } .tv-v{ transition:none; } }
 .vt.tv-grande .vt-rot{ bottom:19.6%; font-size:clamp(10px,2.2cqw,15px); }
 .vt.tv-on .vt-logo, .vt.tv-on .vt-live{ z-index:3; }
+.vt.tv-on .vt-mesa{ aspect-ratio:16/9; width:36%; background-image:url('tv-mesa-quieta.jpg?v=1'); }

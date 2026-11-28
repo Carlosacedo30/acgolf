@@ -21,7 +21,8 @@
   const NUEVOS = ['n-javier','n-aitor','n-carlitos','n-cesar','n-chente','n-covadonga','n-enrique','n-isidro','n-juanma','n-miguel','n-moises'];
   const esNueva = k => k.indexOf('x-') === 0 || NUEVOS.indexOf(k) >= 0;
   const urlVoz = k => (esNueva(k) ? VOCES_X : VOCES) + k + '.mp3';
-  const VIDEOS = { lola: ['tele-lola-a.mp4?v=1', 'tele-lola-b.mp4?v=1'], curro: ['tele-curro-a.mp4?v=1', 'tele-curro-b.mp4?v=1'] };
+  // Vídeos nuevos del plató (28-nov-2026): Lola y Curro oficiales juntos en la mesa; la boca se mueve solo cuando suena la voz
+  const VIDEOS = { lola: ['tv-mesa-a.mp4?v=1', 'tv-mesa-b.mp4?v=1'], curro: ['tv-mesa-b.mp4?v=1', 'tv-mesa-a.mp4?v=1'] };
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -335,7 +336,7 @@
       + '<div class="vt-live"><i></i>EN DIRECTO</div>'
       + '<div class="vt-centro"></div>'
       + '<div class="vt-rot" aria-live="polite"></div>'
-      + '<div class="vt-mesa"><video muted playsinline loop preload="auto" poster="tele-quieto.jpg?v=1"></video><span>Lola y Curro</span>'
+      + '<div class="vt-mesa"><video muted playsinline loop preload="auto" poster="tv-mesa-quieta.jpg?v=1"></video><span>Lola y Curro</span>'
       + '<button type="button" class="vt-grande" aria-label="Ver a pantalla completa">⤢</button></div>'
       + '<div class="vt-bajo"><div class="vt-reloj"></div><div class="vt-marcador"><div class="vt-cinta"></div></div></div>'
       + '<button type="button" class="vt-oir">🔊 <span>Escuchar a Lola y Curro</span></button>'
