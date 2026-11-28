@@ -104,7 +104,7 @@
       return '<div class="ip-card' + (esHoy ? ' hoy' : '') + (ligaInfo(c) ? ' ip-card-liga' : '') + '" data-fecha="' + esc(c.date) + '" data-hora="' + esc(String((c.times && c.times[0]) || '')) + '">'
         + '<div class="ip-fila"><div class="ip-info" role="button" tabindex="0" data-conv-code="' + esc(c.code) + '">'
         + '<div class="ip-eti">' + etiqueta + '</div>' + jornada(c) + '<div class="ip-cuando">' + esc(cuando) + '</div><div class="ip-pie">' + esc(pie) + '</div></div>' + puestoLiga(c) + '</div>'
-        + derecha + '</div>' + elegir + cambiar
+        + derecha + elegir + cambiar
         // Partida ya creada: el administrador o quien lo organizó puede abrir el partido para borrarlo
         + (c.roundCode && (isAdmin || (c.organiza && c.organiza === window.miPerfilId)) ? '<button type="button" class="ip-cambiar" data-gestionar="' + esc(c.code) + '">Ver o borrar el partido</button>' : '')
         + '</div>';
