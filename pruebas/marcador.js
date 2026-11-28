@@ -9,7 +9,9 @@
   const corto = n => String(n || '').trim().replace(/\s+/g, ' ');   // norma de Carlos: en los marcadores siempre el nombre completo
   let est = null, estCode = null, estJson = '', cargando = false, aviso = '';
   let elegidos = null, elegidosKey = '';       // marcadores elegidos en pantalla antes de confirmar
-  let llegada = { hoyo: null, completo: false }, avanceTimer = null;
+  let llegada = { hoyo: null, completo: false }, avanceTimer = null, entradaHecha = '';
+  // Al salir de la pantalla de golpes se olvida, para que la próxima vez que entres vaya al hoyo que falta
+  setInterval(() => { try { if(!document.querySelector('.screen.active[data-screen="3"]')) entradaHecha = ''; } catch(e){} }, 1000);
 
   // ---------- ¿Hace falta marcador? ----------
   // Solo en las partidas que salen de una liga creada en «Crear liga».
@@ -81,6 +83,16 @@
   // ¿En este hoyo, lo que apunto yo (o lo que apunto de quien marco) NO coincide con lo del otro?
   function malEn(g, h){
     return [miIdx()].concat(marcados(g)).some(i => { const a = propio(i, h), b = marca(g, i, h); return a != null && b != null && a !== b; });
+  }
+  // Primer hoyo, en el orden en que se juega (según por dónde sale el grupo), donde aún falta algo mío o de quien marco
+  function primerHoyoPorApuntar(g){
+    let h = typeof hoyoSalidaActual === 'function' ? hoyoSalidaActual() : 1;
+    for(let i = 0; i < nHoyos(); i++){
+      if(!hoyoMioCompleto(g, h)) return h;
+      const sig = typeof hoyoSiguiente === 'function' ? hoyoSiguiente(h) : h + 1;
+      if(!sig || sig === h) break; h = sig;
+    }
+    return null;
   }
   function primerMal(g){ for(let h = 1; h <= nHoyos(); h++) if(malEn(g, h)) return h; return null; }
   const soyJugador = g => !!g && miIdx() >= 0 && g.jugadores.some(j => +j.idx === miIdx() && j.marcador_idx != null);
@@ -316,6 +328,15 @@
     // BLOQUEO: no se puede pasar del primer hoyo que no coincide hasta arreglarlo
     const pm = primerMal(g);
     if(pm != null && currentHole > pm){ currentHole = pm; window.renderHoleView(); return; }
+    // AL ENTRAR en la partida: se va directo al primer hoyo que falta por apuntar (si saliste en el 4, entras en el 5).
+    // Solo una vez por entrada: después cada uno se mueve por los hoyos como quiera.
+    if(estCode === currentRoundCode && entradaHecha !== currentRoundCode + ':' + activeGroup){
+      entradaHecha = currentRoundCode + ':' + activeGroup;
+      if(!cerrada(g) && !todoApuntado(g)){
+        const falta = primerHoyoPorApuntar(g);
+        if(falta != null && falta !== currentHole){ currentHole = falta; window.renderHoleView(); return; }
+      }
+    }
     const h = currentHole;
     const input0 = document.querySelector('.golpes-input[data-hole="' + h + '"]');
     const par = input0 ? parseInt(input0.dataset.par, 10) : null;
