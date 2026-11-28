@@ -642,7 +642,8 @@
   let platoAudio = null, platoPasos = null, platoI = 0, platoT = null, platoPausa = false;
 
   function entradaResumen(round, empezarYa){
-    const sitio = document.querySelector('#vvOverlay .vv-plato-sitio'); if(!sitio || sitio.querySelector('.vv-plato')) return;
+    const sitio = document.querySelector('#vvOverlay .vv-plato-sitio'); if(!sitio || sitio.querySelector('.vv-plato') || sitio.querySelector('.vt')) return;
+    if(window.acgolfTele && window.acgolfTele.montarFinal && window.acgolfTele.montarFinal(sitio, round, empezarYa)){ apuntar('envivo', 'R:' + round.code); return; }   // la emisión nueva (tele-vistas.js)
     sitio.innerHTML = '<div class="vv-plato"><video class="vv-pv" src="plato-risa.mp4?v=1" poster="plato.webp?v=1" muted playsinline loop preload="auto"></video>'
       + '<div class="vv-pbug">🎬 EL <b>PLATÓ</b></div><div class="vv-prot"></div>'
       + '<button type="button" class="vv-pplay">▶<span>Ver el resumen con Curro y Lola</span></button>'

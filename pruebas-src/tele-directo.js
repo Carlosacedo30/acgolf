@@ -21,7 +21,8 @@
   const NUEVOS = ['n-javier','n-aitor','n-carlitos','n-cesar','n-chente','n-covadonga','n-enrique','n-isidro','n-juanma','n-miguel','n-moises'];
   const esNueva = k => k.indexOf('x-') === 0 || NUEVOS.indexOf(k) >= 0;
   const urlVoz = k => (esNueva(k) ? VOCES_X : VOCES) + k + '.mp3';
-  const VIDEOS = { lola: ['tele-lola-a.mp4?v=1', 'tele-lola-b.mp4?v=1'], curro: ['tele-curro-a.mp4?v=1', 'tele-curro-b.mp4?v=1'] };
+  // Vídeos nuevos del plató (28-nov-2026): Lola y Curro oficiales juntos en la mesa; la boca se mueve solo cuando suena la voz
+  const VIDEOS = { lola: ['tv-mesa-a.mp4?v=1', 'tv-mesa-b.mp4?v=1'], curro: ['tv-mesa-b.mp4?v=1', 'tv-mesa-a.mp4?v=1'] };
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -211,11 +212,11 @@
     const k = i => t[i] ? claveNombre(t[i].n) : null;
     const pasos = [];
     const r1 = '🏆 <b>Gana ' + esc(largo(t[0].n)) + '</b> · ' + marca(t[0]);
-    pasos.push(Lp(['x-fin-a1', k(0), 'x-fin-a2'], r1));
+    pasos.push(Lp(k(0) ? ['x-fin-a1', k(0), 'x-fin-a2'] : [], r1));   // sin nombre grabado no se dice la frase a medias: solo se enseña
     if(t[1]){
       const r2 = '2.º · <b>' + esc(largo(t[1].n)) + '</b> · ' + marca(t[1]);
       if(k(1)){ pasos.push(Cp('x-fin-b1', r2)); pasos.push(Lp(k(1), r2)); pasos.push(Cp('x-fin-b2', r2)); }
-      else pasos.push(Cp('x-fin-b2', r2));
+      else pasos.push(Cp([], r2));
     }
     if(t[2]){
       const r3 = '3.º · <b>' + esc(largo(t[2].n)) + '</b> · ' + marca(t[2]);
@@ -324,6 +325,7 @@
     // Un aviso viejo de líder ya no vale si el líder ha vuelto a cambiar
     if(a.prio === 1 && ronda){ const f = foto(ronda); if(!f.lider || a.pasos[a.pasos.length - 1].rot.indexOf(esc(largo(f.lider))) < 0) return siguienteAviso(); }
     ultimoAviso = Date.now();
+    if(window.acgolfTeleDir){ window.acgolfTeleDir({ aviso: a }); return; }   // con la tele nueva manda el realizador (tele-vistas.js)
     reproducir(a.pasos);
   }
   function montar(code, round){
@@ -335,12 +337,12 @@
       + '<div class="vt-live"><i></i>EN DIRECTO</div>'
       + '<div class="vt-centro"></div>'
       + '<div class="vt-rot" aria-live="polite"></div>'
-      + '<div class="vt-mesa"><video muted playsinline loop preload="auto" poster="tele-quieto.jpg?v=1"></video><span>Lola y Curro</span>'
+      + '<div class="vt-mesa"><video muted playsinline loop preload="auto" poster="tv-mesa-quieta.jpg?v=1"></video><span>Lola y Curro</span>'
       + '<button type="button" class="vt-grande" aria-label="Ver a pantalla completa">⤢</button></div>'
       + '<div class="vt-bajo"><div class="vt-reloj"></div><div class="vt-marcador"><div class="vt-cinta"></div></div></div>'
       + '<button type="button" class="vt-oir">🔊 <span>Escuchar a Lola y Curro</span></button>'
       + '</div>';
-    sitio.querySelector('.vt-oir').onclick = () => { desbloquear(); reproducir(guion(ronda)); };
+    sitio.querySelector('.vt-oir').onclick = () => { desbloquear(); if(window.acgolfTeleDir) window.acgolfTeleDir({ inicio: true, toque: true }); else reproducir(guion(ronda)); };
     sitio.querySelector('.vt-grande').onclick = () => {
       const el = sitio.querySelector('.vt');
       try { if(document.fullscreenElement) document.exitFullscreen(); else if(el.requestFullscreen) el.requestFullscreen().then(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch(e){} }).catch(() => el.classList.toggle('vt-full')); else el.classList.toggle('vt-full'); } catch(e){ el.classList.toggle('vt-full'); }
@@ -348,7 +350,7 @@
     actualizar(round);
     clearInterval(reloj); reloj = setInterval(pintarReloj, 30000);
     // Al entrar, se intenta empezar solos (vienen de tocar «Seguir en vivo»); si el móvil no deja, sale el botón
-    setTimeout(() => { if(!empezado){ empezado = true; reproducir(guion(ronda)); } }, 600);
+    setTimeout(() => { if(!empezado){ empezado = true; if(window.acgolfTeleDir) window.acgolfTeleDir({ inicio: true }); else reproducir(guion(ronda)); } }, 600);
   }
   function pintarReloj(){
     const r = document.querySelector('#vvOverlay .vt-reloj'); if(!r || !ronda) return;
@@ -357,7 +359,7 @@
     const ini = new Date(ronda.created_at).getTime();
     let min = Math.max(0, Math.round((Date.now() - ini) / 60000));
     const txt = min > 600 ? '' : (min >= 60 ? Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0') + ' min' : min + ' min');
-    r.innerHTML = (txt ? '⏱ <b>' + txt + '</b>' : '') + '<span>' + (hoyo ? (hoyo >= NH(t) ? 'Último hoyo' : 'Faltan <b>' + (NH(t) - hoyo) + '</b> hoyos') : 'Sin golpes aún') + '</span>';
+    r.innerHTML = (txt ? '<span>⏱ <b>' + txt + '</b></span>' : '') + '<span>' + (hoyo ? (hoyo >= NH(t) ? 'Último hoyo' : 'Faltan <b>' + (NH(t) - hoyo) + '</b> hoyos') : 'Sin golpes aún') + '</span>';
   }
   function actualizar(round){
     ronda = round;
@@ -413,5 +415,5 @@
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);
 
-  window.acgolfTele = { montar, actualizar, quitar, guion, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
+  window.acgolfTele = { montar, actualizar, quitar, guion, _parar: parar, _hablando: () => hablando, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
 })();
