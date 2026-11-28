@@ -16,6 +16,9 @@
 
   let zumT1 = null, zumT2 = null, ronda = null, vista = 0, grupoTurno = 0, timer = null, fiestaT = null, memoria = null, geo = {}, geoPidiendo = {};
   const TIEMPO = 9000;
+  let faseAct = 'medio'; const tiempoFase = () => faseAct === 'final' ? 7000 : TIEMPO;
+  // vista fija del hoyo (fundido): se pide a pinta() por su nombre
+  let vistaForzada = null;
 
   // ---------- Datos ----------
   function datos(round){
@@ -33,7 +36,11 @@
       const fin = hechos >= n, hoyo = orden[Math.min(hechos, n - 1)] || 1;
       return { g, gi, orden, n, hechos, fin, hoyo, par: pares[hoyo - 1] || 4, salida: orden[0] || 1, jug: (g.players || []).filter(Boolean), time: g.time || '' };
     });
-    return { t, gr, grupos, pares, esPtos };
+    const nh = x => (x && x.g && x.g.nueve) ? 9 : 18;
+    const final = t.length >= 2 && t.every(x => (x.pos || 0) >= nh(x));
+    const avance = t.reduce((m, x) => Math.max(m, x.pos || 0), 0), total = t[0] ? nh(t[0]) : 18;
+    const fase = final ? 'fin' : (!t.length || avance <= 4 ? 'inicio' : (avance >= total - 3 ? 'final' : 'medio'));
+    return { t, gr, grupos, pares, esPtos, final, fase, avance, total };
   }
 
   // ---------- Silueta del hoyo (con la salida, el green y los obstáculos de la app) ----------
@@ -111,11 +118,12 @@
       const p = D.puesto[i], m = D.esPtos ? x.pts : signo(x.neto);
       return '<div class="tv-f' + (i === 0 ? ' uno' : '') + '"><i>' + (p.emp ? 'T' : '') + p.pos + '</i><em>' + esc(largo(x.n)) + '<small>' + (x.pos >= (x.g && x.g.nueve ? 9 : 18) ? 'terminado' : 'hoyo ' + etq(x.ultimo)) + '</small></em><b>' + m + '</b></div>';
     }).join('');
-    return '<div class="tv-card tv-clas"><h4><span>CLASIFICACIÓN</span><span>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</span></h4>' + (filas || '<p class="tv-vacio">Esperando los primeros golpes…</p>') + '</div>';
+    return '<div class="tv-card tv-clas"><h4><span>' + (D.final ? 'RESULTADO FINAL' : 'CLASIFICACIÓN') + '</span><span>' + (D.fase === 'final' ? 'RECTA FINAL' : (D.esPtos ? 'PUNTOS' : 'NETO')) + '</span></h4>' + (filas || '<p class="tv-vacio">Esperando los primeros golpes…</p>') + '</div>';
   }
   function vHoyo(D){
     const gs = D.grupos; if(!gs.length) return vClasif(D);
-    const G = gs[grupoTurno % gs.length]; grupoTurno++;
+    let G = gs[grupoTurno % gs.length]; grupoTurno++;
+    if(D.fase === 'final' && D.t[0] && grupoTurno % 2 === 1){ const gl = gs.find(x => x.gi === D.t[0].gi); if(gl) G = gl; }
     const gh = geoDe(ronda.course_id, G.hoyo), sil = silueta(gh, G.hechos / Math.max(1, G.n));
     const nombres = G.jug.map(n => { const x = D.t.find(y => y.n === n); return '<div class="tv-j"><span>' + esc(largo(n)) + '</span><b>' + (x ? (D.esPtos ? x.pts : signo(x.neto)) : '·') + '</b></div>'; }).join('');
     const quien = G.time ? 'Salida ' + esc(G.time) : 'Grupo ' + (G.gi + 1);
@@ -128,20 +136,26 @@
     const filas = D.grupos.map(G => { const p = Math.round(100 * G.hechos / G.n); return '<div class="tv-gr"><div><b>' + (G.time ? 'Salida ' + esc(G.time) : 'Grupo ' + (G.gi + 1)) + '</b><small>sale por el ' + etq(G.salida) + '</small></div><div class="tv-bar"><u style="width:' + p + '%"></u></div><span>' + (G.fin ? 'FIN' : 'hoyo ' + etq(G.hoyo)) + '</span></div>'; }).join('');
     return '<div class="tv-card tv-grupos"><h4><span>EL CAMPO</span><span>' + D.grupos.length + (D.grupos.length === 1 ? ' GRUPO' : ' GRUPOS') + '</span></h4>' + filas + '</div>';
   }
+  function vPodio(D){
+    const t = D.t.slice(0, 3), med = ['1', '2', '3'];
+    const cols = t.map((x, i) => { const p = D.puesto[i]; return '<div class="tv-pd p' + (i + 1) + '"><i>' + (p.emp ? 'T' : '') + p.pos + '</i><em>' + esc(largo(x.n)) + '</em><b>' + (D.esPtos ? x.pts + ' pts' : signo(x.neto)) + '</b><small>' + (D.esPtos ? '' : (x.bruto + ' golpes')) + '</small></div>'; }).join('');
+    return '<div class="tv-card tv-podio"><h4><span>EL PODIO</span><span>RESULTADO FINAL</span></h4><div class="tv-pds">' + cols + '</div></div>';
+  }
   const VISTAS = [vClasif, vHoyo, vGrupos];
+  const ordenVistas = fase => fase === 'inicio' ? [vGrupos, vHoyo, vClasif] : fase === 'final' ? [vClasif, vHoyo, vClasif, vGrupos] : fase === 'fin' ? [vPodio, vClasif, vGrupos] : VISTAS;
 
   function pinta(){
     const cap = document.querySelector('#vvOverlay .tv-cap'); if(!cap || !ronda) return;
     let D; try { D = datos(ronda); } catch(e){ return; }
     D.puesto = D.t.map((x, i) => { const k = D.esPtos ? x.pts : x.neto; let a = i; while(a > 0 && (D.esPtos ? D.t[a - 1].pts : D.t[a - 1].neto) === k) a--; let b = i; while(b < D.t.length - 1 && (D.esPtos ? D.t[b + 1].pts : D.t[b + 1].neto) === k) b++; return { pos: a + 1, emp: b > a }; });
     cargarGeo(ronda.course_id);
-    const fn = D.t.length || vista !== 0 ? VISTAS[vista % VISTAS.length] : vClasif;
+    faseAct = D.fase; const lista = ordenVistas(D.fase); const fn = vistaForzada || (D.t.length ? lista[vista % lista.length] : vClasif); vistaForzada = null;
     const nueva = document.createElement('div'); nueva.className = 'tv-v'; nueva.innerHTML = fn(D);
     const vieja = cap.querySelector('.tv-v');
     cap.appendChild(nueva);
     requestAnimationFrame(() => { nueva.classList.add('on'); colocarPins(nueva); });
     if(vieja){ vieja.classList.remove('on'); setTimeout(() => vieja.remove(), 700); }
-    cap.dataset.vista = vista % VISTAS.length;
+    cap.dataset.vista = vista % lista.length;
   }
   // Los marcadores (grupo y salida) van derechos encima del dibujo inclinado
   function colocarPins(v){
@@ -177,7 +191,7 @@
   function rotar(on){
     clearInterval(rotT); rotT = null;
     if(!on) return;
-    pinta(); rotT = setInterval(() => { vista = (vista + 1) % VISTAS.length; pinta(); }, TIEMPO);
+    pinta(); rotT = setInterval(() => { vista = (vista + 1) % 12; pinta(); }, tiempoFase());
   }
   function marcas(){
     const vt = vtEl(); if(!vt) return;
@@ -185,11 +199,13 @@
     const ti = D.t.map((x, i) => { const k = D.esPtos ? x.pts : x.neto; let a = i; while(a > 0 && (D.esPtos ? D.t[a - 1].pts : D.t[a - 1].neto) === k) a--; let b = i; while(b < D.t.length - 1 && (D.esPtos ? D.t[b + 1].pts : D.t[b + 1].neto) === k) b++; return (b > a ? 'T' : '') + (a + 1); });
     const filas = D.t.slice(0, 3).map((x, i) => '<div class="' + (i === 0 ? 'uno' : '') + '"><i>' + ti[i] + '</i><em>' + esc(largo(x.n)) + '</em><b>' + (D.esPtos ? x.pts : signo(x.neto)) + '</b></div>').join('');
     let m = vt.querySelector('.tv-marcas'); if(!m){ m = document.createElement('div'); m.className = 'tv-marcas'; vt.appendChild(m); }
-    m.innerHTML = '<h5>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</h5>' + (filas || '<p>Esperando los primeros golpes…</p>');
+    m.innerHTML = '<h5>' + (D.final ? 'FINAL' : (D.esPtos ? 'PUNTOS' : 'NETO')) + '</h5>' + (filas || '<p>Esperando los primeros golpes…</p>');
   }
   async function entrada(g){
     const T = T_(); let P = []; try { P = T.guion(ronda); } catch(e){}
     setModo('intro'); marcas(); rotar(false);
+    let DD = null; try { DD = datos(ronda); } catch(e){}
+    if(DD && DD.final) return programaFinal(g, P, DD);
     const A = P.slice(0, 3), B = P.slice(3, 6), C = P.slice(6);
     await decir(A, 9000, g); if(!vive(g)) return;
     await bucle(g, B, C);
@@ -201,28 +217,58 @@
       await decir(B || [], 22000, g); B = null; if(!vive(g)) return;
       setModo('host'); rotar(false); marcas();
       await decir(C || [], 10000, g); C = null; if(!vive(g)) return;
-      setModo('hoyo'); vista = 1; grupoTurno = Math.floor(Math.random() * 3); pinta();
+      setModo('hoyo'); vistaForzada = vHoyo; grupoTurno = Math.floor(Math.random() * 3); pinta();
       document.querySelector('#vvOverlay .tv-cap') && document.querySelector('#vvOverlay .tv-cap').classList.add('grande');
       await espera(9000, g); if(!vive(g)) return;
       const cp = document.querySelector('#vvOverlay .tv-cap'); if(cp) cp.classList.remove('grande');
     }
   }
+  // ---------- El resumen final: la misma emisión, con el ganador en pantalla negra, el podio y las cervezas ----------
+  async function programaFinal(g, P, D){
+    const por = f => P.filter(p => String(p.rot || '').indexOf(f) >= 0);
+    const hola = P.slice(0, 2), gana = por('Gana'), seg = por('2.º'), ter = por('3.º'), cerv = por('🍺'), adios = por('hasta la próxima');
+    const x = D.t[0];
+    setModo('intro'); marcas(); rotar(false);
+    const lv = vtEl() && vtEl().querySelector('.vt-live'); if(lv) lv.innerHTML = '<i></i>RESUMEN FINAL';
+    await decir(hola, 7000, g); if(!vive(g)) return;
+    // 1. El ganador, en pantalla negra
+    if(x){ if(gana.length) T_()._reproducir(gana); await liv({ tipo: 'GANADOR', n: x.n, nombre: largo(x.n), detalle: 'RESUMEN FINAL · ' + (D.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO'), golpes: D.esPtos ? x.pts : x.bruto, final: true }, g, 9000); if(!vive(g)) return; }
+    // 2. El podio con la mesa pequeña, mientras comentan al 2.º y al 3.º
+    setModo('rot'); rotar(false); vistaForzada = vPodio; pinta();
+    await decir(seg.concat(ter), 9000, g); if(!vive(g)) return;
+    // 3. Las cervezas: brindis a pantalla completa
+    if(cerv.length){ const pagan = D.t.slice(D.t.length - Math.floor(D.t.length / 2)).map(y => largo(y.n)); await brindis(pagan, cerv, g); if(!vive(g)) return; }
+    // 4. Despedida con la mesa grande y la clasificación final en las marcas
+    setModo('host'); marcas(); await decir(adios, 6000, g); if(!vive(g)) return;
+    // 5. Se queda la clasificación final y un botón para verlo otra vez
+    setModo('rot'); vistaForzada = vClasif; pinta();
+    const vt = vtEl(); if(vt && !vt.querySelector('.tv-otra')){ const b = document.createElement('button'); b.type = 'button'; b.className = 'tv-otra'; b.textContent = '↺ Ver el resumen otra vez'; b.onclick = () => { b.remove(); window.acgolfTeleDir({ inicio: true }); }; vt.appendChild(b); }
+  }
+  async function brindis(pagan, voz, g){
+    const vt = vtEl(); if(!vt) return;
+    const e = document.createElement('div'); e.className = 'tv-brin';
+    e.innerHTML = '<video muted playsinline autoplay preload="auto" src="tv-brindis.mp4?v=1"></video><div class="tv-bt"><small>HOY PAGAN</small><b>LAS CERVEZAS</b><span>' + pagan.map(esc).join(' · ') + '</span></div>';
+    vt.appendChild(e); setModo('liv'); rotar(false); requestAnimationFrame(() => e.classList.add('on'));
+    try { e.querySelector('video').play().catch(() => {}); } catch(er){}
+    await decir(voz, 8000, g);
+    e.classList.remove('on'); setTimeout(() => e.remove(), 700);
+  }
   // Pantalla negra de gran evento
-  async function liv(ev, g){
+  async function liv(ev, g, dur){
     const vt = vtEl(); if(!vt) return;
     let D; try { D = datos(ronda); } catch(e){ D = { t: [] }; }
     const x = D.t.find(y => y.n === ev.n) || D.t[0], pos = x ? D.t.indexOf(x) + 1 : '';
-    const col = ev.tipo === 'ÁGUILA' ? 'oro' : (ev.tipo === 'NUEVO LÍDER' ? 'azul' : '');
+    const col = (ev.tipo === 'ÁGUILA' || ev.tipo === 'GANADOR') ? 'oro' : (ev.tipo === 'NUEVO LÍDER' || ev.tipo === 'RECTA FINAL' ? 'azul' : '');
     const old = vt.querySelector('.tv-liv'); if(old) old.remove();
-    const vid = ev.tipo === 'BIRDIE' ? 'tv-birdie.mp4?v=1' : 'tv-aplausos.mp4?v=1';
+    const vid = ev.tipo === 'BIRDIE' ? 'tv-birdie.mp4?v=1' : (ev.tipo === 'GANADOR' ? 'tv-brindis.mp4?v=1' : 'tv-aplausos.mp4?v=1');
     const e = document.createElement('div'); e.className = 'tv-liv ' + col;
-    e.innerHTML = '<i class="l1"></i><i class="l2"></i><div class="tv-lt"><small>EN DIRECTO · ' + esc(ronda.round_name || '') + '</small><b>' + esc(ev.tipo) + '</b><strong>' + esc(ev.nombre) + '</strong><span>' + esc(ev.detalle) + '</span>'
-      + '<div class="tv-cifras"><div><small>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</small><b>' + (x ? (D.esPtos ? x.pts : signo(x.neto)) : '—') + '</b></div><div><small>PUESTO</small><b>' + pos + '</b></div><div><small>EN EL HOYO</small><b>' + (ev.golpes || '—') + '</b></div></div></div>'
+    e.innerHTML = '<i class="l1"></i><i class="l2"></i><div class="tv-lt"><small>' + (ev.final ? 'RESUMEN FINAL' : 'EN DIRECTO') + ' · ' + esc(ronda.round_name || '') + '</small><b>' + esc(ev.tipo) + '</b><strong>' + esc(ev.nombre) + '</strong><span>' + esc(ev.detalle) + '</span>'
+      + '<div class="tv-cifras"><div><small>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</small><b>' + (x ? (D.esPtos ? x.pts : signo(x.neto)) : '—') + '</b></div><div><small>PUESTO</small><b>' + pos + '</b></div><div><small>' + (ev.final ? (D.esPtos ? 'PUNTOS' : 'GOLPES') : 'EN EL HOYO') + '</small><b>' + (ev.golpes || '—') + '</b></div></div></div>'
       + '<div class="tv-pip"><video muted playsinline autoplay preload="auto" src="' + vid + '"></video></div>';
     vt.appendChild(e); setModo('liv'); rotar(false);
     requestAnimationFrame(() => e.classList.add('on'));
     try { e.querySelector('video').play().catch(() => {}); } catch(er){}
-    await espera(7000, g);
+    await espera(dur || 7000, g);
     e.classList.remove('on'); setTimeout(() => e.remove(), 700);
   }
   async function evento(ev){
@@ -237,7 +283,7 @@
       } else if(voz){
         setModo('host'); marcas(); rotar(false); await decir(voz, 6000, g); if(!vive(g)) return;
       }
-      setModo('hoyo'); vista = 1; pinta(); const cp = document.querySelector('#vvOverlay .tv-cap'); if(cp) cp.classList.add('grande');
+      setModo('hoyo'); vistaForzada = vHoyo; pinta(); const cp = document.querySelector('#vvOverlay .tv-cap'); if(cp) cp.classList.add('grande');
       await espera(8000, g); if(!vive(g)) return;
       if(cp) cp.classList.remove('grande');
       await bucle(g, [], []);
@@ -255,6 +301,8 @@
       if(mejor){ setTimeout(() => evento({ tipo: mejor.d <= -2 ? 'ÁGUILA' : 'BIRDIE', n: mejor.n, nombre: largo(mejor.n), detalle: 'HOYO ' + etq(mejor.h) + ' · PAR ' + mejor.par, golpes: mejor.v }), 400); }
       else if(lider && memoria.lider && lider !== memoria.lider && t.length > 1){ const x = t[0]; setTimeout(() => evento({ tipo: 'NUEVO LÍDER', n: x.n, nombre: largo(x.n), detalle: x.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO', golpes: '' }), 400); }
     }
+    // La recta final: se avisa una sola vez con la pantalla negra
+    try { const D = datos(ronda); if(memoria && memoria.fase && memoria.fase !== 'final' && D.fase === 'final' && D.t[0]){ const x = D.t[0]; setTimeout(() => evento({ tipo: 'RECTA FINAL', n: x.n, nombre: largo(x.n), detalle: 'LIDERA · ' + (x.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO') + ' · HOYO ' + etq(x.ultimo), golpes: '' }), 600); } memoria = { claves, lider, fase: D.fase }; return; } catch(e){}
     memoria = { claves, lider };
   }
 
@@ -279,13 +327,18 @@
     vt.appendChild(intro); setTimeout(() => intro.classList.add('fuera'), 2200); setTimeout(() => intro.remove(), 3000);
     mirarNovedades();
   }
+  // Partida terminada: la misma emisión con el resumen final (la llama en-vivo.js en lugar del plató de antes)
+  function montarFinal(sitio, round, empezarYa){
+    const T = window.acgolfTele; if(!T || !T.montar || !sitio) return false;
+    try { sitio.innerHTML = '<div class="vt-sitio"></div>'; T.montar(round.code, round); return !!sitio.querySelector('.vt'); } catch(e){ return false; }
+  }
   function arrancar(){
     const T = window.acgolfTele; if(!T || T._tv) return; T._tv = true;
     const m0 = T.montar, a0 = T.actualizar, q0 = T.quitar;
     T.montar = function(code, round){ const r = m0.apply(this, arguments); try { engancharse(code, round); } catch(e){} return r; };
     T.actualizar = function(round){ const r = a0.apply(this, arguments); try { ronda = round; mirarNovedades(); } catch(e){} return r; };
     T.quitar = function(){ gen++; clearInterval(rotT); rotT = null; clearTimeout(zumT1); clearTimeout(zumT2); ronda = null; memoria = null; pend = []; ocupado = false; return q0.apply(this, arguments); };
-    T._tvEvento = evento; T._tvPinta = pinta; T._tvModo = setModo;
+    T.montarFinal = montarFinal; T._tvEvento = evento; T._tvPinta = pinta; T._tvModo = setModo;
   }
   if(window.acgolfTele) arrancar(); else window.addEventListener('load', () => setTimeout(arrancar, 300));
 })();

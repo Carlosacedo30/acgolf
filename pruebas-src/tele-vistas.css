@@ -124,3 +124,21 @@
 .tv-marcas div{ flex:1; min-width:0; display:flex; align-items:center; gap:.8cqw; grid-template-columns:none; padding:.3cqw 1cqw; border:0; border-radius:999px; font-size:1.45cqw; background:rgba(255,255,255,.08); }
 .tv-marcas div em{ flex:1; min-width:0; } .tv-marcas div b{ font-size:2cqw; }
 .tv-marcas div.uno{ background:#E9CF8C; border-radius:999px; }
+
+/* ===== Podio, brindis y botón del resumen final ===== */
+.tv-pds{ flex:1; display:flex; align-items:flex-end; justify-content:center; gap:1.6cqw; padding-top:1cqw; min-height:0; }
+.tv-pd{ flex:1; max-width:15cqw; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; text-align:center; padding:1cqw .8cqw; border:1.5px solid #E9CF8C; border-radius:1.8cqw 1.8cqw 0 0; background:rgba(255,255,255,.07); }
+.tv-pd.p1{ height:100%; background:#E9CF8C; color:#0A0C10; } .tv-pd.p2{ height:82%; } .tv-pd.p3{ height:72%; }
+.tv-pd i{ font:900 italic 5cqw/1 'Archivo',sans-serif; font-style:italic; color:#E9CF8C; } .tv-pd.p1 i{ color:#0A0C10; }
+.tv-pd em{ font:800 2.1cqw/1.15 'Archivo',sans-serif; font-style:normal; margin:.6cqw 0; overflow-wrap:anywhere; }
+.tv-pd b{ font:900 3.6cqw 'Archivo',sans-serif; color:#fff; } .tv-pd.p1 b{ color:#0A0C10; }
+.tv-pd small{ font:700 1.5cqw 'Barlow',sans-serif; color:#DCE5F4; } .tv-pd.p1 small{ color:#0A0C10; }
+.tv-brin{ position:absolute; inset:0; z-index:6; background:#000; opacity:0; transition:opacity .5s; overflow:hidden; }
+.tv-brin.on{ opacity:1; }
+.tv-brin video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.tv-brin::after{ content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.75),rgba(0,0,0,0) 65%); }
+.tv-bt{ position:absolute; z-index:1; left:5cqw; bottom:7cqw; max-width:55cqw; animation:tvEntra .9s .2s cubic-bezier(.2,.85,.2,1) both; }
+.tv-bt small{ display:block; font:800 2.2cqw 'Archivo',sans-serif; letter-spacing:.24em; color:#E9CF8C; }
+.tv-bt b{ display:block; font:900 italic 9cqw/1 'Archivo',sans-serif; color:#fff; text-transform:uppercase; }
+.tv-bt span{ display:block; margin-top:1cqw; font:800 3.2cqw 'Archivo',sans-serif; color:#E9CF8C; }
+.tv-otra{ position:absolute; z-index:7; right:3cqw; top:3cqw; min-height:44px; padding:.5em 1.1em; border-radius:999px; border:1.5px solid #E9CF8C; background:linear-gradient(180deg,#2A5AA6,#16315C); color:#fff; font:800 clamp(12px,2.2cqw,16px) 'Archivo',sans-serif; cursor:pointer; }
