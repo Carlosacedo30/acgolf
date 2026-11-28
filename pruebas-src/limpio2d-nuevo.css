@@ -522,3 +522,6 @@ html.in-on body .mv-v{ color:#fff !important; font:900 22px Archivo, system-ui, 
 html.in-on body .mv-item.lider .mv-v{ color:#E9CF8C !important; }
 html.in-on body .mv-pie{ color:#4A5568 !important; font:700 15px Barlow, system-ui, Arial, sans-serif !important; margin-top:6px !important; }
 @media (max-width:360px){ html.in-on body .mv-l{ font-size:14px !important; letter-spacing:0 !important; } html.in-on body .mv-res{ font-size:17px !important; } html.in-on body .mv-match{ padding:10px 8px !important; gap:6px !important; } }
+/* Nombres completos en la barra del marcador: sin mayúsculas forzadas y partiendo en dos líneas si hace falta */
+html.in-on body .mv-l{ text-transform:none !important; }
+html.in-on body .mv-n{ white-space:normal !important; overflow-wrap:anywhere; text-align:center; line-height:1.15; }
