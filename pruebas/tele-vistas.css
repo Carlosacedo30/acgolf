@@ -1,0 +1,65 @@
+/* © 2026 Carlos Acedo Domínguez. acgolf TV nueva (28-nov-2026, solo pruebas): vistas que cambian solas, hoyo en silueta, animación al anotar.
+   Colores del diseño nuevo: azul #2A5AA6→#16315C, dorado #E9CF8C, rojo #C62B3A, texto blanco. Contraste mínimo 4,5:1. */
+.vt.tv-on{ container-type:inline-size; }
+/* Fondo de plató difuminado y oscuro (no se reconoce a ningún presentador: los oficiales salen en la ventanita) */
+.vt.tv-on .vt-fondo{ background:#0A0C10 url('tv-plato-ancho.jpg?v=1') center/cover !important; filter:blur(5px) brightness(.5); transform:scale(1.08); animation:tvLento 24s ease-in-out infinite alternate; }
+.vt.tv-on .vt-fondo::before, .vt.tv-on .vt-fondo::after{ display:none; }
+@keyframes tvLento{ from{ transform:scale(1.08); } to{ transform:scale(1.2); } }
+.vt.tv-on .vt-centro{ display:none; }
+.tv-cap{ position:absolute; left:3%; top:15%; width:57%; height:58%; }
+.tv-v{ position:absolute; inset:0; opacity:0; transform:translateY(8px); transition:opacity .6s, transform .6s; }
+.tv-v.on{ opacity:1; transform:none; }
+.tv-card{ height:100%; background:linear-gradient(180deg,#2A5AA6 0%,#16315C 100%); border:1.5px solid #E9CF8C; border-radius:3.2cqw; padding:1.6cqw 2cqw; color:#fff;
+  box-shadow:0 .9cqw 2.4cqw rgba(0,0,0,.55), inset 0 0 0 .5cqw rgba(10,24,54,.35); overflow:hidden; display:flex; flex-direction:column; }
+.tv-card h4{ margin:0 0 .8cqw; display:flex; justify-content:space-between; align-items:baseline; font:800 1.9cqw 'Archivo','Barlow',sans-serif; letter-spacing:.14em; color:#E9CF8C; }
+.tv-vacio{ margin:auto; font:700 2.4cqw 'Barlow',sans-serif; color:#fff; text-align:center; }
+/* Clasificación */
+.tv-f{ display:grid; grid-template-columns:5.2cqw 1fr 8cqw; align-items:center; padding:.55cqw .8cqw; border-bottom:1px solid rgba(233,207,140,.28); font:700 2.6cqw 'Barlow',sans-serif; flex:1; min-height:0; }
+.tv-f:last-child{ border:0; }
+.tv-f i{ font:900 2.4cqw 'Archivo',sans-serif; font-style:normal; color:#E9CF8C; }
+.tv-f em{ font-style:normal; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tv-f em small{ display:block; font:600 1.45cqw 'Barlow',sans-serif; color:#DCE5F4; }
+.tv-f b{ text-align:right; font:900 3.4cqw 'Archivo',sans-serif; color:#E9CF8C; }
+.tv-f.uno{ background:#E9CF8C; border-radius:1.6cqw; color:#0A0C10; border:0; }
+.tv-f.uno i, .tv-f.uno b, .tv-f.uno em small{ color:#0A0C10; }
+/* Hoyo en silueta */
+.tv-hoyo{ flex-direction:row; gap:2cqw; padding:1.4cqw; }
+.tv-izq{ flex:0 0 44%; min-width:0; }
+.tv-hw{ position:relative; width:100%; height:100%; border-radius:2cqw; overflow:hidden; background:linear-gradient(180deg,#6aa7de 0,#cfe6f5 8%,#2a6b43 14%); perspective:var(--per,600px); }
+.tv-hw svg{ position:absolute; left:0; bottom:-3%; width:100%; height:auto; transform:rotateX(38deg) scale(1.32); transform-origin:50% 100%; }
+.tv-hw::after{ content:""; position:absolute; left:0; right:0; top:0; height:30%; background:linear-gradient(180deg,rgba(15,35,70,.55),rgba(15,35,70,0)); }
+.tv-sin{ display:flex; flex-direction:column; align-items:center; justify-content:center; background:radial-gradient(circle,#3c9a5c,#1f5a3a); }
+.tv-sin b{ font:900 9cqw 'Archivo',sans-serif; } .tv-sin span{ font:800 1.8cqw 'Archivo',sans-serif; letter-spacing:.2em; color:#E9CF8C; }
+.tv-pins{ position:absolute; inset:0; z-index:2; pointer-events:none; }
+.tv-p{ position:absolute; transform:translate(-50%,-50%); white-space:nowrap; font:900 1.4cqw 'Archivo',sans-serif; text-shadow:0 1px 3px #000; }
+.tv-g1{ width:3.6cqw; height:3.6cqw; border-radius:50%; background:#C62B3A; border:.35cqw solid #fff; display:flex; align-items:center; justify-content:center; font-size:1.8cqw; box-shadow:0 0 0 .8cqw rgba(198,43,58,.3); }
+.tv-sal{ letter-spacing:.16em; color:#fff; }
+.tv-der{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.tv-der h4{ font-size:2cqw; flex-wrap:wrap; }
+.tv-der h4 span:first-child{ font:900 3.4cqw 'Archivo',sans-serif; color:#fff; letter-spacing:.04em; }
+.tv-q{ display:flex; justify-content:space-between; align-items:baseline; gap:1cqw; margin-bottom:.8cqw; }
+.tv-q small{ font:700 1.6cqw 'Barlow',sans-serif; color:#DCE5F4; } .tv-q i{ font:800 1.6cqw 'Barlow',sans-serif; font-style:normal; color:#E9CF8C; white-space:nowrap; }
+.tv-j{ display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(233,207,140,.28); padding:.7cqw 0; font:700 2.3cqw 'Barlow',sans-serif; }
+.tv-j span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .tv-j b{ font:900 2.8cqw 'Archivo',sans-serif; color:#E9CF8C; padding-left:1cqw; }
+/* Grupos en el campo */
+.tv-gr{ display:grid; grid-template-columns:1fr 14cqw 9cqw; gap:1.4cqw; align-items:center; border-bottom:1px solid rgba(233,207,140,.28); padding:.9cqw 0; flex:1; min-height:0; font:700 2.3cqw 'Barlow',sans-serif; }
+.tv-gr:last-child{ border:0; } .tv-gr small{ display:block; font:600 1.5cqw 'Barlow',sans-serif; color:#DCE5F4; }
+.tv-bar{ height:1.2cqw; border-radius:999px; background:rgba(255,255,255,.22); overflow:hidden; } .tv-bar u{ display:block; height:100%; background:#E9CF8C; }
+.tv-gr span{ text-align:right; font:900 2.2cqw 'Archivo',sans-serif; color:#E9CF8C; }
+/* Animación al anotar */
+.tv-fiesta{ position:absolute; inset:0; opacity:0; transition:opacity .5s; background:#000; }
+.tv-fiesta.on{ opacity:1; }
+.tv-fiesta video{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.tv-fiesta::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(5,12,30,.55),rgba(5,12,30,0) 35%,rgba(5,12,30,0) 60%,rgba(5,12,30,.75)); }
+.tv-cartel{ position:absolute; z-index:1; left:3%; top:14%; text-align:left; max-width:56%; }
+.tv-cartel b{ display:inline-block; background:#C62B3A; color:#fff; border:.4cqw solid #fff; border-radius:999px; padding:.3cqw 4cqw; font:900 7cqw 'Archivo',sans-serif; letter-spacing:.1em; box-shadow:0 1cqw 3cqw rgba(0,0,0,.6); }
+.tv-fiesta.oro .tv-cartel b{ background:#E9CF8C; color:#0A0C10; }
+.tv-cartel strong{ display:block; margin-top:1cqw; font:900 4.2cqw 'Archivo',sans-serif; color:#fff; text-shadow:0 .3cqw 1cqw #000; }
+.tv-cartel small{ display:block; font:800 2.2cqw 'Barlow',sans-serif; color:#E9CF8C; text-shadow:0 .2cqw .8cqw #000; letter-spacing:.06em; }
+/* Rótulo de entrada */
+.tv-intro{ position:absolute; inset:0; z-index:3; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(8,14,30,.78); color:#fff; text-align:center; transition:opacity .8s; }
+.tv-intro.fuera{ opacity:0; pointer-events:none; }
+.tv-intro small{ font:800 2.4cqw 'Archivo',sans-serif; letter-spacing:.22em; color:#E9CF8C; text-transform:uppercase; }
+.tv-intro b{ font:900 11cqw 'Archivo',sans-serif; letter-spacing:.04em; } .tv-intro b span{ color:#E9CF8C; }
+.tv-intro em{ font:italic 400 3cqw Georgia,serif; color:#E9CF8C; }
+@media (prefers-reduced-motion: reduce){ .vt.tv-on .vt-fondo{ animation:none; } .tv-v{ transition:none; } }
