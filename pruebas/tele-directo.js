@@ -359,7 +359,7 @@
     const ini = new Date(ronda.created_at).getTime();
     let min = Math.max(0, Math.round((Date.now() - ini) / 60000));
     const txt = min > 600 ? '' : (min >= 60 ? Math.floor(min / 60) + ' h ' + String(min % 60).padStart(2, '0') + ' min' : min + ' min');
-    r.innerHTML = (txt ? '⏱ <b>' + txt + '</b>' : '') + '<span>' + (hoyo ? (hoyo >= NH(t) ? 'Último hoyo' : 'Faltan <b>' + (NH(t) - hoyo) + '</b> hoyos') : 'Sin golpes aún') + '</span>';
+    r.innerHTML = (txt ? '<span>⏱ <b>' + txt + '</b></span>' : '') + '<span>' + (hoyo ? (hoyo >= NH(t) ? 'Último hoyo' : 'Faltan <b>' + (NH(t) - hoyo) + '</b> hoyos') : 'Sin golpes aún') + '</span>';
   }
   function actualizar(round){
     ronda = round;
