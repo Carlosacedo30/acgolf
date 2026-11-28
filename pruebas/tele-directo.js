@@ -212,11 +212,11 @@
     const k = i => t[i] ? claveNombre(t[i].n) : null;
     const pasos = [];
     const r1 = '🏆 <b>Gana ' + esc(largo(t[0].n)) + '</b> · ' + marca(t[0]);
-    pasos.push(Lp(['x-fin-a1', k(0), 'x-fin-a2'], r1));
+    pasos.push(Lp(k(0) ? ['x-fin-a1', k(0), 'x-fin-a2'] : [], r1));   // sin nombre grabado no se dice la frase a medias: solo se enseña
     if(t[1]){
       const r2 = '2.º · <b>' + esc(largo(t[1].n)) + '</b> · ' + marca(t[1]);
       if(k(1)){ pasos.push(Cp('x-fin-b1', r2)); pasos.push(Lp(k(1), r2)); pasos.push(Cp('x-fin-b2', r2)); }
-      else pasos.push(Cp('x-fin-b2', r2));
+      else pasos.push(Cp([], r2));
     }
     if(t[2]){
       const r3 = '3.º · <b>' + esc(largo(t[2].n)) + '</b> · ' + marca(t[2]);
