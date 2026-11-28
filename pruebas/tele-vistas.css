@@ -149,3 +149,17 @@
 @container (max-width:520px){
   .tv-marcas{ display:none; }
 }
+
+/* --- Plano de quien habla: Lola a la izquierda, Curro a la derecha; el vídeo solo mueve la boca de Lola --- */
+.vt.tv-on .vt-mesa video{ transform-origin:50% 40%; transition:transform .6s ease; }
+.vt.tv-on .vt-mesa[data-habla="lola"] video{ transform-origin:24% 40%; transform:scale(1.55); }
+.vt.tv-on .vt-mesa[data-habla="curro"] video{ transform-origin:76% 42%; transform:scale(1.55); animation:tvCabeza 1.1s ease-in-out infinite; }
+@keyframes tvCabeza{ 0%,100%{ transform:scale(1.55) translateY(0) rotate(0); } 25%{ transform:scale(1.57) translateY(-.6%) rotate(-.5deg); } 60%{ transform:scale(1.55) translateY(.4%) rotate(.4deg); } }
+.vt.tv-on .vt-mesa[data-habla] span{ opacity:1; }
+.vt[data-modo="intro"] .vt-mesa[data-habla] span, .vt[data-modo="host"] .vt-mesa[data-habla] span{ opacity:1; left:auto; right:auto; position:absolute; bottom:1.6cqw; left:50%; transform:translateX(-50%); padding:.6cqw 2.4cqw; border-radius:999px; background:rgba(10,24,54,.9); color:#E9CF8C; font-size:max(11px,2.2cqw); border:1px solid #E9CF8C; width:auto; }
+@media (prefers-reduced-motion: reduce){ .vt.tv-on .vt-mesa[data-habla="curro"] video{ animation:none; } }
+.tv-fin{ position:absolute; inset:0; z-index:9; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.2cqw; background:rgba(5,8,16,.92); color:#fff; opacity:0; transition:opacity .8s; text-align:center; pointer-events:none; }
+.tv-fin.on{ opacity:1; }
+.tv-fin small{ font:800 max(10px,1.8cqw) 'Archivo',sans-serif; letter-spacing:.2em; color:#E9CF8C; }
+.tv-fin b{ font:900 max(22px,6cqw) 'Archivo',sans-serif; } .tv-fin b span{ color:#E9CF8C; }
+.tv-fin em{ font:600 max(12px,2.2cqw) 'Barlow',sans-serif; font-style:normal; color:#cfd6e4; }

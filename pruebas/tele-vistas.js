@@ -208,6 +208,7 @@
     if(DD && DD.final) return programaFinal(g, P, DD);
     const A = P.slice(0, 3), B = P.slice(3, 6), C = P.slice(6);
     await decir(A, 9000, g); if(!vive(g)) return;
+    await reel(g, 2, true); if(!vive(g)) return;
     await bucle(g, B, C);
   }
   async function bucle(g, B, C){
@@ -232,17 +233,36 @@
     const lv = vtEl() && vtEl().querySelector('.vt-live'); if(lv) lv.innerHTML = '<i></i>RESUMEN FINAL';
     await decir(hola, 7000, g); if(!vive(g)) return;
     // 1. El ganador, en pantalla negra
-    if(x){ if(gana.length) T_()._reproducir(gana); await liv({ tipo: 'GANADOR', n: x.n, nombre: largo(x.n), detalle: 'RESUMEN FINAL · ' + (D.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO'), golpes: D.esPtos ? x.pts : x.bruto, final: true }, g, 9000); if(!vive(g)) return; }
+    if(x){ const hg = gana.length ? T_()._reproducir(gana) : null; await liv({ tipo: 'GANADOR', n: x.n, nombre: largo(x.n), detalle: 'RESUMEN FINAL · ' + (D.esPtos ? x.pts + ' PUNTOS' : signo(x.neto) + ' NETO'), golpes: D.esPtos ? x.pts : x.bruto, final: true }, g, 9000); if(hg) await hg; if(!vive(g)) return; }
     // 2. El podio con la mesa pequeña, mientras comentan al 2.º y al 3.º
     setModo('rot'); rotar(false); vistaForzada = vPodio; pinta();
     await decir(seg.concat(ter), 9000, g); if(!vive(g)) return;
+    // 2b. Lo mejor del día: birdies y águilas
+    await reel(g, 3, true); if(!vive(g)) return;
     // 3. Las cervezas: brindis a pantalla completa
     if(cerv.length){ const pagan = D.t.slice(D.t.length - Math.floor(D.t.length / 2)).map(y => largo(y.n)); await brindis(pagan, cerv, g); if(!vive(g)) return; }
     // 4. Despedida con la mesa grande y la clasificación final en las marcas
     setModo('host'); marcas(); await decir(adios, 6000, g); if(!vive(g)) return;
-    // 5. Se queda la clasificación final y un botón para verlo otra vez
+    // 5. Fin de la emisión: tarjeta de despedida y se queda la clasificación final con un botón para verlo otra vez
+    { const vt0 = vtEl(); if(vt0){ const f = document.createElement('div'); f.className = 'tv-fin'; f.innerHTML = '<small>FIN DE LA EMISIÓN</small><b>ac<span>golf</span> TV</b><em>Gracias por verlo · hasta la próxima partida</em>'; vt0.appendChild(f); requestAnimationFrame(() => f.classList.add('on')); await espera(4500, g); f.classList.remove('on'); setTimeout(() => f.remove(), 900); if(!vive(g)) return; } }
     setModo('rot'); vistaForzada = vClasif; pinta();
     const vt = vtEl(); if(vt && !vt.querySelector('.tv-otra')){ const b = document.createElement('button'); b.type = 'button'; b.className = 'tv-otra'; b.textContent = '↺ Ver el resumen otra vez'; b.onclick = () => { b.remove(); window.acgolfTeleDir({ inicio: true }); }; vt.appendChild(b); }
+  }
+  // Lo mejor del día: los birdies y águilas que ya hay (los mejores primero), cada uno en pantalla negra con su celebración
+  function mejoresMomentos(n){
+    const E = EV(); if(!E.momentos) return [];
+    let m = []; try { m = E.momentos(ronda); } catch(e){}
+    const vistos = {};
+    return m.filter(x => x.d < 0).sort((a, b) => a.d - b.d || b.pos - a.pos).filter(x => { const k = x.n + ':' + x.h; if(vistos[k]) return false; vistos[k] = 1; return true; }).slice(0, n || 3);
+  }
+  async function reel(g, n, conVoz){
+    const L = mejoresMomentos(n); if(!L.length) return;
+    for(let i = 0; i < L.length; i++){
+      const x = L[i], ev = { tipo: x.d <= -2 ? 'ÁGUILA' : 'BIRDIE', n: x.n, nombre: largo(x.n), detalle: 'HOYO ' + etq(x.h) + ' · PAR ' + x.par, golpes: x.v, tit: 'LO MEJOR DEL DÍA' };
+      const r = 'Birdie de <b>' + esc(largo(x.n)) + '</b> en el hoyo ' + etq(x.h);
+      const hab = (conVoz && i === 0) ? T_()._reproducir([{ q: 'lola', clips: ['l-birdie'], rot: r }, { q: 'curro', clips: ['c-birdie'], rot: r }]) : null;
+      await liv(ev, g, 7000); if(hab) await hab; if(!vive(g)) return;
+    }
   }
   async function brindis(pagan, voz, g){
     const vt = vtEl(); if(!vt) return;
@@ -262,7 +282,7 @@
     const old = vt.querySelector('.tv-liv'); if(old) old.remove();
     const vid = ev.tipo === 'BIRDIE' ? 'tv-birdie.mp4?v=1' : (ev.tipo === 'GANADOR' ? 'tv-brindis.mp4?v=1' : 'tv-aplausos.mp4?v=1');
     const e = document.createElement('div'); e.className = 'tv-liv ' + col;
-    e.innerHTML = '<i class="l1"></i><i class="l2"></i><div class="tv-lt"><small>' + (ev.final ? 'RESUMEN FINAL' : 'EN DIRECTO') + ' · ' + esc(ronda.round_name || '') + '</small><b>' + esc(ev.tipo) + '</b><strong>' + esc(ev.nombre) + '</strong><span>' + esc(ev.detalle) + '</span>'
+    e.innerHTML = '<i class="l1"></i><i class="l2"></i><div class="tv-lt"><small>' + (ev.tit ? ev.tit : (ev.final ? 'RESUMEN FINAL' : 'EN DIRECTO') + ' · ' + esc(ronda.round_name || '')) + '</small><b>' + esc(ev.tipo) + '</b><strong>' + esc(ev.nombre) + '</strong><span>' + esc(ev.detalle) + '</span>'
       + '<div class="tv-cifras"><div><small>' + (D.esPtos ? 'PUNTOS' : 'NETO') + '</small><b>' + (x ? (D.esPtos ? x.pts : signo(x.neto)) : '—') + '</b></div><div><small>PUESTO</small><b>' + pos + '</b></div><div><small>' + (ev.final ? (D.esPtos ? 'PUNTOS' : 'GOLPES') : 'EN EL HOYO') + '</small><b>' + (ev.golpes || '—') + '</b></div></div></div>'
       + '<div class="tv-pip"><video muted playsinline autoplay preload="auto" src="' + vid + '"></video></div>';
     vt.appendChild(e); setModo('liv'); rotar(false);
@@ -271,14 +291,17 @@
     await espera(dur || 7000, g);
     e.classList.remove('on'); setTimeout(() => e.remove(), 700);
   }
+  // Nunca se corta a Lola o a Curro a mitad de frase: si están hablando, el evento espera a que acaben (máx. 25 s)
+  async function esperarHabla(){ for(let i = 0; i < 125 && T_()._hablando && T_()._hablando(); i++) await new Promise(ok => setTimeout(ok, 200)); }
   async function evento(ev){
-    if(!ronda) return; const g = ++gen; ocupado = true;
+    if(!ronda) return; ocupado = true; await esperarHabla(); if(!ronda){ ocupado = false; return; } const g = ++gen;
     try {
       const avs = pend.splice(0);                       // lo que dicen Lola y Curro sobre esta jugada
       const voz = avs.length ? avs.sort((a, b) => a.prio - b.prio)[0].pasos : null;
       if(ev){
-        if(voz) T_()._reproducir(voz);                  // hablan mientras se ve la pantalla negra
+        const hab = voz ? T_()._reproducir(voz) : null;   // hablan mientras se ve la pantalla negra
         await liv(ev, g); if(!vive(g)) return;
+        if(hab) await hab; if(!vive(g)) return;
         setModo('host'); marcas(); await espera(5000, g); if(!vive(g)) return;
       } else if(voz){
         setModo('host'); marcas(); rotar(false); await decir(voz, 6000, g); if(!vive(g)) return;
@@ -337,7 +360,7 @@
     const m0 = T.montar, a0 = T.actualizar, q0 = T.quitar;
     T.montar = function(code, round){ const r = m0.apply(this, arguments); try { engancharse(code, round); } catch(e){} return r; };
     T.actualizar = function(round){ const r = a0.apply(this, arguments); try { ronda = round; mirarNovedades(); } catch(e){} return r; };
-    T.quitar = function(){ gen++; clearInterval(rotT); rotT = null; clearTimeout(zumT1); clearTimeout(zumT2); ronda = null; memoria = null; pend = []; ocupado = false; return q0.apply(this, arguments); };
+    T.quitar = function(){ gen++; clearInterval(rotT); rotT = null; ronda = null; memoria = null; pend = []; ocupado = false; return q0.apply(this, arguments); };
     T.montarFinal = montarFinal; T._tvEvento = evento; T._tvPinta = pinta; T._tvModo = setModo;
   }
   if(window.acgolfTele) arrancar(); else window.addEventListener('load', () => setTimeout(arrancar, 300));

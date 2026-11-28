@@ -22,7 +22,7 @@
   const esNueva = k => k.indexOf('x-') === 0 || NUEVOS.indexOf(k) >= 0;
   const urlVoz = k => (esNueva(k) ? VOCES_X : VOCES) + k + '.mp3';
   // Vídeos nuevos del plató (28-nov-2026): Lola y Curro oficiales juntos en la mesa; la boca se mueve solo cuando suena la voz
-  const VIDEOS = { lola: ['tv-mesa-a.mp4?v=1', 'tv-mesa-b.mp4?v=1'], curro: ['tv-mesa-b.mp4?v=1', 'tv-mesa-a.mp4?v=1'] };
+  const VIDEOS = { lola: ['tv-mesa-a.mp4?v=1', 'tv-mesa-b.mp4?v=1'] };
 
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const norm = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
@@ -147,19 +147,24 @@
   // ---------- La mesa de Lola y Curro ----------
   // mesa(quien) pone el marco de quien habla y deja el vídeo preparado y quieto; moverBoca() lo arranca justo cuando suena la voz
   // y quietaBoca() lo para en cuanto acaba cada trozo (así los silencios entre frases no mueven la boca).
+  // Los vídeos del plató solo mueven la boca de Lola. Por eso: cuando habla Lola se ve el plano de Lola con el vídeo
+  // en marcha; cuando habla Curro se ve el plano de Curro (quieto, con un pequeño movimiento de cabeza) y su nombre.
+  // Entre frases, plano general y quietos (sin la boca abierta a medias).
+  const QUIETO = 2.0;   // segundo del vídeo con las dos caras tranquilas
   function mesa(quien){
     const box = document.querySelector('#vvOverlay .vt-mesa'); if(!box) return;
     const v = box.querySelector('video');
-    const cambia = box.dataset.habla !== (quien || '');
     box.dataset.habla = quien || '';
-    if(!quien){ if(v){ v.pause(); } return; }
-    if(cambia || !v.src){
-      const lista = VIDEOS[quien]; const src = lista[(turno++) % lista.length];
-      if(v && !v.src.endsWith(src)){ v.src = src; }
-      if(v){ try { v.currentTime = 0; } catch(e){} }
-    }
+    const nom = box.querySelector('span'); if(nom) nom.textContent = quien === 'lola' ? 'Lola' : (quien === 'curro' ? 'Curro' : 'Lola y Curro');
+    if(!v) return;
+    if(!quien){ v.pause(); reposo(v); return; }
+    if(quien === 'curro'){ if(!v.src.endsWith(VIDEOS.lola[0])) v.src = VIDEOS.lola[0]; v.pause(); reposo(v); return; }
+    const src = VIDEOS.lola[(turno++) % 2];
+    if(!v.src.endsWith(src)) v.src = src;
+    try { v.currentTime = 0; } catch(e){}
   }
-  function moverBoca(){ const v = document.querySelector('#vvOverlay .vt-mesa video'); if(v) v.play().catch(() => {}); }
+  function reposo(v){ try { v.currentTime = QUIETO; } catch(e){ v.addEventListener('loadedmetadata', () => { try { v.currentTime = QUIETO; } catch(e2){} }, { once: true }); } }
+  function moverBoca(){ const v = document.querySelector('#vvOverlay .vt-mesa video'), b = document.querySelector('#vvOverlay .vt-mesa'); if(v && b && b.dataset.habla === 'lola') v.play().catch(() => {}); }
   function quietaBoca(){ const v = document.querySelector('#vvOverlay .vt-mesa video'); if(v) v.pause(); }
   function rotulo(html){
     const r = document.querySelector('#vvOverlay .vt-rot'); if(!r) return;
@@ -415,5 +420,5 @@
   window.addEventListener('load', () => setTimeout(porEnlace, 2500));
   window.addEventListener('hashchange', porEnlace);
 
-  window.acgolfTele = { montar, actualizar, quitar, guion, _parar: parar, _hablando: () => hablando, claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
+  window.acgolfTele = { montar, actualizar, quitar, guion, _parar: parar, _hablando: () => hablando, _reposo: () => mesa(null), claveNombre, _reproducir: reproducir, _avisos: () => avisos.map(a => a.pasos.map(p => p.q + ':' + p.clips.join('+')).join(' / ')) };
 })();
